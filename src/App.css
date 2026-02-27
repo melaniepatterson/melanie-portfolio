@@ -20,6 +20,10 @@ header h1 {
   margin-bottom: 1rem;
 }
 
+.site-name {
+  visibility: hidden;
+}
+
 nav a {
   color: #fff;
   text-decoration: none;
