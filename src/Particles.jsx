@@ -1,23 +1,56 @@
-cat > src/Particles.jsx << 'EOF'
-import Particles, { initParticlesEngine } from "@tsparticles/react";
-import { loadFull } from "tsparticles";
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 
-export default function ParticlesBackground() {
-  const [init, setInit] = useState(false);
+export default function RepulseLogo() {
+  const imgRef = useRef(null);
 
   useEffect(() => {
-    initParticlesEngine(async (engine) => {
-      await loadFull(engine);
-    }).then(() => setInit(true));
+    const handleMouseMove = (e) => {
+      const img = imgRef.current;
+      const rect = img.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+
+      const dx = centerX - e.clientX;
+      const dy = centerY - e.clientY;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const threshold = 400;
+
+      if (dist < threshold) {
+        const force = (threshold - dist) / threshold;
+        const angle = Math.atan2(dy, dx);
+        const pushX = Math.cos(angle) * force * 220;
+        const pushY = Math.sin(angle) * force * 220;
+        img.style.transition = "transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1)";
+        img.style.transform = `translate(${pushX}px, ${pushY}px)`;
+      } else {
+        img.style.transition = "transform 2.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
+        img.style.transform = "translate(0px, 0px)";
+      }
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
-  if (!init) return null;
-
   return (
-    <Particles
-      options={{"autoPlay":true,"background":{"color":{"value":"#fff"},"opacity":1},"clear":true,"detectRetina":true,"fpsLimit":120,"interactivity":{"detectsOn":"window","events":{"onClick":{"enable":true,"mode":"push"},"onHover":{"enable":true,"mode":"bubble","parallax":{"enable":false,"force":2,"smooth":10}},"resize":{"delay":0.5,"enable":true}},"modes":{"bubble":{"distance":400,"duration":2,"mix":false,"opacity":0.8,"size":40},"push":{"default":true,"quantity":4},"repulse":{"distance":200,"duration":0.4,"factor":100,"speed":1,"maxSpeed":50,"easing":"ease-out-quad"}}},"particles":{"color":{"value":"#ffffff"},"move":{"enable":true,"speed":2,"direction":"none","outModes":{"default":"out"}},"number":{"density":{"enable":true,"width":1920,"height":1080},"value":80},"opacity":{"value":1},"shape":{"type":"image","options":{"image":{"0":{"name":"dots"}}}},"size":{"value":16},"rotate":{"value":{"min":0,"max":360},"animation":{"enable":true,"speed":5,"sync":false},"direction":"random"}},"pauseOnBlur":true,"pauseOnOutsideViewport":true,"preload":{"src":"/images/melanie%20studio%20circle.svg","gif":false,"height":32,"name":"dots","width":32}}}
-    />
+    <div style={{
+      position: "fixed",
+      inset: 0,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      background: "#fff",
+      zIndex: 0
+    }}>
+      <img
+        ref={imgRef}
+        src="/images/melanie studio circle.svg"
+        style={{
+          width: 1500,
+          height: 1500,
+          willChange: "transform",
+        }}
+      />
+    </div>
   );
 }
-EOF
