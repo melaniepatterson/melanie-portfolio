@@ -18,8 +18,8 @@ export default function RepulseLogo() {
       if (dist < threshold) {
         const force = (threshold - dist) / threshold;
         const angle = Math.atan2(dy, dx);
-        const pushX = Math.cos(angle) * force * 220;
-        const pushY = Math.sin(angle) * force * 220;
+        const pushX = Math.cos(angle) * force * 400;
+        const pushY = Math.sin(angle) * force * 400;
         img.style.transition = "transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1)";
         img.style.transform = `translate(${pushX}px, ${pushY}px)`;
       } else {
