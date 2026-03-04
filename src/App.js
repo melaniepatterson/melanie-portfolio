@@ -1,9 +1,11 @@
 import './App.css';
+import ParticlesBackground from "./Particles";   // ← add this line at the top
 
 function App() {
   return (
     <div className="App">
       <header>
+        <ParticlesBackground />
         <h1 class="site-name">Melanie Patterson</h1>
         <nav>
           <a href="#about">About</a>
