@@ -14,6 +14,7 @@ function App() {
       <main>
         <section id="about">
           <p><a href="">Work</a><a href="">Play</a></p>
+        </section>
       </main>
     </div>
   );
