@@ -1,24 +1,28 @@
-import './App.css';
-import ParticlesBackground from "./Particles";   // ← add this line at the top
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Nav from "./Nav";
+import Hero from "./Radialgradient";
+import Logo from "./Logo";
+import Work from "./pages/Work";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
+import "./App.css";
 
 function App() {
   return (
-    <div className="App">
-      <header>
-        <ParticlesBackground />
-        <h1 class="site-name">Melanie Patterson</h1>
-        <nav>
-          <a href="#about">About</a>
-          <a href="#contact">Contact</a>
-        </nav>
-      </header>
-
-      <main>
-        <section id="about">
-          <p><a href="">Work</a><a href="">Play</a></p>
-        </section>
-      </main>
-    </div>
+    <BrowserRouter>
+      <div className="layout">
+        <Nav />
+        <Logo />
+        <main className="content">
+          <Routes>
+            <Route path="/" element={<Hero />} />
+            <Route path="/work" element={<Work />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+          </Routes>
+        </main>
+      </div>
+    </BrowserRouter>
   );
 }
 

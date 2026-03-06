@@ -11,6 +11,7 @@
     "@tsparticles/slim": "^3.9.1",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
+    "react-router-dom": "^7.13.1",
     "tsparticles": "^3.9.1",
     "web-vitals": "^2.1.4"
   },
