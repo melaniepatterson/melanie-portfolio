@@ -37,7 +37,7 @@ export default function About() {
           </p>
         </div>
         <div className={styles.photo}>
-          <img src="https://placehold.co/500x600" alt="Melanie Patterson" />
+          <img src="/images/melanie-patterson-headshot.gif" alt="Melanie Patterson" />
         </div>
       </div>
     </div>

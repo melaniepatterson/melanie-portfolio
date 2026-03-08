@@ -108,12 +108,13 @@
 
 .card {
   text-decoration: none;
-  overflow: hidden;
+  overflow: visible;
   position: relative;
   cursor: pointer;
   display: block;
   min-height: 0;
   min-width: 0;
+  align-self: start;
 }
 
 .card img {
@@ -125,6 +126,26 @@
 
 .card:hover img {
   transform: scale(1.03);
+}
+
+.cardTitle {
+  font-family: 'TAN - Sometimes', serif;
+  font-size: 1.6rem;
+  color: #C93500;
+  line-height: 1;
+  transform: translateY(-50%);
+  padding: 0 0.5rem;
+  position: relative;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  mix-blend-mode: multiply;
+  text-transform: lowercase;
+}
+
+.card:hover .cardTitle {
+  opacity: 1;
 }
 
 .small {
@@ -159,11 +180,6 @@
   opacity: 1;
 }
 
-.cardTitle {
-  font-size: 0.9rem;
-  font-weight: 700;
-}
-
 .cardMeta {
   font-size: 0.75rem;
   opacity: 0.8;
@@ -174,4 +190,38 @@
   opacity: 0.6;
   font-size: 1rem;
   padding: 2rem 0;
+}
+
+.starCheckbox {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.star {
+  width: 100%;
+  height: 100%;
+  fill: #FAF7F2;
+  opacity: 0.3;
+  transition: opacity 0.2s ease, fill 0.2s ease;
+}
+
+.starChecked {
+  fill: #C93500;
+  opacity: 1;
+  mix-blend-mode: multiply;
+}
+
+.filterOption {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  color: #FAF7F2;
 }

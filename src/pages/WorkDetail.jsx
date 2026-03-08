@@ -29,8 +29,13 @@ export default function WorkDetail() {
           <p className={styles.meta}>{project.modality} · {project.medium} · {project.year}</p>
           <p className={styles.description}>{project.description}</p>
           {project.externalLink && (
-            <a href={project.externalLink} target="_blank" rel="noreferrer" className={styles.link}>
-              View Project →
+              <a href={project.externalLink}
+              target={project.externalLink.startsWith("http") ? "_blank" : undefined}
+              rel={project.externalLink.startsWith("http") ? "noreferrer" : undefined}
+              className={styles.link}
+              >
+              View Project
+              {project.externalLink.startsWith("http") ? " ↗" : ""}
             </a>
           )}
         </div>

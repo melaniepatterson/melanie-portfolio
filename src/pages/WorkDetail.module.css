@@ -32,6 +32,7 @@
   grid-template-columns: 1fr 380px;
   gap: 4rem;
   align-items: start;
+  padding-top: 2em;
 }
 
 .images {
@@ -84,7 +85,7 @@
 
 .info {
   position: sticky;
-  top: 3rem;
+  top: 4rem;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -110,16 +111,22 @@
 }
 
 .link {
-  display: inline-block;
-  color: #FAF7F2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #C93500;
+  background: #FAF7F2;
   text-decoration: none;
   font-size: 0.85rem;
   font-weight: 700;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  border-bottom: 2px solid #FAF7F2;
+  padding: 0.75rem 1.25rem;
+  transition: opacity 0.2s ease;
+  border-radius: 25px;
+  margin: 0rem -1.25rem;
 }
 
 .link:hover {
-  opacity: 0.7;
+  opacity: 0.85;
 }

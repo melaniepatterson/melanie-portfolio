@@ -35,6 +35,7 @@ main {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  padding-top: 4em;
 }
 
 .bio {
@@ -72,7 +73,9 @@ main {
 }
 
 .photo img {
+  padding-top: 2em;
   width: 100%;
-  height: auto;
+  max-height: 85vh;
+  object-fit: contain;
   display: block;
 }
