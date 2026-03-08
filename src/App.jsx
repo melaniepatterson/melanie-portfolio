@@ -5,20 +5,23 @@ import Logo from "./Logo";
 import Work from "./pages/Work";
 import AboutContact from "./pages/About-contact";
 import "./App.css";
+import WorkDetail from "./pages/WorkDetail";
 
 function Layout() {
   const location = useLocation();
   const isHome = location.pathname === "/";
   const isWork = location.pathname === "/work";
+  const isWorkDetail = location.pathname.startsWith("/work/");
 
   return (
-    <div className="layout" style={{ paddingRight: isWork ? 0 : 0 }}>
-      {!isHome && <Nav isWork={isWork} />}
-      <Logo isWork={isWork} />
+    <div className="layout">
+      {!isHome && <Nav isWork={isWork || isWorkDetail} />}
+      <Logo isWork={isWork || isWorkDetail} />
       <main className="content">
         <Routes>
           <Route path="/" element={<Hero />} />
           <Route path="/work" element={<Work />} />
+          <Route path="/work/:slug" element={<WorkDetail />} />
           <Route path="/about-contact" element={<AboutContact />} />
         </Routes>
       </main>

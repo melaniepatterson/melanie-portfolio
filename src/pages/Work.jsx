@@ -1,20 +1,14 @@
 import { useState } from "react";
 import styles from "./Work.module.css";
+import { PROJECTS } from "../data/projects";
+import { Link } from "react-router-dom";
 
 const MODALITIES = ["Fine Art", "Design / Print", "Web Development"];
 const MEDIUMS = ["Watercolor", "Digital", "Mixed Media", "Collage", "Code", "Photography", "Drawing"];
+const SIZES = ["small", "medium", "wide", "large"];
 
-// Placeholder projects — replace with your real work later
-const PROJECTS = [
-  { id: 1, title: "Project One", modality: "Fine Art", medium: "Watercolor", image: "https://placehold.co/600x450/C93500/FAF7F2" },
-  { id: 2, title: "Project Two", modality: "Fine Art", medium: "Mixed Media", image: "https://placehold.co/600x450/C93500/FAF7F2" },
-  { id: 3, title: "Project Three", modality: "Design / Print", medium: "Digital", image: "https://placehold.co/600x450/C93500/FAF7F2" },
-  { id: 4, title: "Project Four", modality: "Web Development", medium: "Code", image: "https://placehold.co/600x450/C93500/FAF7F2" },
-  { id: 5, title: "Project Five", modality: "Fine Art", medium: "Collage", image: "https://placehold.co/600x450/C93500/FAF7F2" },
-  { id: 6, title: "Project Six", modality: "Design / Print", medium: "Photography", image: "https://placehold.co/600x450/C93500/FAF7F2" },
-  { id: 7, title: "Project Seven", modality: "Fine Art", medium: "Drawing", image: "https://placehold.co/600x450/C93500/FAF7F2" },
-  { id: 8, title: "Project Eight", modality: "Web Development", medium: "Digital", image: "https://placehold.co/600x450/C93500/FAF7F2" },
-];
+// Seeded per session so it doesn't reflow on every render, only on page load
+const sessionSizes = PROJECTS.map(() => SIZES[Math.floor(Math.random() * SIZES.length)]);
 
 export default function Work() {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -77,17 +71,21 @@ export default function Work() {
 
       <div className={styles.content}>
         <div className={styles.grid}>
-          {filtered.length > 0 ? filtered.map(project => (
-            <div key={project.id} className={styles.card}>
-              <img src={project.image} alt={project.title} />
-              <div className={styles.cardInfo}>
-                <div className={styles.cardTitle}>{project.title}</div>
-                <div className={styles.cardMeta}>{project.modality} · {project.medium}</div>
-              </div>
+          {filtered.length > 0 ? filtered.map((project, i) => (
+          <Link
+            key={project.id}
+            to={`/work/${project.slug}`}
+            className={`${styles.card} ${styles[sessionSizes[i]]}`}
+            >
+            <img src={project.images[0]} alt={project.title} />
+            <div className={styles.cardInfo}>
+              <div className={styles.cardTitle}>{project.title}</div>
+              <div className={styles.cardMeta}>{project.modality} · {project.medium}</div>
             </div>
-          )) : (
-            <p className={styles.empty}>No projects match your filters.</p>
-          )}
+          </Link>
+        )) : (
+          <p className={styles.empty}>No projects match your filters.</p>
+        )}
         </div>
       </div>
     </div>
