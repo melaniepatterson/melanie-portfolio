@@ -68,7 +68,7 @@ export default function RepulseLogo() {
           letterSpacing: "0.1em",
           textTransform: "uppercase",
           textDecoration: "none",
-          borderBottom: "2px solid #C93500",
+          borderBottom: "4px solid #C93500",
           color: "#C93500",
           pointerEvents: "all"
         }}>Work</Link>
@@ -78,7 +78,7 @@ export default function RepulseLogo() {
           letterSpacing: "0.1em",
           textTransform: "uppercase",
           textDecoration: "none",
-          borderBottom: "2px solid #C93500",
+          borderBottom: "4px solid #C93500",
           color: "#C93500",
           pointerEvents: "all"
         }}>Info</Link>
