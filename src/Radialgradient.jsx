@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 
 export default function RepulseLogo() {
   const imgRef = useRef(null);
@@ -39,7 +40,7 @@ export default function RepulseLogo() {
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      background: "#fff",
+      background: "#FAF7F2",
       zIndex: 0
     }}>
       <img
@@ -51,6 +52,37 @@ export default function RepulseLogo() {
           willChange: "transform",
         }}
       />
+      <div style={{
+        position: "fixed",
+        inset: 0,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: "3rem",
+        zIndex: 1,
+        pointerEvents: "none"
+      }}>
+        <Link to="/work" style={{
+          fontSize: "2rem",
+          fontWeight: 500,
+          letterSpacing: "0.1em",
+          textTransform: "uppercase",
+          textDecoration: "none",
+          borderBottom: "2px solid #C93500",
+          color: "#C93500",
+          pointerEvents: "all"
+        }}>Work</Link>
+        <Link to="/about-contact" style={{
+          fontSize: "2rem",
+          fontWeight: 500,
+          letterSpacing: "0.1em",
+          textTransform: "uppercase",
+          textDecoration: "none",
+          borderBottom: "2px solid #C93500",
+          color: "#C93500",
+          pointerEvents: "all"
+        }}>Info</Link>
+      </div>
     </div>
   );
 }

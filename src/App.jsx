@@ -1,27 +1,35 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Nav from "./Nav";
 import Hero from "./Radialgradient";
 import Logo from "./Logo";
 import Work from "./pages/Work";
-import About from "./pages/About";
-import Contact from "./pages/Contact";
+import About from "./pages/About-contact";
 import "./App.css";
+
+function Layout() {
+  const location = useLocation();
+  const isHome = location.pathname === "/";
+
+  return (
+    <div className="layout">
+      {!isHome && <Nav />}
+      <Logo />
+      <main className="content">
+        <Routes>
+          <Route path="/" element={<Hero />} />
+          <Route path="/work" element={<Work />} />
+          <Route path="/about-contact" element={<About />} />
+ 
+        </Routes>
+      </main>
+    </div>
+  );
+}
 
 function App() {
   return (
     <BrowserRouter>
-      <div className="layout">
-        <Nav />
-        <Logo />
-        <main className="content">
-          <Routes>
-            <Route path="/" element={<Hero />} />
-            <Route path="/work" element={<Work />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-          </Routes>
-        </main>
-      </div>
+      <Layout />
     </BrowserRouter>
   );
 }

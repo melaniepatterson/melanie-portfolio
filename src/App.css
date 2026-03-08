@@ -24,19 +24,37 @@ header h1 {
   visibility: hidden;
 }
 
-nav a {
-  color: #C93500;
-  text-decoration: none;
-  margin: 0 1rem;
-  font-size: 1.1rem;
+.sidenav {
+  width: 300px;
+  position: fixed;
+  top: 0;
+  right: 0;
+  display: flex;
+  /* flex-direction: column;
+  justify-content: flex-start; */
+  padding-top: 2rem;
+  padding-right: 2rem;
+  gap: 2rem;
+  z-index: 100;
 }
 
-nav a:hover {
-  text-decoration: underline;
+.sidenav a {
+  color: #C93500;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding-bottom: 2px;
+  border-bottom: 2px solid #C93500 !important;
+}
+
+.content {
+  flex: 1;
 }
 
 main {
-  max-width: 800px;
+  max-width: 80%;
   margin: 0 auto;
   padding: 2rem;
 }
@@ -48,7 +66,7 @@ section {
 h2 {
   font-size: 2rem;
   margin-bottom: 1rem;
-  border-bottom: 2px solid #000;
+  border-bottom: 2px solid #C93500;
   padding-bottom: 0.5rem;
 }
 
@@ -67,13 +85,6 @@ p {
   display: flex;
   justify-content: flex-end;
   margin-bottom: 4rem;
-}
-
-.about-label {
-  font-size: 0.85rem;
-  font-weight: 700;
-  letter-spacing: 0.15em;
-  text-decoration: underline;
 }
 
 .about-content {

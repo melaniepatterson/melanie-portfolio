@@ -1,8 +1,7 @@
 export default function About() {
   return (
     <div className="about-page">
-      <div className="about-nav">
-        <span className="about-label">ABOUT</span>
+      <div className="about-nav"> 
       </div>
       <div className="about-content">
         <div className="about-text">
