@@ -3,12 +3,18 @@
   src: local('Bricolage Grotesque'), url(./fonts/BricolageGrotesque-VariableFont_opsz,wdth,wght.ttf) format('truetype');
 }
 
+@font-face {
+  font-family: 'TAN - Sometimes';
+  src: local('TAN - Sometimes'), url(./fonts/tan_-_sometimes-webfont.woff) format('woff'), url(./fonts/tan_-_sometimes-webfont.woff2) format('woff2');
+}
+
 body {
   margin: 0;
-  font-family: 'Bricolage Grotesque', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
   -webkit-font-smoothing: antialiased;
-  color: #C93500;
-  background-color: #FAF7F2;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 code {
