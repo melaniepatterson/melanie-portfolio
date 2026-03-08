@@ -6,7 +6,9 @@
 }
 
 .back {
-  display: inline-block;
+  position: fixed;
+  top: 2rem;
+  left: 2rem;
   color: #FAF7F2;
   text-decoration: none;
   font-size: 0.85rem;
@@ -14,7 +16,11 @@
   letter-spacing: 0.15em;
   text-transform: uppercase;
   border-bottom: 2px solid #FAF7F2;
-  margin-bottom: 3rem;
+  z-index: 100;
+}
+
+.back:hover {
+  opacity: 0.7;
 }
 
 .back:hover {
