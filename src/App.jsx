@@ -12,7 +12,7 @@ function Layout() {
   const isWork = location.pathname === "/work";
 
   return (
-    <div className="layout">
+    <div className="layout" style={{ paddingRight: isWork ? 0 : 0 }}>
       {!isHome && <Nav isWork={isWork} />}
       <Logo isWork={isWork} />
       <main className="content">

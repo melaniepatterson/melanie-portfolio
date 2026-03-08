@@ -28,9 +28,16 @@ main {
   letter-spacing: 0.15em;
   text-transform: uppercase;
   padding-bottom: 2px;
-  border-bottom: 2px solid #C93500 !important;
+  border-bottom: 2px solid #C93500;
 }
 
 .content {
   flex: 1;
+  min-width: 0;
+}
+
+.layout {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
 }

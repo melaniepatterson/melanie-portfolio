@@ -1,7 +1,7 @@
 import { NavLink } from "react-router-dom";
 
 export default function Nav({ isWork }) {
-  const color = isWork ? "#fff" : "#C93500";
+  const color = isWork ? "#FAF7F2" : "#C93500";
   return (
     <nav className="sidenav">
       <NavLink to="/work" style={{ color, borderBottomColor: color }}>Work</NavLink>

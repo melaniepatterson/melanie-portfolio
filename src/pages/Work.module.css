@@ -1,8 +1,159 @@
 .page {
   min-height: 100vh;
   background: #C93500;
-  padding: 3rem 4rem;
+  color: #FAF7F2;
+  width: 100%;
+}
+
+.filterButton {
+  position: fixed;
+  top: 2rem;
+  left: 2rem;
+  background: none;
+  border: none;
+  color: #FAF7F2;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: inherit;
+}
+
+.filterButton:hover {
+  opacity: 0.7;
+}
+
+/* Drawer */
+.drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 280px;
+  background: #C93500;
+  color: #FAF7F2;
+  z-index: 300;
+  padding: 5rem 2rem 2rem;
+  transform: translateX(-100%);
+  transition: transform 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+  overflow-y: auto;
+}
+
+.drawerOpen {
+  transform: translateX(0);
+}
+
+.drawerClose {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: none;
+  border: none;
+  color: #FAF7F2;
+  font-size: 1.2rem;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 700;
+}
+
+.filterTitle {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  color: #FAF7F2;
+  opacity: 0.6;
+}
+
+.filterOption {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.6rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  color: #FAF7F2;
+}
+
+.filterOption input[type="checkbox"] {
+  accent-color: #FAF7F2;
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+}
+
+.overlay {
   position: fixed;
   inset: 0;
-  overflow-y: auto;
+  /* background: rgba(0,0,0,0.2); */
+  z-index: 250;
+}
+
+/* Grid */
+.content {
+  padding: 6rem 320px 3rem 320px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.card {
+  aspect-ratio: 4/3;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+}
+
+.card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.card:hover img {
+  transform: scale(1.03);
+}
+
+.cardInfo {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1rem;
+  background: linear-gradient(transparent, rgba(0,0,0,0.5));
+  color: #FAF7F2;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.card:hover .cardInfo {
+  opacity: 1;
+}
+
+.cardTitle {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.cardMeta {
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+.empty {
+  color: #FAF7F2;
+  opacity: 0.6;
+  font-size: 1rem;
+  padding: 2rem 0;
 }
