@@ -3,7 +3,7 @@ import Nav from "./Nav";
 import Hero from "./Radialgradient";
 import Logo from "./Logo";
 import Work from "./pages/Work";
-import About from "./pages/About-contact";
+import AboutContact from "./pages/About-contact";
 import "./App.css";
 
 function Layout() {
@@ -18,7 +18,7 @@ function Layout() {
         <Routes>
           <Route path="/" element={<Hero />} />
           <Route path="/work" element={<Work />} />
-          <Route path="/about-contact" element={<About />} />
+          <Route path="/about-contact" element={<AboutContact />} />
  
         </Routes>
       </main>

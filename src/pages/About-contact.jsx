@@ -1,23 +1,24 @@
+import styles from "./About-contact.module.css";
+
 export default function About() {
   return (
-    <div className="about-page">
-      <div className="about-nav"> 
-      </div>
-      <div className="about-content">
-        <div className="about-text">
-          <p className="about-bio">
+    <div className={styles.page}>
+  
+      <div className={styles.content}>
+        <div className={styles.text}>
+          <p className={styles.bio}>
             Melanie Patterson is a multi-disciplinary artist and designer drawing
             inspiration from oratory histories, community dynamics, and just
             societal concepts. Through her work, she is compelled to document
             rare stories, celebrate difficult truths, and make use of thoughtful
             materials with meaningful execution.
           </p>
-          <p className="about-bio">
+          <p className={styles.bio}>
             Born and raised in Miami, FL, USA, she earned her BFA from Rhode
             Island School of Design in 2014 and currently lives in Providence,
             RI, USA.
           </p>
-          <div className="about-skills">
+          <div className={styles.skills}>
             <p><em>Skills:</em></p>
             <p><em>Drawing</em></p>
             <p><em>Painting</em></p>
@@ -26,16 +27,16 @@ export default function About() {
             <p><em>Photography</em></p>
             <p><em>Community Events + Organizing</em></p>
           </div>
-          <div className="about-links">
+          <div className={styles.links}>
             <a href="/cv.pdf" target="_blank" rel="noreferrer">CV</a>
             <span> / </span>
             <a href="mailto:hello@melanie.studio">Email</a>
           </div>
-          <p className="about-footer">
+          <p className={styles.footer}>
             Melanie is also a content creator, blogger and fashion illustrator.
           </p>
         </div>
-        <div className="about-photo">
+        <div className={styles.photo}>
           <img src="https://placehold.co/500x600" alt="Melanie Patterson" />
         </div>
       </div>

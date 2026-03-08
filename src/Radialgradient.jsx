@@ -40,7 +40,6 @@ export default function RepulseLogo() {
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      background: "#FAF7F2",
       zIndex: 0
     }}>
       <img
