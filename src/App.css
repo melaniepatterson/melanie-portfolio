@@ -4,6 +4,10 @@
   box-sizing: border-box;
 }
 
+main {
+  padding: 0;
+}
+
 .sidenav {
   width: 300px;
   position: fixed;

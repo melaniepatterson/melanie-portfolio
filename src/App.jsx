@@ -9,17 +9,17 @@ import "./App.css";
 function Layout() {
   const location = useLocation();
   const isHome = location.pathname === "/";
+  const isWork = location.pathname === "/work";
 
   return (
     <div className="layout">
-      {!isHome && <Nav />}
-      <Logo />
+      {!isHome && <Nav isWork={isWork} />}
+      <Logo isWork={isWork} />
       <main className="content">
         <Routes>
           <Route path="/" element={<Hero />} />
           <Route path="/work" element={<Work />} />
           <Route path="/about-contact" element={<AboutContact />} />
- 
         </Routes>
       </main>
     </div>
@@ -35,3 +35,4 @@ function App() {
 }
 
 export default App;
+
