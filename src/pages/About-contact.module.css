@@ -24,6 +24,12 @@
   align-items: start;
 }
 
+main {
+  max-width: 80%;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
 .text {
   display: flex;
   flex-direction: column;
