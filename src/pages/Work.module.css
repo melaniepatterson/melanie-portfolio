@@ -225,3 +225,23 @@
   cursor: pointer;
   color: #FAF7F2;
 }
+
+.clearButton {
+  background: none;
+  border: 2px solid #FAF7F2;
+  color: #FAF7F2;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: opacity 0.2s ease;
+  border-radius: 25px;
+}
+
+.clearButton:hover {
+  opacity: 0.7;
+}

@@ -10,8 +10,8 @@ import WorkDetail from "./pages/WorkDetail";
 function Layout() {
   const location = useLocation();
   const isHome = location.pathname === "/";
-  const isWork = location.pathname === "/work";
-  const isWorkDetail = location.pathname.startsWith("/work/");
+  const isWork = location.pathname === "/portfolio";
+  const isWorkDetail = location.pathname.startsWith("/portfolio/");
 
   return (
     <div className="layout">
@@ -20,8 +20,8 @@ function Layout() {
       <main className="content">
         <Routes>
           <Route path="/" element={<Hero />} />
-          <Route path="/work" element={<Work />} />
-          <Route path="/work/:slug" element={<WorkDetail />} />
+          <Route path="/portfolio" element={<Work />} />
+          <Route path="/portfolio/:slug" element={<WorkDetail />} />
           <Route path="/about-contact" element={<AboutContact />} />
         </Routes>
       </main>

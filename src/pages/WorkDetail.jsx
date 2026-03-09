@@ -11,13 +11,13 @@ export default function WorkDetail() {
   if (!project) return (
     <div className={styles.page}>
       <p>Project not found.</p>
-      <Link to="/work">← Back to Work</Link>
+      <Link to="/portfolio">← Back to Work</Link>
     </div>
   );
 
   return (
     <div className={styles.page}>
-      <Link to="/work" className={styles.back}>← Work</Link>
+      <Link to="/portfolio" className={styles.back}>← Work</Link>
 
       <div className={styles.layout}>
         <div className={styles.images}>

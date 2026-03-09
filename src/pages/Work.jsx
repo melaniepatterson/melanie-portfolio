@@ -106,6 +106,17 @@ const filtered = sessionOrder.filter(p => {
             </label>
           ))}
         </div>
+        {(selectedModalities.length > 0 || selectedMediums.length > 0) && (
+          <button
+            className={styles.clearButton}
+            onClick={() => {
+              setSelectedModalities([]);
+              setSelectedMediums([]);
+            }}
+          >
+            Clear Filters
+          </button>
+        )}
       </div>
 
       <div className={styles.content}>
@@ -115,7 +126,7 @@ const filtered = sessionOrder.filter(p => {
           return (
             <Link
               key={project.id}
-              to={`/work/${project.slug}`}
+              to={`/portfolio/${project.slug}`}
               className={`${styles.card} ${styles[sessionSizes[i]]}`}
             >
               <img src={project.images[0]} alt={project.title} />
@@ -127,6 +138,7 @@ const filtered = sessionOrder.filter(p => {
         )}
         </div>
       </div>
+      
     </div>
   );
 }
