@@ -11,7 +11,7 @@ export default function WorkDetail() {
   if (!project) return (
     <div className={styles.page}>
       <p>Project not found.</p>
-      <Link to="/portfolio">← Back to Work</Link>
+      <Link to="/portfolio">← Back to Portfolio</Link>
     </div>
   );
 
@@ -26,14 +26,30 @@ export default function WorkDetail() {
 
         <div className={styles.info}>
           <h1 className={styles.title}>{project.title}</h1>
-          <p className={styles.meta}>{project.modality} · {project.medium} · {project.year}</p>
+          <p className={styles.meta}>
+            {project.disciplines.join(" · ")} · {project.year}
+          </p>
+          {project.client && (
+            <p className={styles.client}>
+              {project.client.url ? (
+                <a href={project.client.url} target="_blank" rel="noreferrer" className={styles.clientLink}>
+                  {project.client.name}
+                </a>
+              ) : (
+                project.client.name
+              )}
+            </p>
+          )}
           <p className={styles.description}>{project.description}</p>
+          {project.topics && (
+            <p className={styles.topics}>{project.topics.join(" · ")}</p>
+          )}
           {project.externalLink && (
               <a href={project.externalLink}
               target={project.externalLink.startsWith("http") ? "_blank" : undefined}
               rel={project.externalLink.startsWith("http") ? "noreferrer" : undefined}
               className={styles.link}
-              >
+            >
               View Project
               {project.externalLink.startsWith("http") ? " ↗" : ""}
             </a>

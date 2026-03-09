@@ -18,8 +18,6 @@ const SHAPES = [
   "M12 1L15 5L20 3L18 8L23 10L18 13L21 18L16 17L14 22L11 18L6 21L7 16L2 14L7 11L4 6L9 8Z",
 ];
 
-const sessionShapes = {};
-
 function StarCheckbox({ checked, shape }) {
   return (
     <div className={styles.starCheckbox}>
@@ -32,8 +30,8 @@ function StarCheckbox({ checked, shape }) {
 
 export default function Work() {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [selectedModalities, setSelectedModalities] = useState([]);
-  const [selectedMediums, setSelectedMediums] = useState([]);
+  const [selectedDisciplines, setSelectedDisciplines] = useState([]);
+  const [selectedTopics, setSelectedTopics] = useState([]);
 
   const toggleFilter = (value, selected, setSelected) => {
     setSelected(prev =>
@@ -41,24 +39,23 @@ export default function Work() {
     );
   };
 
-  // Only show filters that have at least one project
-  const availableModalities = [...new Set(PROJECTS.map(p => p.modality))];
-  const availableMediums = [...new Set(PROJECTS.map(p => p.medium))];
+  const availableDisciplines = [...new Set(PROJECTS.flatMap(p => p.disciplines))];
+  const availableTopics = [...new Set(PROJECTS.flatMap(p => p.topics))];
 
-const shapeMap = useMemo(() => {
-  const map = {};
-  const shuffled = [...SHAPES].sort(() => Math.random() - 0.5);
-  [...availableModalities, ...availableMediums].forEach((opt, i) => {
-    map[opt] = shuffled[i % shuffled.length];
+  const shapeMap = useMemo(() => {
+    const map = {};
+    const shuffled = [...SHAPES].sort(() => Math.random() - 0.5);
+    [...availableDisciplines, ...availableTopics].forEach((opt, i) => {
+      map[opt] = shuffled[i % shuffled.length];
+    });
+    return map;
+  }, []);
+
+  const filtered = sessionOrder.filter(p => {
+    const disciplineMatch = selectedDisciplines.length === 0 || p.disciplines.some(d => selectedDisciplines.includes(d));
+    const topicMatch = selectedTopics.length === 0 || p.topics.some(t => selectedTopics.includes(t));
+    return disciplineMatch && topicMatch;
   });
-  return map;
-}, []);
-
-const filtered = sessionOrder.filter(p => {
-  const modalityMatch = selectedModalities.length === 0 || selectedModalities.includes(p.modality);
-  const mediumMatch = selectedMediums.length === 0 || selectedMediums.includes(p.medium);
-  return modalityMatch && mediumMatch;
-});
 
   return (
     <div className={styles.page}>
@@ -74,44 +71,45 @@ const filtered = sessionOrder.filter(p => {
         <button className={styles.drawerClose} onClick={() => setDrawerOpen(false)}>✕</button>
 
         <div className={styles.filterSection}>
-          <div className={styles.filterTitle}>Modality</div>
-          {availableModalities.map(m => (
+          <div className={styles.filterTitle}>Discipline</div>
+          {availableDisciplines.map(m => (
             <label
               key={m}
               className={styles.filterOption}
               onClick={(e) => {
                 e.preventDefault();
-                toggleFilter(m, selectedModalities, setSelectedModalities);
+                toggleFilter(m, selectedDisciplines, setSelectedDisciplines);
               }}
             >
-              <StarCheckbox checked={selectedModalities.includes(m)} shape={shapeMap[m]} />
+              <StarCheckbox checked={selectedDisciplines.includes(m)} shape={shapeMap[m]} />
               {m}
             </label>
           ))}
         </div>
 
         <div className={styles.filterSection}>
-          <div className={styles.filterTitle}>Medium</div>
-          {availableMediums.map(m => (
+          <div className={styles.filterTitle}>Topic</div>
+          {availableTopics.map(m => (
             <label
               key={m}
               className={styles.filterOption}
               onClick={(e) => {
                 e.preventDefault();
-                toggleFilter(m, selectedMediums, setSelectedMediums);
+                toggleFilter(m, selectedTopics, setSelectedTopics);
               }}
             >
-              <StarCheckbox checked={selectedMediums.includes(m)} shape={shapeMap[m]} />
+              <StarCheckbox checked={selectedTopics.includes(m)} shape={shapeMap[m]} />
               {m}
             </label>
           ))}
         </div>
-        {(selectedModalities.length > 0 || selectedMediums.length > 0) && (
+
+        {(selectedDisciplines.length > 0 || selectedTopics.length > 0) && (
           <button
             className={styles.clearButton}
             onClick={() => {
-              setSelectedModalities([]);
-              setSelectedMediums([]);
+              setSelectedDisciplines([]);
+              setSelectedTopics([]);
             }}
           >
             Clear Filters
@@ -122,23 +120,22 @@ const filtered = sessionOrder.filter(p => {
       <div className={styles.content}>
         <div className={styles.grid}>
           {filtered.length > 0 ? filtered.map((project) => {
-          const i = PROJECTS.findIndex(p => p.id === project.id);
-          return (
-            <Link
-              key={project.id}
-              to={`/portfolio/${project.slug}`}
-              className={`${styles.card} ${styles[sessionSizes[i]]}`}
-            >
-              <img src={project.images[0]} alt={project.title} />
-              <div className={styles.cardTitle}>{project.title}</div>
-            </Link>
+            const i = PROJECTS.findIndex(p => p.id === project.id);
+            return (
+              <Link
+                key={project.id}
+                to={`/portfolio/${project.slug}`}
+                className={`${styles.card} ${styles[sessionSizes[i]]}`}
+              >
+                <img src={project.images[0]} alt={project.title} />
+                <div className={styles.cardTitle}>{project.title}</div>
+              </Link>
             );
-            }) : (
+          }) : (
             <p className={styles.empty}>No projects match your filters.</p>
-        )}
+          )}
         </div>
       </div>
-      
     </div>
   );
 }

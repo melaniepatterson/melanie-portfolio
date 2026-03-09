@@ -3,128 +3,96 @@ export const PROJECTS = [
     id: 1,
     slug: "project-one",
     title: "Project One",
-    modality: "Fine Art",
-    medium: "Watercolor",
+    disciplines: ["Fine Art"],
+    topics: ["Personal Narrative"],
+    client: null,
     year: "2024",
     description: "A description of this project and your process, materials, and intent behind the work.",
     externalLink: "",
-    images: [
-  "https://placehold.co/1200x800/1a1a1a/FAF7F2",
-  "https://placehold.co/800x1000/1a1a1a/FAF7F2",
-  "https://placehold.co/1200x600/1a1a1a/FAF7F2",
-  "https://placehold.co/600x600/1a1a1a/FAF7F2",
-]
+    images: ["https://placehold.co/1200x800/1a1a1a/FAF7F2"]
   },
   {
     id: 2,
     slug: "project-two",
     title: "Project Two",
-    modality: "Fine Art",
-    medium: "Mixed Media",
+    disciplines: ["Fine Art"],
+    topics: ["Memory & Archive"],
+    client: null,
     year: "2024",
     description: "A description of this project and your process, materials, and intent behind the work.",
     externalLink: "",
-    images: [
-  "https://placehold.co/1200x800/1a1a1a/FAF7F2",
-  "https://placehold.co/800x1000/1a1a1a/FAF7F2",
-  "https://placehold.co/1200x600/1a1a1a/FAF7F2",
-  "https://placehold.co/600x600/1a1a1a/FAF7F2",
-]
+    images: ["https://placehold.co/1200x800/FAF7F2/C93500"]
   },
   {
     id: 3,
     slug: "project-three",
     title: "Project Three",
-    modality: "Design / Print",
-    medium: "Digital",
+    disciplines: ["Design & Print"],
+    topics: ["Activism & Advocacy"],
+    client: { name: "DARE", url: "https://dareri.org" },
     year: "2023",
     description: "A description of this project and your process, materials, and intent behind the work.",
     externalLink: "",
-    images: [
-  "https://placehold.co/1200x800/1a1a1a/FAF7F2",
-  "https://placehold.co/800x1000/1a1a1a/FAF7F2",
-  "https://placehold.co/1200x600/1a1a1a/FAF7F2",
-  "https://placehold.co/600x600/1a1a1a/FAF7F2",
-]
+    images: ["https://placehold.co/1200x800/e8d5b0/C93500"]
   },
   {
     id: 4,
     slug: "project-four",
     title: "Project Four",
-    modality: "Web Development",
-    medium: "Code",
+    disciplines: ["Web & Interactive"],
+    topics: ["Form & Process"],
+    client: null,
     year: "2023",
     description: "A description of this project and your process, materials, and intent behind the work.",
     externalLink: "https://example.com",
-    images: [
-  "https://placehold.co/1200x800/1a1a1a/FAF7F2",
-  "https://placehold.co/800x1000/1a1a1a/FAF7F2",
-  "https://placehold.co/1200x600/1a1a1a/FAF7F2",
-  "https://placehold.co/600x600/1a1a1a/FAF7F2",
-]
+    images: ["https://placehold.co/1200x800/2d4a3e/FAF7F2"]
   },
   {
     id: 5,
     slug: "project-five",
     title: "Project Five",
-    modality: "Fine Art",
-    medium: "Collage",
+    disciplines: ["Fine Art", "Design & Print"],
+    topics: ["Memory & Archive", "Personal Narrative"],
+    client: null,
     year: "2023",
     description: "A description of this project and your process, materials, and intent behind the work.",
     externalLink: "",
-    images: [
-  "https://placehold.co/1200x800/1a1a1a/FAF7F2",
-  "https://placehold.co/800x1000/1a1a1a/FAF7F2",
-  "https://placehold.co/1200x600/1a1a1a/FAF7F2",
-  "https://placehold.co/600x600/1a1a1a/FAF7F2",
-]
+    images: ["https://placehold.co/1200x800/7c4a6e/FAF7F2"]
   },
   {
     id: 6,
     slug: "project-six",
     title: "Project Six",
-    modality: "Design / Print",
-    medium: "Photography",
+    disciplines: ["Photography / Film / Animation"],
+    topics: ["Activism & Advocacy"],
+    client: { name: "DARE", url: "https://dareri.org" },
     year: "2022",
     description: "A description of this project and your process, materials, and intent behind the work.",
     externalLink: "",
-    images: [
-  "https://placehold.co/1200x800/1a1a1a/FAF7F2",
-  "https://placehold.co/800x1000/1a1a1a/FAF7F2",
-  "https://placehold.co/1200x600/1a1a1a/FAF7F2",
-  "https://placehold.co/600x600/1a1a1a/FAF7F2",
-]
+    images: ["https://placehold.co/1200x800/f4a261/1a1a1a"]
   },
   {
     id: 7,
     slug: "project-seven",
     title: "Project Seven",
-    modality: "Fine Art",
-    medium: "Drawing",
+    disciplines: ["Writing & Publishing"],
+    topics: ["Memory & Archive"],
+    client: null,
     year: "2022",
     description: "A description of this project and your process, materials, and intent behind the work.",
     externalLink: "",
-    images: [
-  "https://placehold.co/1200x800/1a1a1a/FAF7F2",
-  "https://placehold.co/800x1000/1a1a1a/FAF7F2",
-  "https://placehold.co/1200x600/1a1a1a/FAF7F2",
-  "https://placehold.co/600x600/1a1a1a/FAF7F2",
-]
+    images: ["https://placehold.co/1200x800/264653/FAF7F2"]
   },
   {
     id: 8,
     slug: "project-eight",
     title: "Project Eight",
-    modality: "Web Development",
-    medium: "Digital",
+    disciplines: ["Web & Interactive", "Documentary & Research"],
+    topics: ["Form & Process"],
+    client: null,
     year: "2022",
     description: "A description of this project and your process, materials, and intent behind the work.",
     externalLink: "",
-    images: [
-  "https://placehold.co/1200x800/1a1a1a/FAF7F2",
-  "https://placehold.co/800x1000/1a1a1a/FAF7F2",
-  "https://placehold.co/1200x600/1a1a1a/FAF7F2",
-  "https://placehold.co/600x600/1a1a1a/FAF7F2",
-]
+    images: ["https://placehold.co/1200x800/e76f51/FAF7F2"]
   },
 ];
