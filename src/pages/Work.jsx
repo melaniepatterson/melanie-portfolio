@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 const SIZES = ["small", "medium", "wide", "large"];
 const sessionSizes = PROJECTS.map(() => SIZES[Math.floor(Math.random() * SIZES.length)]);
 const sessionOrder = [...PROJECTS].sort(() => Math.random() - 0.5);
+const sessionNudges = PROJECTS.map(() => Math.floor(Math.random() * 120));
 
 const SHAPES = [
   "M12 2C16 2 22 6 22 12C22 18 17 22 12 22C7 22 2 17 2 12C2 7 8 2 12 2Z",
@@ -122,9 +123,7 @@ export default function Work() {
           {filtered.length > 0 ? filtered.map((project) => {
   const i = PROJECTS.findIndex(p => p.id === project.id);
   const size = sessionSizes[i];
-  const nudge = (size === "small" || size === "medium")
-    ? Math.floor(Math.random() * 120)
-    : 0;
+  const nudge = (size === "small" || size === "medium") ? sessionNudges[i] : 0;
   return (
     <Link
       key={project.id}
