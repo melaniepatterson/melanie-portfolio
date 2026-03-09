@@ -120,17 +120,22 @@ export default function Work() {
       <div className={styles.content}>
         <div className={styles.grid}>
           {filtered.length > 0 ? filtered.map((project) => {
-            const i = PROJECTS.findIndex(p => p.id === project.id);
-            return (
-              <Link
-                key={project.id}
-                to={`/portfolio/${project.slug}`}
-                className={`${styles.card} ${styles[sessionSizes[i]]}`}
-              >
-                <img src={project.images[0]} alt={project.title} />
-                <div className={styles.cardTitle}>{project.title}</div>
-              </Link>
-            );
+  const i = PROJECTS.findIndex(p => p.id === project.id);
+  const size = sessionSizes[i];
+  const nudge = (size === "small" || size === "medium")
+    ? Math.floor(Math.random() * 120)
+    : 0;
+  return (
+    <Link
+      key={project.id}
+      to={`/portfolio/${project.slug}`}
+      className={`${styles.card} ${styles[size]}`}
+      style={{ marginTop: `${nudge}px` }}
+    >
+      <img src={project.images[0]} alt={project.title} />
+      <div className={styles.cardTitle}>{project.title}</div>
+    </Link>
+  );
           }) : (
             <p className={styles.empty}>No projects match your filters.</p>
           )}
