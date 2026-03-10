@@ -1,8 +1,7 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import styles from "./Work.module.css";
 import { PROJECTS } from "../data/projects";
 import { Link } from "react-router-dom";
-import { useEffect } from "react";
 
 const SIZES = ["small", "medium", "wide", "large"];
 const sessionSizes = PROJECTS.map(() => SIZES[Math.floor(Math.random() * SIZES.length)]);
@@ -35,20 +34,36 @@ export default function Work() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedDisciplines, setSelectedDisciplines] = useState([]);
   const [selectedTopics, setSelectedTopics] = useState([]);
+  const [showScroll, setShowScroll] = useState(true);
+  const contentRef = useRef(null);
+  const [hasScroll, setHasScroll] = useState(false);
+  const gridRef = useRef(null);
+
+  useEffect(() => {
+    const saved = sessionStorage.getItem("workScroll");
+    if (saved) {
+      window.scrollTo(0, parseInt(saved));
+      sessionStorage.removeItem("workScroll");
+    }
+  }, []);
+  
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 100) {
+        setShowScroll(false);
+      } else {
+        setShowScroll(true);
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const toggleFilter = (value, selected, setSelected) => {
     setSelected(prev =>
       prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value]
     );
   };
-
-  useEffect(() => {
-  const saved = sessionStorage.getItem("workScroll");
-  if (saved) {
-    window.scrollTo(0, parseInt(saved));
-    sessionStorage.removeItem("workScroll");
-  }
-}, []);
 
   const availableDisciplines = [...new Set(PROJECTS.flatMap(p => p.disciplines))];
   const availableTopics = [...new Set(PROJECTS.flatMap(p => p.topics))];
@@ -67,6 +82,19 @@ export default function Work() {
     const topicMatch = selectedTopics.length === 0 || p.topics.some(t => selectedTopics.includes(t));
     return disciplineMatch && topicMatch;
   });
+
+useEffect(() => {
+  const checkScroll = () => {
+    if (!gridRef.current) return;
+    const cards = gridRef.current.querySelectorAll('a');
+    const belowFold = Array.from(cards).some(
+      card => card.getBoundingClientRect().bottom > window.innerHeight
+    );
+    setHasScroll(belowFold);
+  };
+  const timer = setTimeout(checkScroll, 100);
+  return () => clearTimeout(timer);
+}, [filtered]);
 
   return (
     <div className={styles.page}>
@@ -128,12 +156,14 @@ export default function Work() {
         )}
       </div>
 
-      <div className={styles.content}>
-        <div className={styles.grid}>
+      <div className={styles.content} ref={contentRef}>
+        <div className={styles.grid} ref={gridRef}>
           {filtered.length > 0 ? filtered.map((project) => {
   const i = PROJECTS.findIndex(p => p.id === project.id);
   const size = sessionSizes[i];
-const nudge = sessionNudges[i];
+  const nudge = sessionNudges[i];
+  
+
   return (
     <Link
       key={project.id}
@@ -154,8 +184,16 @@ const nudge = sessionNudges[i];
             <p className={styles.empty}>No projects match your filters.</p>
           )}
         </div>
+        <div className={styles.scrollHint} style={{ opacity: showScroll && hasScroll ? 1 : 0 }}>
+          <span>Scroll</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="#FAF7F2" strokeWidth="1.5" strokeLinecap="round">
+            <line x1="12" y1="4" x2="12" y2="20" />
+            <polyline points="6 14 12 20 18 14" />
+          </svg>
+        </div>
       </div>
     </div>
   );
 }
+
 
