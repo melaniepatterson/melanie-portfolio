@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { PROJECTS } from "./data/projects";
+import { SplitText } from "./App";
 
-const CHASER_IMAGES = PROJECTS.map(p => p.images[0]);
+const CHASER_IMAGES = PROJECTS.map(p => p.images[0].src);
 
 export default function RepulseLogo() {
   const imgRef = useRef(null);
@@ -77,7 +78,8 @@ export default function RepulseLogo() {
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      zIndex: 0
+      zIndex: 0,
+      overflow: "hidden"
     }}>
 
       {/* Chaser image */}
@@ -148,7 +150,7 @@ export default function RepulseLogo() {
             color: "#C93500",
             pointerEvents: "all",
           }}
-        >Work</Link>
+        ><SplitText>Work</SplitText></Link>
         <Link
           to="/about-contact"
           onMouseEnter={handleLinkEnter}
@@ -163,7 +165,7 @@ export default function RepulseLogo() {
             color: "#C93500",
             pointerEvents: "all",
           }}
-        >Info</Link>
+        ><SplitText>Info</SplitText></Link>
       </div>
     </div>
   );

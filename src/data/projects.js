@@ -9,7 +9,11 @@ export const PROJECTS = [
     year: "2024",
     description: "A description of this project and your process, materials, and intent behind the work.",
     externalLink: "",
-    images: ["https://placehold.co/1200x800/1a1a1a/FAF7F2"]
+    images: [
+  { src: "https://placehold.co/1200x800/1a1a1a/FAF7F2", alt: "A watercolor painting of..." },
+  { src: "https://placehold.co/800x1000/1a1a1a/FAF7F2", alt: "Detail shot of the upper left corner showing..." },
+  { src: "https://placehold.co/600x600/1a1a1a/FAF7F2", alt: "The full piece installed at..." },
+]
   },
   {
     id: 2,
@@ -21,7 +25,11 @@ export const PROJECTS = [
     year: "2024",
     description: "A description of this project and your process, materials, and intent behind the work.",
     externalLink: "",
-    images: ["https://placehold.co/1200x800/FAF7F2/C93500"]
+    images: [
+  { src: "https://placehold.co/1200x800/1a1a1a/FAF7F2", alt: "A watercolor painting of..." },
+  { src: "https://placehold.co/800x1000/1a1a1a/FAF7F2", alt: "Detail shot of the upper left corner showing..." },
+  { src: "https://placehold.co/600x600/1a1a1a/FAF7F2", alt: "The full piece installed at..." },
+]
   },
   {
     id: 3,
@@ -33,9 +41,11 @@ export const PROJECTS = [
     year: "2023",
     description: "A description of this project and your process, materials, and intent behind the work.",
     externalLink: "",
-    images: ["https://placehold.co/1200x800/e8d5b0/C93500", "https://placehold.co/1200x800/1a1a1a/FAF7F2",  // ← gallery image 1
-    "https://placehold.co/800x1000/1a1a1a/FAF7F2",  // ← gallery image 2
-    "https://placehold.co/600x600/1a1a1a/FAF7F2",]
+    images: [
+  { src: "https://placehold.co/1200x800/1a1a1a/FAF7F2", alt: "A watercolor painting of..." },
+  { src: "https://placehold.co/800x1000/1a1a1a/FAF7F2", alt: "Detail shot of the upper left corner showing..." },
+  { src: "https://placehold.co/600x600/1a1a1a/FAF7F2", alt: "The full piece installed at..." },
+]
   },
   {
     id: 4,
@@ -47,9 +57,11 @@ export const PROJECTS = [
     year: "2023",
     description: "A description of this project and your process, materials, and intent behind the work.",
     externalLink: "https://example.com",
-    images: ["https://placehold.co/1200x800/2d4a3e/FAF7F2", "https://placehold.co/1200x800/1a1a1a/FAF7F2",  // ← gallery image 1
-    "https://placehold.co/800x1000/1a1a1a/FAF7F2",  // ← gallery image 2
-    "https://placehold.co/600x600/1a1a1a/FAF7F2",]
+    images: [
+  { src: "https://placehold.co/1200x800/1a1a1a/FAF7F2", alt: "A watercolor painting of..." },
+  { src: "https://placehold.co/800x1000/1a1a1a/FAF7F2", alt: "Detail shot of the upper left corner showing..." },
+  { src: "https://placehold.co/600x600/1a1a1a/FAF7F2", alt: "The full piece installed at..." },
+]
   },
   {
     id: 5,
@@ -61,7 +73,11 @@ export const PROJECTS = [
     year: "2023",
     description: "A description of this project and your process, materials, and intent behind the work.",
     externalLink: "",
-    images: ["https://placehold.co/1200x800/7c4a6e/FAF7F2"]
+    images: [
+  { src: "https://placehold.co/1200x800/1a1a1a/FAF7F2", alt: "A watercolor painting of..." },
+  { src: "https://placehold.co/800x1000/1a1a1a/FAF7F2", alt: "Detail shot of the upper left corner showing..." },
+  { src: "https://placehold.co/600x600/1a1a1a/FAF7F2", alt: "The full piece installed at..." },
+]
   },
   {
     id: 6,
@@ -73,9 +89,11 @@ export const PROJECTS = [
     year: "2022",
     description: "A description of this project and your process, materials, and intent behind the work.",
     externalLink: "",
-    images: ["https://placehold.co/1200x800/f4a261/1a1a1a", "https://placehold.co/1200x800/1a1a1a/FAF7F2",  // ← gallery image 1
-    "https://placehold.co/800x1000/1a1a1a/FAF7F2",  // ← gallery image 2
-    "https://placehold.co/600x600/1a1a1a/FAF7F2",]
+    images: [
+  { src: "https://placehold.co/1200x800/1a1a1a/FAF7F2", alt: "A watercolor painting of..." },
+  { src: "https://placehold.co/800x1000/1a1a1a/FAF7F2", alt: "Detail shot of the upper left corner showing..." },
+  { src: "https://placehold.co/600x600/1a1a1a/FAF7F2", alt: "The full piece installed at..." },
+]
   },
   {
     id: 7,
@@ -87,9 +105,11 @@ export const PROJECTS = [
     year: "2022",
     description: "A description of this project and your process, materials, and intent behind the work.",
     externalLink: "",
-    images: ["https://placehold.co/1200x800/264653/FAF7F2", "https://placehold.co/1200x800/1a1a1a/FAF7F2",  // ← gallery image 1
-    "https://placehold.co/800x1000/1a1a1a/FAF7F2",  // ← gallery image 2
-    "https://placehold.co/600x600/1a1a1a/FAF7F2",]
+    images: [
+  { src: "https://placehold.co/1200x800/1a1a1a/FAF7F2", alt: "A watercolor painting of..." },
+  { src: "https://placehold.co/800x1000/1a1a1a/FAF7F2", alt: "Detail shot of the upper left corner showing..." },
+  { src: "https://placehold.co/600x600/1a1a1a/FAF7F2", alt: "The full piece installed at..." },
+]
   },
   {
     id: 8,
@@ -101,6 +121,10 @@ export const PROJECTS = [
     year: "2022",
     description: "A description of this project and your process, materials, and intent behind the work.",
     externalLink: "",
-    images: ["https://placehold.co/1200x800/e76f51/FAF7F2"]
+    images: [
+  { src: "https://placehold.co/1200x800/1a1a1a/FAF7F2", alt: "A watercolor painting of..." },
+  { src: "https://placehold.co/800x1000/1a1a1a/FAF7F2", alt: "Detail shot of the upper left corner showing..." },
+  { src: "https://placehold.co/600x600/1a1a1a/FAF7F2", alt: "The full piece installed at..." },
+]
   },
 ];

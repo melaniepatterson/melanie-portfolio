@@ -6,19 +6,6 @@
   margin: 0 auto;
 }
 
-.nav {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 4rem;
-}
-
-.label {
-  font-size: 0.85rem;
-  font-weight: 700;
-  letter-spacing: 0.15em;
-  text-decoration: underline;
-}
-
 .content {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -44,14 +31,6 @@ main {
   color: #C93500;
 }
 
-.skills {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-  font-size: 0.95rem;
-  color: #C93500;
-}
-
 .links {
   font-size: 0.95rem;
   color: #C93500;
@@ -59,17 +38,9 @@ main {
 
 .links a {
   color: #C93500;
-  text-decoration: underline;
-}
-
-.links a:hover {
-  opacity: 0.6;
-}
-
-.footer {
-  font-size: 0.85rem;
-  color: #C93500;
-  margin-top: 2rem;
+  letter-spacing: 0.15em;
+  border-bottom: 1px solid #C93500;
+  text-decoration: none;
 }
 
 .photo img {

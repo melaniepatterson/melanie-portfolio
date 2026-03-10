@@ -2,6 +2,7 @@ import { useParams, Link } from "react-router-dom";
 import { PROJECTS } from "../data/projects";
 import styles from "./WorkDetail.module.css";
 import { useEffect } from "react";
+import { SplitText } from "../App";
 
 
 const GALLERY_SIZES = ["gallerySmall", "galleryMedium", "galleryWide", "galleryLarge"];
@@ -11,23 +12,30 @@ export default function WorkDetail() {
   const project = PROJECTS.find(p => p.slug === slug);
 
   useEffect(() => {
+  document.documentElement.style.backgroundColor = "#C93500";
+  return () => {
+    document.documentElement.style.backgroundColor = "";
+  };
+}, []);
+
+  useEffect(() => {
   window.scrollTo(0, 0);
 }, []);
 
   if (!project) return (
     <div className={styles.page}>
       <p>Project not found.</p>
-      <Link to="/portfolio">← Back to Portfolio</Link>
+      <Link to="/portfolio"><SplitText>← Back to Portfolio</SplitText></Link>
     </div>
   );
 
   return (
     <div className={styles.page}>
-      <Link to="/portfolio" className={styles.back}>← Work</Link>
+      <Link to="/portfolio" className={styles.back}><SplitText>← Work</SplitText></Link>
 
       <div className={styles.layout}>
         <div className={styles.images}>
-          <img src={project.images[0]} alt={project.title} />
+          <img src={project.images[0].src} alt={project.images[0].alt} />
         </div>
 
         <div className={styles.info}>
@@ -38,7 +46,7 @@ export default function WorkDetail() {
           {project.client && (
             <p className={styles.client} style={{fontStyle: "italic"}}>
               Client: {project.client.url ? (
-                <a href={project.client.url} target="_blank" rel="noreferrer" className={styles.clientLink}>
+                <a href={project.client.url} target="_blank" rel="noopener noreferrer" className={styles.clientLink}>
                   {project.client.name}
                 </a>
               ) : (
@@ -53,10 +61,10 @@ export default function WorkDetail() {
           {project.externalLink && (
               <a href={project.externalLink}
               target={project.externalLink.startsWith("http") ? "_blank" : undefined}
-              rel={project.externalLink.startsWith("http") ? "noreferrer" : undefined}
+              rel={project.externalLink.startsWith("http") ? "noopener noreferrer" : undefined}
               className={styles.link}
             >
-              View Project
+              <SplitText>View Project</SplitText>
               {project.externalLink.startsWith("http") ? " ↗" : ""}
             </a>
           )}
@@ -66,13 +74,10 @@ export default function WorkDetail() {
       {project.images.length > 1 && (
         <div className={styles.gallery}>
           {project.images.slice(1).map((img, i) => (
-            <div
-              key={i}
-              className={`${styles.galleryItem} ${styles[GALLERY_SIZES[Math.floor(Math.random() * GALLERY_SIZES.length)]]}`}
-            >
-              <img src={img} alt={`${project.title} ${i + 2}`} />
-            </div>
-          ))}
+          <div key={i} className={`${styles.galleryItem} ${styles[GALLERY_SIZES[Math.floor(Math.random() * GALLERY_SIZES.length)]]}`}>
+            <img src={img.src} alt={img.alt} loading="lazy"/>
+          </div>
+        ))}
         </div>
       )}
     </div>

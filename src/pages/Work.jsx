@@ -40,6 +40,13 @@ export default function Work() {
   const gridRef = useRef(null);
 
   useEffect(() => {
+  document.documentElement.style.backgroundColor = "#C93500";
+  return () => {
+    document.documentElement.style.backgroundColor = "";
+  };
+}, []);
+
+  useEffect(() => {
     const saved = sessionStorage.getItem("workScroll");
     if (saved) {
       window.scrollTo(0, parseInt(saved));
@@ -175,7 +182,7 @@ useEffect(() => {
       }}
       onClick={() => sessionStorage.setItem("workScroll", window.scrollY)}
     >
-      <img src={project.images[0]} alt={project.title} />
+      <img src={project.images[0].src} alt={project.images[0].alt} />
       <div className={styles.cardTitle}>{project.title}</div>
       <div className={styles.cardYear}>{project.year}</div>
     </Link>

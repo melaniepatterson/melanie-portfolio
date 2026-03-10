@@ -1,40 +1,40 @@
+import { useEffect } from "react";
+import { SplitText } from "../App";
 import styles from "./About-contact.module.css";
 
 export default function About() {
+  
+useEffect(() => {
+  document.documentElement.style.backgroundColor = "#C93500";
+  return () => {
+    document.documentElement.style.backgroundColor = "";
+  };
+}, []);
+
   return (
     <div className={styles.page}>
   
       <div className={styles.content}>
         <div className={styles.text}>
           <p className={styles.bio}>
-            Melanie Patterson is a multi-disciplinary artist and designer drawing
-            inspiration from oratory histories, community dynamics, and just
-            societal concepts. Through her work, she is compelled to document
-            rare stories, celebrate difficult truths, and make use of thoughtful
-            materials with meaningful execution.
+            Melanie Patterson is an Indo-Jamaican American artist and designer drawing inspiration from oratory histories, community dynamics, and just societal concepts. Through her work, she is compelled to document rare stories, celebrate difficult truths, and make use of thoughtful materials with meaningful execution. Her practice exists across digital contexts, but is unyieldingly informed by handmade and traditional processes.
           </p>
           <p className={styles.bio}>
-            Born and raised in Miami, FL, USA, she earned her BFA from Rhode
-            Island School of Design in 2014 and currently lives in Providence,
-            RI, USA.
+            Born and raised in Miami, FL, she earned her BFA in Illustration from Rhode Island School of Design and currently lives in Providence, RI. She manages digital communications at RISD, bridging design and technical implementation across HTML email production, marketing copy, and creative direction.
           </p>
-          <div className={styles.skills}>
-            <p><em>Skills:</em></p>
-            <p><em>Drawing</em></p>
-            <p><em>Painting</em></p>
-            <p><em>Digital + Print Design</em></p>
-            <p><em>Web Development</em></p>
-            <p><em>Photography</em></p>
-            <p><em>Community Events + Organizing</em></p>
-          </div>
+          <p className={styles.bio}>
+            Her commitment to community led to her involvement in grassroots civic organizing, where she applies creative tools to amplify advocacy work.
+          </p>
+          <p className={styles.bio}>
+            Available for freelance projects and open to new opportunities.
+          </p>
+         
           <div className={styles.links}>
-            <a href="/cv.pdf" target="_blank" rel="noreferrer">CV</a>
+            <a href="/cv.pdf" target="_blank" rel="noreferrer" ><SplitText>CV</SplitText></a>
             <span> / </span>
-            <a href="mailto:hello@melanie.studio">Email</a>
+            <a href="mailto:hello@melanie.studio"><SplitText>Email</SplitText></a>
           </div>
-          <p className={styles.footer}>
-            Melanie is also a content creator, blogger and fashion illustrator.
-          </p>
+       
         </div>
         <div className={styles.photo}>
           <img src="/images/melanie-patterson-headshot.gif" alt="Melanie Patterson" />

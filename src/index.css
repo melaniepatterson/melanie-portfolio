@@ -20,3 +20,8 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+html {
+  background-color: #FAF7F2;
+  scroll-behavior: smooth;
+}
