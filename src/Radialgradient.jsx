@@ -90,18 +90,28 @@ export default function RepulseLogo() {
           width: 160,
           height: 120,
           pointerEvents: "none",
-          zIndex: 2,
+          zIndex: 4,
           opacity: chaserVisible ? 1 : 0,
-          transition: "opacity 0.2s ease",
+          transition: "opacity 0.2s ease"
         }}
       >
+       
         {chaserImage && (
           <img
             src={chaserImage}
             alt=""
-            style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+            style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", filter: "grayscale(100%)" }}
           />
         )}
+            <div
+        style={{
+          backgroundColor: "#c93500",
+          mixBlendMode: "screen",
+          position: "absolute",
+          inset: 0
+        }}
+      >
+        </div>
       </div>
 
       <img

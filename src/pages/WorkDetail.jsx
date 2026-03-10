@@ -1,12 +1,18 @@
 import { useParams, Link } from "react-router-dom";
 import { PROJECTS } from "../data/projects";
 import styles from "./WorkDetail.module.css";
+import { useEffect } from "react";
+
 
 const GALLERY_SIZES = ["gallerySmall", "galleryMedium", "galleryWide", "galleryLarge"];
 
 export default function WorkDetail() {
   const { slug } = useParams();
   const project = PROJECTS.find(p => p.slug === slug);
+
+  useEffect(() => {
+  window.scrollTo(0, 0);
+}, []);
 
   if (!project) return (
     <div className={styles.page}>
@@ -30,8 +36,8 @@ export default function WorkDetail() {
             {project.disciplines.join(" · ")} · {project.year}
           </p>
           {project.client && (
-            <p className={styles.client}>
-              {project.client.url ? (
+            <p className={styles.client} style={{fontStyle: "italic"}}>
+              Client: {project.client.url ? (
                 <a href={project.client.url} target="_blank" rel="noreferrer" className={styles.clientLink}>
                   {project.client.name}
                 </a>

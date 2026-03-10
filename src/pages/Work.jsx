@@ -2,11 +2,13 @@ import { useState, useMemo } from "react";
 import styles from "./Work.module.css";
 import { PROJECTS } from "../data/projects";
 import { Link } from "react-router-dom";
+import { useEffect } from "react";
 
 const SIZES = ["small", "medium", "wide", "large"];
 const sessionSizes = PROJECTS.map(() => SIZES[Math.floor(Math.random() * SIZES.length)]);
 const sessionOrder = [...PROJECTS].sort(() => Math.random() - 0.5);
-const sessionNudges = PROJECTS.map(() => Math.floor(Math.random() * 120));
+const sessionNudges = PROJECTS.map(() => Math.floor(Math.random() * 300));
+const sessionMargins = PROJECTS.map(() => Math.floor(Math.random() * 300));
 
 const SHAPES = [
   "M12 2C16 2 22 6 22 12C22 18 17 22 12 22C7 22 2 17 2 12C2 7 8 2 12 2Z",
@@ -39,6 +41,14 @@ export default function Work() {
       prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value]
     );
   };
+
+  useEffect(() => {
+  const saved = sessionStorage.getItem("workScroll");
+  if (saved) {
+    window.scrollTo(0, parseInt(saved));
+    sessionStorage.removeItem("workScroll");
+  }
+}, []);
 
   const availableDisciplines = [...new Set(PROJECTS.flatMap(p => p.disciplines))];
   const availableTopics = [...new Set(PROJECTS.flatMap(p => p.topics))];
@@ -123,16 +133,21 @@ export default function Work() {
           {filtered.length > 0 ? filtered.map((project) => {
   const i = PROJECTS.findIndex(p => p.id === project.id);
   const size = sessionSizes[i];
-  const nudge = (size === "small" || size === "medium") ? sessionNudges[i] : 0;
+const nudge = sessionNudges[i];
   return (
     <Link
       key={project.id}
       to={`/portfolio/${project.slug}`}
       className={`${styles.card} ${styles[size]}`}
-      style={{ marginTop: `${nudge}px` }}
+      style={{
+        marginTop: `${nudge}px`,
+        marginBottom: `${sessionMargins[i]}px`,
+      }}
+      onClick={() => sessionStorage.setItem("workScroll", window.scrollY)}
     >
       <img src={project.images[0]} alt={project.title} />
       <div className={styles.cardTitle}>{project.title}</div>
+      <div className={styles.cardYear}>{project.year}</div>
     </Link>
   );
           }) : (
@@ -143,3 +158,4 @@ export default function Work() {
     </div>
   );
 }
+
