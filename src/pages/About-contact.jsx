@@ -1,6 +1,6 @@
-import { useEffect } from "react";
 import { SplitText } from "../App";
 import styles from "./About-contact.module.css";
+import { useEffect } from "react";
 
 export default function About() {
   
@@ -37,7 +37,7 @@ useEffect(() => {
        
         </div>
         <div className={styles.photo}>
-          <img src="/images/melanie-patterson-headshot.gif" alt="Melanie Patterson" />
+          <img src="/images/melanie-patterson-headshot.webp" alt="Melanie Patterson" />
         </div>
       </div>
     </div>

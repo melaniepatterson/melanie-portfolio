@@ -82,5 +82,8 @@ a:hover .split-char {
   transform: rotate(20deg);
 }
 
-
+a:hover .split-char,
+button:hover .split-char {
+  transform: rotate(20deg);
+}
 

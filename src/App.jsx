@@ -9,12 +9,19 @@ import WorkDetail from "./pages/WorkDetail";
 import { PROJECTS } from "./data/projects";
 import { useEffect } from "react";
 import PageTransition from "./PageTransition";
+import NotFound from "./pages/NotFound";
 
 function Layout() {
   const location = useLocation();
   const isHome = location.pathname === "/";
   const isWork = location.pathname === "/portfolio";
   const isWorkDetail = location.pathname.startsWith("/portfolio/");
+
+  useEffect(() => {
+  if ('scrollRestoration' in window.history) {
+    window.history.scrollRestoration = 'manual';
+  }
+}, []);
   
   useEffect(() => {
   const titles = {
@@ -46,6 +53,7 @@ function Layout() {
           <Route path="/portfolio" element={<Work />} />
           <Route path="/portfolio/:slug" element={<WorkDetail />} />
           <Route path="/about-contact" element={<AboutContact />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </PageTransition>
     </main>

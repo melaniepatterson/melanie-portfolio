@@ -103,6 +103,14 @@
   row-gap: 0.5rem;
 }
 
+.spacer {
+  grid-column: span 1;
+}
+
+.spacerWide {
+  grid-column: span 2;
+}
+
 .card {
   text-decoration: none;
   overflow: visible;

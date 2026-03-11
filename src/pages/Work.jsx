@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import styles from "./Work.module.css";
 import { PROJECTS } from "../data/projects";
 import { Link } from "react-router-dom";
@@ -6,8 +6,12 @@ import { Link } from "react-router-dom";
 const SIZES = ["small", "medium", "wide", "large"];
 const sessionSizes = PROJECTS.map(() => SIZES[Math.floor(Math.random() * SIZES.length)]);
 const sessionOrder = [...PROJECTS].sort(() => Math.random() - 0.5);
-const sessionNudges = PROJECTS.map(() => Math.floor(Math.random() * 300));
-const sessionMargins = PROJECTS.map(() => Math.floor(Math.random() * 300));
+const sessionNudges = PROJECTS.map(() => Math.floor(Math.random() * 200));
+const sessionMargins = PROJECTS.map(() => Math.floor(Math.random() * 200));
+const sessionSpacers = new Set(
+  PROJECTS.map((_, i) => i)
+    .filter(() => Math.random() > 0.6)
+);
 
 const SHAPES = [
   "M12 2C16 2 22 6 22 12C22 18 17 22 12 22C7 22 2 17 2 12C2 7 8 2 12 2Z",
@@ -38,6 +42,7 @@ export default function Work() {
   const contentRef = useRef(null);
   const [hasScroll, setHasScroll] = useState(false);
   const gridRef = useRef(null);
+  const [gridVisible, setGridVisible] = useState(true);
 
   useEffect(() => {
   document.documentElement.style.backgroundColor = "#C93500";
@@ -67,10 +72,15 @@ export default function Work() {
   }, []);
 
   const toggleFilter = (value, selected, setSelected) => {
+  setGridVisible(false);
+  setTimeout(() => {
     setSelected(prev =>
       prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value]
     );
-  };
+    setGridVisible(true);
+    window.scrollTo(0, 0);
+  }, 200);
+};
 
   const availableDisciplines = [...new Set(PROJECTS.flatMap(p => p.disciplines))];
   const availableTopics = [...new Set(PROJECTS.flatMap(p => p.topics))];
@@ -154,39 +164,50 @@ useEffect(() => {
           <button
             className={styles.clearButton}
             onClick={() => {
-              setSelectedDisciplines([]);
-              setSelectedTopics([]);
+              setGridVisible(false);
+              setTimeout(() => {
+                setSelectedDisciplines([]);
+                setSelectedTopics([]);
+                setGridVisible(true);
+                window.scrollTo(0, 0);
+              }, 200);
             }}
           >
-            Clear Filters
-          </button>
+  Clear Filters
+</button>
         )}
       </div>
 
       <div className={styles.content} ref={contentRef}>
-        <div className={styles.grid} ref={gridRef}>
+        <div className={styles.grid} ref={gridRef} style={{
+          opacity: gridVisible ? 1 : 0,
+          transition: "opacity 0.2s ease"
+        }}>
           {filtered.length > 0 ? filtered.map((project) => {
-  const i = PROJECTS.findIndex(p => p.id === project.id);
-  const size = sessionSizes[i];
-  const nudge = sessionNudges[i];
-  
+            const i = PROJECTS.findIndex(p => p.id === project.id);
+            const size = sessionSizes[i];
+            const nudge = sessionNudges[i];
 
-  return (
-    <Link
-      key={project.id}
-      to={`/portfolio/${project.slug}`}
-      className={`${styles.card} ${styles[size]}`}
-      style={{
-        marginTop: `${nudge}px`,
-        marginBottom: `${sessionMargins[i]}px`,
-      }}
-      onClick={() => sessionStorage.setItem("workScroll", window.scrollY)}
-    >
-      <img src={project.images[0].src} alt={project.images[0].alt} />
-      <div className={styles.cardTitle}>{project.title}</div>
-      <div className={styles.cardYear}>{project.year}</div>
-    </Link>
-  );
+            return (
+              <React.Fragment key={project.id}>
+                {sessionSpacers.has(i) && (
+                  <div className={styles.spacer} />
+                )}
+                <Link
+                  to={`/portfolio/${project.slug}`}
+                  className={`${styles.card} ${styles[size]}`}
+                  style={{
+                    marginTop: `${nudge}px`,
+                    marginBottom: `${sessionMargins[i]}px`,
+                  }}
+                  onClick={() => sessionStorage.setItem("workScroll", window.scrollY)}
+                >
+                  <img src={project.images[0].src} alt={project.images[0].alt} />
+                  <div className={styles.cardTitle}>{project.title}</div>
+                  <div className={styles.cardYear}>{project.year}</div>
+                </Link>
+              </React.Fragment>
+            );
           }) : (
             <p className={styles.empty}>No projects match your filters.</p>
           )}
