@@ -3,6 +3,9 @@
   color: #FAF7F2;
   width: 100%;
   background-color: #C93500;
+  position: relative;
+  z-index: 2;
+  flex: 1;
 }
 
 .filterButton {
@@ -93,7 +96,7 @@
 
 /* Grid */
 .content {
-  padding: 3rem 320px 3rem 320px;
+  padding: 4rem 320px 3rem 320px;
 }
 
 .grid {
@@ -186,25 +189,8 @@
   grid-column: span 2;
 }
 
-.cardInfo {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 1rem;
-  background: linear-gradient(transparent, rgba(0,0,0,0.5));
-  color: #FAF7F2;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
 .card:hover .cardInfo {
   opacity: 1;
-}
-
-.cardMeta {
-  font-size: 0.75rem;
-  opacity: 0.8;
 }
 
 .empty {
@@ -236,16 +222,6 @@
   fill: #C93500;
   opacity: 1;
   mix-blend-mode: multiply;
-}
-
-.filterOption {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  margin-bottom: 0.75rem;
-  font-size: 0.9rem;
-  cursor: pointer;
-  color: #FAF7F2;
 }
 
 .clearButton {

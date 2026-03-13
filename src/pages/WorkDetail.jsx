@@ -6,6 +6,7 @@ import { SplitText } from "../App";
 
 
 const GALLERY_SIZES = ["gallerySmall", "galleryMedium", "galleryWide", "galleryLarge"];
+const sessionGallerySizes = {};
 
 export default function WorkDetail() {
   const { slug } = useParams();
@@ -73,11 +74,18 @@ export default function WorkDetail() {
 
       {project.images.length > 1 && (
         <div className={styles.gallery}>
-          {project.images.slice(1).map((img, i) => (
-          <div key={i} className={`${styles.galleryItem} ${styles[GALLERY_SIZES[Math.floor(Math.random() * GALLERY_SIZES.length)]]}`}>
-            <img src={img.src} alt={img.alt} loading="lazy"/>
-          </div>
-        ))}
+          {project.images.slice(1).map((img, i) => {
+            if (!sessionGallerySizes[project.slug]) {
+              sessionGallerySizes[project.slug] = project.images.slice(1).map(() =>
+                GALLERY_SIZES[Math.floor(Math.random() * GALLERY_SIZES.length)]
+              );
+            }
+            return (
+              <div key={i} className={`${styles.galleryItem} ${styles[sessionGallerySizes[project.slug][i]]}`}>
+                <img src={img.src} alt={img.alt} loading="lazy" />
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

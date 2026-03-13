@@ -46,17 +46,32 @@ function Layout() {
   <div className="layout">
     {!isHome && <Nav isWork={isWork || isWorkDetail} />}
     <Logo isWork={isWork || isWorkDetail} />
-    <main className="content">
-      <PageTransition>
-        <Routes>
-          <Route path="/" element={<Hero />} />
-          <Route path="/portfolio" element={<Work />} />
-          <Route path="/portfolio/:slug" element={<WorkDetail />} />
-          <Route path="/about-contact" element={<AboutContact />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </PageTransition>
-    </main>
+    <div className="page-wrapper" style={{
+      backgroundColor: isWork || isWorkDetail ? "#C93500" : "#FAF7F2"
+    }}>
+      <main className="content">
+        <PageTransition>
+          <Routes>
+            <Route path="/" element={<Hero />} />
+            <Route path="/portfolio" element={<Work />} />
+            <Route path="/portfolio/:slug" element={<WorkDetail />} />
+            <Route path="/about-contact" element={<AboutContact />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </PageTransition>
+      </main>
+      <footer style={{
+        marginTop: "auto",
+        padding: "1rem 2rem",
+        fontSize: "0.6rem",
+        letterSpacing: "0.1em",
+        opacity: 0.4,
+        color: isWork || isWorkDetail ? "#FAF7F2" : "#C93500",
+        pointerEvents: "none",
+      }}>
+        © {new Date().getFullYear()} Melanie Patterson
+      </footer>
+    </div>
   </div>
 );
 

@@ -4,6 +4,7 @@
   position: relative;
   max-width: 80%;
   margin: 0 auto;
+  z-index: 2;
 }
 
 .content {
@@ -11,11 +12,6 @@
   grid-template-columns: 1fr 1fr;
   gap: 4rem;
   align-items: start;
-}
-
-main {
-  margin: 0 auto;
-  padding: 2rem;
 }
 
 .text {

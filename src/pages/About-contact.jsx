@@ -1,29 +1,26 @@
 import { SplitText } from "../App";
 import styles from "./About-contact.module.css";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function About() {
+  const [hovered, setHovered] = useState(false);
   
-useEffect(() => {
-  document.documentElement.style.backgroundColor = "#C93500";
-  return () => {
-    document.documentElement.style.backgroundColor = "";
-  };
-}, []);
+  useEffect(() => {
+    document.documentElement.style.backgroundColor = "#C93500";
+    return () => {
+      document.documentElement.style.backgroundColor = "";
+    };
+  }, []);
 
   return (
     <div className={styles.page}>
-  
       <div className={styles.content}>
         <div className={styles.text}>
           <p className={styles.bio}>
-            Melanie Patterson is an Indo-Jamaican American artist and designer drawing inspiration from oratory histories, community dynamics, and just societal concepts. Through her work, she is compelled to document rare stories, celebrate difficult truths, and make use of thoughtful materials with meaningful execution. Her practice exists across digital contexts, but is unyieldingly informed by handmade and traditional processes.
+            Melanie Patterson is an Indo-Jamaican American artist and designer drawing inspiration from oratory histories, community dynamics, and just societal concepts. Through her work, she is compelled to document rare stories, celebrate difficult truths, and meaningful work across print, code, and handmade processes alike.
           </p>
           <p className={styles.bio}>
-            Born and raised in Miami, FL, she earned her BFA in Illustration from Rhode Island School of Design and currently lives in Providence, RI. She manages digital communications at RISD, bridging design and technical implementation across HTML email production, marketing copy, and creative direction.
-          </p>
-          <p className={styles.bio}>
-            Her commitment to community led to her involvement in grassroots civic organizing, where she applies creative tools to amplify advocacy work.
+            Born and raised in Miami, FL and based in Providence, RI since earning her BFA from Rhode Island School of Design, she works at the intersection of design, code, and community.
           </p>
           <p className={styles.bio}>
             Available for freelance projects and open to new opportunities.
@@ -37,9 +34,20 @@ useEffect(() => {
        
         </div>
         <div className={styles.photo}>
-          <img src="/images/melanie-patterson-headshot.webp" alt="Melanie Patterson" />
+          <img
+            src="/images/melanie-patterson-headshot.webp"
+            alt="Melanie Patterson"
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+            style={{
+              transform: hovered ? "translateX(6px) rotate(0.75deg)" : "translateX(0px) rotate(0deg)",
+              transition: "transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1)",
+              transformOrigin: "bottom center",
+            }}
+          />
         </div>
       </div>
     </div>
   );
 }
+

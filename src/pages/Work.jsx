@@ -143,7 +143,7 @@ useEffect(() => {
           ))}
         </div>
 
-        <div className={styles.filterSection}>
+        <div>
           <div className={styles.filterTitle}>Topic</div>
           {availableTopics.map(m => (
             <label

@@ -3,6 +3,8 @@
   background-color: #C93500;
   color: #FAF7F2;
   padding: 3rem 4rem;
+  position: relative;
+  z-index: 2;
 }
 
 .back {
@@ -82,7 +84,7 @@
 
 .info {
   position: sticky;
-  top: 4rem;
+  top: 5rem;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
