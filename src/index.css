@@ -1,13 +1,3 @@
-@font-face {
-  font-family: 'Bricolage Grotesque';
-  src: local('Bricolage Grotesque'), url(./fonts/BricolageGrotesque-VariableFont_opsz,wdth,wght.ttf) format('truetype');
-}
-
-@font-face {
-  font-family: 'TAN - Sometimes';
-  src: local('TAN - Sometimes'), url(./fonts/tan_-_sometimes-webfont.woff) format('woff'), url(./fonts/tan_-_sometimes-webfont.woff2) format('woff2');
-}
-
 body {
   margin: 0;
   font-family: 'Bricolage Grotesque', 'Helvetica Neue', sans-serif;

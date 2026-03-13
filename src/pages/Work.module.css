@@ -60,6 +60,10 @@
   font-weight: 700;
 }
 
+.filterSection {
+  margin-bottom: 2rem;
+}
+
 .filterTitle {
   font-size: 0.7rem;
   font-weight: 700;
@@ -187,10 +191,6 @@
 
 .large {
   grid-column: span 2;
-}
-
-.card:hover .cardInfo {
-  opacity: 1;
 }
 
 .empty {
