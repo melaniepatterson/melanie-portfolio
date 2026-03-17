@@ -2,7 +2,7 @@ import { SplitText } from "../App";
 import styles from "./About-contact.module.css";
 import { useEffect, useState } from "react";
 
-export default function About() {
+export default function AboutContact() {
   const [hovered, setHovered] = useState(false);
   
   useEffect(() => {
@@ -17,7 +17,7 @@ export default function About() {
       <div className={styles.content}>
         <div className={styles.text}>
           <p className={styles.bio}>
-            Melanie Patterson is an Indo-Jamaican American artist and designer drawing inspiration from oratory histories, community dynamics, and just societal concepts. Through her work, she is compelled to document rare stories, celebrate difficult truths, and meaningful work across print, code, and handmade processes alike.
+            Melanie Patterson is an Indo-Jamaican American artist and designer drawing inspiration from oratory histories, community dynamics, and just societal concepts. Through her work, she is compelled to document rare stories, celebrate difficult truths, and make meaningful work across print, code, and handmade processes alike.
           </p>
           <p className={styles.bio}>
             Born and raised in Miami, FL and based in Providence, RI since earning her BFA from Rhode Island School of Design, she works at the intersection of design, code, and community.

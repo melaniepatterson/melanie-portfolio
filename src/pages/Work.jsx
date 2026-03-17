@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useRef } from "react";
+import React, { useState, useMemo, useEffect, useRef, Suspense, lazy } from "react";
 import styles from "./Work.module.css";
 import { PROJECTS } from "../data/projects";
 import { Link } from "react-router-dom";
@@ -12,6 +12,19 @@ const sessionSpacers = new Set(
   PROJECTS.map((_, i) => i)
     .filter(() => Math.random() > 0.6)
 );
+const componentCache = {};
+
+function LazyThumbnail({ loader, hovered, fallbackSrc, fallbackAlt }) {
+  if (!componentCache[loader]) {
+    componentCache[loader] = lazy(loader);
+  }
+  const Component = componentCache[loader];
+  return (
+    <Suspense fallback={<img src={fallbackSrc} alt={fallbackAlt} />}>
+      <Component hovered={hovered} />
+    </Suspense>
+  );
+}
 
 const SHAPES = [
   "M12 2C16 2 22 6 22 12C22 18 17 22 12 22C7 22 2 17 2 12C2 7 8 2 12 2Z",
@@ -196,13 +209,19 @@ useEffect(() => {
                 <Link
                   to={`/portfolio/${project.slug}`}
                   className={`${styles.card} ${styles[size]}`}
-                  style={{
-                    marginTop: `${nudge}px`,
-                    marginBottom: `${sessionMargins[i]}px`,
-                  }}
+                  style={{ marginTop: `${nudge}px`, marginBottom: `${sessionMargins[i]}px` }}
                   onClick={() => sessionStorage.setItem("workScroll", window.scrollY)}
                 >
-                  <img src={project.images[0].src} alt={project.images[0].alt} />
+                  {project.thumbnail ? (
+                    <LazyThumbnail
+                      loader={project.thumbnail}
+                      hovered={false}
+                      fallbackSrc={project.images[0].src}
+                      fallbackAlt={project.images[0].alt}
+                    />
+                  ) : (
+                    <img src={project.images[0].src} alt={project.images[0].alt} />
+                  )}
                   <div className={styles.cardTitle}>{project.title}</div>
                   <div className={styles.cardYear}>{project.year}</div>
                 </Link>

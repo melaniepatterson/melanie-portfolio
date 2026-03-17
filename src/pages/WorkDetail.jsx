@@ -1,12 +1,25 @@
 import { useParams, Link } from "react-router-dom";
 import { PROJECTS } from "../data/projects";
 import styles from "./WorkDetail.module.css";
-import { useEffect } from "react";
+import { useEffect, Suspense, lazy } from "react";
 import { SplitText } from "../App";
 
 
 const GALLERY_SIZES = ["gallerySmall", "galleryMedium", "galleryWide", "galleryLarge"];
 const sessionGallerySizes = {};
+const heroCache = {};
+
+function LazyHero({ loader, fallbackSrc, fallbackAlt }) {
+  if (!heroCache[loader]) {
+    heroCache[loader] = lazy(loader);
+  }
+  const Component = heroCache[loader];
+  return (
+    <Suspense fallback={<img src={fallbackSrc} alt={fallbackAlt} />}>
+      <Component />
+    </Suspense>
+  );
+}
 
 export default function WorkDetail() {
   const { slug } = useParams();
@@ -36,7 +49,15 @@ export default function WorkDetail() {
 
       <div className={styles.layout}>
         <div className={styles.images}>
-          <img src={project.images[0].src} alt={project.images[0].alt} />
+          {project.hero ? (
+            <LazyHero
+              loader={project.hero}
+              fallbackSrc={project.images[0].src}
+              fallbackAlt={project.images[0].alt}
+            />
+          ) : (
+            <img src={project.images[0].src} alt={project.images[0].alt} />
+          )}
         </div>
 
         <div className={styles.info}>

@@ -1,14 +1,16 @@
 export const PROJECTS = [
   {
     id: 1,
-    slug: "project-one",
-    title: "Project One",
+    slug: "RISD",
+    title: "Rhode Island School of Design",
     disciplines: ["Interactive Design"],
     topics: ["Personal Narrative"],
     client: null,
     year: "2024",
     description: "A description of this project and your process, materials, and intent behind the work.",
     externalLink: "",
+    thumbnail: () => import('../projects/RISD/Thumbnail'),
+    hero: null,      // or: () => import('../projects/project-one/Hero')
     images: [
   { src: "https://placehold.co/1200x800/1a1a1a/FAF7F2", alt: "A watercolor painting of..." },
   { src: "https://placehold.co/800x1000/1a1a1a/FAF7F2", alt: "Detail shot of the upper left corner showing..." },
@@ -25,6 +27,8 @@ export const PROJECTS = [
     year: "2024",
     description: "A description of this project and your process, materials, and intent behind the work.",
     externalLink: "",
+    thumbnail: null, // or: () => import('../projects/project-one/Thumbnail')
+    hero: null,      // or: () => import('../projects/project-one/Hero')
     images: [
   { src: "https://placehold.co/1200x800/1a1a1a/FAF7F2", alt: "A watercolor painting of..." },
   { src: "https://placehold.co/800x1000/1a1a1a/FAF7F2", alt: "Detail shot of the upper left corner showing..." },
@@ -41,6 +45,8 @@ export const PROJECTS = [
     year: "2023",
     description: "A description of this project and your process, materials, and intent behind the work.",
     externalLink: "",
+    thumbnail: null, // or: () => import('../projects/project-one/Thumbnail')
+    hero: null,      // or: () => import('../projects/project-one/Hero')
     images: [
   { src: "https://placehold.co/1200x800/1a1a1a/FAF7F2", alt: "A watercolor painting of..." },
   { src: "https://placehold.co/800x1000/1a1a1a/FAF7F2", alt: "Detail shot of the upper left corner showing..." },
@@ -57,6 +63,8 @@ export const PROJECTS = [
     year: "2023",
     description: "A description of this project and your process, materials, and intent behind the work.",
     externalLink: "https://example.com",
+    thumbnail: null, // or: () => import('../projects/project-one/Thumbnail')
+    hero: null,      // or: () => import('../projects/project-one/Hero')
     images: [
   { src: "https://placehold.co/1200x800/1a1a1a/FAF7F2", alt: "A watercolor painting of..." },
   { src: "https://placehold.co/800x1000/1a1a1a/FAF7F2", alt: "Detail shot of the upper left corner showing..." },
@@ -73,6 +81,8 @@ export const PROJECTS = [
     year: "2023",
     description: "A description of this project and your process, materials, and intent behind the work.",
     externalLink: "",
+    thumbnail: null, // or: () => import('../projects/project-one/Thumbnail')
+    hero: null,      // or: () => import('../projects/project-one/Hero')
     images: [
   { src: "https://placehold.co/1200x800/1a1a1a/FAF7F2", alt: "A watercolor painting of..." },
   { src: "https://placehold.co/800x1000/1a1a1a/FAF7F2", alt: "Detail shot of the upper left corner showing..." },
@@ -89,6 +99,8 @@ export const PROJECTS = [
     year: "2022",
     description: "A description of this project and your process, materials, and intent behind the work.",
     externalLink: "",
+    thumbnail: null, // or: () => import('../projects/project-one/Thumbnail')
+    hero: null,      // or: () => import('../projects/project-one/Hero')
     images: [
   { src: "https://placehold.co/1200x800/1a1a1a/FAF7F2", alt: "A watercolor painting of..." },
   { src: "https://placehold.co/800x1000/1a1a1a/FAF7F2", alt: "Detail shot of the upper left corner showing..." },
@@ -105,6 +117,8 @@ export const PROJECTS = [
     year: "2022",
     description: "A description of this project and your process, materials, and intent behind the work.",
     externalLink: "",
+    thumbnail: null, // or: () => import('../projects/project-one/Thumbnail')
+    hero: null,      // or: () => import('../projects/project-one/Hero')
     images: [
   { src: "https://placehold.co/1200x800/1a1a1a/FAF7F2", alt: "A watercolor painting of..." },
   { src: "https://placehold.co/800x1000/1a1a1a/FAF7F2", alt: "Detail shot of the upper left corner showing..." },
@@ -121,6 +135,8 @@ export const PROJECTS = [
     year: "2022",
     description: "A description of this project and your process, materials, and intent behind the work.",
     externalLink: "",
+    thumbnail: null, // or: () => import('../projects/project-one/Thumbnail')
+    hero: null,      // or: () => import('../projects/project-one/Hero')
     images: [
   { src: "https://placehold.co/1200x800/1a1a1a/FAF7F2", alt: "A watercolor painting of..." },
   { src: "https://placehold.co/800x1000/1a1a1a/FAF7F2", alt: "Detail shot of the upper left corner showing..." },
