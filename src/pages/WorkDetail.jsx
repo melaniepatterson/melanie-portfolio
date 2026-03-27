@@ -1,13 +1,13 @@
 import { useParams, Link } from "react-router-dom";
 import { PROJECTS } from "../data/projects";
 import styles from "./WorkDetail.module.css";
-import { useEffect, Suspense, lazy } from "react";
+import { useEffect, Suspense, lazy, useState } from "react";
 import { SplitText } from "../App";
+import InspirationResult from "../components/InspirationResult";
+import Lightbox from "../components/Lightbox";
 
-
-const GALLERY_SIZES = ["gallerySmall", "galleryMedium", "galleryWide", "galleryLarge"];
-const sessionGallerySizes = {};
 const heroCache = {};
+const sessionGalleryOffsets = {};
 
 function LazyHero({ loader, fallbackSrc, fallbackAlt }) {
   if (!heroCache[loader]) {
@@ -21,20 +21,31 @@ function LazyHero({ loader, fallbackSrc, fallbackAlt }) {
   );
 }
 
+function getOffsets(project) {
+  if (!sessionGalleryOffsets[project.slug]) {
+    sessionGalleryOffsets[project.slug] = project.images.slice(1).map((img) => {
+      const maxStart = img.size === "large" || img.type === "inspiration-result" ? 3 : 4;
+      return Math.floor(Math.random() * maxStart) + 1;
+    });
+  }
+  return sessionGalleryOffsets[project.slug];
+}
+
 export default function WorkDetail() {
   const { slug } = useParams();
   const project = PROJECTS.find(p => p.slug === slug);
+  const [lightbox, setLightbox] = useState(null);
 
   useEffect(() => {
-  document.documentElement.style.backgroundColor = "#C93500";
-  return () => {
-    document.documentElement.style.backgroundColor = "";
-  };
-}, []);
+    document.documentElement.style.backgroundColor = "#C93500";
+    return () => {
+      document.documentElement.style.backgroundColor = "";
+    };
+  }, []);
 
   useEffect(() => {
-  window.scrollTo(0, 0);
-}, []);
+    window.scrollTo(0, 0);
+  }, []);
 
   if (!project) return (
     <div className={styles.page}>
@@ -66,7 +77,7 @@ export default function WorkDetail() {
             {project.disciplines.join(" · ")} · {project.year}
           </p>
           {project.client && (
-            <p className={styles.client} style={{fontStyle: "italic"}}>
+            <p className={styles.client} style={{ fontStyle: "italic" }}>
               Client: {project.client.url ? (
                 <a href={project.client.url} target="_blank" rel="noopener noreferrer" className={styles.clientLink}>
                   {project.client.name}
@@ -81,7 +92,8 @@ export default function WorkDetail() {
             <p className={styles.topics}>{project.topics.join(" · ")}</p>
           )}
           {project.externalLink && (
-              <a href={project.externalLink}
+              <a
+              href={project.externalLink}
               target={project.externalLink.startsWith("http") ? "_blank" : undefined}
               rel={project.externalLink.startsWith("http") ? "noopener noreferrer" : undefined}
               className={styles.link}
@@ -96,18 +108,58 @@ export default function WorkDetail() {
       {project.images.length > 1 && (
         <div className={styles.gallery}>
           {project.images.slice(1).map((img, i) => {
-            if (!sessionGallerySizes[project.slug]) {
-              sessionGallerySizes[project.slug] = project.images.slice(1).map(() =>
-                GALLERY_SIZES[Math.floor(Math.random() * GALLERY_SIZES.length)]
+            const offsets = getOffsets(project);
+
+            if (img.type === "inspiration-result") {
+              return (
+                <div
+                  key={i}
+                  className={`${styles.galleryItem} ${styles.galleryLarge}`}
+                >
+                  <InspirationResult
+                    inspirationSrc={img.inspirationSrc}
+                    inspirationAlt={img.inspirationAlt}
+                    inspirationCaption={img.inspirationCaption}
+                    resultSrc={img.resultSrc}
+                    resultAlt={img.resultAlt}
+                    resultCaption={img.resultCaption}
+                    dominates={img.dominates}
+                    onLightbox={(src, alt) => setLightbox({ src, alt })}
+                  />
+                </div>
               );
             }
+
+            if (img.type === "code-reveal") {
+              return (
+                <div key={i} className={`${styles.galleryItem} ${img.size === "large" ? styles.galleryLarge : styles.gallerySmall}`} style={{ gridColumnStart: offsets[i] }}>
+                  <CodeReveal still={img.still} alt={img.alt} code={img.code} />
+                </div>
+              );
+            }
+
             return (
-              <div key={i} className={`${styles.galleryItem} ${styles[sessionGallerySizes[project.slug][i]]}`}>
+              <div
+                key={i}
+                className={`${styles.galleryItem} ${img.size === "large" ? styles.galleryLarge : styles.gallerySmall} ${img.lightbox ? styles.lightboxable : ""}`}
+                style={{ gridColumnStart: offsets[i] }}
+                onClick={() => img.lightbox && setLightbox({ src: img.src, alt: img.alt })}
+              >
                 <img src={img.src} alt={img.alt} loading="lazy" />
+                {img.lightbox && <div className={styles.lightboxHint}>⊕</div>}
+                {img.caption && <p className={styles.caption}>{img.caption}</p>}
               </div>
             );
           })}
         </div>
+      )}
+
+      {lightbox && (
+        <Lightbox
+          src={lightbox.src}
+          alt={lightbox.alt}
+          onClose={() => setLightbox(null)}
+        />
       )}
     </div>
   );

@@ -3,17 +3,28 @@ export const PROJECTS = [
     id: 1,
     slug: "RISD",
     title: "Rhode Island School of Design",
-    disciplines: ["Interactive Design"],
-    topics: ["Personal Narrative"],
+    disciplines: ["Interactive Design", "Design & Print"],
+    topics: null,
     client: null,
-    year: "2024",
+    year: "2021– ",
     description: "A description of this project and your process, materials, and intent behind the work.",
     externalLink: "",
     thumbnail: () => import('../projects/RISD/Thumbnail'),
     hero: null,      // or: () => import('../projects/project-one/Hero')
     images: [
-  { src: "https://placehold.co/1200x800/1a1a1a/FAF7F2", alt: "A watercolor painting of..." },
-  { src: "https://placehold.co/800x1000/1a1a1a/FAF7F2", alt: "Detail shot of the upper left corner showing..." },
+  { src: "/images/projects/RISD/melanie-patterson-risd.webp", alt: "Textured blue liquid gradient with the RISD seal in the center." },
+  { src: "/images/projects/RISD/Rhode-Island-School-of-Design-Viewbook-Flip.webp", alt: "A gif flipping through the RISD viewbook. It's colorful pages and white debossed cover contrast a living wall of climbing philodendrons, pothos, and spider plants.", caption: "Viewbook design by Mary Banas and Jordan Gushwa (RISD Marketing & Communications); Video by me!", size: "small", lightbox: true },/*
+  { 
+    type: "inspiration-result",
+    inspirationSrc: "/images/projects/RISD/RISD-Hooray-by-Alex-Rapport.webp",
+    inspirationAlt: "'Hooray' text animation spelled out of yellow, orange, pink and white confetti against a blue background. Confetti falls and resets the animation.",
+    inspirationCaption: <><i>Hooray</i> banner by Alex Rapport (RISD Marketing & Communications) </>,
+    resultSrc: "/images/projects/RISD/Melanie-Patterson-Decision-Letter-Confetti.webp",
+    resultAlt: "Admissions admit decision letter screenshot with confetti in orange, pink, yellow and white and falling RISD seals in javascript",
+    resultCaption: "Confetti script for RISD admit decision letter",
+    dominates: "result",
+    resultCodeReveal: null,
+  }, */
   { src: "https://placehold.co/600x600/1a1a1a/FAF7F2", alt: "The full piece installed at..." },
 ]
   },

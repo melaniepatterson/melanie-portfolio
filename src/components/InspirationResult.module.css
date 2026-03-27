@@ -1,0 +1,78 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.large {
+  flex: 2;
+}
+
+.small {
+  flex: 1;
+}
+
+.item img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.label {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.5;
+}
+
+.caption {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  line-height: 1.5;
+  opacity: 0.7;
+  margin: 0;
+}
+
+.arrow {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  opacity: 0.5;
+}
+
+.arrow svg {
+  width: 24px;
+  height: 24px;
+}
+
+.lightboxable {
+  cursor: zoom-in;
+  position: relative;
+}
+
+.lightboxHint {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  color: #FAF7F2;
+  font-size: 1.2rem;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+  line-height: 1;
+  z-index: 2;
+}
+
+.lightboxable:hover .lightboxHint {
+  opacity: 1;
+}

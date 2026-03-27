@@ -21,11 +21,6 @@
   z-index: 100;
 }
 
-/* .back:hover {
-  opacity: 0.7;
-} 
- */
-
 .layout {
   display: grid;
   grid-template-columns: 1fr 380px;
@@ -58,6 +53,7 @@
 .galleryItem {
   overflow: hidden;
   display: block;
+  position: relative;
 }
 
 .galleryItem img {
@@ -70,16 +66,12 @@
   grid-column: span 1;
 }
 
-.galleryMedium {
-  grid-column: span 1;
-}
-
-.galleryWide {
-  grid-column: span 2;
-}
-
 .galleryLarge {
   grid-column: span 2;
+}
+
+.galleryFull {
+  grid-column: span 4;
 }
 
 .info {
@@ -126,10 +118,6 @@
   margin: 0rem -1.25rem;
 }
 
-/* .link:hover {
-  opacity: 0.85;
-} */
-
 .client {
   font-size: 0.85rem;
   letter-spacing: 0.1em;
@@ -155,6 +143,32 @@
   color: #FAF7F2;
 }
 
-.ctaButton {
-  overflow: visible;
+.caption {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  line-height: 1.5;
+  opacity: 0.7;
+  margin: 0.5rem 0 0 0;
+  color: #FAF7F2;
+}
+
+.lightboxable {
+  cursor: zoom-in;
+}
+
+.lightboxHint {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  color: #FAF7F2;
+  font-size: 1.2rem;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+  line-height: 1;
+}
+
+.galleryItem:hover .lightboxHint {
+  opacity: 1;
 }

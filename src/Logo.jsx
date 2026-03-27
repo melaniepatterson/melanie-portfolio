@@ -5,7 +5,7 @@ export default function Logo({ isWork }) {
       bottom: "2rem",
       right: "2rem",
       zIndex: 50,
-      width: 550,
+      width: "clamp(280px, 40vw, 550px)",
       pointerEvents: "none"
     }}>
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 916.78 579.4" fill={isWork ? "#FAF7F2" : "#c93500"}>
