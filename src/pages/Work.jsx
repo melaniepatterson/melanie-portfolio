@@ -96,7 +96,7 @@ export default function Work() {
 };
 
   const availableDisciplines = [...new Set(PROJECTS.flatMap(p => p.disciplines))];
-  const availableTopics = [...new Set(PROJECTS.flatMap(p => p.topics))];
+  const availableTopics = [...new Set(PROJECTS.flatMap(p => p.topics ?? []))];
 
   const shapeMap = useMemo(() => {
     const map = {};

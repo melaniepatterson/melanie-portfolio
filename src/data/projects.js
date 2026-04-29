@@ -1,9 +1,11 @@
+import React from 'react';
+
 export const PROJECTS = [
   {
     id: 1,
     slug: "RISD",
     title: "Rhode Island School of Design",
-    disciplines: ["Interactive Design", "Design & Print"],
+    disciplines: ["Interactive Design", "Design & Print", "Photography, Film & Animation"],
     topics: null,
     client: null,
     year: "2021– ",
@@ -13,18 +15,25 @@ export const PROJECTS = [
     hero: null,      // or: () => import('../projects/project-one/Hero')
     images: [
   { src: "/images/projects/RISD/melanie-patterson-risd.webp", alt: "Textured blue liquid gradient with the RISD seal in the center." },
-  { src: "/images/projects/RISD/Rhode-Island-School-of-Design-Viewbook-Flip.webp", alt: "A gif flipping through the RISD viewbook. It's colorful pages and white debossed cover contrast a living wall of climbing philodendrons, pothos, and spider plants.", caption: "Viewbook design by Mary Banas and Jordan Gushwa (RISD Marketing & Communications); Video by me!", size: "small", lightbox: true },/*
+  { src: "/images/projects/RISD/Rhode-Island-School-of-Design-Viewbook-Flip.webp", alt: "A gif flipping through the RISD viewbook. It's colorful pages and white debossed cover contrast a living wall of climbing philodendrons, pothos, and spider plants.", caption: "Viewbook design by Mary Banas and Jordan Gushwa (RISD Marketing & Communications); Video by me!", size: "small", lightbox: true },
   { 
     type: "inspiration-result",
     inspirationSrc: "/images/projects/RISD/RISD-Hooray-by-Alex-Rapport.webp",
     inspirationAlt: "'Hooray' text animation spelled out of yellow, orange, pink and white confetti against a blue background. Confetti falls and resets the animation.",
     inspirationCaption: <><i>Hooray</i> banner by Alex Rapport (RISD Marketing & Communications) </>,
-    resultSrc: "/images/projects/RISD/Melanie-Patterson-Decision-Letter-Confetti.webp",
+    resultSrc: "/images/projects/melanie-patterson-risd-admissions-decision-letter.webp",
     resultAlt: "Admissions admit decision letter screenshot with confetti in orange, pink, yellow and white and falling RISD seals in javascript",
-    resultCaption: "Confetti script for RISD admit decision letter",
+    resultCaption: "Confetti script for RISD admitted students decision letter",
     dominates: "result",
-    resultCodeReveal: null,
-  }, */
+    resultComponent: () => import('../projects/RISD/ConfettiDemo.jsx'),
+    hoverHint: true,
+  },
+  { 
+  type: "browser-frame",
+  src: "/images/projects/RISD/melanie-patterson-risd-admitted-student-portal.webp",
+  alt: "Screenshot of...",
+  size: "large",
+  },
   { src: "https://placehold.co/600x600/1a1a1a/FAF7F2", alt: "The full piece installed at..." },
 ]
   },

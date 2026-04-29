@@ -1,13 +1,23 @@
 import { useParams, Link } from "react-router-dom";
 import { PROJECTS } from "../data/projects";
 import styles from "./WorkDetail.module.css";
-import { useEffect, Suspense, lazy, useState } from "react";
 import { SplitText } from "../App";
 import InspirationResult from "../components/InspirationResult";
 import Lightbox from "../components/Lightbox";
+import CodeReveal from "../components/CodeReveal";
+import BrowserFrame from "../components/BrowserFrame";
+import React, { useEffect, Suspense, lazy, useState } from "react";
 
 const heroCache = {};
 const sessionGalleryOffsets = {};
+const sessionDetailSpacers = {};
+
+function getSpacers(project) {
+  if (!sessionDetailSpacers[project.slug]) {
+    sessionDetailSpacers[project.slug] = project.images.slice(1).map(() => Math.random() > 0.6);
+  }
+  return sessionDetailSpacers[project.slug];
+}
 
 function LazyHero({ loader, fallbackSrc, fallbackAlt }) {
   if (!heroCache[loader]) {
@@ -117,13 +127,7 @@ export default function WorkDetail() {
                   className={`${styles.galleryItem} ${styles.galleryLarge}`}
                 >
                   <InspirationResult
-                    inspirationSrc={img.inspirationSrc}
-                    inspirationAlt={img.inspirationAlt}
-                    inspirationCaption={img.inspirationCaption}
-                    resultSrc={img.resultSrc}
-                    resultAlt={img.resultAlt}
-                    resultCaption={img.resultCaption}
-                    dominates={img.dominates}
+                    {...img}
                     onLightbox={(src, alt) => setLightbox({ src, alt })}
                   />
                 </div>
@@ -138,6 +142,21 @@ export default function WorkDetail() {
               );
             }
 
+            if (img.type === "browser-frame") {
+              const spacers = getSpacers(project);
+              return (
+                <React.Fragment key={i}>
+                  {spacers[i] && <div className={styles.gallerySpacer} />}
+                  <div
+                    className={`${styles.galleryItem} ${img.size === "large" ? styles.galleryLarge : styles.gallerySmall}`}
+                    style={{ gridColumnStart: offsets[i] }}
+                  >
+                    <BrowserFrame src={img.src} alt={img.alt} />
+                  </div>
+                </React.Fragment>
+              );
+            }
+
             return (
               <div
                 key={i}
@@ -148,6 +167,7 @@ export default function WorkDetail() {
                 <img src={img.src} alt={img.alt} loading="lazy" />
                 {img.lightbox && <div className={styles.lightboxHint}>⊕</div>}
                 {img.caption && <p className={styles.caption}>{img.caption}</p>}
+                {img.hoverHint && <p className={styles.hoverHint}>Hover to interact</p>}
               </div>
             );
           })}

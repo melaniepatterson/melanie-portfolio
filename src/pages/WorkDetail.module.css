@@ -51,15 +51,16 @@
 }
 
 .galleryItem {
-  overflow: hidden;
+  overflow: visible;
   display: block;
   position: relative;
 }
 
 .galleryItem img {
+  display: block;
   width: 100%;
   height: auto;
-  display: block;
+  overflow: hidden;
 }
 
 .gallerySmall {
@@ -72,6 +73,10 @@
 
 .galleryFull {
   grid-column: span 4;
+}
+
+.gallerySpacer {
+  grid-column: span 1;
 }
 
 .info {
@@ -167,8 +172,34 @@
   transition: opacity 0.2s ease;
   pointer-events: none;
   line-height: 1;
+  mix-blend-mode: difference;
 }
 
 .galleryItem:hover .lightboxHint {
   opacity: 1;
+}
+
+.hoverHint {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #FAF7F2;
+  opacity: 0.4;
+  position: absolute;
+  right: -0.5rem;
+  top: 50%;
+  transform: rotate(90deg) translateX(-50%);
+  transform-origin: right center;
+  white-space: nowrap;
+  pointer-events: none;
+  animation: pulse 2s ease-in-out infinite;
+  animation-fill-mode: both;
+  animation-delay: 0s;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
 }

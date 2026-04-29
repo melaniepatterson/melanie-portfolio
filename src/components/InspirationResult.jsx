@@ -1,6 +1,20 @@
 import styles from "./InspirationResult.module.css";
 import CodeReveal from "./CodeReveal";
+import { Suspense, lazy } from "react";
 
+const resultComponentCache = {};
+
+function LazyResultComponent({ loader, fallbackSrc, fallbackAlt }) {
+  if (!resultComponentCache[loader]) {
+    resultComponentCache[loader] = lazy(loader);
+  }
+  const Component = resultComponentCache[loader];
+  return (
+    <Suspense fallback={fallbackSrc ? <img src={fallbackSrc} alt={fallbackAlt} /> : null}>
+      <Component />
+    </Suspense>
+  );
+}
 
 export default function InspirationResult({
   inspirationSrc,
@@ -11,9 +25,14 @@ export default function InspirationResult({
   resultCaption,
   dominates = "result",
   onLightbox,
+  resultComponent,
+  hoverHint,
 }) {
   return (
     <div className={styles.wrapper}>
+      {hoverHint && (
+        <p className={styles.hoverHint}>Hover to interact</p>
+      )}
       <div className={`${styles.item} ${dominates === "inspiration" ? styles.large : styles.small}`}>
         <span className={styles.label}>Inspiration</span>
         <img src={inspirationSrc} alt={inspirationAlt} />
@@ -27,12 +46,17 @@ export default function InspirationResult({
         </svg>
       </div>
 
-      <div className={`${styles.item} ${dominates === "result" ? styles.large : styles.small} ${onLightbox ? styles.lightboxable : ""}`}
-        onClick={() => onLightbox && onLightbox(resultSrc, resultAlt)}
+      <div
+        className={`${styles.item} ${dominates === "result" ? styles.large : styles.small} ${onLightbox && !resultComponent ? styles.lightboxable : ""}`}
+        onClick={() => onLightbox && !resultComponent && onLightbox(resultSrc, resultAlt)}
       >
-        {onLightbox && <div className={styles.lightboxHint}>⊕</div>}
-        {resultCodeReveal ? (
-          <CodeReveal still={resultSrc} alt={resultAlt} code={resultCodeReveal} />
+        {onLightbox && !resultComponent && <div className={styles.lightboxHint}>⊕</div>}
+        {resultComponent ? (
+          <LazyResultComponent
+            loader={resultComponent}
+            fallbackSrc={resultSrc}
+            fallbackAlt={resultAlt}
+          />
         ) : (
           <img src={resultSrc} alt={resultAlt} />
         )}

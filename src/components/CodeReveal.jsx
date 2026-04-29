@@ -1,17 +1,17 @@
 import { useState } from "react";
 import styles from "./CodeReveal.module.css";
 
-export default function CodeReveal({ code }) {
-  const [hovered, setHovered] = useState(false);
+export default function CodeReveal({ still, alt, code }) {
+  const [revealed, setRevealed] = useState(false);
 
   return (
     <div
       className={styles.wrapper}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onMouseEnter={() => setRevealed(true)}
+      onMouseLeave={() => setRevealed(false)}
     >
-      <img src={still} alt="Animation preview" className={styles.image} />
-      <div className={`${styles.overlay} ${hovered ? styles.visible : ""}`}>
+      <img src={still} alt={alt} className={styles.image} />
+      <div className={`${styles.overlay} ${revealed ? styles.visible : ""}`}>
         <pre className={styles.code}>{code}</pre>
       </div>
     </div>
