@@ -1556,7 +1556,6 @@ const STEP_CATEGORIES = {
   pm_essence:     'essence',
   pm_tret:        'tretinoin',
   pm_bha:          'bha',
-  pm_pha:           'bha',
   pm_azelaic:     'azelaic acid',
   pm_moisturizer:     'moisturizer',
   pm_eye:             'eye cream',
