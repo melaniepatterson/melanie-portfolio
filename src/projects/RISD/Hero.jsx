@@ -1,6 +1,6 @@
 import { useState } from "react";
 import img1 from "./images/melanie-patterson-risd.webp";
-import img2 from "./images/melanie-patterson-risd-email-1.webp";
+
 import img3 from "./images/03.webp";
 
 export default function Hero() {
@@ -16,7 +16,7 @@ export default function Hero() {
         style={{ width: "100%", height: "auto", display: "block" }}
       />
       <img
-        src={img2}
+        src=""
         alt=""
         style={{
           position: "absolute",
