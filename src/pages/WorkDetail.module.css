@@ -48,12 +48,14 @@
   gap: 1.5rem;
   grid-auto-rows: auto;
   margin-top: 4rem;
+  grid-auto-flow: dense;
 }
 
 .galleryItem {
   overflow: visible;
   display: block;
   position: relative;
+  padding-right: 2rem; /* consistent on all items — hint items use it, others leave it empty */
 }
 
 .galleryItem img {
@@ -77,6 +79,15 @@
 
 .gallerySpacer {
   grid-column: span 1;
+}
+
+.galleryRowBreak {
+  grid-column: span 1;
+  height: 0; /* invisible, just takes the column space */
+}
+
+.galleryItem:hover .lightboxHint {
+  opacity: 1;
 }
 
 .info {
@@ -165,7 +176,7 @@
 .lightboxHint {
   position: absolute;
   top: 0.75rem;
-  right: 0.75rem;
+  right: 2.75rem;
   color: #FAF7F2;
   font-size: 1.2rem;
   opacity: 0;
@@ -173,10 +184,6 @@
   pointer-events: none;
   line-height: 1;
   mix-blend-mode: difference;
-}
-
-.galleryItem:hover .lightboxHint {
-  opacity: 1;
 }
 
 .hoverHint {
@@ -188,7 +195,7 @@
   color: #FAF7F2;
   opacity: 0.4;
   position: absolute;
-  right: -0.5rem;
+  right: 0.75rem; /* was -0.5rem — now sits inside the padding area */
   top: 50%;
   transform: rotate(90deg) translateX(-50%);
   transform-origin: right center;
@@ -203,3 +210,4 @@
   0%, 100% { opacity: 0.4; }
   50% { opacity: 0.8; }
 }
+

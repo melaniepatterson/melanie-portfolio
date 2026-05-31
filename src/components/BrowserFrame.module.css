@@ -1,10 +1,67 @@
+/* BrowserFrame.module.css */
+
 .wrapper {
-  width: 100%;
   position: relative;
+  width: 100%;
 }
 
 .svg {
   width: 100%;
   height: auto;
   display: block;
+  /* Ensure the rounded-corner clip looks clean */
+  overflow: visible;
+}
+
+.scrollContainer {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+.screenshot {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.scrollHint {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #982511;
+  position: absolute;
+  right: 3%;
+  top: 65%;
+  transform: rotate(90deg) translateX(-50%);
+  transform-origin: right center;
+  white-space: nowrap;
+  pointer-events: none;
+  margin: 0;
+  opacity: 1;
+  transition: opacity 0.8s ease;
+}
+
+.scrollHintHidden {
+  opacity: 0;
+}
+
+/* Pulse lives here — isolated from the transition above */
+.scrollHintInner {
+  display: block;
+  animation: browserFadeIn 0.8s ease 1.2s both, browserPulse 2s ease-in-out 2s infinite;
+}
+
+@keyframes browserFadeIn {
+  from { opacity: 0; }
+  to { opacity: 0.4; }
+}
+
+@keyframes browserPulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
 }

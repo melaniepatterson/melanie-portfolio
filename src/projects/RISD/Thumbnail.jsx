@@ -1,5 +1,5 @@
 import img1 from "./images/melanie-patterson-risd.webp";
-import img2 from "./images/02.webp";
+import img2 from "./images/melanie-patterson-risd-email-1.webp";
 import img3 from "./images/03.webp";
 
 export default function Thumbnail({ hovered }) {

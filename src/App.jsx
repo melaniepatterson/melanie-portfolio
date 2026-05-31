@@ -10,12 +10,14 @@ import { PROJECTS } from "./data/projects";
 import { useEffect } from "react";
 import PageTransition from "./PageTransition";
 import NotFound from "./pages/NotFound";
+import GlowUpCalendar from './components/GlowUpCalendar'
 
 function Layout() {
   const location = useLocation();
   const isHome = location.pathname === "/";
   const isWork = location.pathname === "/portfolio";
   const isWorkDetail = location.pathname.startsWith("/portfolio/");
+  const isRoutine = location.pathname === "/routine";
 
   useEffect(() => {
   if ('scrollRestoration' in window.history) {
@@ -28,6 +30,7 @@ function Layout() {
     "/": "melanie.studio",
     "/portfolio": "Work — melanie.studio",
     "/about-contact": "Info & Contact — melanie.studio",
+    "/routine": "Routine — melanie.studio",
   };
 
   const title = titles[location.pathname];
@@ -44,10 +47,16 @@ function Layout() {
 
   return (
   <div className="layout">
-    {!isHome && <Nav isWork={isWork || isWorkDetail} />}
-    <Logo isWork={isWork || isWorkDetail} />
+    {!isHome && !isRoutine && <Nav isWork={isWork || isWorkDetail} />}
+    <Logo isWork={isWork || isWorkDetail} isHidden={isRoutine} />
     <div className="page-wrapper" style={{
-      backgroundColor: isWork || isWorkDetail ? "#C93500" : "#FAF7F2"
+      backgroundColor: isWork || isWorkDetail ? "#C93500" : "#FAF7F2",
+      ...(isRoutine && {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '100vh',
+      })
     }}>
       <main className="content">
         <PageTransition>
@@ -57,6 +66,7 @@ function Layout() {
             <Route path="/portfolio/:slug" element={<WorkDetail />} />
             <Route path="/about-contact" element={<AboutContact />} />
             <Route path="*" element={<NotFound />} />
+            <Route path="/routine" element={<GlowUpCalendar />} />
           </Routes>
         </PageTransition>
       </main>

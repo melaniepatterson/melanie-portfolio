@@ -9,14 +9,28 @@ import BrowserFrame from "../components/BrowserFrame";
 import React, { useEffect, Suspense, lazy, useState } from "react";
 
 const heroCache = {};
-const sessionGalleryOffsets = {};
-const sessionDetailSpacers = {};
+const sessionGalleryData = {};
 
-function getSpacers(project) {
-  if (!sessionDetailSpacers[project.slug]) {
-    sessionDetailSpacers[project.slug] = project.images.slice(1).map(() => Math.random() > 0.6);
+function getGalleryData(project) {
+  if (!sessionGalleryData[project.slug]) {
+    // Shuffle a copy of the gallery images (everything after the hero)
+    const images = [...project.images.slice(1)];
+    for (let i = images.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [images[i], images[j]] = [images[j], images[i]];
+    }
+
+    // Offsets derived from shuffled order so large/small maxStart is correct
+    const offsets = images.map((img) => {
+      const maxStart = img.size === "large" || img.type === "inspiration-result" ? 3 : 4;
+      return Math.floor(Math.random() * maxStart) + 1;
+    });
+
+    const spacers = images.map(() => Math.random() > 0.6);
+
+    sessionGalleryData[project.slug] = { images, offsets, spacers };
   }
-  return sessionDetailSpacers[project.slug];
+  return sessionGalleryData[project.slug];
 }
 
 function LazyHero({ loader, fallbackSrc, fallbackAlt }) {
@@ -31,14 +45,35 @@ function LazyHero({ loader, fallbackSrc, fallbackAlt }) {
   );
 }
 
-function getOffsets(project) {
-  if (!sessionGalleryOffsets[project.slug]) {
-    sessionGalleryOffsets[project.slug] = project.images.slice(1).map((img) => {
-      const maxStart = img.size === "large" || img.type === "inspiration-result" ? 3 : 4;
-      return Math.floor(Math.random() * maxStart) + 1;
-    });
-  }
-  return sessionGalleryOffsets[project.slug];
+// Pre-pass: returns indices that need a 1-col spacer inserted before them
+// to prevent two large items from filling an entire row side by side.
+// Works with grid-auto-flow: dense so small items can backfill the gap.
+function computeRowBreaks(images, offsets) {
+  const breaks = new Set();
+  let col = 1;
+
+  images.forEach((img, i) => {
+    const isLarge = img.size === "large" || img.type === "inspiration-result";
+    const span = isLarge ? 2 : 1;
+    // browser-frame large items use gridColumn: "span 2" (auto-placed, no explicit start)
+    const isAutoPlaced = img.type === "browser-frame" && img.size === "large";
+    const start = isAutoPlaced ? col : (offsets[i] || col);
+
+    if (isLarge && col === 3) {
+      // This large item would land at cols 3–4, pairing with a previous
+      // large item at cols 1–2 and filling the entire row.
+      // Insert a 1-col spacer at col 3 so the large item wraps to a new row.
+      breaks.add(i);
+      col = 1 + span; // large item placed at 1–2 on the new row
+      if (col > 4) col = 1;
+      return;
+    }
+
+    col = start + span;
+    if (col > 4) col = 1;
+  });
+
+  return breaks;
 }
 
 export default function WorkDetail() {
@@ -63,6 +98,9 @@ export default function WorkDetail() {
       <Link to="/portfolio"><SplitText>← Back to Portfolio</SplitText></Link>
     </div>
   );
+
+  const { images: galleryImages, offsets, spacers } = getGalleryData(project);
+  const rowBreaks = computeRowBreaks(galleryImages, offsets);
 
   return (
     <div className={styles.page}>
@@ -102,7 +140,7 @@ export default function WorkDetail() {
             <p className={styles.topics}>{project.topics.join(" · ")}</p>
           )}
           {project.externalLink && (
-              <a
+            <a
               href={project.externalLink}
               target={project.externalLink.startsWith("http") ? "_blank" : undefined}
               rel={project.externalLink.startsWith("http") ? "noopener noreferrer" : undefined}
@@ -115,60 +153,72 @@ export default function WorkDetail() {
         </div>
       </div>
 
-      {project.images.length > 1 && (
+      {galleryImages.length > 0 && (
         <div className={styles.gallery}>
-          {project.images.slice(1).map((img, i) => {
-            const offsets = getOffsets(project);
+          {galleryImages.map((img, i) => {
 
             if (img.type === "inspiration-result") {
               return (
-                <div
-                  key={i}
-                  className={`${styles.galleryItem} ${styles.galleryLarge}`}
-                >
-                  <InspirationResult
-                    {...img}
-                    onLightbox={(src, alt) => setLightbox({ src, alt })}
-                  />
-                </div>
+                <React.Fragment key={i}>
+                  {rowBreaks.has(i) && <div className={styles.galleryRowBreak} />}
+                  <div className={`${styles.galleryItem} ${styles.galleryLarge}`}>
+                    <InspirationResult
+                      {...img}
+                      onLightbox={(src, alt) => setLightbox({ src, alt })}
+                    />
+                  </div>
+                </React.Fragment>
               );
             }
 
             if (img.type === "code-reveal") {
               return (
-                <div key={i} className={`${styles.galleryItem} ${img.size === "large" ? styles.galleryLarge : styles.gallerySmall}`} style={{ gridColumnStart: offsets[i] }}>
-                  <CodeReveal still={img.still} alt={img.alt} code={img.code} />
-                </div>
-              );
-            }
-
-            if (img.type === "browser-frame") {
-              const spacers = getSpacers(project);
-              return (
                 <React.Fragment key={i}>
-                  {spacers[i] && <div className={styles.gallerySpacer} />}
+                  {rowBreaks.has(i) && <div className={styles.galleryRowBreak} />}
                   <div
                     className={`${styles.galleryItem} ${img.size === "large" ? styles.galleryLarge : styles.gallerySmall}`}
                     style={{ gridColumnStart: offsets[i] }}
                   >
+                    <CodeReveal still={img.still} alt={img.alt} code={img.code} />
+                  </div>
+                </React.Fragment>
+              );
+            }
+
+            if (img.type === "browser-frame") {
+              return (
+                <React.Fragment key={i}>
+                  {rowBreaks.has(i) && <div className={styles.galleryRowBreak} />}
+                  {spacers[i] && <div className={styles.gallerySpacer} />}
+                  <div
+                    className={`${styles.galleryItem} ${img.size === "large" ? styles.galleryLarge : styles.gallerySmall}`}
+                    style={
+                      img.size === "large"
+                        ? { gridColumn: "span 2" }
+                        : { gridColumnStart: offsets[i] }
+                    }
+                  >
                     <BrowserFrame src={img.src} alt={img.alt} />
+                    {img.caption && <p className={styles.caption}>{img.caption}</p>}
                   </div>
                 </React.Fragment>
               );
             }
 
             return (
-              <div
-                key={i}
-                className={`${styles.galleryItem} ${img.size === "large" ? styles.galleryLarge : styles.gallerySmall} ${img.lightbox ? styles.lightboxable : ""}`}
-                style={{ gridColumnStart: offsets[i] }}
-                onClick={() => img.lightbox && setLightbox({ src: img.src, alt: img.alt })}
-              >
-                <img src={img.src} alt={img.alt} loading="lazy" />
-                {img.lightbox && <div className={styles.lightboxHint}>⊕</div>}
-                {img.caption && <p className={styles.caption}>{img.caption}</p>}
-                {img.hoverHint && <p className={styles.hoverHint}>Hover to interact</p>}
-              </div>
+              <React.Fragment key={i}>
+                {rowBreaks.has(i) && <div className={styles.galleryRowBreak} />}
+                <div
+                  className={`${styles.galleryItem} ${img.size === "large" ? styles.galleryLarge : styles.gallerySmall} ${img.lightbox ? styles.lightboxable : ""}`}
+                  style={{ gridColumnStart: offsets[i] }}
+                  onClick={() => img.lightbox && setLightbox({ src: img.src, alt: img.alt })}
+                >
+                  <img src={img.src} alt={img.alt} loading="lazy" />
+                  {img.lightbox && <div className={styles.lightboxHint}>⊕</div>}
+                  {img.caption && <p className={styles.caption}>{img.caption}</p>}
+                  {img.hoverHint && <p className={styles.hoverHint}>Hover to interact</p>}
+                </div>
+              </React.Fragment>
             );
           })}
         </div>

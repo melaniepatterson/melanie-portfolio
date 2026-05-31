@@ -1,4 +1,6 @@
-export default function Logo({ isWork }) {
+export default function Logo({ isWork, isHidden }) {
+  if (isHidden) return null
+
   return (
     <div style={{
       position: "fixed",

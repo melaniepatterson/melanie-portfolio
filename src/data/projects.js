@@ -12,7 +12,7 @@ export const PROJECTS = [
     description: "A description of this project and your process, materials, and intent behind the work.",
     externalLink: "",
     thumbnail: () => import('../projects/RISD/Thumbnail'),
-    hero: null,      // or: () => import('../projects/project-one/Hero')
+    hero: () => import('../projects/RISD/Hero'),      // or: () => import('../projects/project-one/Hero')
     images: [
   { src: "/images/projects/RISD/melanie-patterson-risd.webp", alt: "Textured blue liquid gradient with the RISD seal in the center." },
   { src: "/images/projects/RISD/Rhode-Island-School-of-Design-Viewbook-Flip.webp", alt: "A gif flipping through the RISD viewbook. It's colorful pages and white debossed cover contrast a living wall of climbing philodendrons, pothos, and spider plants.", caption: "Viewbook design by Mary Banas and Jordan Gushwa (RISD Marketing & Communications); Video by me!", size: "small", lightbox: true },
@@ -33,6 +33,7 @@ export const PROJECTS = [
   src: "/images/projects/RISD/melanie-patterson-risd-admitted-student-portal.webp",
   alt: "Screenshot of...",
   size: "large",
+  caption: "Text caption",
   },
   { src: "https://placehold.co/600x600/1a1a1a/FAF7F2", alt: "The full piece installed at..." },
 ]
