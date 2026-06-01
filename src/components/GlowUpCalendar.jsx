@@ -66,13 +66,13 @@ const DAYS   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
 // Ingredient/category taxonomy — maps to routine structure flags
 // scope: 'face' = face routine products, 'body' = shower/body products, 'both' = either
 const ACTIVE_CATEGORIES = {
-  retinoid:    { label: 'Retinoids / tretinoin', routineFlag: 'tret',       scope: 'face' },
-  aha:         { label: 'AHAs',                  routineFlag: 'azelaic',    scope: 'face' },
-  bha:         { label: 'BHAs / salicylic acid', routineFlag: 'bha',        scope: 'both' },
-  vitamin_c:   { label: 'Vitamin C',             routineFlag: 'vitamin_c',  scope: 'face' },
-  bp:          { label: 'Benzoyl peroxide',       routineFlag: 'bp',         scope: 'body' },
-  physical:    { label: 'Physical exfoliation',  routineFlag: 'physical',   scope: 'body' },
-  niacinamide: { label: 'Niacinamide',           routineFlag: 'niacinamide',scope: 'face' },
+  retinoid:    { label: 'Vitamin A / retinoids',     routineFlag: 'tret',        scope: 'face' },
+  aha:         { label: 'Exfoliating acids (AHA)',   routineFlag: 'azelaic',     scope: 'face' },
+  bha:         { label: 'Exfoliating acids (BHA)',   routineFlag: 'bha',         scope: 'both' },
+  vitamin_c:   { label: 'Vitamin C',                 routineFlag: 'vitamin_c',   scope: 'face' },
+  bp:          { label: 'Benzoyl peroxide',           routineFlag: 'bp',          scope: 'body' },
+  physical:    { label: 'Physical exfoliation',      routineFlag: 'physical',    scope: 'body' },
+  niacinamide: { label: 'Niacinamide',               routineFlag: 'niacinamide', scope: 'face' },
 }
 
 const BASE_TYPES = {
@@ -140,7 +140,21 @@ const BASE_TYPES = {
     avoidPreNote:  '',
     avoidPostNote: '',
   },
-  hydrafacial: {
+  microneedling: {
+    label: 'Microneedling (professional)', area: 'face', pre: 7, post: 14, pca: false,
+    avoidPre:  ['retinoid','aha','bha','vitamin_c','bp'],
+    avoidPost: ['retinoid','aha','bha','vitamin_c','bp'],
+    avoidPreNote:  'Stop all actives 7 days before — skin must be in baseline condition.',
+    avoidPostNote: 'No actives for 14 days post-microneedling. Skin barrier is compromised.',
+  },
+  microneedling_home: {
+    label: 'Microneedling (at home)', area: 'face', pre: 3, post: 7, pca: false,
+    avoidPre:  ['retinoid','aha','bha','vitamin_c'],
+    avoidPost: ['retinoid','aha','bha','vitamin_c'],
+    avoidPreNote:  'Stop actives 3 days before home microneedling.',
+    avoidPostNote: 'No actives for 7 days after — treat like a mini professional session.',
+  },
+    hydrafacial: {
     label: 'HydraFacial',
     area: 'face', pre: 3, post: 3, pca: false,
     avoidPre:  ['retinoid','aha','bha'],
@@ -303,7 +317,6 @@ function getDayInfo(dt, treatments, allTypes, routineHistory) {
     const diff = Math.round((dt - td) / 86400000)
     if (diff >= -cfg.pre && diff <= -1)      return { status: 'pause',    isTreatment: false }
     if (diff >= 1 && diff <= cfg.post)       return { status: cfg.pca ? 'pca' : 'recovery', isTreatment: false }
-    if (tv.qure && diff === -(cfg.pre + 1))  return { status: 'qure',     isTreatment: false }
   }
   const period  = getActivePeriod(dt, routineHistory)
   const tretBha = getTretBhaStatus(dt, period)
@@ -549,13 +562,21 @@ function TreatmentConflictBlock({ conflicts, ingredientConflicts, safeDate, trea
               <div style={{ fontSize: 11, fontWeight: 600, color: '#78350F', marginBottom: 3 }}>
                 Pause {ingredientConflicts.preDays}d before:
               </div>
-              {ingredientConflicts.pre.map(cat => (
-                <div key={cat} style={{ fontSize: 11, color: '#92400E', padding: '2px 0', display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#F59E0B', flexShrink: 0 }} />
-                  {ACTIVE_CATEGORIES[cat]?.label || cat}
-                  {ingredientConflicts.preNote ? '' : ''}
-                </div>
-              ))}
+              {(() => {
+                // Merge aha + bha into one "Exfoliating acids (AHA / BHA)" line
+                const cats = ingredientConflicts.pre
+                const hasAHA = cats.includes('aha'), hasBHA = cats.includes('bha')
+                const merged = hasBHA && hasAHA
+                  ? [...cats.filter(c => c !== 'aha' && c !== 'bha'), 'aha_bha']
+                  : cats
+                const getLabel = c => c === 'aha_bha' ? 'Exfoliating acids (AHA / BHA)' : (ACTIVE_CATEGORIES[c]?.label || c)
+                return merged.map(cat => (
+                  <div key={cat} style={{ fontSize: 11, color: '#92400E', padding: '2px 0', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#F59E0B', flexShrink: 0 }} />
+                    {getLabel(cat)}
+                  </div>
+                ))
+              })()}
               {ingredientConflicts.preNote && (
                 <div style={{ fontSize: 10, color: '#78350F', marginTop: 4, fontStyle: 'italic' }}>{ingredientConflicts.preNote}</div>
               )}
@@ -567,12 +588,20 @@ function TreatmentConflictBlock({ conflicts, ingredientConflicts, safeDate, trea
               <div style={{ fontSize: 11, fontWeight: 600, color: '#78350F', marginBottom: 3 }}>
                 Avoid {ingredientConflicts.postDays}d after:
               </div>
-              {ingredientConflicts.post.map(cat => (
-                <div key={cat} style={{ fontSize: 11, color: '#92400E', padding: '2px 0', display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#F59E0B', flexShrink: 0 }} />
-                  {ACTIVE_CATEGORIES[cat]?.label || cat}
-                </div>
-              ))}
+              {(() => {
+                const cats = ingredientConflicts.post
+                const hasAHA = cats.includes('aha'), hasBHA = cats.includes('bha')
+                const merged = hasBHA && hasAHA
+                  ? [...cats.filter(c => c !== 'aha' && c !== 'bha'), 'aha_bha']
+                  : cats
+                const getLabel = c => c === 'aha_bha' ? 'Exfoliating acids (AHA / BHA)' : (ACTIVE_CATEGORIES[c]?.label || c)
+                return merged.map(cat => (
+                  <div key={cat} style={{ fontSize: 11, color: '#92400E', padding: '2px 0', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#F59E0B', flexShrink: 0 }} />
+                    {getLabel(cat)}
+                  </div>
+                ))
+              })()}
               {ingredientConflicts.postNote && (
                 <div style={{ fontSize: 10, color: '#78350F', marginTop: 4, fontStyle: 'italic' }}>{ingredientConflicts.postNote}</div>
               )}
@@ -614,8 +643,8 @@ function getActiveRoutineFlags(period, showerHistory, proposedDt, products = {})
   for (const product of Object.values(products)) {
     if (!product.currentlyUsing) continue
     const cat = (product.category || '').toLowerCase()
-    if (cat === 'tretinoin')              flags.add('tret')
-    if (cat === 'bha')                    { flags.add('bha') }
+    if (cat === 'tretinoin' || (product.name + ' ' + (product.notes||'')).toLowerCase().match(/retinol|retinoid|retinal|adapalene|tazarotene|vitamin a/)) flags.add('tret')
+    if (cat === 'bha') flags.add('bha')
     if (cat === 'azelaic acid')           flags.add('azelaic')
     if (cat === 'body wash' || (product.name + ' ' + (product.notes||'')).toLowerCase().includes('benzoyl')) flags.add('bp')
     if (cat === 'serum' && (product.name + ' ' + (product.notes||'')).toLowerCase().includes('vitamin c')) flags.add('vitamin_c')
@@ -926,7 +955,9 @@ function RoutineHistoryPanel({ history, onClose, onEdit, onDelete, onAddNew, dai
       </div>
 
       {sorted.length === 0 && (
-        <div style={{ fontSize: 12, color: T.textMuted }}>No routine periods saved yet.</div>
+        <div style={{ fontSize: 12, color: T.textMuted, background: T.creamDark, borderRadius: 8, padding: '12px 14px', lineHeight: 1.6 }}>
+          No skincare routine saved yet. Hit <strong>+ Start new routine</strong> to set up your first one.
+        </div>
       )}
 
       {sorted.map((p, i) => {
@@ -939,7 +970,7 @@ function RoutineHistoryPanel({ history, onClose, onEdit, onDelete, onAddNew, dai
               </div>
               <div style={{ display: 'flex', gap: 4 }}>
                 <Btn onClick={() => onEdit(p)} style={{ padding: '3px 10px', fontSize: 11 }}>Edit</Btn>
-                <button onClick={() => onDelete(p.startDate)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 16, padding: '0 4px', lineHeight: 1 }}>×</button>
+                <button onClick={() => { if (window.confirm('Delete this skincare routine period? This cannot be undone.')) onDelete(p.startDate) }} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 16, padding: '0 4px', lineHeight: 1 }}>×</button>
               </div>
             </div>
             <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.8 }}>
@@ -968,7 +999,7 @@ function RoutineHistoryPanel({ history, onClose, onEdit, onDelete, onAddNew, dai
           <Btn onClick={() => onEditDaily('new')} variant="primary" style={{ padding: '3px 10px', fontSize: 11 }}>+ Start new routine</Btn>
         </div>
         {(!dailyHistory || dailyHistory.length === 0) && (
-          <div style={{ fontSize: 12, color: T.textLight, fontStyle: 'italic' }}>No extras set yet.</div>
+          <div style={{ fontSize: 12, color: T.textLight, fontStyle: 'italic' }}>No extras saved yet — add brow serums, eye patches, tools, and more.</div>
         )}
         {[...(dailyHistory || [])].sort((a, b) => b.startDate.localeCompare(a.startDate)).map((p, i) => (
           <div key={p.id} style={{ borderTop: i > 0 ? `0.5px solid ${T.border}` : 'none', paddingTop: i > 0 ? 12 : 0, marginTop: i > 0 ? 12 : 0 }}>
@@ -978,7 +1009,7 @@ function RoutineHistoryPanel({ history, onClose, onEdit, onDelete, onAddNew, dai
               </div>
               <div style={{ display: 'flex', gap: 4 }}>
                 <Btn onClick={() => onEditDaily(p)} style={{ padding: '3px 10px', fontSize: 11 }}>Edit</Btn>
-                <button onClick={() => onDeleteDaily(p.id)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 16, padding: '0 4px', lineHeight: 1 }}>×</button>
+                <button onClick={() => { if (window.confirm('Delete this extras period? This cannot be undone.')) onDeleteDaily(p.id) }} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 16, padding: '0 4px', lineHeight: 1 }}>×</button>
               </div>
             </div>
             <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.8 }}>
@@ -995,7 +1026,7 @@ function RoutineHistoryPanel({ history, onClose, onEdit, onDelete, onAddNew, dai
           <Btn onClick={() => onEditShower('new')} variant="primary" style={{ padding: '3px 10px', fontSize: 11 }}>+ Start new routine</Btn>
         </div>
         {(!showerHistory || showerHistory.length === 0) && (
-          <div style={{ fontSize: 12, color: T.textLight, fontStyle: 'italic' }}>No shower routine set yet.</div>
+          <div style={{ fontSize: 12, color: T.textLight, fontStyle: 'italic' }}>No shower routine saved yet — add body washes, hair treatments, and more.</div>
         )}
         {[...(showerHistory || [])].sort((a, b) => b.startDate.localeCompare(a.startDate)).map((p, i) => (
           <div key={p.id} style={{ borderTop: i > 0 ? `0.5px solid ${T.border}` : 'none', paddingTop: i > 0 ? 12 : 0, marginTop: i > 0 ? 12 : 0 }}>
@@ -1005,7 +1036,7 @@ function RoutineHistoryPanel({ history, onClose, onEdit, onDelete, onAddNew, dai
               </div>
               <div style={{ display: 'flex', gap: 4 }}>
                 <Btn onClick={() => onEditShower(p)} style={{ padding: '3px 10px', fontSize: 11 }}>Edit</Btn>
-                <button onClick={() => onDeleteShower(p.id)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 16, padding: '0 4px', lineHeight: 1 }}>×</button>
+                <button onClick={() => { if (window.confirm('Delete this shower routine period? This cannot be undone.')) onDeleteShower(p.id) }} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 16, padding: '0 4px', lineHeight: 1 }}>×</button>
               </div>
             </div>
             <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.8 }}>
@@ -1022,7 +1053,6 @@ function RoutineHistoryPanel({ history, onClose, onEdit, onDelete, onAddNew, dai
 function TreatmentSelectorPanel({ selector, treatments, allTypes, customTypes, setCustomTypes, onApply, onRemove, onClose, routineHistory, showerHistory, products }) {
   const existing = treatments[selector.key]
   const [selType,     setSelType]     = useState(existing?.type       || null)
-  const [qureOn,      setQureOn]      = useState(existing?.qure       || false)
   const [timeOfDay,   setTimeOfDay]   = useState(existing?.timeOfDay  || 'am')
   const [treatArea,   setTreatArea]   = useState(existing?.area || (selType && allTypes[selType]?.area) || 'face')
   const [customPre,   setCustomPre]   = useState(existing?.pre  ?? (existing?.type ? (allTypes[existing.type]?.pre ?? 0) : 0))
@@ -1128,12 +1158,11 @@ function TreatmentSelectorPanel({ selector, treatments, allTypes, customTypes, s
           </div>
         </div>
       )}
-      <Toggle checked={qureOn} onChange={e => setQureOn(e.target.checked)} label="Mark Microneedling night — the night before this pause begins" />
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', borderTop: `0.5px solid ${T.border}`, paddingTop: 10, marginTop: 4 }}>
-        <Btn variant="primary" onClick={() => { if (selType && conflicts.length === 0) onApply(selType, qureOn, timeOfDay, treatArea, customPre, customPost) }} disabled={!selType || conflicts.length > 0}>Save</Btn>
+        <Btn variant="primary" onClick={() => { if (selType && conflicts.length === 0) onApply(selType, false, timeOfDay, treatArea, customPre, customPost) }} disabled={!selType || conflicts.length > 0}>Save</Btn>
         {conflicts.length > 0 && safeDate && <div style={{ fontSize: 11, color: '#166534', padding: '4px 0' }}>Move to {safeDate} to save.</div>}
         <Btn onClick={onClose}>Cancel</Btn>
-        {existing && <Btn variant="danger" onClick={onRemove}>Remove treatment</Btn>}
+        {existing && <Btn variant="danger" onClick={() => { if (window.confirm('Remove this treatment? This cannot be undone.')) onRemove() }}>Remove treatment</Btn>}
       </div>
       <SectionLabel>Add a new treatment type</SectionLabel>
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
@@ -1153,7 +1182,7 @@ function TreatmentSelectorPanel({ selector, treatments, allTypes, customTypes, s
 const EXTRAS_PRESETS = [
   {
     group: 'Growth & serums',
-    items: ['Brow serum / minoxidil', 'Lash serum', 'Scalp serum', 'Hair growth oil (castor oil, rosemary)'],
+    items: ['Brow serum', 'Lash serum', 'Scalp serum', 'Hair growth oil (castor oil, rosemary, etc.)'],
   },
   {
     group: 'Eye & lip',
@@ -1161,7 +1190,7 @@ const EXTRAS_PRESETS = [
   },
   {
     group: 'Skin tools',
-    items: ['Face massage', 'Gua sha', 'Face roller (jade, quartz)', 'LED device', 'Microcurrent device', 'Dermaroller / microneedling'],
+    items: ['Face massage', 'Gua sha', 'Face roller', 'LED device', 'Microcurrent device'],
   },
   {
     group: 'Body',
@@ -1169,7 +1198,7 @@ const EXTRAS_PRESETS = [
   },
   {
     group: 'Wellness',
-    items: ['Supplements (collagen, biotin, zinc)', 'Ingestibles'],
+    items: ['Supplements (collagen, biotin, zinc, etc.)'],
   },
 ]
 
@@ -1196,7 +1225,7 @@ const TIME_OF_DAY_OPTIONS = [
 
 // DraggableItem — single draggable row with long-press-to-drag on mobile
 // Supports optional frequency, weekStartDay, timeOfDay props for Extras
-function DraggableItem({ item, index, total, onRemove, isDragging, onDragStart, onDragEnter, onDragEnd, onLongPress, onFreqChange, onWeekStartChange, onTimeChange, freqOptions }) {
+function DraggableItem({ item, index, total, onRemove, isDragging, onDragStart, onDragEnter, onDragEnd, onLongPress, onFreqChange, onWeekStartChange, onTimeChange, freqOptions, onNoteChange }) {
   const ref = useRef(null)
   const longPressTimer = useRef(null)
   const [pressing, setPressing] = useState(false)
@@ -1230,7 +1259,18 @@ function DraggableItem({ item, index, total, onRemove, isDragging, onDragStart, 
       <div style={{ fontSize: 14, color: T.textLight, flexShrink: 0, cursor: 'grab', paddingTop: 1 }}>⠿</div>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontSize: 12, fontWeight: 500, color: T.text, marginBottom: 1 }}>{item.label}</div>
-        {item.note && <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 2 }}>{item.note}</div>}
+        {onNoteChange ? (
+          <input
+            type="text"
+            value={item.note || ''}
+            onChange={e => onNoteChange(index, e.target.value)}
+            placeholder="Add a note..."
+            onClick={e => e.stopPropagation()}
+            style={{ fontSize: 11, color: T.textMuted, background: 'transparent', border: 'none', borderBottom: `0.5px solid ${T.border}`, outline: 'none', width: '100%', padding: '1px 0', marginBottom: 2, cursor: 'text' }}
+          />
+        ) : (
+          item.note && <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 2 }}>{item.note}</div>
+        )}
         {item.productName && <div style={{ fontSize: 10, color: T.textLight, marginBottom: 3 }}>↗ {item.productName}</div>}
         {/* Frequency picker — only shown when onFreqChange provided */}
         {onFreqChange && (
@@ -1323,6 +1363,7 @@ function DailyEditor({ initial, onSave, onCancel, lockStartDate = false, allPeri
   function handleFreqChange(i, freq) { setItems(it => it.map((x, idx) => idx === i ? { ...x, frequency: freq } : x)) }
   function handleWeekStartChange(i, day) { setItems(it => it.map((x, idx) => idx === i ? { ...x, weekStartDay: day } : x)) }
   function handleTimeChange(i, tod) { setItems(it => it.map((x, idx) => idx === i ? { ...x, timeOfDay: tod } : x)) }
+  function handleNoteChange(i, note) { setItems(it => it.map((x, idx) => idx === i ? { ...x, note } : x)) }
 
   function handleSave() {
     if (!startDate || conflict) return
@@ -1372,6 +1413,7 @@ function DailyEditor({ initial, onSave, onCancel, lockStartDate = false, allPeri
               onFreqChange={handleFreqChange}
               onWeekStartChange={handleWeekStartChange}
               onTimeChange={handleTimeChange}
+              onNoteChange={handleNoteChange}
               freqOptions={EXTRAS_FREQUENCIES}
             />
             {/* Inline product picker per daily item */}
@@ -1460,7 +1502,6 @@ function DailyEditor({ initial, onSave, onCancel, lockStartDate = false, allPeri
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'flex-end' }}>
         <div><FieldLabel>Item</FieldLabel><TextInput value={newLabel} onChange={e => setNewLabel(e.target.value)} placeholder="e.g. Minoxidil" width={110} /></div>
         <div><FieldLabel>Note</FieldLabel><TextInput value={newNote} onChange={e => setNewNote(e.target.value)} placeholder="optional" width={90} /></div>
-        <div><FieldLabel>Product</FieldLabel><TextInput value={newProductName} onChange={e => setNewProductName(e.target.value)} placeholder="optional" width={100} /></div>
         <div>
           <FieldLabel>How often</FieldLabel>
           <select value={newFreq} onChange={e => setNewFreq(e.target.value)} style={{ fontSize: 12, padding: '5px 8px', border: `0.5px solid ${T.border}`, borderRadius: 6, background: T.cream, color: T.text }}>
@@ -1503,15 +1544,18 @@ function DailySection({ dt, dailyHistory, onEditDaily, tab, products }) {
     return freqMatch && tabMatch
   })
 
-  // Only render if there are matching items for today's tab
-  if (activeItems.length === 0) return null
-
+  // Always show the header — only hide items section when nothing matches today's tab
   return (
     <div style={{ marginBottom: 10 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
         <div style={{ fontSize: 10, fontWeight: 600, color: '#92400E', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Extras</div>
         <button onClick={onEditDaily} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 11, color: T.textLight, padding: '0 2px' }} aria-label="Edit extras">Edit</button>
       </div>
+      {activeItems.length === 0 && (
+        <div style={{ fontSize: 11, color: '#A16207', fontStyle: 'italic', paddingBottom: 4 }}>
+          {allItems.length === 0 ? 'No extras added — tap Edit to set up.' : 'No extras scheduled for today.'}
+        </div>
+      )}
       {activeItems.map(item => {
         const prod = item.productId ? products?.[item.productId] : null
         return (
@@ -1992,7 +2036,7 @@ function DraggableShowerItem({ item, index, onRemove, onFreqChange, onWeekStartC
       <div style={{ fontSize: 14, color: T.textLight, flexShrink: 0 }}>⠿</div>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontSize: 12, fontWeight: 500, color: T.text, marginBottom: 3 }}>{item.label}</div>
-        {item.note && <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 2 }}>{item.note}</div>}
+                {item.note && <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 2 }}>{item.note}</div>}
         {item._linkedProduct && <div style={{ fontSize: 10, color: T.textLight, marginBottom: 2 }}>↗ {item._linkedProduct}</div>}
         <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 3 }}>
           {SHOWER_FREQUENCIES.map(f => (
@@ -2858,27 +2902,33 @@ function generateICS({ routineHistory, treatments, allTypes, products, settings 
     else if (info.status === 'tret') nightType = 'main'
     else nightType = 'off'
 
-    const statusLabel = info.isTreatment ? (allTypes[info.status]?.label || info.status)
-      : info.status === 'tret' ? `${period?.activeName || 'Tretinoin'} night`
+    const rawLabel = info.isTreatment ? (allTypes[info.status]?.label || info.status) : ''
+    const statusLabel = info.isTreatment
+      ? (rawLabel.charAt(0).toUpperCase() + rawLabel.slice(1).toLowerCase())
+      : info.status === 'tret' ? `${period?.activeName ? (period.activeName.charAt(0).toUpperCase() + period.activeName.slice(1)) : 'Tretinoin'} night`
       : info.status === 'pause' ? 'Pre-treatment pause'
       : (info.status === 'pca' || info.status === 'recovery') ? 'Recovery'
-      : 'Off night'
+      : null
 
-    const amDesc = buildStepDescription(AM_STEPS, periodProducts, products)
+    const amDesc = period ? buildStepDescription(AM_STEPS, periodProducts, products) : null
     const pmSteps = period ? getPmSteps(period, nightType) : []
-    const pmDesc = pmSteps.length ? buildStepDescription(pmSteps, periodProducts, products) : 'Follow provider aftercare instructions'
+    const pmDesc = info.isTreatment && !period ? 'Follow provider aftercare instructions'
+      : pmSteps.length ? buildStepDescription(pmSteps, periodProducts, products)
+      : null
+    // Skip days with no routine and no treatment
+    if (!period && !info.isTreatment) continue
     const uid = () => `${key}-${Math.random().toString(36).slice(2)}@glowup`
 
     if (format === 'allday') {
-      const desc = `MORNING\n${amDesc}\n\nEVENING (${statusLabel})\n${pmDesc}`
-      lines.push('BEGIN:VEVENT',`UID:${uid()}`,`DTSTART;VALUE=DATE:${icsDate(dt)}`,`DTEND;VALUE=DATE:${icsDate(new Date(dt.getTime()+86400000))}`,`SUMMARY:Skincare — ${statusLabel}`,`DESCRIPTION:${icsEscape(desc)}`,'END:VEVENT')
+      const desc = `${amDesc ? `MORNING\n${amDesc}\n\n` : ``}${statusLabel ? `EVENING (${statusLabel})` : 'EVENING'}\n${pmDesc}`
+      lines.push('BEGIN:VEVENT',`UID:${uid()}`,`DTSTART;VALUE=DATE:${icsDate(dt)}`,`DTEND;VALUE=DATE:${icsDate(new Date(dt.getTime()+86400000))}`,`SUMMARY:${statusLabel ? `Skincare — ${statusLabel}` : 'Skincare routine'}`,`DESCRIPTION:${icsEscape(desc)}`,'END:VEVENT')
 
     } else {
       // separate AM + PM
       const at = getAM(dow)
       lines.push('BEGIN:VEVENT',`UID:${uid()}`,`DTSTART:${icsDateTime(dt, at)}`,`DTEND:${icsDateTime(dt, addMins(at, 30))}`,`SUMMARY:Morning routine`,`DESCRIPTION:${icsEscape('MORNING\n'+amDesc)}`,'END:VEVENT')
       const pt = getPM(dow)
-      lines.push('BEGIN:VEVENT',`UID:${uid()}`,`DTSTART:${icsDateTime(dt, pt)}`,`DTEND:${icsDateTime(dt, addMins(pt, 30))}`,`SUMMARY:Evening routine — ${statusLabel}`,`DESCRIPTION:${icsEscape('EVENING\n'+pmDesc)}`,'END:VEVENT')
+      lines.push('BEGIN:VEVENT',`UID:${uid()}`,`DTSTART:${icsDateTime(dt, pt)}`,`DTEND:${icsDateTime(dt, addMins(pt, 30))}`,`SUMMARY:${statusLabel ? `Evening routine — ${statusLabel}` : 'Evening routine'}`,`DESCRIPTION:${icsEscape('EVENING\n'+pmDesc)}`,'END:VEVENT')
     }
   }
   lines.push('END:VCALENDAR')
@@ -2998,6 +3048,165 @@ function ExportPanel({ routineHistory, treatments, allTypes, products, dailyHist
   )
 }
 
+
+// ─── UPCOMING TREATMENTS PANEL ───────────────────────────────
+function UpcomingTreatmentsPanel({ treatments, allTypes, routineHistory, onClose, onEdit, onRemove, onAddNew }) {
+  const now = new Date(); now.setHours(0,0,0,0)
+  const [addingDate, setAddingDate] = useState('')
+  const sorted = Object.entries(treatments).sort(([a],[b]) => a.localeCompare(b))
+  const upcoming = sorted.filter(([k]) => new Date(k+'T00:00:00') >= now)
+  const past     = sorted.filter(([k]) => new Date(k+'T00:00:00') <  now)
+
+  function renderTreatment([key, tv], isPast) {
+    const dt  = new Date(key+'T00:00:00')
+    const cfg = { pre: tv.pre ?? allTypes[tv.type]?.pre ?? 0, post: tv.post ?? allTypes[tv.type]?.post ?? 0 }
+    const typeLabel = allTypes[tv.type]?.label || tv.type
+    const isToday = key === dateKey(now)
+    const areaLabel = tv.area ? ` · ${tv.area.charAt(0).toUpperCase()+tv.area.slice(1)}` : ''
+    const todLabel  = tv.timeOfDay === 'pm' ? 'Evening' : 'Morning'
+
+    return (
+      <div key={key} style={{ padding: '10px 0', borderBottom: `0.5px solid ${T.border}`, opacity: isPast ? 0.55 : 1 }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+          {/* Date block */}
+          <div style={{ minWidth: 48, textAlign: 'center', padding: '4px 6px', borderRadius: 6, background: isToday ? T.pink : T.creamDark, border: `0.5px solid ${isToday ? T.pinkDeep : T.border}`, flexShrink: 0 }}>
+            <div style={{ fontSize: 9, fontWeight: 600, color: isToday ? T.pinkDeep : T.textMuted, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              {dt.toLocaleString('default',{month:'short'})}
+            </div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: isToday ? T.pinkDeep : T.text, lineHeight: 1.1 }}>{dt.getDate()}</div>
+            <div style={{ fontSize: 9, color: T.textLight }}>{dt.getFullYear()}</div>
+          </div>
+
+          {/* Details */}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
+              <span style={{ fontSize: 13, fontWeight: 600, color: T.text }}>{typeLabel}</span>
+              {isToday && <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 10, background: T.pink, color: T.pinkDeep, fontWeight: 600 }}>Today</span>}
+            </div>
+            <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 4 }}>
+              {todLabel}{areaLabel}
+              {cfg.pre > 0 && ` · ${cfg.pre}d pause before`}
+              {cfg.post > 0 && ` · ${cfg.post}d recovery after`}
+            </div>
+            {isPast && (
+              <div style={{ fontSize: 10, color: T.textLight, fontStyle: 'italic' }}>
+                Recovery ended {(() => {
+                  const recEnd = new Date(dt); recEnd.setDate(recEnd.getDate() + cfg.post)
+                  const daysSince = Math.round((now - recEnd) / 86400000)
+                  return daysSince <= 0 ? 'today' : `${daysSince}d ago`
+                })()}
+              </div>
+            )}
+            {!isPast && cfg.pre > 0 && (() => {
+              const pauseStart = new Date(dt); pauseStart.setDate(pauseStart.getDate() - cfg.pre)
+              const daysUntilPause = Math.round((pauseStart - now) / 86400000)
+              const daysUntil = Math.round((dt - now) / 86400000)
+              return daysUntilPause <= 0 && daysUntil > 0 ? (
+                <div style={{ fontSize: 10, color: '#92400E', background: '#FFFBEB', border: '0.5px solid #FCD34D', borderRadius: 4, padding: '2px 6px', display: 'inline-block', marginTop: 2 }}>
+                  Pause window active — {daysUntil}d until treatment
+                </div>
+              ) : daysUntilPause > 0 ? (
+                <div style={{ fontSize: 10, color: T.textMuted, marginTop: 2 }}>
+                  Pause actives in {daysUntilPause}d · Treatment in {daysUntil}d
+                </div>
+              ) : null
+            })()}
+          </div>
+
+          {/* Actions */}
+          {!isPast && (
+            <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
+              <Btn onClick={() => onEdit(key)} style={{ fontSize: 10, padding: '3px 8px' }}>Edit</Btn>
+              <button onClick={() => onRemove(key)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 16, padding: '0 4px', lineHeight: 1 }}>×</button>
+            </div>
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  function handleExportICS() {
+    const lines = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//GlowUp Calendar//EN','CALSCALE:GREGORIAN','METHOD:PUBLISH']
+    Object.entries(treatments).sort(([a],[b]) => a.localeCompare(b)).forEach(([key, tv]) => {
+      const cfg = { pre: tv.pre ?? allTypes[tv.type]?.pre ?? 0, post: tv.post ?? allTypes[tv.type]?.post ?? 0 }
+      const typeLabel = allTypes[tv.type]?.label || tv.type
+      const dt = new Date(key+'T00:00:00')
+      const preStart = new Date(dt); preStart.setDate(preStart.getDate() - cfg.pre)
+      const recEnd   = new Date(dt); recEnd.setDate(recEnd.getDate() + cfg.post)
+      const uid = `${key}-treatment-${Math.random().toString(36).slice(2)}@glowup`
+      const desc = `${typeLabel}\nPause actives from: ${fmtDate(dateKey(preStart))}\nRecovery through: ${fmtDate(dateKey(recEnd))}\nArea: ${tv.area || 'face'} · ${tv.timeOfDay === 'pm' ? 'Evening' : 'Morning'}`
+      lines.push(
+        'BEGIN:VEVENT', `UID:${uid}`,
+        `DTSTART;VALUE=DATE:${icsDate(dt)}`,
+        `DTEND;VALUE=DATE:${icsDate(new Date(dt.getTime()+86400000))}`,
+        `SUMMARY:${typeLabel}`,
+        `DESCRIPTION:${icsEscape(desc)}`,
+        'END:VEVENT'
+      )
+    })
+    lines.push('END:VCALENDAR')
+    const blob = new Blob([lines.join('\r\n')], { type: 'text/calendar;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a'); a.href = url; a.download = 'treatments.ics'; a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  return (
+    <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 12, padding: '16px 18px', marginBottom: 14 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>Treatments</div>
+        <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+          {Object.keys(treatments).length > 0 && (
+            <Btn onClick={handleExportICS} style={{ fontSize: 11, padding: '4px 10px' }}>↑ Export .ics</Btn>
+          )}
+          <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 18, color: T.textMuted, padding: '0 2px', lineHeight: 1 }}>×</button>
+        </div>
+      </div>
+
+      {/* Add new treatment */}
+      <div style={{ marginBottom: 14, paddingBottom: 14, borderBottom: `0.5px solid ${T.border}` }}>
+        {addingDate ? (
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+            <DateInput value={addingDate} onChange={e => setAddingDate(e.target.value)} />
+            <Btn variant="primary" disabled={!addingDate} onClick={() => { onAddNew(addingDate); setAddingDate('') }} style={{ fontSize: 11, padding: '5px 12px' }}>
+              Choose type →
+            </Btn>
+            <Btn onClick={() => setAddingDate('')} style={{ fontSize: 11, padding: '5px 10px' }}>Cancel</Btn>
+          </div>
+        ) : (
+          <Btn variant="primary" onClick={() => setAddingDate(dateKey(new Date()))} style={{ fontSize: 11, padding: '5px 12px' }}>
+            + Add a treatment
+          </Btn>
+        )}
+      </div>
+
+      {Object.keys(treatments).length === 0 ? (
+        <div style={{ fontSize: 12, color: T.textMuted, background: T.creamDark, borderRadius: 8, padding: '12px 14px', lineHeight: 1.6 }}>
+          No treatments scheduled yet. Tap any date on the calendar to add a treatment.
+        </div>
+      ) : (
+        <>
+          {upcoming.length > 0 && (
+            <div>
+              <div style={{ fontSize: 10, fontWeight: 600, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>Upcoming</div>
+              {upcoming.map(t => renderTreatment(t, false))}
+            </div>
+          )}
+          {past.length > 0 && (
+            <div style={{ marginTop: upcoming.length > 0 ? 14 : 0 }}>
+              <div style={{ fontSize: 10, fontWeight: 600, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>Past</div>
+              {past.slice(0, 5).map(t => renderTreatment(t, true))}
+              {past.length > 5 && (
+                <div style={{ fontSize: 11, color: T.textLight, fontStyle: 'italic', paddingTop: 8 }}>+{past.length - 5} older treatments</div>
+              )}
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  )
+}
+
 // ─── MAIN COMPONENT ──────────────────────────────────────────
 export default function GlowUpCalendar() {
   const now = new Date(); now.setHours(0,0,0,0)
@@ -3033,6 +3242,7 @@ export default function GlowUpCalendar() {
   const [dayFlyout,     setDayFlyout]     = useState(null) // { key, date, tab: 'am'|'pm', dayType }
   const [toast,         setToast]         = useState(false)
   const [showExport,    setShowExport]    = useState(false)
+  const [showTreatments, setShowTreatments] = useState(false)
   const [showAllBadges, setShowAllBadges] = useState(() => lsGet('glowup-show-all-badges', false))
 
   // Persistence
@@ -3221,7 +3431,7 @@ export default function GlowUpCalendar() {
         const end = new Date(td); end.setDate(end.getDate() + cfg.post)
         const res = new Date(td); res.setDate(res.getDate() + cfg.post + 1)
         const qd  = new Date(td); qd.setDate(qd.getDate() - (cfg.pre + 1))
-        const ql  = tv.qure ? ` | Microneedling: ${formatDate(qd)}` : ''
+        const ql  = ''
         lines.push(`- **${allTypes[tv.type]?.label || tv.type}: ${formatDate(td)}**${ql} | No tret from: ${formatDate(pre)} | Recovery through: ${formatDate(end)} | Resume: ${formatDate(res)}`)
       })
     }
@@ -3257,7 +3467,10 @@ export default function GlowUpCalendar() {
     const hairTreatment = isHairTreatmentDay(dt, info, period)
     const s       = info.status
 
-    let cellBg = T.white, cellBorder = T.border
+    const hasRoutinePeriod = !!getActivePeriod(dt, routineHistory)
+    // Days with no routine period get plain white; active routine days get a subtle tint
+    let cellBg = hasRoutinePeriod ? '#FAF5FF' : T.white
+    let cellBorder = hasRoutinePeriod ? '#E9D8FD' : T.border
     if      (info.isTreatment && T[s])              { cellBg = T[s].bg;       cellBorder = T[s].border       }
     else if (s === 'pause')                         { cellBg = T.pause.bg;    cellBorder = T.pause.border    }
     else if (s === 'pca' || s === 'recovery')       { cellBg = T.recovery.bg; cellBorder = T.recovery.border }
@@ -3318,22 +3531,7 @@ export default function GlowUpCalendar() {
       if (s === 'pause')    return <Badge key="p" colorKey="pause"         label="No actives"       />
       if (s === 'pca')      return <Badge key="p" colorKey="recovery"      label="Recovery" />
       if (s === 'recovery') return <Badge key="p" colorKey="recovery"      label="Recovery" />
-      if (s === 'qure')     return <Badge key="p" colorKey="microneedling" label="microneedling"    />
       if (s === 'tret') { const an = period?.activeName || 'tretinoin'; return <Badge key="p" colorKey="tret" label={an.charAt(0).toUpperCase() + an.slice(1)} /> }
-      if (s === 'bha')      return <Badge key="p" colorKey="bha"           label="BHA"              />
-      // Tier 2 — secondary actives
-      if (period?.secondaryActives) {
-        const lookFor = (!period?.tretEnabled || s === 'none')
-          ? (sa) => sa.enabled && sa.nights !== 'main'
-          : (sa) => sa.enabled && (sa.nights === 'off' || sa.nights === 'all')
-        const active = (period.secondaryActives || []).find(lookFor)
-        if (active) {
-          const def = AVAILABLE_SECONDARY_ACTIVES.find(a => a.key === active.key)
-          const raw2 = def?.label.split('/')[0].split('(')[0].trim() || active.key
-          const lbl = raw2.charAt(0).toUpperCase() + raw2.slice(1)
-          return <Badge key="p" colorKey="bha" label={lbl} />
-        }
-      }
       if (!showAllBadges) return null
       // Tier 3 — extras: show first active PM item's label
       const ep = getActiveDailyPeriod(dt, dailyHistory)
@@ -3421,11 +3619,11 @@ export default function GlowUpCalendar() {
 
   // ── Render ────────────────────────────────────────────────
   // Determine if any overlay panel is open
-  const hasOverlay = !!(panel || editingPeriod || editingDaily || editingShower || showLibrary || editingProduct || selector || showExport)
+  const hasOverlay = !!(panel || editingPeriod || editingDaily || editingShower || showLibrary || editingProduct || selector || showExport || showTreatments)
 
   function closeAllPanels() {
     setPanel(null); setEditingPeriod(null); setEditingDaily(null); setEditingShower(null)
-    setShowLibrary(false); setEditingProduct(null); setSelector(null); setShowExport(false)
+    setShowLibrary(false); setEditingProduct(null); setSelector(null); setShowExport(false); setShowTreatments(false)
   }
 
   return (
@@ -3452,9 +3650,9 @@ export default function GlowUpCalendar() {
           <button onClick={nextMonth} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 8, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.text }}>→</button>
         </div>
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-          {!hasRoutine && <Btn variant="primary" onClick={() => setPanel('setup')}>+ Start new routine</Btn>}
-          {hasRoutine && <Btn variant={panel === 'update' ? 'active' : 'primary'} style={{ fontSize: 11, padding: '5px 10px' }} onClick={() => { setPanel(p => p === 'update' ? null : 'update'); setEditingPeriod(null); setDayFlyout(null) }}>+ Start new routine</Btn>}
-          {hasRoutine && <Btn variant={panel === 'history' ? 'active' : 'default'} style={{ fontSize: 11, padding: '5px 10px' }} onClick={() => { setPanel(p => p === 'history' ? null : 'history'); setEditingPeriod(null); setDayFlyout(null) }}>Routine history</Btn>}
+          <Btn variant={['update','setup'].includes(panel) ? 'active' : 'primary'} style={{ fontSize: 11, padding: '5px 10px' }} onClick={() => { setPanel(p => ['update','setup'].includes(p) ? null : (hasRoutine ? 'update' : 'setup')); setEditingPeriod(null); setDayFlyout(null) }}>+ Start new routine</Btn>
+          <Btn variant={panel === 'history' ? 'active' : 'default'} style={{ fontSize: 11, padding: '5px 10px' }} onClick={() => { setPanel(p => p === 'history' ? null : 'history'); setEditingPeriod(null); setDayFlyout(null) }}>Routine history</Btn>
+          <Btn variant={showTreatments ? 'active' : 'default'} style={{ fontSize: 11, padding: '5px 10px' }} onClick={() => { setShowTreatments(s => !s); setDayFlyout(null) }}>Treatments</Btn>
           <Btn variant={showLibrary ? 'active' : 'default'} style={{ fontSize: 11, padding: '5px 10px' }} onClick={() => { setShowLibrary(s => !s); setEditingProduct(null); setDayFlyout(null) }}>Product library</Btn>
           <Btn variant={showExport ? 'active' : 'default'} onClick={() => { setShowExport(s => !s); setDayFlyout(null) }} style={{ fontSize: 11, padding: '5px 10px' }}>↑ Export</Btn>
 
@@ -3630,6 +3828,31 @@ export default function GlowUpCalendar() {
                 initial={editingProduct === 'new' ? undefined : editingProduct}
                 onSave={saveProduct}
                 onCancel={() => setEditingProduct(null)}
+              />
+            )}
+
+            {/* Upcoming treatments panel */}
+            {showTreatments && (
+              <UpcomingTreatmentsPanel
+                treatments={treatments}
+                allTypes={allTypes}
+                routineHistory={routineHistory}
+                onClose={() => setShowTreatments(false)}
+                onEdit={(key) => {
+                  const [y,m,d] = key.split('-').map(Number)
+                  setSelector({ key, date: new Date(y,m-1,d) })
+                  setShowTreatments(false)
+                }}
+                onRemove={(key) => {
+                  if (window.confirm('Remove this treatment? This cannot be undone.')) {
+                    setTreatments(t => { const n={...t}; delete n[key]; return n })
+                  }
+                }}
+                onAddNew={(dateStr) => {
+                  const [y,m,d] = dateStr.split('-').map(Number)
+                  setSelector({ key: dateStr, date: new Date(y,m-1,d) })
+                  setShowTreatments(false)
+                }}
               />
             )}
 
