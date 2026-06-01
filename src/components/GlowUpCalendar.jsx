@@ -66,13 +66,13 @@ const DAYS   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
 // Ingredient/category taxonomy — maps to routine structure flags
 // scope: 'face' = face routine products, 'body' = shower/body products, 'both' = either
 const ACTIVE_CATEGORIES = {
-  retinoid:    { label: 'Vitamin A / retinoids',     routineFlag: 'tret',        scope: 'face' },
-  aha:         { label: 'Exfoliating acids (AHA)',   routineFlag: 'azelaic',     scope: 'face' },
-  bha:         { label: 'Exfoliating acids (BHA)',   routineFlag: 'bha',         scope: 'both' },
-  vitamin_c:   { label: 'Vitamin C',                 routineFlag: 'vitamin_c',   scope: 'face' },
-  bp:          { label: 'Benzoyl peroxide',           routineFlag: 'bp',          scope: 'body' },
-  physical:    { label: 'Physical exfoliation',      routineFlag: 'physical',    scope: 'body' },
-  niacinamide: { label: 'Niacinamide',               routineFlag: 'niacinamide', scope: 'face' },
+  retinoid:    { label: 'Retinoids',              routineFlag: 'tret',        scope: 'face' },
+  aha:         { label: 'AHAs',                   routineFlag: 'azelaic',     scope: 'face' },
+  bha:         { label: 'BHAs',                   routineFlag: 'bha',         scope: 'both' },
+  vitamin_c:   { label: 'Vitamin C',              routineFlag: 'vitamin_c',   scope: 'face' },
+  bp:          { label: 'Benzoyl peroxide',        routineFlag: 'bp',          scope: 'body' },
+  physical:    { label: 'Physical exfoliation',   routineFlag: 'physical',    scope: 'body' },
+  niacinamide: { label: 'Niacinamide',            routineFlag: 'niacinamide', scope: 'face' },
 }
 
 const BASE_TYPES = {
@@ -105,8 +105,8 @@ const BASE_TYPES = {
     area: 'both', pre: 7, post: 7, pca: false,
     avoidPre:  ['retinoid'],
     avoidPost: ['retinoid'],
-    avoidPreNote:  'Pause tretinoin 7 days before (increases skin sensitivity at treatment sites).',
-    avoidPostNote: 'Wait 7 days before restarting tretinoin on treated areas.',
+    avoidPreNote:  'Pause retinoids 7 days before (increases skin sensitivity at treatment sites).',
+    avoidPostNote: 'Wait 7 days before restarting retinoids on treated areas.',
   },
   laser: {
     label: 'Laser hair removal',
@@ -208,7 +208,7 @@ const EVENING_FREQ_SIMPLE = [
 // Which secondary actives are not recommended on which nights
 const SECONDARY_INCOMPATIBILITIES = {
   bha:     { main: 'Using exfoliating acids on the same nights as a retinoid increases irritation and sensitivity. Most derms recommend alternating.' },
-  pha:     { main: 'PHAs combined with retinoids may increase irritation, especially while building tolerance. Consider using on off nights.' },
+  pha:     { main: 'PHAs combined with retinoids may increase irritation, especially while building tolerance. Consider using on separate nights.' },
   azelaic: {}, // azelaic acid is generally compatible with retinoids
   peptides:{}, // peptides are broadly compatible
   niacinamide: {}, // niacinamide is compatible with most actives
@@ -216,14 +216,11 @@ const SECONDARY_INCOMPATIBILITIES = {
 
 const DEFAULT_PERIOD = {
   startDate:         '',
-  activeName:        'tretinoin',
+  activeName:        'retinoid',
   tretEnabled:       false,
   tretFrequency:     '2x-232',
   tretStartDate:     '',
   secondaryActives:  AVAILABLE_SECONDARY_ACTIVES.map(a => ({ key: a.key, enabled: false, nights: a.defaultNights })),
-  massageEnabled:    false,
-  massageDays:       [1, 3, 5],
-  massageVideoUrl:   '',
 }
 
 // ─── HELPERS ─────────────────────────────────────────────────
@@ -330,11 +327,6 @@ function isMassageDay(dt, info, period) {
   return period.massageDays.includes(dt.getDay())
 }
 
-function isHairTreatmentDay(dt, info, period) {
-  if (!period?.hairTreatmentEnabled) return false
-  if (info.isTreatment || ['pause','pca','recovery'].includes(info.status)) return false
-  return period.hairTreatmentDays.includes(dt.getDay())
-}
 
 // ─── UI PRIMITIVES ───────────────────────────────────────────
 function Badge({ colorKey, label }) {
@@ -346,15 +338,6 @@ function Badge({ colorKey, label }) {
   )
 }
 
-function LegendItem({ colorKey, label }) {
-  const c = T[colorKey] || T.custom
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: T.textMuted }}>
-      <div style={{ width: 10, height: 10, borderRadius: 2, background: c.bg, border: `0.5px solid ${c.border}`, flexShrink: 0 }} />
-      {label}
-    </div>
-  )
-}
 
 function Btn({ onClick, children, variant = 'default', style: sx = {}, disabled = false }) {
   const base = { padding: '6px 14px', borderRadius: 8, fontSize: 12, cursor: disabled ? 'default' : 'pointer', opacity: disabled ? 0.5 : 1 }
@@ -397,20 +380,6 @@ function Toggle({ checked, onChange, label }) {
   )
 }
 
-function DayPicker({ selected, onChange, label }) {
-  return (
-    <div style={{ marginBottom: 8 }}>
-      <FieldLabel>{label}</FieldLabel>
-      <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-        {DAYS.map((d, i) => (
-          <button key={i} onClick={() => onChange(selected.includes(i) ? selected.filter(x => x !== i) : [...selected, i])} style={{ padding: '3px 8px', borderRadius: 6, fontSize: 11, cursor: 'pointer', border: `0.5px solid ${selected.includes(i) ? T.pinkDeep : T.border}`, background: selected.includes(i) ? T.pink : T.white, color: T.text, fontWeight: selected.includes(i) ? 600 : 400 }}>
-            {d}
-          </button>
-        ))}
-      </div>
-    </div>
-  )
-}
 
 
 // ─── CONFLICT MESSAGE ────────────────────────────────────────
@@ -495,7 +464,7 @@ function detectTreatmentConflicts(proposedKey, proposedType, allTypes, treatment
       conflicts.push({
         kind: 'tret',
         message: `Recovery window overlaps ${period.activeName || 'Tretinoin'} start (${period.tretStartDate})`,
-        detail: `This treatment needs ${cfg.post}d recovery. Tretinoin starts in ${daysToTret}d — you won't be healed in time.`
+        detail: `This treatment needs ${cfg.post}d recovery. Your retinoid starts in ${daysToTret}d — you won't be healed in time.`
       })
     }
 
@@ -504,7 +473,7 @@ function detectTreatmentConflicts(proposedKey, proposedType, allTypes, treatment
       conflicts.push({
         kind: 'tret',
         message: `Too close to ${period.activeName || 'Tretinoin'} start (${period.tretStartDate})`,
-        detail: `This treatment needs ${cfg.pre}d Tretinoin pause before it. Tretinoin started ${Math.abs(daysToTret)}d ago — not enough time.`
+        detail: `This treatment needs ${cfg.pre}d retinoid pause before it. Your retinoid started ${Math.abs(daysToTret)}d ago — not enough time.`
       })
     }
 
@@ -745,7 +714,7 @@ function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = false, lo
 
       <SectionLabel>What does your skincare routine consist of?</SectionLabel>
       <div style={{ fontSize: 12, color: T.textMuted, marginBottom: 12, lineHeight: 1.6, background: T.creamDark, borderRadius: 8, padding: '10px 12px' }}>
-        Your morning and evening steps — from cleanse to SPF, actives, and treatments. Most actives go at night because they can increase sun sensitivity, and skin does most of its repair work while you sleep. Toggle on what you use and we'll build your calendar.
+        Your morning and evening steps — from cleanse to SPF, actives, and treatments. Toggle on what you use and we'll build your calendar around it.
       </div>
 
       {/* Retinoid toggle */}
@@ -754,7 +723,7 @@ function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = false, lo
           <input type="checkbox" checked={form.tretEnabled} onChange={e => set('tretEnabled', e.target.checked)} style={{ width: 14, height: 14, marginTop: 2, cursor: 'pointer', accentColor: T.pinkDeep }} />
           <div>
             <div style={{ fontSize: 12, fontWeight: 600, color: T.text }}>Retinoid (vitamin A)</div>
-            <div style={{ fontSize: 11, color: T.textMuted }}>Tretinoin, adapalene, retinol, retinaldehyde, etc. — prescription or over the counter</div>
+            <div style={{ fontSize: 11, color: T.textMuted }}>Tretinoin, adapalene, retinol, retinaldehyde, and more — prescription or over the counter</div>
           </div>
         </label>
       </div>
@@ -795,7 +764,7 @@ function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = false, lo
       {/* Other evening actives */}
       {form.tretEnabled && (
         <div style={{ fontSize: 11, color: T.textMuted, margin: '8px 0 6px', paddingLeft: 2 }}>
-          <strong style={{ color: T.text }}>Active nights</strong> = nights you use your retinoid. <strong style={{ color: T.text }}>Off nights</strong> = the other evenings.
+          <strong style={{ color: T.text }}>Active nights</strong> = nights you use your main evening treatment. <strong style={{ color: T.text }}>Off nights</strong> = the other evenings.
         </div>
       )}
       {AVAILABLE_SECONDARY_ACTIVES.map(def => {
@@ -865,7 +834,7 @@ function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = false, lo
             {/* Product assignment split by routine section */}
             {[
               { section: 'Morning', steps: AM_STEPS },
-              { section: `Active nights (${form.activeName || 'treatment'})`, steps: [
+              { section: form.activeName ? `Active nights (${form.activeName})` : 'Active nights', steps: [
                 { key: 'pm_cleanse1', label: 'Cleanse 1' }, { key: 'pm_cleanse2', label: 'Cleanse 2' },
                 { key: 'pm_essence', label: 'Essence' },
                 { key: 'pm_tret', label: form.activeName ? form.activeName.charAt(0).toUpperCase() + form.activeName.slice(1) : 'Evening treatment' },
@@ -2295,7 +2264,7 @@ function ShowerSection({ dt, showerHistory, onEditShower, products }) {
 // nightType: 'main' | 'off' | 'recovery' | 'treatment'
 function getPmSteps(period, nightType) {
   const steps = []
-  const activeName = period?.activeName || 'tretinoin'
+  const activeName = period?.activeName || 'retinoid'
   const capName = activeName.charAt(0).toUpperCase() + activeName.slice(1)
   const secondaries = period?.secondaryActives || []
 
@@ -2370,23 +2339,7 @@ const AM_STEPS = [
   { key: 'am_eye',         label: 'Eye cream'   },
 ]
 
-const PM_STEPS_TRET = [
-  { key: 'pm_cleanse1',    label: 'Cleanse 1'   },
-  { key: 'pm_cleanse2',    label: 'Cleanse 2'   },
-  { key: 'pm_essence',     label: 'Essence'     },
-  { key: 'pm_tret',        label: 'Tretinoin'   },
-  { key: 'pm_moisturizer', label: 'Moisturizer' },
-  { key: 'pm_eye',         label: 'Eye cream'   },
-]
 
-const PM_STEPS_BHA = [
-  { key: 'pm_cleanse1',    label: 'Cleanse 1'   },
-  { key: 'pm_cleanse2',    label: 'Cleanse 2'   },
-  { key: 'pm_bha',         label: 'BHA'         },
-  { key: 'pm_azelaic',     label: 'Azelaic acid'},
-  { key: 'pm_moisturizer', label: 'Moisturizer' },
-  { key: 'pm_eye',         label: 'Eye cream'   },
-]
 
 function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allTypes, onClose, onAddTreatment, onTabChange, onEditDaily, onEditShower, onUpdatePeriodProducts, onAddProduct }) {
   const [massageOpen, setMassageOpen] = useState(false)
@@ -2724,7 +2677,7 @@ const DEFAULT_PRODUCTS = {
     id: 'prod-to-salicylic', name: 'Salicylic Acid 2% Solution', brand: 'The Ordinary',
     category: 'bha', bdsCompliant: true, currentlyUsing: true,
     applicationArea: { face: true, body: true, hair: false },
-    effectiveness: 0, tags: ['bha'], notes: 'Face (BHA nights) + leave-on arms for KP',
+    effectiveness: 0, tags: ['bha'], notes: 'Leave-on, face + arms (KP)',
     imageUrl: '', purchaseUrl: '', buyAgain: null,
   },
   'prod-bgs-spf': {
@@ -2745,7 +2698,7 @@ const DEFAULT_PRODUCTS = {
     id: 'prod-to-azelaic', name: 'Azelaic Acid Suspension 10%', brand: 'The Ordinary',
     category: 'azelaic acid', bdsCompliant: true, currentlyUsing: true,
     applicationArea: { face: true, body: false, hair: false },
-    effectiveness: 0, tags: ['azelaic'], notes: 'BHA/off nights',
+    effectiveness: 0, tags: ['azelaic'], notes: '',
     imageUrl: '', purchaseUrl: '', buyAgain: null,
   },
   'prod-cosrx-snail': {
@@ -2766,7 +2719,7 @@ const DEFAULT_PRODUCTS = {
     id: 'prod-klairs-cream', name: 'Midnight Blue Calming Cream', brand: 'Klairs',
     category: 'moisturizer', bdsCompliant: true, currentlyUsing: true,
     applicationArea: { face: true, body: false, hair: false },
-    effectiveness: 0, tags: ['calming', 'korean'], notes: 'PM moisturizer (tret + BHA nights)',
+    effectiveness: 0, tags: ['calming', 'korean'], notes: '',
     imageUrl: '', purchaseUrl: '', buyAgain: null,
   },
   'prod-farmacy-cleanser': {
@@ -2825,15 +2778,15 @@ const DEFAULT_PRODUCTS = {
 // Pre-populated on first load and merged in for any existing library.
 // Photos and purchase links can be added manually.
 const SEED_PRODUCTS = [
-  { id:'seed-1',  name:'Low pH Good Morning Gel Cleanser',         brand:'COSRX',         category:'cleanser',           bdsCompliant:true,  currentlyUsing:false, applicationArea:{face:true},             effectiveness:0, buyAgain:null, tags:['fragrance free'], notes:'', imageUrl:'', purchaseUrl:'' },
+  { id:'seed-1',  name:'Low pH Good Morning Gel Cleanser',         brand:'COSRX',         category:'cleanser',           bdsCompliant:true,  currentlyUsing:false, applicationArea:{face:true},             effectiveness:0, buyAgain:null, tags:['Fragrance free'], notes:'', imageUrl:'', purchaseUrl:'' },
   { id:'seed-2',  name:'Blueberry Bounce Gentle Cleanser',          brand:'Glow Recipe',   category:'cleanser',           bdsCompliant:true,  currentlyUsing:false, applicationArea:{face:true},             effectiveness:0, buyAgain:null, tags:[], notes:'', imageUrl:'', purchaseUrl:'' },
   { id:'seed-3',  name:'Green Clean Makeup Meltaway Cleansing Balm',brand:'Farmacy',       category:'cleansing oil / balm',bdsCompliant:true,  currentlyUsing:false, applicationArea:{face:true},             effectiveness:0, buyAgain:null, tags:[], notes:'', imageUrl:'', purchaseUrl:'' },
-  { id:'seed-4',  name:'Heartleaf 77% Soothing Toner',             brand:'Anua',          category:'toner',              bdsCompliant:true,  currentlyUsing:false, applicationArea:{face:true},             effectiveness:0, buyAgain:null, tags:['fragrance free'], notes:'', imageUrl:'', purchaseUrl:'' },
+  { id:'seed-4',  name:'Heartleaf 77% Soothing Toner',             brand:'Anua',          category:'toner',              bdsCompliant:true,  currentlyUsing:false, applicationArea:{face:true},             effectiveness:0, buyAgain:null, tags:['Fragrance free'], notes:'', imageUrl:'', purchaseUrl:'' },
   { id:'seed-5',  name:'Advanced Snail 96 Mucin Power Essence',     brand:'COSRX',         category:'essence',            bdsCompliant:true,  currentlyUsing:false, applicationArea:{face:true},             effectiveness:0, buyAgain:null, tags:[], notes:'', imageUrl:'', purchaseUrl:'' },
-  { id:'seed-6',  name:'Niacinamide 10% + Zinc 1%',                brand:'The Ordinary',  category:'serum',              bdsCompliant:true,  currentlyUsing:false, applicationArea:{face:true},             effectiveness:0, buyAgain:null, tags:['niacinamide'], notes:'', imageUrl:'', purchaseUrl:'' },
+  { id:'seed-6',  name:'Niacinamide 10% + Zinc 1%',                brand:'The Ordinary',  category:'serum',              bdsCompliant:true,  currentlyUsing:false, applicationArea:{face:true},             effectiveness:0, buyAgain:null, tags:['Niacinamide'], notes:'', imageUrl:'', purchaseUrl:'' },
   { id:'seed-7',  name:'Salicylic Acid 2% Solution',                brand:'The Ordinary',  category:'bha',                bdsCompliant:true,  currentlyUsing:false, applicationArea:{body:true},             effectiveness:0, buyAgain:null, tags:[], notes:'Body / KP treatment — leave-on', imageUrl:'', purchaseUrl:'' },
   { id:'seed-8',  name:'Azelaic Acid Suspension 10%',               brand:'The Ordinary',  category:'azelaic acid',       bdsCompliant:true,  currentlyUsing:false, applicationArea:{face:true},             effectiveness:0, buyAgain:null, tags:[], notes:'', imageUrl:'', purchaseUrl:'' },
-  { id:'seed-9',  name:'Daily Go-To Sunscreen SPF 50+',             brand:'Purito',        category:'spf',                bdsCompliant:true,  currentlyUsing:false, applicationArea:{face:true},             effectiveness:0, buyAgain:null, tags:['fragrance free'], notes:'Summer formula (Oat-in)', imageUrl:'', purchaseUrl:'' },
+  { id:'seed-9',  name:'Daily Go-To Sunscreen SPF 50+',             brand:'Purito',        category:'spf',                bdsCompliant:true,  currentlyUsing:false, applicationArea:{face:true},             effectiveness:0, buyAgain:null, tags:['Fragrance free'], notes:'Summer formula (Oat-in)', imageUrl:'', purchaseUrl:'' },
   { id:'seed-10', name:'Midnight Blue Calming Cream',               brand:'Klairs',        category:'moisturizer',        bdsCompliant:true,  currentlyUsing:false, applicationArea:{face:true},             effectiveness:0, buyAgain:null, tags:[], notes:'', imageUrl:'', purchaseUrl:'' },
   { id:'seed-11', name:'Plum Plump Hyaluronic Cream',               brand:'Glow Recipe',   category:'moisturizer',        bdsCompliant:true,  currentlyUsing:false, applicationArea:{face:true},             effectiveness:0, buyAgain:null, tags:[], notes:'Fall / winter formula', imageUrl:'', purchaseUrl:'' },
   { id:'seed-12', name:'Make It Matte SPF 45',                      brand:'Black Girl Sunscreen', category:'spf',         bdsCompliant:true,  currentlyUsing:false, applicationArea:{face:true},             effectiveness:0, buyAgain:null, tags:[], notes:'Kids formula', imageUrl:'', purchaseUrl:'' },
@@ -3214,21 +3167,22 @@ export default function GlowUpCalendar() {
   const [year,  setYear]  = useState(now.getFullYear())
   const [month, setMonth] = useState(now.getMonth())
 
-  const [routineHistory, setRoutineHistory] = useState(() => lsGet('glowup-routine-history', []))
+  const [routineHistory, setRoutineHistory] = useState(() => /* 🔄 DB */ lsGet('glowup-routine-history', []))
   const [products, setProducts] = useState(() => {
-    const stored = lsGet('glowup-products', null) || {}
+    const stored = /* 🔄 DB */ lsGet('glowup-products', null) || {}
     // Always merge seed products that aren't already in the library (by ID)
-    // This ensures seeds appear even if the user had prior manual products
     const merged = { ...stored }
-    SEED_PRODUCTS.forEach(p => {
-      if (!merged[p.id]) merged[p.id] = p
+    SEED_PRODUCTS.forEach(p => { if (!merged[p.id]) merged[p.id] = p })
+    // Normalize all tags to sentence case
+    Object.values(merged).forEach(p => {
+      if (p.tags) p.tags = p.tags.map(t => t ? t.charAt(0).toUpperCase() + t.slice(1) : t)
     })
     return merged
   })
-  const [dailyHistory,   setDailyHistory]   = useState(() => lsGet('glowup-daily-routine',   []))
-  const [showerHistory,  setShowerHistory]  = useState(() => lsGet('glowup-shower-routine', []))
-  const [treatments,     setTreatments]     = useState(() => lsGet('glowup-treatments',      {}))
-  const [customTypes,    setCustomTypes]    = useState(() => lsGet('glowup-custom-types',    {}))
+  const [dailyHistory,   setDailyHistory]   = useState(() => /* 🔄 DB */ lsGet('glowup-daily-routine',   []))
+  const [showerHistory,  setShowerHistory]  = useState(() => /* 🔄 DB */ lsGet('glowup-shower-routine', []))
+  const [treatments,     setTreatments]     = useState(() => /* 🔄 DB */ lsGet('glowup-treatments',      {}))
+  const [customTypes,    setCustomTypes]    = useState(() => /* 🔄 DB */ lsGet('glowup-custom-types',    {}))
 
   // panel: 'setup' | 'update' | 'history' | null
   const [panel,         setPanel]         = useState(null)
@@ -3243,16 +3197,16 @@ export default function GlowUpCalendar() {
   const [toast,         setToast]         = useState(false)
   const [showExport,    setShowExport]    = useState(false)
   const [showTreatments, setShowTreatments] = useState(false)
-  const [showAllBadges, setShowAllBadges] = useState(() => lsGet('glowup-show-all-badges', false))
+  const [showAllBadges, setShowAllBadges] = useState(() => /* 🔄 DB */ lsGet('glowup-show-all-badges', false))
 
   // Persistence
-  useEffect(() => { lsSet('glowup-routine-history', routineHistory) }, [routineHistory])
-  useEffect(() => { lsSet('glowup-products',       products)       }, [products])
-  useEffect(() => { lsSet('glowup-daily-routine',   dailyHistory)   }, [dailyHistory])
-  useEffect(() => { lsSet('glowup-shower-routine', showerHistory)  }, [showerHistory])
-  useEffect(() => { lsSet('glowup-treatments',      treatments)     }, [treatments])
-  useEffect(() => { lsSet('glowup-custom-types',    customTypes)    }, [customTypes])
-  useEffect(() => { lsSet('glowup-show-all-badges',  showAllBadges)  }, [showAllBadges])
+  useEffect(() => { /* 🔄 DB */ lsSet('glowup-routine-history', routineHistory) }, [routineHistory])
+  useEffect(() => { /* 🔄 DB */ lsSet('glowup-products',       products)       }, [products])
+  useEffect(() => { /* 🔄 DB */ lsSet('glowup-daily-routine',   dailyHistory)   }, [dailyHistory])
+  useEffect(() => { /* 🔄 DB */ lsSet('glowup-shower-routine', showerHistory)  }, [showerHistory])
+  useEffect(() => { /* 🔄 DB */ lsSet('glowup-treatments',      treatments)     }, [treatments])
+  useEffect(() => { /* 🔄 DB */ lsSet('glowup-custom-types',    customTypes)    }, [customTypes])
+  useEffect(() => { /* 🔄 DB */ lsSet('glowup-show-all-badges',  showAllBadges)  }, [showAllBadges])
 
 
   const allTypes   = { ...BASE_TYPES, ...customTypes }
@@ -3430,9 +3384,6 @@ export default function GlowUpCalendar() {
         const pre = new Date(td); pre.setDate(pre.getDate() - cfg.pre)
         const end = new Date(td); end.setDate(end.getDate() + cfg.post)
         const res = new Date(td); res.setDate(res.getDate() + cfg.post + 1)
-        const qd  = new Date(td); qd.setDate(qd.getDate() - (cfg.pre + 1))
-        const ql  = ''
-        lines.push(`- **${allTypes[tv.type]?.label || tv.type}: ${formatDate(td)}**${ql} | No tret from: ${formatDate(pre)} | Recovery through: ${formatDate(end)} | Resume: ${formatDate(res)}`)
       })
     }
     lines.push('', '## Routine history')
@@ -3464,7 +3415,6 @@ export default function GlowUpCalendar() {
     const period  = getActivePeriod(dt, routineHistory)
     const isToday = dt.getTime() === now.getTime()
     const massage = isMassageDay(dt, info, period)
-    const hairTreatment = isHairTreatmentDay(dt, info, period)
     const s       = info.status
 
     const hasRoutinePeriod = !!getActivePeriod(dt, routineHistory)
@@ -3729,7 +3679,7 @@ export default function GlowUpCalendar() {
             {!hasRoutine && panel === 'setup' && !editingPeriod && (
               <div style={{ background: T.pink, border: `0.5px solid ${T.pinkDeep}`, borderRadius: 12, padding: '14px 18px', marginBottom: 8 }}>
                 <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 6 }}>Welcome! Set up your routine to get started.</div>
-                <div style={{ fontSize: 12, color: T.textMuted, marginBottom: 10 }}>Configure your tret schedule, BHA nights, massage days, and hair treatment — it all auto-populates on the calendar.</div>
+                <div style={{ fontSize: 12, color: T.textMuted, marginBottom: 10 }}>Configure your evening actives, secondary treatments, and schedule — it all auto-populates on the calendar.</div>
               </div>
             )}
 
