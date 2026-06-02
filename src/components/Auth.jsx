@@ -13,7 +13,7 @@ export default function Auth() {
     setError(null)
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: window.location.origin + '/routine' }
+      options: { emailRedirectTo: 'https://melanie.studio/routine' }
     })
     if (error) setError(error.message)
     else setSent(true)
