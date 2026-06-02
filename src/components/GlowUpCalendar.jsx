@@ -3726,6 +3726,7 @@ export default function GlowUpCalendar({ session }) {
           <Btn variant={showTreatments ? 'active' : 'default'} style={{ fontSize: 11, padding: '5px 10px' }} onClick={() => { setShowTreatments(s => !s); setDayFlyout(null) }}>Treatments</Btn>
           <Btn variant={showLibrary ? 'active' : 'default'} style={{ fontSize: 11, padding: '5px 10px' }} onClick={() => { setShowLibrary(s => !s); setEditingProduct(null); setDayFlyout(null) }}>Product library</Btn>
           <Btn variant={showExport ? 'active' : 'default'} onClick={() => { setShowExport(s => !s); setDayFlyout(null) }} style={{ fontSize: 11, padding: '5px 10px' }}>↑ Export</Btn>
+          <button onClick={async () => { await supabase.auth.signOut(); window.location.reload() }} style={{ fontSize: 11, padding: '5px 10px', borderRadius: 8, border: `0.5px solid ${T.border}`, background: 'transparent', cursor: 'pointer', color: T.textLight }}>Sign out</button>
 
         </div>
       </div>
