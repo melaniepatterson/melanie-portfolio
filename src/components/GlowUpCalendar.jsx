@@ -31,6 +31,7 @@
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { supabase } from '../lib/supabase'
 
 // ─── DESIGN TOKENS ───────────────────────────────────────────
 const T = {
@@ -869,7 +870,7 @@ function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = false, lo
                     {prod ? (
                       <span style={{ fontSize: 11, color: T.textMuted }}>{prod.name}</span>
                     ) : (
-                      <span style={{ fontSize: 11, color: T.textLight, fontStyle: 'italic' }}>unassigned</span>
+                      <span style={{ fontSize: 11, color: T.textLight, fontStyle: 'italic' }}>Unassigned</span>
                     )}
                     <span style={{ fontSize: 10, color: T.textLight }}>{isOpen ? '▲' : '▼'}</span>
                   </div>
@@ -1173,7 +1174,7 @@ const EXTRAS_PRESETS = [
 
 // ─── EXTRAS ─────────────────────────────────────────────────
 // Generates a unique id for new daily items
-function uid() { return Math.random().toString(36).slice(2, 9) }
+function uid() { return crypto.randomUUID() }
 
 // Active daily period helper — same pattern as getActivePeriod
 function getActiveDailyPeriod(dt, history) {
@@ -1298,13 +1299,7 @@ function DailyEditor({ initial, onSave, onCancel, lockStartDate = false, allPeri
   const [dragFrom,  setDragFrom]  = useState(null)
   const [dragOver,  setDragOver]  = useState(null)
 
-  // Detect overlap against all other daily periods (exclude self by id)
-  const conflict = startDate
-    ? detectOverlap(
-        { startDate, endDate: endDate || null, excludeId: initial?.id },
-        allPeriods
-      )
-    : null
+  const conflict = null // end dates are set automatically on save
 
   function addItem() {
     if (!newLabel.trim()) return
@@ -1335,7 +1330,7 @@ function DailyEditor({ initial, onSave, onCancel, lockStartDate = false, allPeri
   function handleNoteChange(i, note) { setItems(it => it.map((x, idx) => idx === i ? { ...x, note } : x)) }
 
   function handleSave() {
-    if (!startDate || conflict) return
+    if (!startDate || conflict || items.length === 0) return
     onSave({ startDate, endDate: endDate || null, items, id: initial?.id || uid() })
   }
 
@@ -1492,7 +1487,7 @@ function DailyEditor({ initial, onSave, onCancel, lockStartDate = false, allPeri
       </div>{/* end add item section */}
 
       <div style={{ borderTop: `0.5px solid ${T.border}`, paddingTop: 10, marginTop: 10, display: 'flex', gap: 8 }}>
-        <Btn variant="primary" onClick={handleSave} disabled={!startDate || !!conflict}>Save</Btn>
+        <Btn variant="primary" onClick={handleSave} disabled={!startDate || !!conflict || items.length === 0}>Save</Btn>
         <Btn onClick={onCancel}>Cancel</Btn>
       </div>
     </div>
@@ -1784,7 +1779,7 @@ function ProductPicker({ stepKey, currentProductId, products, onSelect, onAddNew
 }
 
 // ProductLibrary — browse all products
-function ProductLibrary({ products, onEdit, onAdd, onClose }) {
+function ProductLibrary({ products, onEdit, onAdd, onDelete, onClose }) {
   const [filterCat, setFilterCat] = useState('all')
   const [filterArea, setFilterArea] = useState('all')
   const [search, setSearch] = useState('')
@@ -1837,7 +1832,7 @@ function ProductLibrary({ products, onEdit, onAdd, onClose }) {
             <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 6 }}>
               {p.currentlyUsing && <span style={{ fontSize: 9, padding: '1px 5px', borderRadius: 3, background: '#DCFCE7', color: '#166534', border: '0.5px solid #4ADE80' }}>In use</span>}
               {p.bdsCompliant && <span style={{ fontSize: 9, padding: '1px 5px', borderRadius: 3, background: '#E1F5EE', color: '#085041', border: '0.5px solid #5DCAA5' }}>BDS safe</span>}
-              {p.buyAgain === true && <span style={{ fontSize: 9, padding: '1px 5px', borderRadius: 3, background: T.pink, color: '#9F1239', border: `0.5px solid ${T.pinkDeep}` }}>buy again</span>}
+              {p.buyAgain === true && <span style={{ fontSize: 9, padding: '1px 5px', borderRadius: 3, background: T.pink, color: '#9F1239', border: `0.5px solid ${T.pinkDeep}` }}>Buy again</span>}
               {Object.entries(p.applicationArea || {}).filter(([,v])=>v).map(([k]) => (
                 <span key={k} style={{ fontSize: 9, padding: '1px 5px', borderRadius: 3, background: T.creamDark, color: T.textMuted, border: `0.5px solid ${T.border}` }}>
                   {k.charAt(0).toUpperCase() + k.slice(1)}
@@ -1845,8 +1840,9 @@ function ProductLibrary({ products, onEdit, onAdd, onClose }) {
               ))}
               {(p.tags || []).slice(0,2).map(t => <span key={t} style={{ fontSize: 9, padding: '1px 5px', borderRadius: 3, background: T.creamDark, color: T.textMuted, border: `0.5px solid ${T.border}` }}>{t}</span>)}
             </div>
-            <div style={{ marginTop: 8 }}>
-              <Btn onClick={() => onEdit(p)} style={{ fontSize: 11, padding: '3px 8px', width: '100%', textAlign: 'center' }}>Edit</Btn>
+            <div style={{ marginTop: 8, display: 'flex', gap: 4 }}>
+              <Btn onClick={() => onEdit(p)} style={{ fontSize: 11, padding: '3px 8px', flex: 1, textAlign: 'center' }}>Edit</Btn>
+              {onDelete && <button onClick={() => { if (window.confirm('Remove this product from your library?')) onDelete(p.id) }} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 16, padding: '0 4px', lineHeight: 1 }}>×</button>}
             </div>
           </div>
         ))}
@@ -2044,9 +2040,7 @@ function ShowerEditor({ initial, onSave, onCancel, allPeriods = [], onEditConfli
   const [dragFrom,  setDragFrom]  = useState(null)
   const [dragOver,  setDragOver]  = useState(null)
 
-  const conflict = startDate
-    ? detectOverlap({ startDate, endDate: endDate || null, excludeId: initial?.id }, allPeriods)
-    : null
+  const conflict = null // end dates set automatically on save
 
   function addItem() {
     if (!newLabel.trim()) return
@@ -2203,7 +2197,7 @@ function ShowerEditor({ initial, onSave, onCancel, allPeriods = [], onEditConfli
       </div>
 
       <div style={{ borderTop: `0.5px solid ${T.border}`, paddingTop: 10, marginTop: 10, display: 'flex', gap: 8 }}>
-        <Btn variant="primary" onClick={() => startDate && !conflict && onSave({ startDate, endDate: endDate || null, items, id: initial?.id || uid() })} disabled={!startDate || !!conflict}>Save</Btn>
+        <Btn variant="primary" onClick={() => startDate && !conflict && onSave({ startDate, endDate: endDate || null, items, id: initial?.id || uid() })} disabled={!startDate || !!conflict || items.length === 0}>Save</Btn>
         <Btn onClick={onCancel}>Cancel</Btn>
       </div>
     </div>
@@ -2418,9 +2412,9 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
                   {product.effectiveness > 0 && <StarRating value={product.effectiveness} size={9} />}
                 </div>
               ) : productId ? (
-                <div style={{ fontSize: 11, color: T.textLight, fontStyle: 'italic' }}>assigned product not found — tap to reassign</div>
+                <div style={{ fontSize: 11, color: T.textLight, fontStyle: 'italic' }}>Assigned product not found — tap to reassign</div>
               ) : (
-                <div style={{ fontSize: 11, color: T.textLight, fontStyle: 'italic' }}>tap to assign product</div>
+                <div style={{ fontSize: 11, color: T.textLight, fontStyle: 'italic' }}>Tap to assign product</div>
               )}
             </div>
             <div style={{ fontSize: 10, color: T.textLight }}>{isThisOpen ? '▲' : '▼'}</div>
@@ -2634,7 +2628,7 @@ function NewRoutinePeriodPicker({ routineHistory, dailyHistory, showerHistory, p
               onSave={onSaveDaily}
               onCancel={onCancel}
               allPeriods={dailyHistory}
-              onEditConflict={() => {}}
+              onEditConflict={(p) => openDailyEditor(p)}
               products={products}
               onSaveProduct={onSaveProduct}
             />
@@ -2645,7 +2639,7 @@ function NewRoutinePeriodPicker({ routineHistory, dailyHistory, showerHistory, p
               onSave={onSaveShower}
               onCancel={onCancel}
               allPeriods={showerHistory}
-              onEditConflict={() => {}}
+              onEditConflict={(p) => openShowerEditor(p)}
             />
           )}
         </div>
@@ -2655,123 +2649,6 @@ function NewRoutinePeriodPicker({ routineHistory, dailyHistory, showerHistory, p
 }
 
 
-// ─── DEFAULT PRODUCTS ─────────────────────────────────────────
-// Pre-populated with BDS-safe products from Melanie's current routine.
-// Seeded on first load only (when the product library is empty).
-const DEFAULT_PRODUCTS = {
-  'prod-anua-toner': {
-    id: 'prod-anua-toner', name: 'Heartleaf 77% Soothing Toner', brand: 'Anua',
-    category: 'toner', bdsCompliant: true, currentlyUsing: true,
-    applicationArea: { face: true, body: false, hair: false },
-    effectiveness: 0, tags: ['fragrance free', 'korean'], notes: '',
-    imageUrl: '', purchaseUrl: '', buyAgain: null,
-  },
-  'prod-cosrx-cleanser': {
-    id: 'prod-cosrx-cleanser', name: 'Low pH Good Morning Gel Cleanser', brand: 'COSRX',
-    category: 'cleanser', bdsCompliant: true, currentlyUsing: true,
-    applicationArea: { face: true, body: false, hair: false },
-    effectiveness: 0, tags: ['low ph', 'korean'], notes: 'AM cleanse (PM step 2)',
-    imageUrl: '', purchaseUrl: '', buyAgain: null,
-  },
-  'prod-to-salicylic': {
-    id: 'prod-to-salicylic', name: 'Salicylic Acid 2% Solution', brand: 'The Ordinary',
-    category: 'bha', bdsCompliant: true, currentlyUsing: true,
-    applicationArea: { face: true, body: true, hair: false },
-    effectiveness: 0, tags: ['bha'], notes: 'Leave-on, face + arms (KP)',
-    imageUrl: '', purchaseUrl: '', buyAgain: null,
-  },
-  'prod-bgs-spf': {
-    id: 'prod-bgs-spf', name: 'Kids SPF 50', brand: 'Black Girl Sunscreen',
-    category: 'spf', bdsCompliant: true, currentlyUsing: true,
-    applicationArea: { face: true, body: false, hair: false },
-    effectiveness: 0, tags: ['mineral', 'spf 50'], notes: '',
-    imageUrl: '', purchaseUrl: '', buyAgain: null,
-  },
-  'prod-to-niacinamide': {
-    id: 'prod-to-niacinamide', name: 'Niacinamide 10% + Zinc 1%', brand: 'The Ordinary',
-    category: 'serum', bdsCompliant: true, currentlyUsing: true,
-    applicationArea: { face: true, body: true, hair: false },
-    effectiveness: 0, tags: ['niacinamide', 'zinc'], notes: 'Also used on body for scarring',
-    imageUrl: '', purchaseUrl: '', buyAgain: null,
-  },
-  'prod-to-azelaic': {
-    id: 'prod-to-azelaic', name: 'Azelaic Acid Suspension 10%', brand: 'The Ordinary',
-    category: 'azelaic acid', bdsCompliant: true, currentlyUsing: true,
-    applicationArea: { face: true, body: false, hair: false },
-    effectiveness: 0, tags: ['azelaic'], notes: '',
-    imageUrl: '', purchaseUrl: '', buyAgain: null,
-  },
-  'prod-cosrx-snail': {
-    id: 'prod-cosrx-snail', name: 'Advanced Snail 96 Mucin Power Essence', brand: 'COSRX',
-    category: 'essence', bdsCompliant: true, currentlyUsing: true,
-    applicationArea: { face: true, body: false, hair: false },
-    effectiveness: 0, tags: ['snail mucin', 'korean'], notes: '',
-    imageUrl: '', purchaseUrl: '', buyAgain: null,
-  },
-  'prod-purito-moisturizer': {
-    id: 'prod-purito-moisturizer', name: 'Oat-in Calming Gel Cream', brand: 'Purito',
-    category: 'moisturizer', bdsCompliant: true, currentlyUsing: true,
-    applicationArea: { face: true, body: false, hair: false },
-    effectiveness: 0, tags: ['gel', 'oat', 'korean'], notes: 'Summer moisturizer (May–Sep)',
-    imageUrl: '', purchaseUrl: '', buyAgain: null,
-  },
-  'prod-klairs-cream': {
-    id: 'prod-klairs-cream', name: 'Midnight Blue Calming Cream', brand: 'Klairs',
-    category: 'moisturizer', bdsCompliant: true, currentlyUsing: true,
-    applicationArea: { face: true, body: false, hair: false },
-    effectiveness: 0, tags: ['calming', 'korean'], notes: '',
-    imageUrl: '', purchaseUrl: '', buyAgain: null,
-  },
-  'prod-farmacy-cleanser': {
-    id: 'prod-farmacy-cleanser', name: 'Green Clean Makeup Removing Cleansing Balm', brand: 'Farmacy',
-    category: 'cleansing oil / balm', bdsCompliant: true, currentlyUsing: true,
-    applicationArea: { face: true, body: false, hair: false },
-    effectiveness: 0, tags: ['balm', 'oil cleanser'], notes: 'PM cleanse step 1',
-    imageUrl: '', purchaseUrl: '', buyAgain: null,
-  },
-  'prod-gr-blueberry': {
-    id: 'prod-gr-blueberry', name: 'Blueberry Bounce Gentle Cleanser', brand: 'Glow Recipe',
-    category: 'cleanser', bdsCompliant: true, currentlyUsing: true,
-    applicationArea: { face: true, body: false, hair: false },
-    effectiveness: 0, tags: ['gentle', 'korean-founded'], notes: 'AM cleanser',
-    imageUrl: '', purchaseUrl: '', buyAgain: null,
-  },
-  'prod-gr-plum': {
-    id: 'prod-gr-plum', name: 'Plum Plump Hyaluronic Acid Serum', brand: 'Glow Recipe',
-    category: 'serum', bdsCompliant: true, currentlyUsing: false,
-    applicationArea: { face: true, body: false, hair: false },
-    effectiveness: 0, tags: ['hyaluronic acid', 'seasonal'], notes: 'Fall/winter moisturizer (Oct–Apr)',
-    imageUrl: '', purchaseUrl: '', buyAgain: null,
-  },
-  'prod-vegamour-brow': {
-    id: 'prod-vegamour-brow', name: 'GRO Brow Serum', brand: 'Vegamour',
-    category: 'hair growth', bdsCompliant: true, currentlyUsing: true,
-    applicationArea: { face: false, body: false, hair: true },
-    effectiveness: 0, tags: ['minoxidil', 'brow'], notes: 'Apply AM + PM, dry 5 min before castor oil',
-    imageUrl: '', purchaseUrl: '', buyAgain: null,
-  },
-  'prod-jbco': {
-    id: 'prod-jbco', name: 'Jamaican Black Castor Oil', brand: '',
-    category: 'hair growth', bdsCompliant: true, currentlyUsing: true,
-    applicationArea: { face: false, body: false, hair: true },
-    effectiveness: 0, tags: ['castor oil', 'brow'], notes: 'Apply over dried minoxidil AM + PM',
-    imageUrl: '', purchaseUrl: '', buyAgain: null,
-  },
-  'prod-olaplex-3': {
-    id: 'prod-olaplex-3', name: 'No. 3 Plus Pre-Shampoo Treatment', brand: 'Olaplex',
-    category: 'haircare', bdsCompliant: false, currentlyUsing: true,
-    applicationArea: { face: false, body: false, hair: true },
-    effectiveness: 0, tags: ['bond builder', 'pre-shampoo'], notes: 'Verify BDS status before continued use',
-    imageUrl: '', purchaseUrl: '', buyAgain: null,
-  },
-  'prod-clinique-eye': {
-    id: 'prod-clinique-eye', name: 'Eye Cream', brand: 'Clinique',
-    category: 'eye cream', bdsCompliant: false, currentlyUsing: true,
-    applicationArea: { face: true, body: false, hair: false },
-    effectiveness: 0, tags: ['eye', 'eyelid eczema'], notes: 'Kept for eyelid eczema — medical need. Estée Lauder brand.',
-    imageUrl: '', purchaseUrl: '', buyAgain: null,
-  },
-}
 
 
 // ─── SEED PRODUCTS ───────────────────────────────────────────
@@ -3161,28 +3038,19 @@ function UpcomingTreatmentsPanel({ treatments, allTypes, routineHistory, onClose
 }
 
 // ─── MAIN COMPONENT ──────────────────────────────────────────
-export default function GlowUpCalendar() {
+export default function GlowUpCalendar({ session }) {
+  const userId = session?.user?.id
   const now = new Date(); now.setHours(0,0,0,0)
 
   const [year,  setYear]  = useState(now.getFullYear())
   const [month, setMonth] = useState(now.getMonth())
 
-  const [routineHistory, setRoutineHistory] = useState(() => /* 🔄 DB */ lsGet('glowup-routine-history', []))
-  const [products, setProducts] = useState(() => {
-    const stored = /* 🔄 DB */ lsGet('glowup-products', null) || {}
-    // Always merge seed products that aren't already in the library (by ID)
-    const merged = { ...stored }
-    SEED_PRODUCTS.forEach(p => { if (!merged[p.id]) merged[p.id] = p })
-    // Normalize all tags to sentence case
-    Object.values(merged).forEach(p => {
-      if (p.tags) p.tags = p.tags.map(t => t ? t.charAt(0).toUpperCase() + t.slice(1) : t)
-    })
-    return merged
-  })
-  const [dailyHistory,   setDailyHistory]   = useState(() => /* 🔄 DB */ lsGet('glowup-daily-routine',   []))
-  const [showerHistory,  setShowerHistory]  = useState(() => /* 🔄 DB */ lsGet('glowup-shower-routine', []))
-  const [treatments,     setTreatments]     = useState(() => /* 🔄 DB */ lsGet('glowup-treatments',      {}))
-  const [customTypes,    setCustomTypes]    = useState(() => /* 🔄 DB */ lsGet('glowup-custom-types',    {}))
+  const [routineHistory, setRoutineHistory] = useState([])
+  const [products,       setProducts]       = useState({})
+  const [dailyHistory,   setDailyHistory]   = useState([])
+  const [showerHistory,  setShowerHistory]  = useState([])
+  const [treatments,     setTreatments]     = useState({})
+  const [customTypes,    setCustomTypes]    = useState({})
 
   // panel: 'setup' | 'update' | 'history' | null
   const [panel,         setPanel]         = useState(null)
@@ -3196,17 +3064,192 @@ export default function GlowUpCalendar() {
   const [dayFlyout,     setDayFlyout]     = useState(null) // { key, date, tab: 'am'|'pm', dayType }
   const [toast,         setToast]         = useState(false)
   const [showExport,    setShowExport]    = useState(false)
+  const [loading,       setLoading]       = useState(true)
+
+  // ── Load all data from Supabase on mount ─────────────────────────────────
+  useEffect(() => {
+    if (!userId) return
+    async function loadAll() {
+      setLoading(true)
+      const [
+        { data: rp },
+        { data: pr },
+        { data: ep },
+        { data: sp },
+        { data: tr },
+        { data: ct },
+      ] = await Promise.all([
+        supabase.from('routine_periods').select('*').eq('user_id', userId).order('start_date'),
+        supabase.from('products').select('*').eq('user_id', userId),
+        supabase.from('extras_periods').select('*').eq('user_id', userId).order('start_date'),
+        supabase.from('shower_periods').select('*').eq('user_id', userId).order('start_date'),
+        supabase.from('treatments').select('*').eq('user_id', userId),
+        supabase.from('custom_treatment_types').select('*').eq('user_id', userId),
+      ])
+
+      // Routine periods — convert snake_case from DB to camelCase
+      setRoutineHistory((rp || []).map(p => ({
+        startDate:       p.start_date,
+        endDate:         p.end_date,
+        activeName:      p.active_name,
+        tretEnabled:     p.tret_enabled,
+        tretFrequency:   p.tret_frequency,
+        tretStartDate:   p.tret_start_date,
+        secondaryActives:p.secondary_actives || [],
+        products:        p.products || {},
+        _dbId:           p.id,
+      })))
+
+      // Products — merge with seeds
+      const prodMap = {}
+      SEED_PRODUCTS.forEach(p => { prodMap[p.id] = p })
+      ;(pr || []).forEach(p => {
+        prodMap[p.id] = {
+          id:              p.id,
+          name:            p.name,
+          brand:           p.brand,
+          category:        p.category,
+          imageUrl:        p.image_url,
+          purchaseUrl:     p.purchase_url,
+          bdsCompliant:    p.bds_compliant,
+          currentlyUsing:  p.currently_using,
+          applicationArea: p.application_area || {},
+          effectiveness:   p.effectiveness,
+          buyAgain:        p.buy_again,
+          tags:            (p.tags || []).map(t => t ? t.charAt(0).toUpperCase() + t.slice(1) : t),
+          notes:           p.notes,
+        }
+      })
+      // Seed any missing seeds into DB
+      const missingSeedIds = SEED_PRODUCTS.filter(s => !(pr || []).find(p => p.id === s.id))
+      if (missingSeedIds.length > 0) {
+        await supabase.from('products').upsert(
+          missingSeedIds.map(s => ({
+            id: s.id, user_id: userId,
+            name: s.name, brand: s.brand, category: s.category,
+            image_url: s.imageUrl, purchase_url: s.purchaseUrl,
+            bds_compliant: s.bdsCompliant, currently_using: s.currentlyUsing,
+            application_area: s.applicationArea, effectiveness: s.effectiveness,
+            buy_again: s.buyAgain, tags: s.tags, notes: s.notes,
+          }))
+        )
+      }
+      setProducts(prodMap)
+
+      // Extras periods
+      setDailyHistory((ep || []).map(p => ({ id: p.id, startDate: p.start_date, endDate: p.end_date, items: p.items || [] })))
+
+      // Shower periods
+      setShowerHistory((sp || []).map(p => ({ id: p.id, startDate: p.start_date, endDate: p.end_date, items: p.items || [] })))
+
+      // Treatments — convert array to keyed object
+      const treatMap = {}
+      ;(tr || []).forEach(t => {
+        treatMap[t.date] = { type: t.type, timeOfDay: t.time_of_day, area: t.area, pre: t.pre_days, post: t.post_days, _dbId: t.id }
+      })
+      setTreatments(treatMap)
+
+      // Custom treatment types
+      const ctMap = {}
+      ;(ct || []).forEach(t => { ctMap[t.key] = { label: t.label, pre: t.pre_days, post: t.post_days } })
+      setCustomTypes(ctMap)
+
+      setLoading(false)
+    }
+    loadAll()
+  }, [userId])
   const [showTreatments, setShowTreatments] = useState(false)
-  const [showAllBadges, setShowAllBadges] = useState(() => /* 🔄 DB */ lsGet('glowup-show-all-badges', false))
+  const [showAllBadges, setShowAllBadges] = useState(false)
 
   // Persistence
-  useEffect(() => { /* 🔄 DB */ lsSet('glowup-routine-history', routineHistory) }, [routineHistory])
-  useEffect(() => { /* 🔄 DB */ lsSet('glowup-products',       products)       }, [products])
-  useEffect(() => { /* 🔄 DB */ lsSet('glowup-daily-routine',   dailyHistory)   }, [dailyHistory])
-  useEffect(() => { /* 🔄 DB */ lsSet('glowup-shower-routine', showerHistory)  }, [showerHistory])
-  useEffect(() => { /* 🔄 DB */ lsSet('glowup-treatments',      treatments)     }, [treatments])
-  useEffect(() => { /* 🔄 DB */ lsSet('glowup-custom-types',    customTypes)    }, [customTypes])
-  useEffect(() => { /* 🔄 DB */ lsSet('glowup-show-all-badges',  showAllBadges)  }, [showAllBadges])
+  // Persistence — save to Supabase whenever state changes
+  // Routine periods
+  useEffect(() => {
+    if (!userId || loading) return
+    async function sync() {
+      // Upsert all periods — match by start_date + user_id
+      const rows = routineHistory.map(p => ({
+        id:                p._dbId,
+        user_id:           userId,
+        start_date:        p.startDate,
+        end_date:          p.endDate || null,
+        active_name:       p.activeName,
+        tret_enabled:      p.tretEnabled,
+        tret_frequency:    p.tretFrequency,
+        tret_start_date:   p.tretStartDate || null,
+        secondary_actives: p.secondaryActives || [],
+        products:          p.products || {},
+      }))
+      if (rows.length > 0) await supabase.from('routine_periods').upsert(rows)
+    }
+    sync()
+  }, [routineHistory, userId, loading])
+
+  // Products
+  useEffect(() => {
+    if (!userId || loading) return
+    async function sync() {
+      const rows = Object.values(products)
+        .filter(p => !p.id?.startsWith('seed-') || p._modified)
+        .map(p => ({
+          id: p.id, user_id: userId,
+          name: p.name, brand: p.brand, category: p.category,
+          image_url: p.imageUrl, purchase_url: p.purchaseUrl,
+          bds_compliant: p.bdsCompliant, currently_using: p.currentlyUsing,
+          application_area: p.applicationArea || {}, effectiveness: p.effectiveness,
+          buy_again: p.buyAgain, tags: p.tags || [], notes: p.notes,
+        }))
+      if (rows.length > 0) await supabase.from('products').upsert(rows)
+    }
+    sync()
+  }, [products, userId, loading])
+
+  // Extras periods
+  useEffect(() => {
+    if (!userId || loading) return
+    async function sync() {
+      const rows = dailyHistory.map(p => ({ id: p.id, user_id: userId, start_date: p.startDate, end_date: p.endDate || null, items: p.items || [] }))
+      if (rows.length > 0) await supabase.from('extras_periods').upsert(rows)
+    }
+    sync()
+  }, [dailyHistory, userId, loading])
+
+  // Shower periods
+  useEffect(() => {
+    if (!userId || loading) return
+    async function sync() {
+      const rows = showerHistory.map(p => ({ id: p.id, user_id: userId, start_date: p.startDate, end_date: p.endDate || null, items: p.items || [] }))
+      if (rows.length > 0) await supabase.from('shower_periods').upsert(rows)
+    }
+    sync()
+  }, [showerHistory, userId, loading])
+
+  // Treatments
+  useEffect(() => {
+    if (!userId || loading) return
+    async function sync() {
+      // Delete all and re-insert (treatments keyed by date, simplest approach)
+      await supabase.from('treatments').delete().eq('user_id', userId)
+      const rows = Object.entries(treatments).map(([date, t]) => ({
+        id: t._dbId,
+        user_id: userId, date,
+        type: t.type, time_of_day: t.timeOfDay || 'am',
+        area: t.area || 'face', pre_days: t.pre, post_days: t.post,
+      }))
+      if (rows.length > 0) await supabase.from('treatments').upsert(rows)
+    }
+    sync()
+  }, [treatments, userId, loading])
+
+  // Custom treatment types
+  useEffect(() => {
+    if (!userId || loading) return
+    async function sync() {
+      const rows = Object.entries(customTypes).map(([key, t]) => ({ user_id: userId, key, label: t.label, pre_days: t.pre, post_days: t.post }))
+      if (rows.length > 0) await supabase.from('custom_treatment_types').upsert(rows, { onConflict: 'user_id,key' })
+    }
+    sync()
+  }, [customTypes, userId, loading])
 
 
   const allTypes   = { ...BASE_TYPES, ...customTypes }
@@ -3215,26 +3258,47 @@ export default function GlowUpCalendar() {
   // ── Routine handlers ─────────────────────────────────────
 
   // Add a new period — auto-sets endDate on the currently active period
-  function saveNewPeriod(form) {
+  async function saveNewPeriod(form) {
+    // Write to Supabase directly — get back the DB id
+    const row = {
+      user_id: userId, start_date: form.startDate, end_date: form.endDate || null,
+      active_name: form.activeName, tret_enabled: form.tretEnabled,
+      tret_frequency: form.tretFrequency, tret_start_date: form.tretStartDate || null,
+      secondary_actives: form.secondaryActives || [], products: form.products || {},
+    }
+    const { data } = await supabase.from('routine_periods').insert(row).select().single()
+    const formWithId = { ...form, _dbId: data?.id }
+
     setRoutineHistory(h => {
       const prevActive = getActivePeriod(new Date(form.startDate + 'T00:00:00'), h)
       const updated = h.map(p => {
-        // Set endDate on the previously active period if it has no endDate or its endDate is after the new startDate
         if (prevActive && p.startDate === prevActive.startDate && p.startDate !== form.startDate) {
+          // Also update end date in DB
+          supabase.from('routine_periods').update({ end_date: dayBefore(form.startDate) }).eq('id', p._dbId)
           return { ...p, endDate: dayBefore(form.startDate) }
         }
         return p
       })
+      // Keep existing periods with same startDate that have different DB ids (shouldn't normally happen but be safe)
       const filtered = updated.filter(p => p.startDate !== form.startDate)
-      return [...filtered, form].sort((a, b) => a.startDate.localeCompare(b.startDate))
+      return [...filtered, formWithId].sort((a, b) => a.startDate.localeCompare(b.startDate))
     })
     setPanel(null)
   }
 
   // Edit an existing period in place — matches by original startDate stored in editingPeriod
-  function saveEditedPeriod(form) {
+  async function saveEditedPeriod(form) {
+    const row = {
+      start_date: form.startDate, end_date: form.endDate || null,
+      active_name: form.activeName, tret_enabled: form.tretEnabled,
+      tret_frequency: form.tretFrequency, tret_start_date: form.tretStartDate || null,
+      secondary_actives: form.secondaryActives || [], products: form.products || {},
+    }
+    if (editingPeriod._dbId) {
+      await supabase.from('routine_periods').update(row).eq('id', editingPeriod._dbId)
+    }
     setRoutineHistory(h => h.map(p =>
-      p.startDate === editingPeriod.startDate ? { ...form } : p
+      p.startDate === editingPeriod.startDate ? { ...form, _dbId: editingPeriod._dbId } : p
     ))
     setEditingPeriod(null)
     setPanel(null)
@@ -3250,32 +3314,47 @@ export default function GlowUpCalendar() {
     setEditingPeriod(null)
   }
 
-  function deletePeriod(startDate) {
-    setRoutineHistory(h => h.filter(p => p.startDate !== startDate))
+  async function deletePeriod(startDate) {
+    const period = routineHistory.find(p => p.startDate === startDate)
+    if (period?._dbId) {
+      await supabase.from('routine_periods').delete().eq('id', period._dbId)
+      setRoutineHistory(h => h.filter(p => p._dbId !== period._dbId))
+    } else {
+      setRoutineHistory(h => h.filter(p => p.startDate !== startDate))
+    }
   }
 
-  function deleteDaily(id) {
+  async function deleteDaily(id) {
+    await supabase.from('extras_periods').delete().eq('id', id)
     setDailyHistory(h => h.filter(p => p.id !== id))
   }
 
-  function deleteShower(id) {
+  async function deleteShower(id) {
+    await supabase.from('shower_periods').delete().eq('id', id)
     setShowerHistory(h => h.filter(p => p.id !== id))
   }
 
   // ── Daily routine handlers ────────────────────────────────
-  function saveDaily(form) {
+  async function saveDaily(form) {
+    const id = form.id || crypto.randomUUID()
+    const formWithId = { ...form, id }
+    const row = { id, user_id: userId, start_date: form.startDate, end_date: form.endDate || null, items: form.items || [] }
+    await supabase.from('extras_periods').upsert(row)
     setDailyHistory(h => {
-      // If new period (no matching id yet), auto-set endDate on currently active period
-      const isNew = !h.find(p => p.id === form.id)
-      const updated = isNew ? h.map(p => {
+      const isNew = !h.find(p => p.id === id)
+      if (isNew) {
+        // Close out the previously active period
         const prevActive = getActiveDailyPeriod(new Date(form.startDate + 'T00:00:00'), h)
-        if (prevActive && p.id === prevActive.id) {
-          return { ...p, endDate: dayBefore(form.startDate) }
+        if (prevActive) {
+          supabase.from('extras_periods').update({ end_date: dayBefore(form.startDate) }).eq('id', prevActive.id)
         }
-        return p
-      }) : h
-      const filtered = updated.filter(p => p.id !== form.id)
-      return [...filtered, form].sort((a, b) => a.startDate.localeCompare(b.startDate))
+        const updated = h.map(p => prevActive && p.id === prevActive.id
+          ? { ...p, endDate: dayBefore(form.startDate) }
+          : p
+        )
+        return [...updated, formWithId].sort((a, b) => a.startDate.localeCompare(b.startDate))
+      }
+      return [...h.filter(p => p.id !== id), formWithId].sort((a, b) => a.startDate.localeCompare(b.startDate))
     })
     setEditingDaily(null)
   }
@@ -3288,16 +3367,25 @@ export default function GlowUpCalendar() {
   }
 
   // ── Shower routine handlers ───────────────────────────────
-  function saveShower(form) {
+  async function saveShower(form) {
+    const id = form.id || crypto.randomUUID()
+    const formWithId = { ...form, id }
+    const row = { id, user_id: userId, start_date: form.startDate, end_date: form.endDate || null, items: form.items || [] }
+    await supabase.from('shower_periods').upsert(row)
     setShowerHistory(h => {
-      const isNew = !h.find(p => p.id === form.id)
-      const updated = isNew ? h.map(p => {
+      const isNew = !h.find(p => p.id === id)
+      if (isNew) {
         const prevActive = getActiveShowerPeriod(new Date(form.startDate + 'T00:00:00'), h)
-        if (prevActive && p.id === prevActive.id) return { ...p, endDate: dayBefore(form.startDate) }
-        return p
-      }) : h
-      const filtered = updated.filter(p => p.id !== form.id)
-      return [...filtered, form].sort((a, b) => a.startDate.localeCompare(b.startDate))
+        if (prevActive) {
+          supabase.from('shower_periods').update({ end_date: dayBefore(form.startDate) }).eq('id', prevActive.id)
+        }
+        const updated = h.map(p => prevActive && p.id === prevActive.id
+          ? { ...p, endDate: dayBefore(form.startDate) }
+          : p
+        )
+        return [...updated, formWithId].sort((a, b) => a.startDate.localeCompare(b.startDate))
+      }
+      return [...h.filter(p => p.id !== id), formWithId].sort((a, b) => a.startDate.localeCompare(b.startDate))
     })
     setEditingShower(null)
   }
@@ -3309,22 +3397,35 @@ export default function GlowUpCalendar() {
   }
 
   // ── Product handlers ──────────────────────────────────────
-  function saveProduct(product) {
+  async function saveProduct(product) {
+    const row = {
+      id: product.id, user_id: userId,
+      name: product.name, brand: product.brand, category: product.category,
+      image_url: product.imageUrl, purchase_url: product.purchaseUrl,
+      bds_compliant: product.bdsCompliant, currently_using: product.currentlyUsing,
+      application_area: product.applicationArea || {}, effectiveness: product.effectiveness,
+      buy_again: product.buyAgain, tags: product.tags || [], notes: product.notes,
+    }
+    await supabase.from('products').upsert(row)
     setProducts(p => ({ ...p, [product.id]: product }))
     setEditingProduct(null)
   }
 
+  async function deleteProduct(productId) {
+    await supabase.from('products').delete().eq('id', productId).eq('user_id', userId)
+    setProducts(p => { const n = { ...p }; delete n[productId]; return n })
+  }
+
   // Assigns a product to a specific step in a specific routine period
-  function updatePeriodProducts(periodStartDate, stepKey, productId) {
+  async function updatePeriodProducts(periodStartDate, stepKey, productId) {
     if (!periodStartDate) return
     setRoutineHistory(h => h.map(p => {
       if (p.startDate !== periodStartDate) return p
       const newProducts = { ...(p.products || {}) }
-      if (productId === null) {
-        delete newProducts[stepKey]
-      } else {
-        newProducts[stepKey] = productId
-      }
+      if (productId === null) delete newProducts[stepKey]
+      else newProducts[stepKey] = productId
+      // Write to DB
+      if (p._dbId) supabase.from('routine_periods').update({ products: newProducts }).eq('id', p._dbId)
       return { ...p, products: newProducts }
     }))
   }
@@ -3349,13 +3450,27 @@ export default function GlowUpCalendar() {
     setDayFlyout(null)
   }
 
-  function applyTreatment(type, qure, timeOfDay = 'am', area = 'face', pre, post) {
+  async function applyTreatment(type, qure, timeOfDay = 'am', area = 'face', pre, post) {
     const cfg = allTypes[type] || {}
-    setTreatments(t => ({ ...t, [selector.key]: { type, qure, timeOfDay, area, pre: pre ?? cfg.pre, post: post ?? cfg.post } }))
+    const existing = treatments[selector.key]
+    const row = {
+      user_id: userId, date: selector.key, type,
+      time_of_day: timeOfDay, area, pre_days: pre ?? cfg.pre, post_days: post ?? cfg.post,
+    }
+    let dbId = existing?._dbId
+    if (dbId) {
+      await supabase.from('treatments').update(row).eq('id', dbId)
+    } else {
+      const { data } = await supabase.from('treatments').insert(row).select().single()
+      dbId = data?.id
+    }
+    setTreatments(t => ({ ...t, [selector.key]: { type, timeOfDay, area, pre: pre ?? cfg.pre, post: post ?? cfg.post, _dbId: dbId } }))
     setSelector(null)
   }
 
-  function removeTreatment() {
+  async function removeTreatment() {
+    const existing = treatments[selector.key]
+    if (existing?._dbId) await supabase.from('treatments').delete().eq('id', existing._dbId)
     setTreatments(t => { const n = { ...t }; delete n[selector.key]; return n })
     setSelector(null)
   }
@@ -3576,6 +3691,12 @@ export default function GlowUpCalendar() {
     setShowLibrary(false); setEditingProduct(null); setSelector(null); setShowExport(false); setShowTreatments(false)
   }
 
+  if (loading) return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', fontFamily: 'inherit', color: '#78716C', fontSize: 13 }}>
+      Loading your routine...
+    </div>
+  )
+
   return (
     <div onClick={() => { if (dayFlyout) setDayFlyout(null) }} style={{ fontFamily: 'inherit', padding: '1rem 0.75rem', maxWidth: 900, position: 'relative', margin: '0 auto' }}>
       <style>{`@keyframes slideDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } } @keyframes panelIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }`}</style>
@@ -3768,6 +3889,7 @@ export default function GlowUpCalendar() {
                 products={products}
                 onEdit={(p) => setEditingProduct(p)}
                 onAdd={() => setEditingProduct('new')}
+                onDelete={deleteProduct}
                 onClose={() => setShowLibrary(false)}
               />
             )}
@@ -3793,8 +3915,10 @@ export default function GlowUpCalendar() {
                   setSelector({ key, date: new Date(y,m-1,d) })
                   setShowTreatments(false)
                 }}
-                onRemove={(key) => {
+                onRemove={async (key) => {
                   if (window.confirm('Remove this treatment? This cannot be undone.')) {
+                    const t = treatments[key]
+                    if (t?._dbId) await supabase.from('treatments').delete().eq('id', t._dbId)
                     setTreatments(t => { const n={...t}; delete n[key]; return n })
                   }
                 }}
