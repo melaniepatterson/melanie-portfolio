@@ -234,10 +234,28 @@ function formatDate(dt) {
 }
 
 // Returns the date string for the day before a given date string
+function getPeriodStatus(p) {
+  const today = new Date(); today.setHours(0,0,0,0)
+  const start = new Date(p.startDate + 'T00:00:00')
+  const end   = p.endDate ? new Date(p.endDate + 'T00:00:00') : null
+  if (start > today) return 'upcoming'
+  if (!end || end >= today) return 'current'
+  return 'past'
+}
+
 function fmtDate(dateStr) {
   if (!dateStr) return ''
   const [y, m, d] = dateStr.split('-')
   return `${m}/${d}/${y}`
+}
+
+function fmtDateTime(isoStr) {
+  if (!isoStr) return ''
+  const dt = new Date(isoStr)
+  return dt.toLocaleString(undefined, {
+    month: '2-digit', day: '2-digit', year: 'numeric',
+    hour: 'numeric', minute: '2-digit', hour12: true,
+  })
 }
 
 function dayBefore(dateStr) {
@@ -935,8 +953,15 @@ function RoutineHistoryPanel({ history, onClose, onEdit, onDelete, onAddNew, dai
         return (
           <div key={p.startDate} style={{ borderTop: i > 0 ? `0.5px solid ${T.border}` : 'none', paddingTop: i > 0 ? 12 : 0, marginTop: i > 0 ? 12 : 0 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: T.text }}>
-                From {fmtDate(p.startDate)}{i === 0 ? ' — current' : ''}
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: T.text }}>
+                  {(() => {
+                    const status = getPeriodStatus(p)
+                    if (status === 'current') return `Current routine (as of ${fmtDate(p.startDate)})`
+                    if (status === 'upcoming') return `Upcoming — starts ${fmtDate(p.startDate)}`
+                    return `${fmtDate(p.startDate)} — ${p.endDate ? fmtDate(p.endDate) : '—'}`
+                  })()}
+                </div>
               </div>
               <div style={{ display: 'flex', gap: 4 }}>
                 <Btn onClick={() => onEdit(p)} style={{ padding: '3px 10px', fontSize: 11 }}>Edit</Btn>
@@ -944,7 +969,7 @@ function RoutineHistoryPanel({ history, onClose, onEdit, onDelete, onAddNew, dai
               </div>
             </div>
             <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.8 }}>
-              <span>{p.activeName ? (p.activeName.charAt(0).toUpperCase() + p.activeName.slice(1)) : 'Tretinoin'}: {p.tretEnabled ? `${freq}, from ${fmtDate(p.tretStartDate)}` : 'off'}</span> &nbsp;·&nbsp;
+              <span>{p.activeName ? (p.activeName.charAt(0).toUpperCase() + p.activeName.slice(1)) : 'Retinoid'}: {p.tretEnabled ? `${freq}, from ${fmtDate(p.tretStartDate)}` : 'off'}</span> &nbsp;·&nbsp;
               <span>{
                 p.secondaryActives
                   ? (() => {
@@ -958,6 +983,14 @@ function RoutineHistoryPanel({ history, onClose, onEdit, onDelete, onAddNew, dai
                   : `BHA: ${p.bhaEnabled ? 'on' : 'off'}`
               }</span>
             </div>
+            {(p.updatedAt || p.createdAt) && (
+              <div style={{ fontSize: 10, color: T.textLight, marginTop: 5, fontStyle: 'italic', lineHeight: 1.6 }}>
+                {p.createdAt && <div>Created: {fmtDateTime(p.createdAt)}</div>}
+                {p.updatedAt && p.createdAt && p.updatedAt !== p.createdAt && (
+                  <div>Last edited: {fmtDateTime(p.updatedAt)}</div>
+                )}
+              </div>
+            )}
           </div>
         )
       })}
@@ -975,7 +1008,12 @@ function RoutineHistoryPanel({ history, onClose, onEdit, onDelete, onAddNew, dai
           <div key={p.id} style={{ borderTop: i > 0 ? `0.5px solid ${T.border}` : 'none', paddingTop: i > 0 ? 12 : 0, marginTop: i > 0 ? 12 : 0 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
               <div style={{ fontSize: 12, fontWeight: 600, color: T.text }}>
-                From {fmtDate(p.startDate)}{i === 0 ? ' — current' : ''}
+                {(() => {
+                    const status = getPeriodStatus(p)
+                    if (status === 'current') return `Current (as of ${fmtDate(p.startDate)})`
+                    if (status === 'upcoming') return `Upcoming — starts ${fmtDate(p.startDate)}`
+                    return `${fmtDate(p.startDate)} — ${p.endDate ? fmtDate(p.endDate) : '—'}`
+                  })()}
               </div>
               <div style={{ display: 'flex', gap: 4 }}>
                 <Btn onClick={() => onEditDaily(p)} style={{ padding: '3px 10px', fontSize: 11 }}>Edit</Btn>
@@ -985,6 +1023,14 @@ function RoutineHistoryPanel({ history, onClose, onEdit, onDelete, onAddNew, dai
             <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.8 }}>
               {p.items.map(it => it.label).join(' · ') || 'No items'}
             </div>
+            {(p.updatedAt || p.createdAt) && (
+              <div style={{ fontSize: 10, color: T.textLight, marginTop: 4, fontStyle: 'italic' }}>
+                {p.createdAt && <div>Created: {fmtDateTime(p.createdAt)}</div>}
+                {p.updatedAt && p.createdAt && p.updatedAt !== p.createdAt && (
+                  <div>Last edited: {fmtDateTime(p.updatedAt)}</div>
+                )}
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -1002,7 +1048,12 @@ function RoutineHistoryPanel({ history, onClose, onEdit, onDelete, onAddNew, dai
           <div key={p.id} style={{ borderTop: i > 0 ? `0.5px solid ${T.border}` : 'none', paddingTop: i > 0 ? 12 : 0, marginTop: i > 0 ? 12 : 0 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
               <div style={{ fontSize: 12, fontWeight: 600, color: T.text }}>
-                From {fmtDate(p.startDate)}{i === 0 ? ' — current' : ''}
+                {(() => {
+                    const status = getPeriodStatus(p)
+                    if (status === 'current') return `Current (as of ${fmtDate(p.startDate)})`
+                    if (status === 'upcoming') return `Upcoming — starts ${fmtDate(p.startDate)}`
+                    return `${fmtDate(p.startDate)} — ${p.endDate ? fmtDate(p.endDate) : '—'}`
+                  })()}
               </div>
               <div style={{ display: 'flex', gap: 4 }}>
                 <Btn onClick={() => onEditShower(p)} style={{ padding: '3px 10px', fontSize: 11 }}>Edit</Btn>
@@ -1012,6 +1063,14 @@ function RoutineHistoryPanel({ history, onClose, onEdit, onDelete, onAddNew, dai
             <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.8 }}>
               {(p.items || []).map(it => `${it.label} (${SHOWER_FREQUENCIES.find(f=>f.key===it.frequency)?.label||it.frequency})`).join(' · ') || 'No items'}
             </div>
+            {(p.updatedAt || p.createdAt) && (
+              <div style={{ fontSize: 10, color: T.textLight, marginTop: 4, fontStyle: 'italic' }}>
+                {p.createdAt && <div>Created: {fmtDateTime(p.createdAt)}</div>}
+                {p.updatedAt && p.createdAt && p.updatedAt !== p.createdAt && (
+                  <div>Last edited: {fmtDateTime(p.updatedAt)}</div>
+                )}
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -1331,7 +1390,7 @@ function DailyEditor({ initial, onSave, onCancel, lockStartDate = false, allPeri
 
   function handleSave() {
     if (!startDate || conflict || items.length === 0) return
-    onSave({ startDate, endDate: endDate || null, items, id: initial?.id || uid() })
+    onSave({ startDate, endDate: endDate || null, items, id: initial?.id || uid(), createdAt: initial?.createdAt })
   }
 
   return (
@@ -3037,6 +3096,71 @@ function UpcomingTreatmentsPanel({ treatments, allTypes, routineHistory, onClose
   )
 }
 
+
+// ─── SIDE MENU ────────────────────────────────────────────────
+function SideMenu({ session, onClose, onHistory, onLibrary, onExport, onSignOut }) {
+  const email = session?.user?.email || ''
+  const menuItems = [
+    { label: 'Routine history',  icon: '📋', action: onHistory },
+    { label: 'Product library',  icon: '🧴', action: onLibrary },
+    { label: 'Export',           icon: '↑',  action: onExport  },
+    { label: 'Profile',          icon: '👤', action: () => { window.location.href = '/routine/profile' } },
+  ]
+
+  return (
+    <>
+      {/* Backdrop */}
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.2)', zIndex: 200 }} />
+      {/* Drawer */}
+      <div style={{
+        position: 'fixed', top: 0, right: 0, bottom: 0, width: 260,
+        background: T.white, borderLeft: `0.5px solid ${T.border}`,
+        zIndex: 201, display: 'flex', flexDirection: 'column',
+        fontFamily: 'inherit', boxShadow: '-4px 0 24px rgba(0,0,0,0.08)',
+      }}>
+        {/* Header */}
+        <div style={{ padding: '20px 20px 16px', borderBottom: `0.5px solid ${T.border}` }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: T.text }}>Glow Up</div>
+            <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 20, color: T.textMuted, padding: '0 2px', lineHeight: 1 }}>×</button>
+          </div>
+          <div style={{ fontSize: 11, color: T.textMuted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{email}</div>
+        </div>
+
+        {/* Menu items */}
+        <div style={{ flex: 1, padding: '8px 0', overflowY: 'auto' }}>
+          {menuItems.map(({ label, icon, action }) => (
+            <button key={label} onClick={() => { action(); onClose() }} style={{
+              display: 'flex', alignItems: 'center', gap: 12, width: '100%',
+              padding: '12px 20px', border: 'none', background: 'transparent',
+              cursor: 'pointer', textAlign: 'left', fontSize: 13, color: T.text,
+              borderBottom: `0.5px solid ${T.border}`,
+            }}
+              onMouseEnter={e => e.currentTarget.style.background = T.creamDark}
+              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+            >
+              <span style={{ fontSize: 16, width: 20, textAlign: 'center' }}>{icon}</span>
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {/* Footer — sign out */}
+        <div style={{ padding: '12px 20px', borderTop: `0.5px solid ${T.border}` }}>
+          <button onClick={onSignOut} style={{
+            display: 'flex', alignItems: 'center', gap: 12, width: '100%',
+            padding: '10px 0', border: 'none', background: 'transparent',
+            cursor: 'pointer', fontSize: 13, color: T.textLight, textAlign: 'left',
+          }}>
+            <span style={{ fontSize: 16, width: 20, textAlign: 'center' }}>→</span>
+            Sign out
+          </button>
+        </div>
+      </div>
+    </>
+  )
+}
+
 // ─── MAIN COMPONENT ──────────────────────────────────────────
 export default function GlowUpCalendar({ session }) {
   const userId = session?.user?.id
@@ -3098,6 +3222,8 @@ export default function GlowUpCalendar({ session }) {
         secondaryActives:p.secondary_actives || [],
         products:        p.products || {},
         _dbId:           p.id,
+        createdAt:       p.created_at,
+        updatedAt:       p.updated_at,
       })))
 
       // Products — merge with seeds
@@ -3137,10 +3263,10 @@ export default function GlowUpCalendar({ session }) {
       setProducts(prodMap)
 
       // Extras periods
-      setDailyHistory((ep || []).map(p => ({ id: p.id, startDate: p.start_date, endDate: p.end_date, items: p.items || [] })))
+      setDailyHistory((ep || []).map(p => ({ id: p.id, startDate: p.start_date, endDate: p.end_date, items: p.items || [], createdAt: p.created_at, updatedAt: p.updated_at })))
 
       // Shower periods
-      setShowerHistory((sp || []).map(p => ({ id: p.id, startDate: p.start_date, endDate: p.end_date, items: p.items || [] })))
+      setShowerHistory((sp || []).map(p => ({ id: p.id, startDate: p.start_date, endDate: p.end_date, items: p.items || [], createdAt: p.created_at, updatedAt: p.updated_at })))
 
       // Treatments — convert array to keyed object
       const treatMap = {}
@@ -3159,6 +3285,10 @@ export default function GlowUpCalendar({ session }) {
     loadAll()
   }, [userId])
   const [showTreatments, setShowTreatments] = useState(false)
+  const [showMenu,      setShowMenu]      = useState(false)
+  const [editFromHistory, setEditFromHistory] = useState(false)
+  const [dailyFromHistory, setDailyFromHistory] = useState(false)
+  const [showerFromHistory, setShowerFromHistory] = useState(false)
   const [showAllBadges, setShowAllBadges] = useState(false)
 
   // Persistence
@@ -3267,7 +3397,7 @@ export default function GlowUpCalendar({ session }) {
       secondary_actives: form.secondaryActives || [], products: form.products || {},
     }
     const { data } = await supabase.from('routine_periods').insert(row).select().single()
-    const formWithId = { ...form, _dbId: data?.id }
+    const formWithId = { ...form, _dbId: data?.id, createdAt: data?.created_at, updatedAt: data?.created_at }
 
     setRoutineHistory(h => {
       const prevActive = getActivePeriod(new Date(form.startDate + 'T00:00:00'), h)
@@ -3294,14 +3424,17 @@ export default function GlowUpCalendar({ session }) {
       tret_frequency: form.tretFrequency, tret_start_date: form.tretStartDate || null,
       secondary_actives: form.secondaryActives || [], products: form.products || {},
     }
+    const editNow = new Date().toISOString()
     if (editingPeriod._dbId) {
-      await supabase.from('routine_periods').update(row).eq('id', editingPeriod._dbId)
+      await supabase.from('routine_periods').update({ ...row, updated_at: editNow }).eq('id', editingPeriod._dbId)
     }
     setRoutineHistory(h => h.map(p =>
-      p.startDate === editingPeriod.startDate ? { ...form, _dbId: editingPeriod._dbId } : p
+      p.startDate === editingPeriod.startDate ? { ...form, _dbId: editingPeriod._dbId, createdAt: editingPeriod.createdAt, updatedAt: editNow } : p
     ))
     setEditingPeriod(null)
-    setPanel(null)
+    setEditFromHistory(false)
+    if (editFromHistory) setPanel('history')
+    else setPanel(null)
   }
 
   function startEdit(period) {
@@ -3312,6 +3445,10 @@ export default function GlowUpCalendar({ session }) {
 
   function cancelEdit() {
     setEditingPeriod(null)
+    if (editFromHistory) {
+      setPanel('history')
+      setEditFromHistory(false)
+    }
   }
 
   async function deletePeriod(startDate) {
@@ -3337,8 +3474,9 @@ export default function GlowUpCalendar({ session }) {
   // ── Daily routine handlers ────────────────────────────────
   async function saveDaily(form) {
     const id = form.id || crypto.randomUUID()
-    const formWithId = { ...form, id }
-    const row = { id, user_id: userId, start_date: form.startDate, end_date: form.endDate || null, items: form.items || [] }
+    const now = new Date().toISOString()
+    const formWithId = { ...form, id, updatedAt: now, createdAt: form.createdAt || now }
+    const row = { id, user_id: userId, start_date: form.startDate, end_date: form.endDate || null, items: form.items || [], updated_at: now }
     await supabase.from('extras_periods').upsert(row)
     setDailyHistory(h => {
       const isNew = !h.find(p => p.id === id)
@@ -3357,6 +3495,7 @@ export default function GlowUpCalendar({ session }) {
       return [...h.filter(p => p.id !== id), formWithId].sort((a, b) => a.startDate.localeCompare(b.startDate))
     })
     setEditingDaily(null)
+    if (dailyFromHistory) { setPanel('history'); setDailyFromHistory(false) }
   }
 
   function openDailyEditor(period) {
@@ -3369,8 +3508,9 @@ export default function GlowUpCalendar({ session }) {
   // ── Shower routine handlers ───────────────────────────────
   async function saveShower(form) {
     const id = form.id || crypto.randomUUID()
-    const formWithId = { ...form, id }
-    const row = { id, user_id: userId, start_date: form.startDate, end_date: form.endDate || null, items: form.items || [] }
+    const now = new Date().toISOString()
+    const formWithId = { ...form, id, updatedAt: now, createdAt: form.createdAt || now }
+    const row = { id, user_id: userId, start_date: form.startDate, end_date: form.endDate || null, items: form.items || [], updated_at: now }
     await supabase.from('shower_periods').upsert(row)
     setShowerHistory(h => {
       const isNew = !h.find(p => p.id === id)
@@ -3388,6 +3528,7 @@ export default function GlowUpCalendar({ session }) {
       return [...h.filter(p => p.id !== id), formWithId].sort((a, b) => a.startDate.localeCompare(b.startDate))
     })
     setEditingShower(null)
+    if (showerFromHistory) { setPanel('history'); setShowerFromHistory(false) }
   }
 
   function openShowerEditor(period) {
@@ -3691,6 +3832,11 @@ export default function GlowUpCalendar({ session }) {
     setShowLibrary(false); setEditingProduct(null); setSelector(null); setShowExport(false); setShowTreatments(false)
   }
 
+  async function handleSignOut() {
+    await supabase.auth.signOut()
+    window.location.reload()
+  }
+
   if (loading) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', fontFamily: 'inherit', color: '#78716C', fontSize: 13 }}>
       Loading your routine...
@@ -3715,21 +3861,37 @@ export default function GlowUpCalendar({ session }) {
       </div>
 
       {/* Header — always visible, never moves */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, flexWrap: 'wrap', gap: 8 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, gap: 8 }}>
+        {/* Left — nav + primary actions */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <button onClick={prevMonth} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 8, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.text }}>←</button>
           <button onClick={nextMonth} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 8, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.text }}>→</button>
-        </div>
-        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
           <Btn variant={['update','setup'].includes(panel) ? 'active' : 'primary'} style={{ fontSize: 11, padding: '5px 10px' }} onClick={() => { setPanel(p => ['update','setup'].includes(p) ? null : (hasRoutine ? 'update' : 'setup')); setEditingPeriod(null); setDayFlyout(null) }}>+ Start new routine</Btn>
-          <Btn variant={panel === 'history' ? 'active' : 'default'} style={{ fontSize: 11, padding: '5px 10px' }} onClick={() => { setPanel(p => p === 'history' ? null : 'history'); setEditingPeriod(null); setDayFlyout(null) }}>Routine history</Btn>
           <Btn variant={showTreatments ? 'active' : 'default'} style={{ fontSize: 11, padding: '5px 10px' }} onClick={() => { setShowTreatments(s => !s); setDayFlyout(null) }}>Treatments</Btn>
-          <Btn variant={showLibrary ? 'active' : 'default'} style={{ fontSize: 11, padding: '5px 10px' }} onClick={() => { setShowLibrary(s => !s); setEditingProduct(null); setDayFlyout(null) }}>Product library</Btn>
-          <Btn variant={showExport ? 'active' : 'default'} onClick={() => { setShowExport(s => !s); setDayFlyout(null) }} style={{ fontSize: 11, padding: '5px 10px' }}>↑ Export</Btn>
-          <button onClick={async () => { await supabase.auth.signOut(); window.location.reload() }} style={{ fontSize: 11, padding: '5px 10px', borderRadius: 8, border: `0.5px solid ${T.border}`, background: 'transparent', cursor: 'pointer', color: T.textLight }}>Sign out</button>
-
         </div>
+        {/* Right — hamburger */}
+        <button
+          onClick={() => setShowMenu(s => !s)}
+          style={{ border: `0.5px solid ${showMenu ? T.pinkDeep : T.border}`, background: showMenu ? T.pink : 'transparent', borderRadius: 8, padding: '5px 10px', cursor: 'pointer', color: T.text, fontSize: 16, lineHeight: 1, display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', justifyContent: 'center', width: 36, height: 32 }}
+          aria-label="Menu"
+        >
+          <span style={{ display: 'block', width: 14, height: 1.5, background: T.text, borderRadius: 1 }} />
+          <span style={{ display: 'block', width: 14, height: 1.5, background: T.text, borderRadius: 1 }} />
+          <span style={{ display: 'block', width: 14, height: 1.5, background: T.text, borderRadius: 1 }} />
+        </button>
       </div>
+
+      {/* Side menu */}
+      {showMenu && (
+        <SideMenu
+          session={session}
+          onClose={() => setShowMenu(false)}
+          onHistory={() => { setPanel(p => p === 'history' ? null : 'history'); setEditingPeriod(null); setDayFlyout(null) }}
+          onLibrary={() => { setShowLibrary(s => !s); setEditingProduct(null); setDayFlyout(null) }}
+          onExport={() => { setShowExport(s => !s); setDayFlyout(null) }}
+          onSignOut={handleSignOut}
+        />
+      )}
 
       {/* Badge toggle row */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, marginTop: -4, justifyContent: 'flex-end' }}>
@@ -3846,7 +4008,7 @@ export default function GlowUpCalendar({ session }) {
               <ShowerEditor
                 initial={editingShower === 'new' ? null : editingShower}
                 onSave={saveShower}
-                onCancel={() => { setEditingShower(null); setDayFlyout(null) }}
+                onCancel={() => { setEditingShower(null); setDayFlyout(null); if (showerFromHistory) { setPanel('history'); setShowerFromHistory(false) } }}
                 allPeriods={showerHistory}
                 onEditConflict={(p) => setEditingShower(p)}
                 products={products}
@@ -3859,7 +4021,7 @@ export default function GlowUpCalendar({ session }) {
               <DailyEditor
                 initial={editingDaily === 'new' ? null : editingDaily}
                 onSave={saveDaily}
-                onCancel={() => { setEditingDaily(null); setDayFlyout(null) }}
+                onCancel={() => { setEditingDaily(null); setDayFlyout(null); if (dailyFromHistory) { setPanel('history'); setDailyFromHistory(false) } }}
                 allPeriods={dailyHistory}
                 onEditConflict={(p) => setEditingDaily(p)}
                 products={products}
@@ -3872,14 +4034,14 @@ export default function GlowUpCalendar({ session }) {
               <RoutineHistoryPanel
                 history={routineHistory}
                 onClose={() => setPanel(null)}
-                onEdit={(period) => { startEdit(period); setPanel(null) }}
+                onEdit={(period) => { startEdit(period); setPanel(null); setEditFromHistory(true) }}
                 onDelete={deletePeriod}
                 onAddNew={() => { setPanel('update'); }}
                 dailyHistory={dailyHistory}
-                onEditDaily={(p) => { openDailyEditor(p); setPanel(null) }}
+                onEditDaily={(p) => { openDailyEditor(p); setPanel(null); setDailyFromHistory(true) }}
                 onDeleteDaily={deleteDaily}
                 showerHistory={showerHistory}
-                onEditShower={(p) => { openShowerEditor(p); setPanel(null) }}
+                onEditShower={(p) => { openShowerEditor(p); setPanel(null); setShowerFromHistory(true) }}
                 onDeleteShower={deleteShower}
               />
             )}

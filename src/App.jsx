@@ -12,6 +12,7 @@ import PageTransition from "./PageTransition";
 import NotFound from "./pages/NotFound";
 import GlowUpCalendar from './components/GlowUpCalendar'
 import Auth from './components/Auth'
+import Profile from './components/Profile'
 import { supabase } from './lib/supabase'
 
 function Layout() {
@@ -19,15 +20,12 @@ function Layout() {
   const isHome = location.pathname === "/";
   const isWork = location.pathname === "/portfolio";
   const isWorkDetail = location.pathname.startsWith("/portfolio/");
-  const isRoutine = location.pathname === "/routine";
+  const isRoutine = location.pathname === "/routine" || location.pathname === "/routine/profile";
 
-  const [session, setSession] = useState(undefined) // undefined = loading
+  const [session, setSession] = useState(undefined)
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log('Session on load:', session)
-      setSession(session)
-    })
+    supabase.auth.getSession().then(({ data: { session } }) => setSession(session))
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => setSession(session))
     return () => subscription.unsubscribe()
   }, [])
@@ -44,6 +42,7 @@ function Layout() {
       "/portfolio": "Work — melanie.studio",
       "/about-contact": "Info & Contact — melanie.studio",
       "/routine": "Routine — melanie.studio",
+      "/routine/profile": "Profile — melanie.studio",
     };
     const title = titles[location.pathname];
     if (title) {
@@ -55,11 +54,11 @@ function Layout() {
     }
   }, [location.pathname]);
 
-  // Show nothing while checking session
   if (isRoutine && session === undefined) return null
-
-  // Show auth screen if not logged in and on /routine
   if (isRoutine && !session) return <Auth />
+
+  // Profile page — full screen, no nav/logo/footer chrome
+  if (location.pathname === "/routine/profile") return <Profile session={session} />
 
   return (
     <div className="layout">
@@ -83,6 +82,7 @@ function Layout() {
               <Route path="/about-contact" element={<AboutContact />} />
               <Route path="*" element={<NotFound />} />
               <Route path="/routine" element={<GlowUpCalendar session={session} />} />
+              <Route path="/routine/profile" element={<Profile session={session} />} />
             </Routes>
           </PageTransition>
         </main>
