@@ -3097,14 +3097,95 @@ function UpcomingTreatmentsPanel({ treatments, allTypes, routineHistory, onClose
 }
 
 
+
+// ─── FEEDBACK PANEL ───────────────────────────────────────────
+function FeedbackPanel({ userId, onClose }) {
+  const [type,    setType]    = useState('general')
+  const [message, setMessage] = useState('')
+  const [sending, setSending] = useState(false)
+  const [sent,    setSent]    = useState(false)
+
+  const types = [
+    { key: 'bug',     label: '🐛 Bug report' },
+    { key: 'feature', label: '✨ Feature idea' },
+    { key: 'general', label: '💬 General' },
+  ]
+
+  async function handleSend() {
+    if (!message.trim()) return
+    setSending(true)
+    await supabase.from('feedback').insert({ user_id: userId, type, message: message.trim() })
+    setSending(false)
+    setSent(true)
+    setTimeout(() => { setSent(false); setMessage(''); onClose() }, 2000)
+  }
+
+  return (
+    <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 12, padding: '16px 18px', marginBottom: 14 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>Send feedback</div>
+        <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 18, color: T.textMuted, lineHeight: 1 }}>×</button>
+      </div>
+
+      {/* Type picker */}
+      <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
+        {types.map(t => (
+          <button key={t.key} onClick={() => setType(t.key)} style={{
+            flex: 1, padding: '6px 8px', borderRadius: 8, fontSize: 11, cursor: 'pointer',
+            border: `0.5px solid ${type === t.key ? T.pinkDeep : T.border}`,
+            background: type === t.key ? T.pink : 'transparent', color: T.text,
+          }}>{t.label}</button>
+        ))}
+      </div>
+
+      {/* Message */}
+      <textarea
+        value={message}
+        onChange={e => setMessage(e.target.value)}
+        placeholder="What's on your mind? Be as specific as you can — screenshots or steps to reproduce a bug are super helpful."
+        rows={5}
+        style={{
+          width: '100%', fontSize: 12, padding: '10px 12px', border: `0.5px solid ${T.border}`,
+          borderRadius: 8, background: T.cream, color: T.text, resize: 'vertical',
+          fontFamily: 'inherit', boxSizing: 'border-box', outline: 'none', lineHeight: 1.6,
+          marginBottom: 10,
+        }}
+      />
+
+      <button
+        onClick={handleSend}
+        disabled={sending || !message.trim()}
+        style={{
+          width: '100%', padding: '10px', borderRadius: 8, border: 'none',
+          background: sent ? '#4ADE80' : T.pinkDeep,
+          color: sent ? '#14532D' : T.white,
+          fontSize: 12, fontWeight: 600, cursor: sending || !message.trim() ? 'default' : 'pointer',
+          opacity: !message.trim() ? 0.5 : 1, transition: 'background 0.2s', fontFamily: 'inherit',
+        }}
+      >{sent ? '✓ Sent — thank you!' : sending ? 'Sending...' : 'Send feedback'}</button>
+    </div>
+  )
+}
+
 // ─── SIDE MENU ────────────────────────────────────────────────
-function SideMenu({ session, onClose, onHistory, onLibrary, onExport, onSignOut }) {
+function SideMenu({ session, onClose, onHistory, onLibrary, onExport, onSignOut, onFeedback }) {
   const email = session?.user?.email || ''
+  const [profile, setProfile] = useState(null)
+
+  useEffect(() => {
+    if (!session?.user?.id) return
+    supabase.from('profiles').select('display_name, avatar_url').eq('id', session.user.id).single()
+      .then(({ data }) => { if (data) setProfile(data) })
+  }, [session?.user?.id])
+
+  const displayName = profile?.display_name || email.split('@')[0]
+  const avatarUrl   = profile?.avatar_url || null
   const menuItems = [
     { label: 'Routine history',  icon: '📋', action: onHistory },
     { label: 'Product library',  icon: '🧴', action: onLibrary },
     { label: 'Export',           icon: '↑',  action: onExport  },
     { label: 'Profile',          icon: '👤', action: () => { window.location.href = '/routine/profile' } },
+    { label: 'Send feedback',     icon: '💬', action: onFeedback },
   ]
 
   return (
@@ -3118,13 +3199,29 @@ function SideMenu({ session, onClose, onHistory, onLibrary, onExport, onSignOut 
         zIndex: 201, display: 'flex', flexDirection: 'column',
         fontFamily: 'inherit', boxShadow: '-4px 0 24px rgba(0,0,0,0.08)',
       }}>
-        {/* Header */}
+        {/* Header — avatar + name */}
         <div style={{ padding: '20px 20px 16px', borderBottom: `0.5px solid ${T.border}` }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: T.text }}>Glow Up</div>
-            <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 20, color: T.textMuted, padding: '0 2px', lineHeight: 1 }}>×</button>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              {/* Avatar */}
+              <div style={{ width: 44, height: 44, borderRadius: '50%', overflow: 'hidden', flexShrink: 0, background: T.creamDark, border: `0.5px solid ${T.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => e.target.style.display='none'} />
+                ) : (
+                  <svg viewBox="0 0 44 44" width="44" height="44" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="22" cy="17" r="8" fill="#C8B8A2" />
+                    <ellipse cx="22" cy="38" rx="14" ry="10" fill="#C8B8A2" />
+                  </svg>
+                )}
+              </div>
+              {/* Name + email */}
+              <div style={{ minWidth: 0 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{displayName}</div>
+                <div style={{ fontSize: 10, color: T.textMuted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: 1 }}>{email}</div>
+              </div>
+            </div>
+            <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 20, color: T.textMuted, padding: '0 2px', lineHeight: 1, flexShrink: 0 }}>×</button>
           </div>
-          <div style={{ fontSize: 11, color: T.textMuted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{email}</div>
         </div>
 
         {/* Menu items */}
@@ -3286,6 +3383,7 @@ export default function GlowUpCalendar({ session }) {
   }, [userId])
   const [showTreatments, setShowTreatments] = useState(false)
   const [showMenu,      setShowMenu]      = useState(false)
+  const [showFeedback,  setShowFeedback]  = useState(false)
   const [editFromHistory, setEditFromHistory] = useState(false)
   const [dailyFromHistory, setDailyFromHistory] = useState(false)
   const [showerFromHistory, setShowerFromHistory] = useState(false)
@@ -3825,11 +3923,11 @@ export default function GlowUpCalendar({ session }) {
 
   // ── Render ────────────────────────────────────────────────
   // Determine if any overlay panel is open
-  const hasOverlay = !!(panel || editingPeriod || editingDaily || editingShower || showLibrary || editingProduct || selector || showExport || showTreatments)
+  const hasOverlay = !!(panel || editingPeriod || editingDaily || editingShower || showLibrary || editingProduct || selector || showExport || showTreatments || showFeedback)
 
   function closeAllPanels() {
     setPanel(null); setEditingPeriod(null); setEditingDaily(null); setEditingShower(null)
-    setShowLibrary(false); setEditingProduct(null); setSelector(null); setShowExport(false); setShowTreatments(false)
+    setShowLibrary(false); setEditingProduct(null); setSelector(null); setShowExport(false); setShowTreatments(false); setShowFeedback(false)
   }
 
   async function handleSignOut() {
@@ -3867,7 +3965,7 @@ export default function GlowUpCalendar({ session }) {
           <button onClick={prevMonth} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 8, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.text }}>←</button>
           <button onClick={nextMonth} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 8, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.text }}>→</button>
           <Btn variant={['update','setup'].includes(panel) ? 'active' : 'primary'} style={{ fontSize: 11, padding: '5px 10px' }} onClick={() => { setPanel(p => ['update','setup'].includes(p) ? null : (hasRoutine ? 'update' : 'setup')); setEditingPeriod(null); setDayFlyout(null) }}>+ Start new routine</Btn>
-          <Btn variant={showTreatments ? 'active' : 'default'} style={{ fontSize: 11, padding: '5px 10px' }} onClick={() => { setShowTreatments(s => !s); setDayFlyout(null) }}>Treatments</Btn>
+          <Btn variant={showTreatments ? 'active' : 'default'} style={{ fontSize: 11, padding: '5px 10px' }} onClick={() => { setShowTreatments(s => !s); setDayFlyout(null) }}>My treatments</Btn>
         </div>
         {/* Right — hamburger */}
         <button
@@ -3890,6 +3988,7 @@ export default function GlowUpCalendar({ session }) {
           onLibrary={() => { setShowLibrary(s => !s); setEditingProduct(null); setDayFlyout(null) }}
           onExport={() => { setShowExport(s => !s); setDayFlyout(null) }}
           onSignOut={handleSignOut}
+          onFeedback={() => { setShowFeedback(true); setShowMenu(false) }}
         />
       )}
 
@@ -4090,6 +4189,14 @@ export default function GlowUpCalendar({ session }) {
                   setSelector({ key: dateStr, date: new Date(y,m-1,d) })
                   setShowTreatments(false)
                 }}
+              />
+            )}
+
+            {/* Feedback panel */}
+            {showFeedback && (
+              <FeedbackPanel
+                userId={userId}
+                onClose={() => setShowFeedback(false)}
               />
             )}
 
