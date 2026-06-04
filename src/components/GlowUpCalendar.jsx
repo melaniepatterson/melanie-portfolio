@@ -2453,13 +2453,7 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
         <div key={step.key}>
           <div
             onClick={() => period && setOpenStepKey(isThisOpen ? null : step.key)}
-            style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '7px 0', borderBottom: `0.5px solid ${T.border}`, cursor: period ? 'pointer' : 'default', opacity: (() => {
-              if (product) return 1
-              // Check if any currently-using product matches this step's category
-              const stepCat = STEP_CATEGORIES[step.key]
-              const hasCurrentlyUsing = stepCat && Object.values(products).some(p => p.currentlyUsing && p.category === stepCat)
-              return hasCurrentlyUsing ? 1 : 0.45
-            })() }}
+            style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '7px 0', borderBottom: `0.5px solid ${T.border}`, cursor: period ? 'pointer' : 'default', opacity: product ? 1 : 0.45 }}
           >
             <div style={{ width: 8, height: 8, borderRadius: '50%', background: dotColor, flexShrink: 0 }} />
             <div style={{ flex: 1 }}>
@@ -3261,7 +3255,6 @@ function SideMenu({ session, onClose, onHistory, onLibrary, onExport, onSignOut,
               {/* Name + email */}
               <div style={{ minWidth: 0 }}>
                 <div style={{ fontSize: 13, fontWeight: 600, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{displayName}</div>
-                <div style={{ fontSize: 10, color: T.textMuted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: 1 }}>{email}</div>
               </div>
             </div>
             <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 20, color: T.textMuted, padding: '0 2px', lineHeight: 1, flexShrink: 0 }}>×</button>
@@ -3930,6 +3923,9 @@ export default function GlowUpCalendar({ session }) {
             onClick={e => e.stopPropagation()}
             style={{
               position: 'absolute',
+              maxHeight: '80vh',
+              overflowY: 'auto',
+              WebkitOverflowScrolling: 'touch',
               top: '100%',
               left: 0,
               width: 'min(280px, 90vw)',
