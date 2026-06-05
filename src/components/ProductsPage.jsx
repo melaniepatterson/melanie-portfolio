@@ -491,6 +491,56 @@ function ProductForm({ initial, onSave, onCancel }) {
   )
 }
 
+// ─── STORE NAME FROM URL ──────────────────────────────────────
+const STORE_MAP = {
+  'ulta.com':                'Ulta',
+  'sephora.com':             'Sephora',
+  'amazon.com':              'Amazon',
+  'target.com':              'Target',
+  'walmart.com':             'Walmart',
+  'cvs.com':                 'CVS',
+  'walgreens.com':           'Walgreens',
+  'theordinary.com':         'The Ordinary',
+  'blackgirlsunscreen.com':  'Black Girl Sunscreen',
+  'cosrx.com':               'COSRX',
+  'glowrecipe.com':          'Glow Recipe',
+  'farmacybeauty.com':       'Farmacy',
+  'puritoseoul.com':         'Purito',
+  'goodmolecules.com':       'Good Molecules',
+  'starface.world':          'Starface',
+  'vegamour.com':            'Vegamour',
+  'olaplex.com':             'Olaplex',
+  'us.klairs.com':           'Klairs',
+  'klairs.com':              'Klairs',
+  'anua.com':                'Anua',
+  'clinique.com':            'Clinique',
+  'skinstore.com':           'SkinStore',
+  'dermstore.com':           'Dermstore',
+  'cultbeauty.com':          'Cult Beauty',
+  'lookfantastic.com':       'Look Fantastic',
+  'nordstrom.com':           'Nordstrom',
+  'macys.com':               "Macy's",
+  'bloomingdales.com':       "Bloomingdale's",
+  'revolve.com':             'Revolve',
+  'yesstyle.com':            'YesStyle',
+  'iherb.com':               'iHerb',
+  'glamradar.com':           'Glam Radar',
+}
+
+function getStoreName(url) {
+  if (!url) return null
+  try {
+    const hostname = new URL(url).hostname.replace(/^(www|m)\./, '')
+    if (STORE_MAP[hostname]) return STORE_MAP[hostname]
+    // Fallback: capitalize the root domain
+    const root = hostname.split('.')[0]
+    return root.charAt(0).toUpperCase() + root.slice(1)
+  } catch {
+    return null
+  }
+}
+
+
 // ─── PRODUCT LIBRARY (standalone, no external deps) ──────────
 function ProductLibrary({ products, onEdit, onAdd, onDelete }) {
   const [filterCat, setFilterCat] = useState('all')
@@ -500,23 +550,25 @@ function ProductLibrary({ products, onEdit, onAdd, onDelete }) {
   const [search, setSearch] = useState('')
 
   const ETHICS_FILTERS = [
-    { key: 'black_owned',      label: 'Black-owned'      },
-    { key: 'indigenous_owned', label: 'Indigenous-owned' },
-    { key: 'poc_owned',        label: 'POC-owned'        },
-    { key: 'woman_owned',      label: 'Woman-owned'      },
-    { key: 'lgbtq_owned',      label: 'LGBTQ+-owned'     },
-    { key: 'cruelty_free',     label: 'Cruelty-free'     },
-    { key: 'vegan',            label: 'Vegan'            },
-    { key: 'certified_organic',label: 'Organic'          },
-    { key: 'fair_trade',       label: 'Fair trade'       },
-    { key: 'clean_formula',    label: 'Clean'            },
-    { key: 'science_backed',   label: 'Science-backed'   },
-    { key: 'is_prescription',  label: '℞ Rx'             },
+    { key: 'black_owned',       label: 'Black-owned'      },
+    { key: 'indigenous_owned',  label: 'Indigenous-owned' },
+    { key: 'poc_owned',         label: 'POC-owned'        },
+    { key: 'woman_owned',       label: 'Woman-owned'      },
+    { key: 'lgbtq_owned',       label: 'LGBTQ+-owned'     },
+    { key: 'cruelty_free',      label: 'Cruelty-free'     },
+    { key: 'vegan',             label: 'Vegan'            },
+    { key: 'certified_organic', label: 'Organic'          },
+    { key: 'fair_trade',        label: 'Fair trade'       },
+    { key: 'clean_formula',     label: 'Clean'            },
+    { key: 'science_backed',    label: 'Science-backed'   },
+    { key: 'is_prescription',   label: '℞ Rx'             },
   ]
 
   function toggleFlag(key) {
     setFilterFlags(prev => prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key])
   }
+
+  const hasFilters = filterCat !== 'all' || filterFlags.length > 0 || filterUsing || filterBuyAgain
 
   const list = Object.values(products)
     .filter(p => {
@@ -531,105 +583,140 @@ function ProductLibrary({ products, onEdit, onAdd, onDelete }) {
     })
     .sort((a, b) => (a.name || '').localeCompare(b.name || ''))
 
+  function SideSection({ title, children }) {
+    return (
+      <div style={{ marginBottom: 22 }}>
+        <div style={{ fontSize: 10, fontWeight: 700, color: T.textLight, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8, paddingBottom: 6, borderBottom: `0.5px solid ${T.border}` }}>
+          {title}
+        </div>
+        {children}
+      </div>
+    )
+  }
+
+  function SideCheck({ label, checked, onChange }) {
+    return (
+      <label style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '3px 0', cursor: 'pointer', fontSize: 12, color: checked ? T.text : T.textMuted, userSelect: 'none' }}>
+        <input type="checkbox" checked={checked} onChange={onChange}
+          style={{ width: 13, height: 13, cursor: 'pointer', accentColor: T.pinkDeep, flexShrink: 0 }} />
+        {label}
+      </label>
+    )
+  }
+
   return (
     <div style={{ padding: '12px 20px' }}>
-      {/* Search + filter row */}
-      <div style={{ display: 'flex', gap: 8, marginBottom: 10, flexWrap: 'wrap' }}>
-        <input
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          placeholder="Search products..."
-          style={{ flex: 1, minWidth: 140, fontSize: 12, padding: '7px 10px', border: '0.5px solid ' + T.border, borderRadius: 8, background: T.white, color: T.text, fontFamily: 'inherit', outline: 'none' }}
-        />
-        <select
-          value={filterCat}
-          onChange={e => setFilterCat(e.target.value)}
-          style={{ fontSize: 12, padding: '7px 10px', border: '0.5px solid ' + T.border, borderRadius: 8, background: T.white, color: T.text, fontFamily: 'inherit', outline: 'none' }}
-        >
-          <option value="all">All categories</option>
-          {PRODUCT_CATEGORIES.map(cat => (
-            <option key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</option>
-          ))}
-        </select>
-      </div>
-      {/* Ethics filter pills */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 14 }}>
-        {ETHICS_FILTERS.map(({ key, label }) => {
-          const active = filterFlags.includes(key)
-          return (
-            <button key={key} onClick={() => toggleFlag(key)} style={{
-              padding: '4px 10px', borderRadius: 20, fontSize: 11, cursor: 'pointer',
-              border: '0.5px solid ' + (active ? T.pinkDeep : T.border),
-              background: active ? T.pink : 'transparent',
-              color: T.text, fontFamily: 'inherit',
-            }}>{label}</button>
-          )
-        })}
-        <button onClick={() => setFilterUsing(s => !s)} style={{ padding: '4px 10px', borderRadius: 20, fontSize: 11, cursor: 'pointer', border: '0.5px solid ' + (filterUsing ? T.pinkDeep : T.border), background: filterUsing ? T.pink : 'transparent', color: T.text, fontFamily: 'inherit' }}>Currently using</button>
-        <button onClick={() => setFilterBuyAgain(s => !s)} style={{ padding: '4px 10px', borderRadius: 20, fontSize: 11, cursor: 'pointer', border: '0.5px solid ' + (filterBuyAgain ? T.pinkDeep : T.border), background: filterBuyAgain ? T.pink : 'transparent', color: T.text, fontFamily: 'inherit' }}>Would buy again</button>
-        {(filterFlags.length > 0 || filterUsing || filterBuyAgain) && (
-          <button onClick={() => { setFilterFlags([]); setFilterUsing(false); setFilterBuyAgain(false) }} style={{ padding: '4px 10px', borderRadius: 20, fontSize: 11, cursor: 'pointer', border: '0.5px solid ' + T.border, background: 'transparent', color: T.textMuted, fontFamily: 'inherit' }}>
-            Clear all ×
-          </button>
-        )}
-      </div>
+      {/* Search */}
+      <input
+        value={search}
+        onChange={e => setSearch(e.target.value)}
+        placeholder="Search products..."
+        style={{ width: '100%', boxSizing: 'border-box', fontSize: 12, padding: '8px 12px', border: '0.5px solid ' + T.border, borderRadius: 8, background: T.white, color: T.text, fontFamily: 'inherit', outline: 'none', marginBottom: 16 }}
+      />
 
-      {list.length === 0 && (
-        <div style={{ fontSize: 13, color: T.textMuted, fontStyle: 'italic', padding: '20px 0', textAlign: 'center' }}>
-          {Object.keys(products).length === 0
-            ? 'No products yet — tap + Add product to get started.'
-            : 'No products match your search.'}
+      <div style={{ display: 'flex', gap: 24, alignItems: 'flex-start' }}>
+
+        {/* ── Sidebar ── */}
+        <div style={{ width: 164, flexShrink: 0 }}>
+
+          <SideSection title="Category">
+            {['all', ...PRODUCT_CATEGORIES].map(cat => {
+              const active = filterCat === cat
+              return (
+                <div key={cat} onClick={() => setFilterCat(cat)} style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '3px 0', cursor: 'pointer', userSelect: 'none' }}>
+                  <span style={{
+                    width: 13, height: 13, borderRadius: 3, flexShrink: 0, display: 'inline-block',
+                    border: `1.5px solid ${active ? T.pinkDeep : T.border}`,
+                    background: active ? T.pink : 'transparent',
+                  }} />
+                  <span style={{ fontSize: 12, color: active ? T.pinkDeep : T.textMuted, fontWeight: active ? 600 : 400 }}>
+                    {cat === 'all' ? 'All' : cat.charAt(0).toUpperCase() + cat.slice(1)}
+                  </span>
+                </div>
+              )
+            })}
+          </SideSection>
+
+          <SideSection title="Status">
+            <SideCheck label="Currently using" checked={filterUsing} onChange={e => setFilterUsing(e.target.checked)} />
+            <SideCheck label="Would buy again" checked={filterBuyAgain} onChange={e => setFilterBuyAgain(e.target.checked)} />
+          </SideSection>
+
+          <SideSection title="Ethics">
+            {ETHICS_FILTERS.map(({ key, label }) => (
+              <SideCheck key={key} label={label} checked={filterFlags.includes(key)} onChange={() => toggleFlag(key)} />
+            ))}
+          </SideSection>
+
+          {hasFilters && (
+            <button
+              onClick={() => { setFilterCat('all'); setFilterFlags([]); setFilterUsing(false); setFilterBuyAgain(false) }}
+              style={{ fontSize: 11, color: T.textMuted, background: 'transparent', border: `0.5px solid ${T.border}`, borderRadius: 6, padding: '5px 10px', cursor: 'pointer', fontFamily: 'inherit' }}>
+              Clear all ×
+            </button>
+          )}
         </div>
-      )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
-      {list.map(p => (
-        <div key={p.id} style={{ background: T.white, border: '0.5px solid ' + T.border, borderRadius: 10, padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 4 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 2 }}>{p.name}</div>
-              {p.brand && <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 4 }}>{p.brand}</div>}
-              {p.category && (
-                <div style={{ fontSize: 11, color: T.textLight, marginBottom: 4 }}>
-                  {p.category.charAt(0).toUpperCase() + p.category.slice(1)}
-                </div>
-              )}
-              <ProductFlagBadges product={p} max={4} />
-              {p.pao_months && (
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 2, fontSize: 10, color: T.textMuted, marginTop: 4 }}>
-                  <PaoIcon months={p.pao_months} size={13} />
-                </span>
-              )}
-              {p.effectiveness > 0 && (
-                <div style={{ marginTop: 4 }}>
-                  <StarRating value={p.effectiveness} size={11} />
-                </div>
-              )}
-              {p.currentlyUsing && (
-                <div style={{ fontSize: 10, color: T.pinkDeep, fontWeight: 600, marginTop: 4 }}>Currently using</div>
-              )}
-              {p.notes && (
-                <div style={{ fontSize: 11, color: T.textMuted, marginTop: 6, lineHeight: 1.5, fontStyle: 'italic' }}>{p.notes}</div>
-              )}
-              {p.purchaseUrl && (
-                <a href={p.purchaseUrl} target="_blank" rel="noopener noreferrer"
-                  style={{ display: 'inline-block', marginTop: 8, fontSize: 11, padding: '4px 12px', borderRadius: 20, background: T.pinkDeep, color: '#fff', textDecoration: 'none', fontWeight: 500 }}>
-                  Shop →
-                </a>
-              )}
+        {/* ── Product grid ── */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          {list.length === 0 && (
+            <div style={{ fontSize: 13, color: T.textMuted, fontStyle: 'italic', padding: '20px 0', textAlign: 'center' }}>
+              {Object.keys(products).length === 0
+                ? 'No products yet — tap + Add product to get started.'
+                : 'No products match your search.'}
             </div>
-            <div style={{ display: 'flex', gap: 4, flexShrink: 0, alignSelf: 'flex-start' }}>
-              <Btn onClick={() => onEdit(p)} style={{ fontSize: 11, padding: '3px 10px' }}>Edit</Btn>
-              <button
-                onClick={() => {
-                  if (window.confirm('Delete ' + p.name + '? This cannot be undone.')) onDelete(p)
-                }}
-                style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 18, lineHeight: 1, padding: 0 }}
-              >×</button>
-            </div>
+          )}
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
+            {list.map(p => (
+              <div key={p.id} style={{ background: T.white, border: '0.5px solid ' + T.border, borderRadius: 10, padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 4 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 2 }}>{p.name}</div>
+                    {p.brand && <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 4 }}>{p.brand}</div>}
+                    {p.category && (
+                      <div style={{ fontSize: 11, color: T.textLight, marginBottom: 4 }}>
+                        {p.category.charAt(0).toUpperCase() + p.category.slice(1)}
+                      </div>
+                    )}
+                    <ProductFlagBadges product={p} max={4} />
+                    {p.pao_months && (
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 2, fontSize: 10, color: T.textMuted, marginTop: 4 }}>
+                        <PaoIcon months={p.pao_months} size={13} />
+                      </span>
+                    )}
+                    {p.effectiveness > 0 && (
+                      <div style={{ marginTop: 4 }}>
+                        <StarRating value={p.effectiveness} size={11} />
+                      </div>
+                    )}
+                    {p.currentlyUsing && (
+                      <div style={{ fontSize: 10, color: T.pinkDeep, fontWeight: 600, marginTop: 4 }}>Currently using</div>
+                    )}
+                    {p.notes && (
+                      <div style={{ fontSize: 11, color: T.textMuted, marginTop: 6, lineHeight: 1.5, fontStyle: 'italic' }}>{p.notes}</div>
+                    )}
+                    {p.purchaseUrl && (
+                      <a href={p.purchaseUrl} target="_blank" rel="noopener noreferrer"
+                        style={{ display: 'inline-block', marginTop: 8, fontSize: 11, padding: '4px 12px', borderRadius: 20, background: T.pinkDeep, color: '#fff', textDecoration: 'none', fontWeight: 500 }}>
+                        Buy at {getStoreName(p.purchaseUrl) || 'store'} →
+                      </a>
+                    )}
+                  </div>
+                  <div style={{ display: 'flex', gap: 4, flexShrink: 0, alignSelf: 'flex-start' }}>
+                    <Btn onClick={() => onEdit(p)} style={{ fontSize: 11, padding: '3px 10px' }}>Edit</Btn>
+                    <button
+                      onClick={() => {
+                        if (window.confirm('Delete ' + p.name + '? This cannot be undone.')) onDelete(p)
+                      }}
+                      style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 18, lineHeight: 1, padding: 0 }}
+                    >×</button>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-      ))}
       </div>
     </div>
   )

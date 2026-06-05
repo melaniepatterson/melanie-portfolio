@@ -1,0 +1,153 @@
+import{r as t,j as e}from"./index-CrAvBL-2.js";const m="/assets/melanie-patterson-decision-letter-text-DsZWhqya.webp",g=`/**
+ * Custom confetti
+ */
+
+  // ── Piece definitions ────────────────────────────────────────────────────
+
+  // RISD logo SVG
+  const SEAL_SVG = \`data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 674.7 675.3'><circle cx='337.4' cy='337.6' r='333.5' style='fill:%232454ff'/><path d='M431.6 376.1c-3.1 19.1-7.8 26.4-17.3 36.2 15.3 1.1 29.1 1.3 39.9 1.3 29.1 0 50-8.3 68-25.6 20.6-19.9 31.9-44.4 31.9-69.5s-20.6-56.7-58.9-57.5c-8.3-.2-16.6-.2-24.7-.1.3-2 .6-4 1-6.1.7-4.2 1.5-8.1 2.4-11.6 3.7.6 7.3 1 11 1 21.3 0 36.9-10.4 36.9-23.1s-6-12.4-18-12.4-30.4 8.7-41 24.8c-8.2-2.8-16.7-6.9-25.4-11.7 4.6-7 7.1-15.2 7.1-23.9 0-15.8-9.7-34.5-26.7-50 28.7.1 49.1 12.7 49.1 29.5s-3.1 9.4-8.9 9.4-3-.3-4.4-.7l-.4.9c4.4 3.4 10.3 5.4 16.3 5.4 9.5 0 15.6-5.1 15.6-13 0-19.9-32.3-37.9-67.6-37.9s-4.7 0-7.1.2c-19.3-14.7-45.9-25.3-77.3-25.3s-53.8 12.6-53.8 31.3v1.4h-3.6c-47.9 0-77.7 18.9-77.7 46s.2 4.3.6 6.3c-17.5 12.7-30.9 33.5-37.1 60.1-13.8 1-23.6 5-34.8 14.2-11.2 9.1-15.8 16.1-15.8 23.3s2.3 10.2 7.6 13.8c5-4.6 10.6-8.6 16.9-12-4.4-2.8-6.7-6.9-6.7-11.6 0-7.5 5.9-11.5 16.7-12 4.3-.2 8.8-.3 13.4-.3-4.5 31.1-9.8 67.5-15 99-3.3 20.3-6.9 27.1-16.2 37.1 9.1.4 20 .9 28.7.9s13.8-1.8 19.1-6.7c4.5-4.1 8.9-9.1 13.3-14.9l-.9-.9c-3.3 3.1-7.1 4.9-14.7 4.9s-5.9 0-9-.1c1.9-17.1 4-34.2 6.3-51.3 6.4.4 12.8.6 19.1.5 11 22.5 23 45.3 38 71.6 4.6 8 9.5 15.5 14.7 22.5-36 9.1-57.6 26.8-57.6 44.8s19.5 32 56.9 32 7.6-.2 11.5-.6c9.8 23.5 45.9 42.8 88.7 42.8s83.8-20.8 87.2-46.8c36.9-7.7 57.8-26.3 57.8-43.1s-10.2-23.1-36.9-23.1-35.1 5.1-54.1 12.4c-22.3-14.5-55.5-24.6-98.8-24.6s-22.8.8-33.1 2.2c-1-1.6-2-3.2-2.9-4.8-17.4-29.9-34-62.7-49.6-95.9 20.4-14.6 30-29.8 30-44.5s-13.2-28.5-36.5-28.9c-7.3-.1-14.6-.2-21.7-.1.5-3.2 1.1-6.4 1.6-9.6 3.1-18.2 8.6-31.7 16.6-41 7.8 16.7 28 28.5 50.7 28.5s35.1-6.5 53.8-19.7c22.6 12.5 47.7 25.1 81.7 25.1s36.1-6.8 45.7-17.2c8.8 5 17.5 9.3 26 12.3-3.5 6.5-6.6 13.9-9.1 22.2-11.5 1.4-21.1 6.2-31.3 14.9-11.5 9.8-15.1 15.7-15.1 23.8s2.9 9.5 6.9 12.4c5.1-4.7 11-8.8 17.8-12.4-4.3-3.1-6.7-7.3-6.7-11.6 0-7.1 5.5-11.1 16.2-11.6 2.9-.1 5.7-.2 8.5-.3-.7 3.6-1.3 7.3-1.8 11.2-3.3 25.1-7.8 56.6-12.9 88.2ZM245.2 507.2c-23.5 0-35.5-11.1-35.5-25.3s13.1-28.1 37.9-35.4c7.8 9.6 16.2 18.2 25.2 25.9-13.9 7.3-22.6 18.2-22.6 30.6s0 2.7.3 4.1c-1.7 0-3.4.1-5.2.1Zm161.1-3.1c0 1.1 0 2.3-.2 3.4-4.8.4-10 .6-15.6.6-4.3 0-8.6-.1-12.9-.5v-1.3c0-10.5-5.1-20.1-13.8-27.5 8.8-3.8 17.4-7.4 25.6-10.6 11.4 10.9 16.8 23.7 16.8 35.9Zm-46-4.5c0 1.8-.2 3.6-.7 5.2-10.8-2.4-21.3-6-31.3-10.9 8.6-3.5 17.2-7.2 25.6-10.9 4.1 4.7 6.4 10.3 6.4 16.6Zm-39.8-9.7c-8.5-4.8-16.6-10.4-24.2-16.8 5.9-2.3 12.9-3.6 20.7-3.6 12.8 0 23.7 3.2 31.3 8.6-9.2 4.1-18.5 8.1-27.8 11.8Zm-14.1 5.2c-10.5 3.7-21 6.8-31.6 8.9v-1.3c0-8.6 3.2-16.1 8.9-21.7 7.3 5.3 14.8 10 22.7 14.1Zm35.2 56.1c-35.2 0-60.7-16-65.9-39.5 13-3 26.1-7.4 39.2-12.4 13 5.9 26.7 10.2 41 12.8-4 4.8-10.5 7.6-18.8 7.6s-14.9-2.7-19.1-7.3l-1.1.9c7.3 11.2 17.8 17.1 31.3 17.1s23.5-6.5 27.6-15.7c4.8.4 9.7.6 14.6.6s9.7-.2 14.2-.5c-6.2 21.2-30.9 36.5-63.1 36.5Zm96.4-95.1c16.9 0 24 7.6 24 18.2s-8.9 23.9-33.2 29.7c-1.1-13.9-9.8-28.6-25.6-40.9 12.8-4.3 24.6-7 34.8-7Zm-141.2-16c40.2-.2 68.5 9.2 86.3 22.6-8.4 3.5-17 7.4-25.7 11.3-11-7-25.7-11.2-42-11.2s-18.6 1.2-26.7 3.4c-7.4-7.2-14.3-15.3-20.5-24.1 8.6-1.2 18.1-1.9 28.5-2ZM191.5 277c18.2.4 27.5 9 27.5 25.3s-10.1 27.1-26 27.1-13.7-.3-20.6-.9c2.5-17.3 5.2-34.5 8-51.7 3.7 0 7.4.1 11.1.2Zm235.4-86.8c0 7.4-2.1 14.9-6.7 21.4-8.2-5.2-16.7-10.7-25.4-16.4 5.5-4.9 8.5-11.3 8.5-18.8s-4.9-18.5-13.2-24.5c5.3-1.9 10.8-3.1 16.7-3.7 12.8 11.9 20 27 20 41.9Zm-126.5-32.7c11.8 2.2 23.3 6 34.4 10.8-6.4 4.4-12.5 9.4-18.5 15l-.4.4c-9.1-6.9-15-16.1-15.5-26.2Zm47.9 23.6c1.5-1.4 2.9-2.8 4.4-4.1 8 4.2 15.7 8.9 23.4 13.6-5.1 3.6-12.4 5.6-21.5 5.6s-13.1-1-19.2-2.8l12.9-12.3Zm9.2-8.4c7.4-6.5 14.2-11.5 20.9-15.3 4 4.4 6.3 9.9 6.3 16s-1.4 9.4-4 12.9c-7.5-4.7-15.3-9.3-23.2-13.5Zm-15.2-48c23.3 0 43 7 57.6 17.8-6.6.9-13.3 2.3-19.9 4.1-6.3-2.4-13.7-3.7-21.8-3.7s-12.1.8-17.1 2.4l.2 1.3c2.3-.3 4.7-.4 7.3-.4 7.6 0 14.4 1.5 20 4.1-9.6 3.6-19 8.3-28 14-12.8-5.8-26.2-10.4-40-13 2.5-16.5 17.7-26.7 41.6-26.7Zm-64.6 30.6h2.6c3.7 12.1 15.5 24 30.6 33.1L294 204.2c-16.8-9.1-33.6-17-53.6-17s-14.4 1.1-21.2 3.3c5.6-22.2 27.2-35.3 58.5-35.3Zm-32.9 76c-15.3 0-27.1-10.9-27.1-28.7s0-2.9.2-4.4c6.4-2.6 13.5-3.8 21.6-3.8 17.5 0 33 6.7 48.9 15.1-18.4 16.7-29.6 21.8-43.5 21.8Zm125.7.4c-22.6 0-41-8.1-58.3-17.4 4.5-3.5 9-7.4 13.5-11.7l5-4.7c11.3 4.2 23.2 6.7 34.4 6.7s18-2 24.3-5.5c9.1 6 18 11.9 26.8 17.5-8.9 9-23.7 15.1-45.5 15.1Zm126.9-15.3c5.3 0 8.7 3.3 8.7 8.2 0 7.6-8 12.9-20.9 12.9s-6.3-.3-9.5-.8c4.8-13.8 12-20.3 21.7-20.3ZM482.2 277c33.1 1.2 49.5 19.1 49.5 53.1s-21.1 64.9-55.3 65.3c-8.2.4-16.4 0-24.6-1.1 4.8-39.4 10.1-78.6 16.1-117.7 4.7 0 9.4.2 14.3.4Zm-178.1 19.6c-5.7 33.1-10.6 66.1-14.9 99.4 3.3 0 6.6.2 9.6.2 7.6 0 11.3-1.8 14.7-4.9l.9.9c-4.4 5.8-8.8 10.8-13.3 14.9-5.3 4.8-9.8 6.7-19.1 6.7s-17.1-.4-25.5-.9c6.2-6.9 9.6-14.2 12.4-30.7 5.9-34.3 11-68.8 15.3-103.5-3.1-.1-6.2-.2-9.3-.2-6.9 0-10.8 1.3-14.4 4.7l-1.1-.9c3.9-4.9 8-9.6 12.6-13.9 5.8-5.5 10.8-7.4 21.5-7.4s18.2.4 27.5.9c-9.8 9.3-13.7 17.5-16.7 34.9Zm47.8-2.2c0 7.1 2.6 12.6 10.6 21.2l18.9 20.3c9.6 10.3 13.4 18.9 13.4 30 0 24.1-26 48.9-52.6 48.9s-16-2.2-21.3-5.3c7.1-8.9 12-17.8 15.8-28.4h1.1c.4 10.4 7.3 16.4 18.9 16.4s19.8-7.5 19.8-19.2-2.6-13.1-10.4-21.4L350.4 340c-12.2-13.1-16.6-22.1-16.6-33.3 0-25.8 27.9-47.4 58.2-46.9 8.5.2 12.9 2.3 12.9 6s-.7 3.8-3.8 7.3c-8.7 10.2-10 12.9-10.7 19.3h-1.3c0-9.1-5.6-15.3-17.8-15.3s-19.3 6.8-19.3 17.3Z' style='fill:%23ffffff'/></svg>\`;
+
+  // Inline SVG strings for the 4 confetti shapes
+  const CONFETTI_SVGS = [
+    // Orange confetti
+    \`data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 67.62 92.1'><path d='M67.62,42.16C32.62,28.31,23.13,0,23.13,0L0,56.22c-.02,18.63,45.15,35.88,45.15,35.88l22.47-49.94Z' style='fill:%23f96b00'/></svg>\`,
+    // Pink confetti
+    \`data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 82.19 106.33'><path d='M65.29,13.2L53.62,0C16.89,23.33,0,55.66,0,55.66c19.71,21.67,50.02,50.68,50.02,50.68-.33-23.07,17.83-53.02,27-66.66,3.09-4.6,5.17-7.36,5.17-7.36l-16.91-19.12Z' style='fill:%23f985f6'/></svg>\`,
+    // White confetti
+    \`data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 82.19 106.33'><path d='M65.29,13.2L53.62,0C16.89,23.33,0,55.66,0,55.66c19.71,21.67,50.02,50.68,50.02,50.68-.33-23.07,17.83-53.02,27-66.66,3.09-4.6,5.17-7.36,5.17-7.36l-16.91-19.12Z' style='fill:%23ffffff'/></svg>\`,
+    // Yellow confetti
+    \`data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 88.76 73.86'><path d='M24.41,0L0,40.19s34.48,54.69,88.76,24.67l-.91-64.16s-40.84,31.56-63.44-.7Z' style='fill:%23fcd73a'/></svg>\`,
+  ];
+
+  // All piece types: RISD logo + 4 confetti shapes
+  // Weight the RISD logo at ~1-in-6 to keep it special
+  const PIECE_POOL = [
+    { src: SEAL_SVG, size: 24, weight: 7, rotate: false },
+    { src: CONFETTI_SVGS[0], size: 12, weight: 14, rotate: true }, // orange
+    { src: CONFETTI_SVGS[1], size: 12, weight: 14, rotate: true }, // pink
+    { src: CONFETTI_SVGS[2], size: 9, weight: 14, rotate: true }, // white
+    { src: CONFETTI_SVGS[3], size: 11, weight: 14, rotate: true }, // yellow
+  ];
+
+  // Build weighted array once
+  const WEIGHTED_POOL = [];
+  PIECE_POOL.forEach((p) => {
+    for (let i = 0; i < p.weight; i++) WEIGHTED_POOL.push(p);
+  });
+
+  // ── Config ────────────────────────────────────────────────────────────────
+  const PIECE_COUNT = 40; // total pieces launched
+  const DURATION_MS = 10000; // clear after this many ms (matches original)
+  const FALL_SPEED = { min: 2, max: 4.5 }; // px per frame
+  const DRIFT_SPEED = { min: 0.4, max: 1.2 }; // lateral sine amplitude (px/frame)
+  const ROTATE_SPEED = { min: 1, max: 4 }; // degrees per frame
+  const SPAWN_INTERVAL = 120; // ms between each new piece spawning
+
+  // ── State ─────────────────────────────────────────────────────────────────
+  const pieces = [];
+  let animId = null;
+  let spawnTimer = null;
+  let clearTimer = null;
+  let spawned = 0;
+
+  // ── Helpers ───────────────────────────────────────────────────────────────
+  function rand(min, max) {
+    return Math.random() * (max - min) + min;
+  }
+  function pick(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  function createPiece() {
+    const def = pick(WEIGHTED_POOL);
+    const size = def.size * rand(0.7, 1.4); // ±40% size variation
+
+    const el = document.createElement('img');
+    el.src = def.src;
+    el.style.cssText = \`
+      position: absolute;
+      top: -\${size * 1.5}px;
+      left: \${rand(0, 100)}%;
+      width: \${size}px;
+      height: \${size}px;
+      pointer-events: none;
+      z-index: 2;
+      will-change: transform;
+    \`;
+    container.appendChild(el);
+
+    return {
+      el,
+      x: parseFloat(el.style.left), // vw % converted below
+      xPct: rand(0, 100), // starting x as % of viewport
+      y: -size * 1.5,
+      fallSpeed: rand(FALL_SPEED.min, FALL_SPEED.max),
+      driftAmp:
+        rand(DRIFT_SPEED.min, DRIFT_SPEED.max) * (Math.random() < 0.5 ? 1 : -1),
+      driftFreq: rand(0.02, 0.05), // sine wave frequency
+      rotation: def.rotate ? rand(0, 360) : 0,
+      rotateSpeed: def.rotate
+        ? rand(ROTATE_SPEED.min, ROTATE_SPEED.max) *
+          (Math.random() < 0.5 ? 1 : -1)
+        : 0,
+      rotate: def.rotate,
+      tick: rand(0, Math.PI * 2), // phase offset for drift
+      size,
+      dead: false,
+    };
+  }
+
+  function updatePiece(p) {
+    p.tick += p.driftFreq;
+    p.y += p.fallSpeed;
+    p.xPct += Math.sin(p.tick) * p.driftAmp * 0.05;
+    if (p.rotate) p.rotation += p.rotateSpeed;
+
+    p.el.style.transform = \`translate(\${Math.sin(p.tick) * p.driftAmp * 6}px, \${p.y}px) rotate(\${p.rotation}deg)\`;
+    p.el.style.left = \`\${p.xPct}%\`;
+
+    if (p.y > container.offsetHeight + p.size * 2) {
+      p.dead = true;
+      p.el.remove();
+    }
+  }
+
+  function loop() {
+    for (let i = pieces.length - 1; i >= 0; i--) {
+      updatePiece(pieces[i]);
+      if (pieces[i].dead) pieces.splice(i, 1);
+    }
+    if (pieces.length > 0 || spawned < PIECE_COUNT) {
+      animId = requestAnimationFrame(loop);
+    } else {
+      if (typeof onComplete === 'function') onComplete();
+    }
+  }
+
+  function spawnNext() {
+    if (spawned >= PIECE_COUNT) return;
+    pieces.push(createPiece());
+    spawned++;
+    if (spawned < PIECE_COUNT) {
+      spawnTimer = setTimeout(spawnNext, SPAWN_INTERVAL);
+    }
+  }
+
+function clearAll() {
+  clearTimeout(spawnTimer);
+  spawned = PIECE_COUNT;
+  pieces.forEach((p) => p.el.remove());
+  pieces.length = 0;
+  if (animId) {
+    cancelAnimationFrame(animId);
+    animId = null;
+  }
+  if (typeof onComplete === 'function') onComplete();
+}
+
+  // ── Kick off ──────────────────────────────────────────────────────────────
+  spawnNext();
+  animId = requestAnimationFrame(loop);
+  clearTimer = setTimeout(clearAll, DURATION_MS);
+
+`,h="_wrapper_195fb_1",x="_image_195fb_8",u="_expandHint_195fb_40",w="_lightboxOverlay_195fb_57",E="_lightboxImage_195fb_68",_="_lightboxOuter_195fb_76",v="_lightboxInner_195fb_81",I="_lightboxClose_195fb_87",n={wrapper:h,image:x,expandHint:u,lightboxOverlay:w,lightboxImage:E,lightboxOuter:_,lightboxInner:v,lightboxClose:I};function T(){const d=t.useRef(!1),a=t.useRef(!1),[s,o]=t.useState(!1),l=t.useRef(null),i=t.useRef(null);function r(f,c){if(!(!f||c.current)){c.current=!0;try{new Function("container","onComplete",g)(f,()=>{c.current=!1})}catch(p){console.error("Confetti error:",p),c.current=!1}}}return t.useEffect(()=>{s&&i.current&&r(i.current,a),s||(a.current=!1)},[s]),e.jsxs(e.Fragment,{children:[e.jsxs("div",{ref:l,className:n.wrapper,onMouseEnter:()=>r(l.current,d),onClick:()=>o(!0),children:[e.jsx("img",{src:m,alt:"RISD admit decision letter",className:n.image}),e.jsx("div",{className:n.expandHint,children:"⊕"})]}),s&&e.jsx("div",{className:n.lightboxOverlay,children:e.jsxs("div",{className:n.lightboxOuter,children:[e.jsx("button",{className:n.lightboxClose,onClick:()=>o(!1),children:"✕"}),e.jsx("div",{ref:i,className:n.lightboxInner,children:e.jsx("img",{src:m,alt:"RISD admit decision letter",className:n.lightboxImage,onMouseEnter:()=>r(i.current,a)})})]})})]})}export{T as default};

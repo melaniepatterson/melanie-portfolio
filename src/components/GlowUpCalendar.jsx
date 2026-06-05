@@ -3165,24 +3165,7 @@ function NewRoutinePeriodPicker({ routineHistory, dailyHistory, showerHistory, p
 // ─── SEED PRODUCTS ───────────────────────────────────────────
 // Pre-populated on first load and merged in for any existing library.
 // Photos and purchase links can be added manually.
-const SEED_PRODUCTS = [
-  { id:'seed-1',  name:'Low pH Good Morning Gel Cleanser',         brand:'COSRX',         category:'cleanser',           bdsCompliant:true,  currentlyUsing:false, applicationArea:{face:true},             effectiveness:0, buyAgain:null, tags:['Fragrance free'], notes:'', imageUrl:'', purchaseUrl:'' },
-  { id:'seed-2',  name:'Blueberry Bounce Gentle Cleanser',          brand:'Glow Recipe',   category:'cleanser',           bdsCompliant:true,  currentlyUsing:false, applicationArea:{face:true},             effectiveness:0, buyAgain:null, tags:[], notes:'', imageUrl:'', purchaseUrl:'' },
-  { id:'seed-3',  name:'Green Clean Makeup Meltaway Cleansing Balm',brand:'Farmacy',       category:'cleansing oil / balm',bdsCompliant:true,  currentlyUsing:false, applicationArea:{face:true},             effectiveness:0, buyAgain:null, tags:[], notes:'', imageUrl:'', purchaseUrl:'' },
-  { id:'seed-4',  name:'Heartleaf 77% Soothing Toner',             brand:'Anua',          category:'toner',              bdsCompliant:true,  currentlyUsing:false, applicationArea:{face:true},             effectiveness:0, buyAgain:null, tags:['Fragrance free'], notes:'', imageUrl:'', purchaseUrl:'' },
-  { id:'seed-5',  name:'Advanced Snail 96 Mucin Power Essence',     brand:'COSRX',         category:'essence',            bdsCompliant:true,  currentlyUsing:false, applicationArea:{face:true},             effectiveness:0, buyAgain:null, tags:[], notes:'', imageUrl:'', purchaseUrl:'' },
-  { id:'seed-6',  name:'Niacinamide 10% + Zinc 1%',                brand:'The Ordinary',  category:'serum',              bdsCompliant:true,  currentlyUsing:false, applicationArea:{face:true},             effectiveness:0, buyAgain:null, tags:['Niacinamide'], notes:'', imageUrl:'', purchaseUrl:'' },
-  { id:'seed-7',  name:'Salicylic Acid 2% Solution',                brand:'The Ordinary',  category:'bha',                bdsCompliant:true,  currentlyUsing:false, applicationArea:{body:true},             effectiveness:0, buyAgain:null, tags:[], notes:'Body / KP treatment — leave-on', imageUrl:'', purchaseUrl:'' },
-  { id:'seed-8',  name:'Azelaic Acid Suspension 10%',               brand:'The Ordinary',  category:'azelaic acid',       bdsCompliant:true,  currentlyUsing:false, applicationArea:{face:true},             effectiveness:0, buyAgain:null, tags:[], notes:'', imageUrl:'', purchaseUrl:'' },
-  { id:'seed-9',  name:'Daily Go-To Sunscreen SPF 50+',             brand:'Purito',        category:'spf',                bdsCompliant:true,  currentlyUsing:false, applicationArea:{face:true},             effectiveness:0, buyAgain:null, tags:['Fragrance free'], notes:'Summer formula (Oat-in)', imageUrl:'', purchaseUrl:'' },
-  { id:'seed-10', name:'Midnight Blue Calming Cream',               brand:'Klairs',        category:'moisturizer',        bdsCompliant:true,  currentlyUsing:false, applicationArea:{face:true},             effectiveness:0, buyAgain:null, tags:[], notes:'', imageUrl:'', purchaseUrl:'' },
-  { id:'seed-11', name:'Plum Plump Hyaluronic Cream',               brand:'Glow Recipe',   category:'moisturizer',        bdsCompliant:true,  currentlyUsing:false, applicationArea:{face:true},             effectiveness:0, buyAgain:null, tags:[], notes:'Fall / winter formula', imageUrl:'', purchaseUrl:'' },
-  { id:'seed-12', name:'Make It Matte SPF 45',                      brand:'Black Girl Sunscreen', category:'spf',         bdsCompliant:true,  currentlyUsing:false, applicationArea:{face:true},             effectiveness:0, buyAgain:null, tags:[], notes:'Kids formula', imageUrl:'', purchaseUrl:'' },
-  { id:'seed-13', name:'All About Eyes',                            brand:'Clinique',      category:'eye cream',          bdsCompliant:false, currentlyUsing:true,  applicationArea:{face:true},             effectiveness:0, buyAgain:null, tags:[], notes:'', imageUrl:'', purchaseUrl:'' },
-  { id:'seed-14', name:'GRO+ Advanced Hair Serum',                  brand:'Vegamour',      category:'hair growth',        bdsCompliant:true,  currentlyUsing:false, applicationArea:{hair:true},             effectiveness:0, buyAgain:null, tags:[], notes:'Contains minoxidil — verify BDS status', imageUrl:'', purchaseUrl:'' },
-  { id:'seed-15', name:'Jamaican Black Castor Oil',                 brand:'',              category:'hair growth',        bdsCompliant:true,  currentlyUsing:false, applicationArea:{hair:true, body:true},  effectiveness:0, buyAgain:null, tags:[], notes:'', imageUrl:'', purchaseUrl:'' },
-  { id:'seed-16', name:'No.3 Hair Perfector',                       brand:'Olaplex',       category:'haircare',           bdsCompliant:null,  currentlyUsing:false, applicationArea:{hair:true},             effectiveness:0, buyAgain:null, tags:[], notes:'BDS status pending verification', imageUrl:'', purchaseUrl:'' },
-]
+
 
 
 // ─── ICS EXPORT ──────────────────────────────────────────────
@@ -3847,9 +3830,8 @@ export default function GlowUpCalendar({ session }) {
         updatedAt:       p.updated_at,
       })))
 
-      // Products — merge with seeds
+      // Products — Supabase only, no seeds
       const prodMap = {}
-      SEED_PRODUCTS.forEach(p => { prodMap[p.id] = p })
       ;(pr || []).forEach(p => {
         prodMap[p.id] = {
           id:                  p.id,
