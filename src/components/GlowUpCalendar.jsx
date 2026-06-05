@@ -335,45 +335,7 @@ const PRODUCT_INGREDIENT_CATEGORIES = {
 }
 
 
-const INGREDIENT_CONFLICTS = [
-  { a: 'vitamin_c', aForms: ['L-ascorbic acid (most potent)'], b: 'aha_bha_toner', severity: 'hard', message: 'L-ascorbic acid and AHA/BHA toner are pH-incompatible and destabilize each other.' },
-  { a: 'vitamin_c', aForms: ['L-ascorbic acid (most potent)'], b: 'aha',           severity: 'hard', message: 'L-ascorbic acid conflicts with AHA — pH incompatibility reduces efficacy of both.' },
-  { a: 'vitamin_c', aForms: ['L-ascorbic acid (most potent)'], b: 'bha',           severity: 'hard', message: 'L-ascorbic acid conflicts with BHA — pH incompatibility reduces efficacy of both.' },
-  { a: 'vitamin_c', aForms: null, b: 'benzoyl_peroxide', severity: 'hard', message: 'Benzoyl peroxide oxidizes vitamin C, rendering both less effective.' },
-  { a: 'retinoid',  aForms: null, b: 'benzoyl_peroxide', severity: 'hard', message: 'Benzoyl peroxide oxidizes retinoids, significantly reducing their efficacy.' },
-  { a: 'retinoid',  aForms: null, b: 'aha',              severity: 'hard', message: 'Retinoid + AHA in the same session risks severe irritation and over-exfoliation.' },
-  { a: 'retinoid',  aForms: null, b: 'bha',              severity: 'hard', message: 'Retinoid + BHA in the same session risks severe irritation and over-exfoliation.' },
-  { a: 'retinoid',  aForms: null, b: 'aha_bha_toner',    severity: 'hard', message: 'Retinoid + AHA/BHA toner risks severe irritation. Use on separate nights.' },
-  { a: 'peptides',  aForms: ['Copper peptides'], b: 'vitamin_c',    severity: 'hard', message: 'Copper peptides are destabilized by vitamin C — use on separate days.' },
-  { a: 'peptides',  aForms: ['Copper peptides'], b: 'aha',           severity: 'hard', message: 'Acid environments degrade copper peptides.' },
-  { a: 'peptides',  aForms: ['Copper peptides'], b: 'bha',           severity: 'hard', message: 'Acid environments degrade copper peptides.' },
-  { a: 'peptides',  aForms: ['Copper peptides'], b: 'aha_bha_toner', severity: 'hard', message: 'Acid environments degrade copper peptides.' },
-  { a: 'vitamin_c', aForms: null, b: 'aha_bha_toner', severity: 'soft', message: "Vitamin C derivatives and AHA/BHA toners may reduce each other's efficacy. Consider separate AM/PM use." },
-  { a: 'vitamin_c', aForms: null, b: 'aha',           severity: 'soft', message: 'Vitamin C and AHA are both pH-dependent. Using together may reduce efficacy.' },
-  { a: 'vitamin_c', aForms: null, b: 'bha',           severity: 'soft', message: "Vitamin C and BHA may reduce each other's efficacy at low pH." },
-  { a: 'niacinamide', aForms: null, b: 'vitamin_c',  severity: 'soft', message: 'At high temps, niacinamide and L-ascorbic acid may form niacin. Not harmful but may cause temporary flushing.' },
-  { a: 'retinoid',  aForms: null, b: 'vitamin_c',    severity: 'soft', message: 'Retinoid and vitamin C together can increase irritation. AM vitamin C / PM retinoid is the gold standard.' },
-  { a: 'peptides',  aForms: ['Argireline'], b: 'vitamin_c', severity: 'soft', message: 'Argireline may have reduced efficacy when combined with vitamin C.' },
-  { a: 'benzoyl_peroxide', aForms: null, b: 'niacinamide', severity: 'soft', message: 'At high BP concentrations, combining with niacinamide may cause temporary yellowing.' },
-]
 
-function checkIngredientConflicts(periodProducts, products) {
-  const warnings = []
-  const assigned = Object.entries(periodProducts || {})
-    .map(([stepId, productId]) => products[productId])
-    .filter(p => p?.ingredient_category)
-  for (let i = 0; i < assigned.length; i++) {
-    for (let j = i + 1; j < assigned.length; j++) {
-      const a = assigned[i], b = assigned[j]
-      for (const rule of INGREDIENT_CONFLICTS) {
-        const matchAB = rule.a === a.ingredient_category && rule.b === b.ingredient_category && (!rule.aForms || rule.aForms.includes(a.ingredient_form))
-        const matchBA = rule.a === b.ingredient_category && rule.b === a.ingredient_category && (!rule.aForms || rule.aForms.includes(b.ingredient_form))
-        if (matchAB || matchBA) warnings.push({ severity: rule.severity, message: rule.message })
-      }
-    }
-  }
-  return warnings
-}
 
 function getDefaultSteps(dayType) {
   return Object.entries(INGREDIENT_CATEGORIES)
@@ -445,9 +407,6 @@ function dateKey(dt) {
   return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`
 }
 
-function formatDate(dt) {
-  return `${MONTHS[dt.getMonth()].slice(0,3)} ${dt.getDate()}, ${dt.getFullYear()}`
-}
 
 // Returns the date string for the day before a given date string
 function getPeriodStatus(p) {
@@ -497,14 +456,7 @@ function detectOverlap({ startDate, endDate, excludeId, excludeStartDate, exclud
   return null
 }
 
-function lsGet(key, fallback) {
-  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback }
-  catch { return fallback }
-}
 
-function lsSet(key, value) {
-  try { localStorage.setItem(key, JSON.stringify(value)) } catch {}
-}
 
 function getActivePeriod(dt, history) {
   const key = dateKey(dt)
@@ -1862,26 +1814,7 @@ function DailySection({ dt, dailyHistory, onEditDaily, tab, products }) {
 
 // ─── PRODUCT SYSTEM ──────────────────────────────────────────
 // Maps routine step keys to human-readable categories for filtering
-const STEP_CATEGORIES = {
-  am_cleanser:    'cleanser',
-  am_toner:       'toner',
-  am_serum:       'serum',
-  am_moisturizer: 'moisturizer',
-  am_spf:         'spf',
-  am_eye:         'eye cream',
-  pm_cleanse1:    'cleansing oil / balm',
-  pm_cleanse2:    'cleanser',
-  pm_essence:     'essence',
-  pm_tret:        'tretinoin',
-  pm_bha:          'bha',
-  pm_azelaic:     'azelaic acid',
-  pm_moisturizer:     'moisturizer',
-  pm_eye:             'eye cream',
-  pm_peptides:        'serum',
-  pm_niacinamide_pm:  'serum',
-  pm_pha:             'bha',
-  pm_recovery:        'moisturizer',
-}
+
 
 const PRODUCT_CATEGORIES = [
   'cleanser', 'cleansing oil / balm', 'toner', 'essence',
@@ -2171,8 +2104,6 @@ function ProductPicker({ stepKey, currentProductId, products, onSelect, onAddNew
   // Derive categoryKey from stepKey if not passed directly (e.g. 'main_cleanser' → 'cleanser')
   const derivedCategoryKey = categoryKey || (stepKey ? stepKey.replace(/^(am|main|off|recovery|pause|nr)_/, '') : null)
   const ingredientCat = derivedCategoryKey ? INGREDIENT_CATEGORIES[derivedCategoryKey] : null
-  // Fall back to old STEP_CATEGORIES for backwards compat
-  const oldCategory = STEP_CATEGORIES?.[stepKey]
   const [search, setSearch] = useState('')
   const [showAll, setShowAll] = useState(false)
 
@@ -2740,71 +2671,7 @@ function ShowerSection({ dt, showerHistory, onEditShower, products }) {
 
 // Dynamically builds PM step list based on routine period config and night type
 // nightType: 'main' | 'off' | 'recovery' | 'treatment'
-function getPmSteps(period, nightType) {
-  const steps = []
-  const activeName = period?.activeName || 'retinoid'
-  const capName = activeName.charAt(0).toUpperCase() + activeName.slice(1)
-  const secondaries = period?.secondaryActives || []
 
-  if (nightType === 'recovery') {
-    // Recovery nights: gentle cleanse + recovery/barrier product + moisturizer
-    steps.push({ key: 'pm_cleanse1',   label: 'Gentle cleanse' })
-    steps.push({ key: 'pm_recovery',   label: 'Recovery / barrier product' })
-    steps.push({ key: 'pm_moisturizer',label: 'Moisturizer'    })
-    steps.push({ key: 'pm_eye',        label: 'Eye cream'      })
-    return steps
-  }
-  if (nightType === 'pause') {
-    // Pre-treatment pause: normal base PM steps, no actives
-    steps.push({ key: 'pm_cleanse1',   label: 'Cleanse 1'   })
-    steps.push({ key: 'pm_cleanse2',   label: 'Cleanse 2'   })
-    steps.push({ key: 'pm_essence',    label: 'Essence'     })
-    steps.push({ key: 'pm_moisturizer',label: 'Moisturizer' })
-    steps.push({ key: 'pm_eye',        label: 'Eye cream'   })
-    return steps
-  }
-  if (nightType === 'treatment') {
-    // Treatment night itself: no steps — provider instructions only
-    return []
-  }
-
-  // Base steps always present for active/off nights
-  steps.push({ key: 'pm_cleanse1', label: 'Cleanse 1' })
-  steps.push({ key: 'pm_cleanse2', label: 'Cleanse 2' })
-  steps.push({ key: 'pm_essence',  label: 'Essence'   })
-
-  if (!period?.tretEnabled) {
-    // No retinoid — show all enabled secondaries every night, no active/off distinction
-    for (const sa of secondaries) {
-      if (!sa.enabled) continue
-      const def = AVAILABLE_SECONDARY_ACTIVES.find(a => a.key === sa.key)
-      if (def) steps.push({ key: def.stepKey, label: def.label })
-    }
-  } else if (nightType === 'main') {
-    steps.push({ key: 'pm_tret', label: capName })
-    for (const sa of secondaries) {
-      if (!sa.enabled || (sa.nights !== 'main' && sa.nights !== 'all')) continue
-      const def = AVAILABLE_SECONDARY_ACTIVES.find(a => a.key === sa.key)
-      if (def) steps.push({ key: def.stepKey, label: def.label })
-    }
-  } else {
-    // Legacy bhaEnabled support
-    if (period?.bhaEnabled && period?.secondaryActives === undefined) {
-      steps.push({ key: 'pm_bha',     label: 'BHA'          })
-      steps.push({ key: 'pm_azelaic', label: 'Azelaic acid' })
-    } else {
-      for (const sa of secondaries) {
-        if (!sa.enabled || (sa.nights !== 'off' && sa.nights !== 'all')) continue
-        const def = AVAILABLE_SECONDARY_ACTIVES.find(a => a.key === sa.key)
-        if (def) steps.push({ key: def.stepKey, label: def.label })
-      }
-    }
-  }
-
-  steps.push({ key: 'pm_moisturizer', label: 'Moisturizer' })
-  steps.push({ key: 'pm_eye',         label: 'Eye cream'   })
-  return steps
-}
 
 // ─── DAY FLYOUT ──────────────────────────────────────────────
 // Shows AM or PM routine for a clicked day, with tab switcher
@@ -4259,14 +4126,7 @@ export default function GlowUpCalendar({ session }) {
     setSelector(null)
   }
 
-  function openSelector(key) {
-    const [y, m, d] = key.split('-').map(Number)
-    setSelector({ key, date: new Date(y, m - 1, d) })
-    setPanel(null)
-    setEditingPeriod(null)
-    setEditingDaily(null)
-    setDayFlyout(null)
-  }
+  
 
   async function applyTreatment(type, qure, timeOfDay = 'am', area = 'face', pre, post) {
     const cfg = allTypes[type] || {}

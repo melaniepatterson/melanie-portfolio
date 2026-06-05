@@ -373,7 +373,23 @@ function ProductForm({ initial, onSave, onCancel, catalogProducts }) {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 8 }}>
-        <div><FieldLabel>Product name</FieldLabel><TextInput value={form.name} onChange={e => set('name', e.target.value)} placeholder="e.g. Blueberry Cleanser" width="100%" /></div>
+        <div style={{ position: 'relative' }}>
+          <FieldLabel>Product name</FieldLabel>
+          <TextInput value={form.name} onChange={e => set('name', e.target.value)} placeholder="e.g. Blueberry Cleanser" width="100%" />
+          {showSuggestions && suggestions.length > 0 && (
+            <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 100, background: '#fff', border: '0.5px solid ' + T.border, borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.08)', maxHeight: 200, overflowY: 'auto' }}>
+              {suggestions.map(p => (
+                <div key={p.id} onMouseDown={() => selectSuggestion(p)}
+                  style={{ padding: '8px 12px', cursor: 'pointer', fontSize: 12, borderBottom: '0.5px solid ' + T.border }}
+                  onMouseEnter={e => e.currentTarget.style.background = T.creamDark}
+                  onMouseLeave={e => e.currentTarget.style.background = '#fff'}>
+                  <div style={{ fontWeight: 500, color: T.text }}>{p.name}</div>
+                  {p.brand && <div style={{ fontSize: 11, color: T.textMuted }}>{p.brand}</div>}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
         <div><FieldLabel>Brand</FieldLabel><TextInput value={form.brand} onChange={e => set('brand', e.target.value)} placeholder="e.g. Glow Recipe" width="100%" /></div>
       </div>
 
