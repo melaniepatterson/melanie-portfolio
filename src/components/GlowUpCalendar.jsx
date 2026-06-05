@@ -1908,14 +1908,15 @@ const PAO_OPTIONS = [3, 6, 9, 12, 18, 24, 36]
 
 function PaoIcon({ months, size = 20 }) {
   if (!months) return null
+  const s = Math.round(size)
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, verticalAlign: 'middle' }}>
-      <svg width={size} height={size} viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="4" y="8" width="12" height="9" rx="1" stroke="currentColor" strokeWidth="1.3" fill="none"/>
-        <path d="M4 8V6.5C4 5.67 6.69 5 10 5s6 .67 6 1.5V8" stroke="currentColor" strokeWidth="1.3" fill="none"/>
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 2, verticalAlign: 'middle' }}>
+      <svg width={s} height={s} viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="4" y="8" width="12" height="9" rx="1" stroke="currentColor" strokeWidth="1.3"/>
+        <path d="M4 8V6.5C4 5.67 6.69 5 10 5s6 .67 6 1.5V8" stroke="currentColor" strokeWidth="1.3"/>
         <path d="M7 5.2L6 3.5M13 5.2L14 3.5" stroke="currentColor" strokeWidth="1" strokeLinecap="round"/>
-        <text x="10" y="14.5" textAnchor="middle" fontSize="5" fontWeight="700" fill="currentColor">{months}M</text>
       </svg>
+      <span style={{ fontSize: Math.max(8, Math.round(s * 0.5)), fontWeight: 700, lineHeight: 1 }}>{months}M</span>
     </span>
   )
 }
@@ -2022,83 +2023,79 @@ function ProductForm({ initial, onSave, onCancel }) {
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: 10, marginBottom: 8, flexWrap: 'wrap' }}>
+      {/* Currently using + Would buy again — same row */}
+      <div style={{ display: 'flex', gap: 20, marginBottom: 12, flexWrap: 'wrap' }}>
         <Toggle checked={!!form.currentlyUsing} onChange={e => set('currentlyUsing', e.target.checked)} label="I'm currently using this" />
-
-
-          {/* Purchase & expiry tracking */}
-          <div style={{ borderTop: `0.5px solid ${T.border}`, paddingTop: 12, marginBottom: 8 }}>
-            <FieldLabel>
-              Purchase & expiry
-              <span style={{ fontWeight: 400, color: T.textLight, marginLeft: 4 }}>(optional)</span>
-            </FieldLabel>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 10 }}>
-            <div>
-              <FieldLabel>Purchased</FieldLabel>
-              <input type="date" value={form.purchased_at || ''} onChange={e => set('purchased_at', e.target.value)}
-                style={{ width: '100%', fontSize: 12, padding: '7px 10px', border: `0.5px solid ${T.border}`, borderRadius: 8, background: T.cream, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
-            </div>
-            <div>
-              <FieldLabel>Opened</FieldLabel>
-              <input type="date" value={form.opened_at || ''} onChange={e => set('opened_at', e.target.value)}
-                style={{ width: '100%', fontSize: 12, padding: '7px 10px', border: `0.5px solid ${T.border}`, borderRadius: 8, background: T.cream, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
-            </div>
-            <div>
-              <FieldLabel>Expires</FieldLabel>
-              <input type="date" value={form.expires_at || ''} onChange={e => set('expires_at', e.target.value)}
-                style={{ width: '100%', fontSize: 12, padding: '7px 10px', border: `0.5px solid ${T.border}`, borderRadius: 8, background: T.cream, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
-            </div>
-            <div>
-              <FieldLabel style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <PaoIcon months={form.pao_months} size={14} />
-                PAO
-                <InfoTooltip text="Period After Opening — how long the product is safe to use once opened. Look for the open jar symbol on packaging." />
-              </FieldLabel>
-              <select value={form.pao_months || ''} onChange={e => set('pao_months', e.target.value ? Number(e.target.value) : null)}
-                style={{ width: '100%', fontSize: 12, padding: '7px 10px', border: `0.5px solid ${T.border}`, borderRadius: 8, background: T.cream, color: form.pao_months ? T.text : T.textMuted, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }}>
-                <option value="">— Select PAO —</option>
-                {PAO_OPTIONS.map(m => <option key={m} value={m}>{m} months</option>)}
-              </select>
-            </div>
-          </div>
-          {form.opened_at && form.pao_months && (
-            <div style={{ fontSize: 11, color: T.textMuted, fontStyle: 'italic', marginBottom: 10 }}>
-              Use by: {new Date(new Date(form.opened_at).setMonth(new Date(form.opened_at).getMonth() + form.pao_months)).toLocaleDateString()}
-            </div>
-          )}
-        <div style={{ borderTop: `0.5px solid ${T.border}`, paddingTop: 12, marginBottom: 8 }}>
-          <FieldLabel>Ownership & ethics</FieldLabel>
-        </div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 10 }}>
-          {[
-            { key: 'black_owned',       label: 'Black-owned'       },
-            { key: 'indigenous_owned',  label: 'Indigenous-owned'  },
-            { key: 'poc_owned',         label: 'POC-owned'         },
-            { key: 'woman_owned',       label: 'Woman-owned'       },
-            { key: 'lgbtq_owned',       label: 'LGBTQ+-owned'      },
-            { key: 'cruelty_free',      label: 'Cruelty-free'      },
-            { key: 'vegan',             label: 'Vegan'             },
-            { key: 'certified_organic', label: 'Certified organic' },
-            { key: 'fair_trade',        label: 'Fair trade'        },
-            { key: 'is_prescription',   label: '℞ Prescription'    },
-            { key: 'clean_formula',     label: 'Clean formula'     },
-            { key: 'science_backed',    label: 'Science-backed'    },
-          ].map(({ key, label }) => (
-            <button
-              key={key}
-              type="button"
-              onClick={() => set(key, !form[key])}
-              style={{
-                padding: '5px 12px', borderRadius: 20, fontSize: 11, cursor: 'pointer',
-                border: `0.5px solid ${form[key] ? T.pinkDeep : T.border}`,
-                background: form[key] ? T.pink : 'transparent',
-                color: T.text, fontFamily: 'inherit',
-              }}
-            >{label}</button>
-          ))}
-        </div>
         <Toggle checked={form.buyAgain === true} onChange={e => set('buyAgain', e.target.checked ? true : null)} label="Would buy again" />
+      </div>
+
+      {/* Purchase & expiry tracking */}
+      <div style={{ borderTop: `0.5px solid ${T.border}`, paddingTop: 12, marginBottom: 10 }}>
+        <FieldLabel>Purchase & expiry <span style={{ fontWeight: 400, color: T.textLight }}>(optional)</span></FieldLabel>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 10 }}>
+        <div>
+          <FieldLabel>Purchased</FieldLabel>
+          <input type="date" value={form.purchased_at || ''} onChange={e => set('purchased_at', e.target.value)}
+            style={{ width: '100%', fontSize: 12, padding: '7px 10px', border: `0.5px solid ${T.border}`, borderRadius: 8, background: T.cream, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
+        </div>
+        <div>
+          <FieldLabel>Opened</FieldLabel>
+          <input type="date" value={form.opened_at || ''} onChange={e => set('opened_at', e.target.value)}
+            style={{ width: '100%', fontSize: 12, padding: '7px 10px', border: `0.5px solid ${T.border}`, borderRadius: 8, background: T.cream, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
+        </div>
+        <div>
+          <FieldLabel>Expires</FieldLabel>
+          <input type="date" value={form.expires_at || ''} onChange={e => set('expires_at', e.target.value)}
+            style={{ width: '100%', fontSize: 12, padding: '7px 10px', border: `0.5px solid ${T.border}`, borderRadius: 8, background: T.cream, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
+        </div>
+        <div>
+          <FieldLabel>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+              <PaoIcon months={form.pao_months} size={14} />
+              PAO
+              <InfoTooltip text="Period After Opening — how long the product is good for once opened. Look for the open jar symbol on packaging." />
+            </span>
+          </FieldLabel>
+          <select value={form.pao_months || ''} onChange={e => set('pao_months', e.target.value ? Number(e.target.value) : null)}
+            style={{ width: '100%', fontSize: 12, padding: '7px 10px', border: `0.5px solid ${T.border}`, borderRadius: 8, background: T.cream, color: form.pao_months ? T.text : T.textMuted, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }}>
+            <option value="">— Select PAO —</option>
+            {PAO_OPTIONS.map(m => <option key={m} value={m}>{m} months</option>)}
+          </select>
+        </div>
+      </div>
+      {form.opened_at && form.pao_months && (
+        <div style={{ fontSize: 11, color: T.textMuted, fontStyle: 'italic', marginBottom: 10 }}>
+          Use by: {new Date(new Date(form.opened_at).setMonth(new Date(form.opened_at).getMonth() + form.pao_months)).toLocaleDateString()}
+        </div>
+      )}
+
+      {/* Ownership & ethics */}
+      <div style={{ borderTop: `0.5px solid ${T.border}`, paddingTop: 12, marginBottom: 8 }}>
+        <FieldLabel>Ownership & ethics</FieldLabel>
+      </div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 12 }}>
+        {[
+          { key: 'black_owned',       label: 'Black-owned'       },
+          { key: 'indigenous_owned',  label: 'Indigenous-owned'  },
+          { key: 'poc_owned',         label: 'POC-owned'         },
+          { key: 'woman_owned',       label: 'Woman-owned'       },
+          { key: 'lgbtq_owned',       label: 'LGBTQ+-owned'      },
+          { key: 'cruelty_free',      label: 'Cruelty-free'      },
+          { key: 'vegan',             label: 'Vegan'             },
+          { key: 'certified_organic', label: 'Certified organic' },
+          { key: 'fair_trade',        label: 'Fair trade'        },
+          { key: 'is_prescription',   label: '℞ Prescription'    },
+          { key: 'clean_formula',     label: 'Clean formula'     },
+          { key: 'science_backed',    label: 'Science-backed'    },
+        ].map(({ key, label }) => (
+          <button key={key} type="button" onClick={() => set(key, !form[key])} style={{
+            padding: '5px 12px', borderRadius: 20, fontSize: 11, cursor: 'pointer',
+            border: `0.5px solid ${form[key] ? T.pinkDeep : T.border}`,
+            background: form[key] ? T.pink : 'transparent',
+            color: T.text, fontFamily: 'inherit',
+          }}>{label}</button>
+        ))}
       </div>
 
       <div style={{ marginBottom: 8 }}>
@@ -3032,11 +3029,14 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
         </div>
       ) : (
         <>
-          {/* Skincare section header */}
-          {tab === 'am' && period && <div style={{ fontSize: 10, fontWeight: 700, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8, paddingBottom: 4, borderBottom: `0.5px solid ${T.border}` }}>Skincare</div>}
+          {/* Skincare section header — always show when period exists */}
+          {period && <div style={{ fontSize: 10, fontWeight: 700, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8, paddingBottom: 4, borderBottom: `0.5px solid ${T.border}` }}>Skincare</div>}
           {/* AM: normal routine unless it's an AM treatment */}
-          {tab === 'am' && !isRecovery && !(isTreatment && treatTod === 'am') && renderSteps(period ? getStepsForDayType(period, 'am') : getDefaultSteps('am'), T.pinkDeep, 'am')}
-          {tab === 'am' && isRecovery && renderSteps(getStepsForDayType(period, 'recovery'), T.pinkDeep, 'recovery')}
+          {tab === 'am' && dayType === 'pause' && (
+            <div style={{ fontSize: 11, color: '#92400E', background: '#FFFBEB', border: '0.5px solid #FCD34D', borderRadius: 6, padding: '5px 10px', marginBottom: 8 }}>
+              Pre-treatment pause — your morning SPF and moisturizer are fine. Skip any acids or actives.
+            </div>
+          )}
           {tab === 'am' && isTreatment && treatTod === 'am' && (
             <div style={{ fontSize: 12, color: T.textMuted, padding: '8px 0' }}>
               <span style={{ fontWeight: 500, color: T.text }}>Treatment this morning.</span> Skip your regular routine and follow your provider's instructions. Recovery products start tonight.
@@ -3047,11 +3047,8 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
               Recovery products only — no actives this morning.
             </div>
           )}
-          {tab === 'am' && dayType === 'pause' && (
-            <div style={{ fontSize: 11, color: '#92400E', background: '#FFFBEB', border: '0.5px solid #FCD34D', borderRadius: 6, padding: '5px 10px', marginBottom: 8 }}>
-              Pre-treatment pause — your morning SPF and moisturizer are fine. Skip any acids or actives.
-            </div>
-          )}
+          {tab === 'am' && !isRecovery && !(isTreatment && treatTod === 'am') && renderSteps(period ? getStepsForDayType(period, 'am') : getDefaultSteps('am'), T.pinkDeep, 'am')}
+          {tab === 'am' && isRecovery && renderSteps(getStepsForDayType(period, 'recovery'), T.pinkDeep, 'recovery')}
           {/* PM: treatment banner + recovery steps */}
           {tab === 'pm' && isTreatment && (
             <div style={{ fontSize: 11, padding: '6px 10px', borderRadius: 6, background: '#E0F2FE', color: '#0C4A6E', marginBottom: 8, lineHeight: 1.5 }}>
@@ -4114,7 +4111,7 @@ export default function GlowUpCalendar({ session }) {
   function openDailyEditor(period) {
     if (period === 'new') {
       const current = getActiveDailyPeriod(new Date(), dailyHistory)
-      setEditingDaily(current ? { ...current, startDate: '', id: null, _prefill: true } : 'new')
+      setEditingDaily(current ? { ...current, startDate: '', endDate: null, id: null, _prefill: true } : 'new')
     } else {
       setEditingDaily(period)
     }
@@ -4152,7 +4149,7 @@ export default function GlowUpCalendar({ session }) {
   function openShowerEditor(period) {
     if (period === 'new') {
       const current = getActiveShowerPeriod(new Date(), showerHistory)
-      setEditingShower(current ? { ...current, startDate: '', id: null, _prefill: true } : 'new')
+      setEditingShower(current ? { ...current, startDate: '', endDate: null, id: null, _prefill: true } : 'new')
     } else {
       setEditingShower(period)
     }
