@@ -3664,6 +3664,7 @@ export default function GlowUpCalendar({ session }) {
   useEffect(() => {
     if (!userId) return
     async function loadAll() {
+      try {
       setLoading(true)
       const [
         { data: rp },
@@ -3702,7 +3703,6 @@ export default function GlowUpCalendar({ session }) {
       // Products — catalog (global) + user products
       const prodMap = {}
       // Load catalog first so user products override if same id
-      if (catErr) console.warn('catalog_products fetch error:', catErr.message)
       ;(cat || []).forEach(p => {
         prodMap[p.id] = {
           ...p,
@@ -3779,6 +3779,10 @@ export default function GlowUpCalendar({ session }) {
       setCustomTypes(ctMap)
 
       setLoading(false)
+      } catch(err) {
+        console.error('loadAll error:', err)
+        setLoading(false)
+      }
     }
     loadAll()
   }, [userId])
