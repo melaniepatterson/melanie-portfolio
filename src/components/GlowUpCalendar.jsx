@@ -387,7 +387,7 @@ function getDefaultSteps(dayType) {
       categoryKey: key,
       label: cat.label,
       optional: cat.optional,
-      enabled: true, // all steps visible by default; user can toggle off
+      enabled: !cat.optional, // required steps on by default; optional steps off
       professionalOnly: cat.dayTypes[dayType] === 'professional',
     }))
 }
@@ -2898,8 +2898,8 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
       result.push(
         <div key="hidden-steps" style={{ marginTop: 8 }}>
           <div style={{ marginBottom: 6 }}>
-            <div style={{ fontSize: 10, color: T.textLight, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Removed steps</div>
-            <div style={{ fontSize: 10, color: T.textLight, fontStyle: 'italic', marginTop: 2 }}>Tap + to add back to your routine</div>
+            <div style={{ fontSize: 10, color: T.textLight, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Optional steps</div>
+            <div style={{ fontSize: 10, color: T.textLight, fontStyle: 'italic', marginTop: 2 }}>Tap + to add to your routine</div>
           </div>
           {hiddenSteps.map(s => (
             <div key={s.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '5px 0', borderBottom: '0.5px solid ' + T.border, opacity: 0.5 }}>
