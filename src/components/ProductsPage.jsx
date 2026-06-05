@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 
 const T = {
@@ -495,6 +495,8 @@ function ProductForm({ initial, onSave, onCancel }) {
 function ProductLibrary({ products, onEdit, onAdd, onDelete }) {
   const [filterCat, setFilterCat] = useState('all')
   const [filterFlags, setFilterFlags] = useState([])
+  const [filterUsing, setFilterUsing] = useState(false)
+  const [filterBuyAgain, setFilterBuyAgain] = useState(false)
   const [search, setSearch] = useState('')
 
   const ETHICS_FILTERS = [
@@ -523,7 +525,9 @@ function ProductLibrary({ products, onEdit, onAdd, onDelete }) {
         p.name.toLowerCase().includes(search.toLowerCase()) ||
         (p.brand || '').toLowerCase().includes(search.toLowerCase())
       const matchFlags = filterFlags.length === 0 || filterFlags.every(f => p[f])
-      return matchCat && matchSearch && matchFlags
+      const matchUsing = !filterUsing || p.currentlyUsing
+      const matchBuyAgain = !filterBuyAgain || p.buyAgain === true
+      return matchCat && matchSearch && matchFlags && matchUsing && matchBuyAgain
     })
     .sort((a, b) => (a.name || '').localeCompare(b.name || ''))
 
@@ -561,9 +565,11 @@ function ProductLibrary({ products, onEdit, onAdd, onDelete }) {
             }}>{label}</button>
           )
         })}
-        {filterFlags.length > 0 && (
-          <button onClick={() => setFilterFlags([])} style={{ padding: '4px 10px', borderRadius: 20, fontSize: 11, cursor: 'pointer', border: '0.5px solid ' + T.border, background: 'transparent', color: T.textMuted, fontFamily: 'inherit' }}>
-            Clear filters ×
+        <button onClick={() => setFilterUsing(s => !s)} style={{ padding: '4px 10px', borderRadius: 20, fontSize: 11, cursor: 'pointer', border: '0.5px solid ' + (filterUsing ? T.pinkDeep : T.border), background: filterUsing ? T.pink : 'transparent', color: T.text, fontFamily: 'inherit' }}>Currently using</button>
+        <button onClick={() => setFilterBuyAgain(s => !s)} style={{ padding: '4px 10px', borderRadius: 20, fontSize: 11, cursor: 'pointer', border: '0.5px solid ' + (filterBuyAgain ? T.pinkDeep : T.border), background: filterBuyAgain ? T.pink : 'transparent', color: T.text, fontFamily: 'inherit' }}>Would buy again</button>
+        {(filterFlags.length > 0 || filterUsing || filterBuyAgain) && (
+          <button onClick={() => { setFilterFlags([]); setFilterUsing(false); setFilterBuyAgain(false) }} style={{ padding: '4px 10px', borderRadius: 20, fontSize: 11, cursor: 'pointer', border: '0.5px solid ' + T.border, background: 'transparent', color: T.textMuted, fontFamily: 'inherit' }}>
+            Clear all ×
           </button>
         )}
       </div>
@@ -604,6 +610,12 @@ function ProductLibrary({ products, onEdit, onAdd, onDelete }) {
               )}
               {p.notes && (
                 <div style={{ fontSize: 11, color: T.textMuted, marginTop: 6, lineHeight: 1.5, fontStyle: 'italic' }}>{p.notes}</div>
+              )}
+              {p.purchaseUrl && (
+                <a href={p.purchaseUrl} target="_blank" rel="noopener noreferrer"
+                  style={{ display: 'inline-block', marginTop: 8, fontSize: 11, padding: '4px 12px', borderRadius: 20, background: T.pinkDeep, color: '#fff', textDecoration: 'none', fontWeight: 500 }}>
+                  Shop →
+                </a>
               )}
             </div>
             <div style={{ display: 'flex', gap: 4, flexShrink: 0, alignSelf: 'flex-start' }}>

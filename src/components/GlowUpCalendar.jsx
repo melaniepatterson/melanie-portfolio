@@ -1244,7 +1244,7 @@ function RoutineHistoryPanel({ history, onClose, onEdit, onDelete, onAddNew, get
         {(!dailyHistory || dailyHistory.length === 0) && (
           <div style={{ fontSize: 12, color: T.textLight, fontStyle: 'italic' }}>No extras saved yet — add brow serums, eye patches, tools, and more.</div>
         )}
-        {[...(dailyHistory || [])].sort((a, b) => b.startDate.localeCompare(a.startDate)).map((p, i) => (
+        {[...(dailyHistory || [])].sort((a, b) => b.startDate.localeCompare(a.startDate)).slice(0, 3).map((p, i) => (
           <div key={p.id} style={{ borderTop: i > 0 ? `0.5px solid ${T.border}` : 'none', paddingTop: i > 0 ? 12 : 0, marginTop: i > 0 ? 12 : 0 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
               <div style={{ fontSize: 12, fontWeight: 600, color: T.text }}>
@@ -4717,7 +4717,7 @@ export default function GlowUpCalendar({ session }) {
                 onClose={() => setPanel(null)}
                 onEdit={(period) => { startEdit(period); setPanel(null); setEditFromHistory(true) }}
                 onDelete={deletePeriod}
-                onAddNew={() => { setPanel('update'); }}
+                onAddNew={() => { setPanel('update'); setEditingPeriod(null) }}
                 dailyHistory={dailyHistory}
                 onEditDaily={(p) => { openDailyEditor(p); setPanel(null); setDailyFromHistory(true) }}
                 onDeleteDaily={deleteDaily}
