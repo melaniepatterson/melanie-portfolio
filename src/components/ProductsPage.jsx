@@ -302,6 +302,7 @@ function ProductForm({ initial, onSave, onCancel }) {
     lgbtq_owned: false, cruelty_free: false, vegan: false, certified_organic: false, fair_trade: false,
     clean_formula: false, science_backed: false, is_prescription: false,
     purchased_at: '', opened_at: '', expires_at: '', pao_months: null,
+    store_name: '', direct_url: '', direct_store_name: '',
     ...(initial ? { ...initial, tags: initial.tags || [] } : {})
   })
   const [tagInput, setTagInput] = useState('')
@@ -477,6 +478,23 @@ function ProductForm({ initial, onSave, onCancel }) {
             ))}
           </select>
         </>)}
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 10 }}>
+        <div>
+          <FieldLabel>Store name <span style={{ fontWeight: 400, color: T.textLight }}>(e.g. Ulta)</span></FieldLabel>
+          <input value={form.store_name || ''} onChange={e => set('store_name', e.target.value)} placeholder="e.g. Sephora"
+            style={{ width: '100%', fontSize: 12, padding: '7px 10px', border: `0.5px solid ${T.border}`, borderRadius: 8, background: T.cream, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
+        </div>
+        <div>
+          <FieldLabel>Direct URL <span style={{ fontWeight: 400, color: T.textLight }}>(brand site)</span></FieldLabel>
+          <input value={form.direct_url || ''} onChange={e => set('direct_url', e.target.value)} placeholder="https://..."
+            style={{ width: '100%', fontSize: 12, padding: '7px 10px', border: `0.5px solid ${T.border}`, borderRadius: 8, background: T.cream, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
+        </div>
+        <div style={{ gridColumn: '1 / -1' }}>
+          <FieldLabel>Direct store name <span style={{ fontWeight: 400, color: T.textLight }}>(e.g. The Ordinary)</span></FieldLabel>
+          <input value={form.direct_store_name || ''} onChange={e => set('direct_store_name', e.target.value)} placeholder="e.g. The Ordinary"
+            style={{ width: '100%', fontSize: 12, padding: '7px 10px', border: `0.5px solid ${T.border}`, borderRadius: 8, background: T.cream, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
+        </div>
       </div>
       <div style={{ marginBottom: 10 }}>
         <FieldLabel>Notes</FieldLabel>
@@ -761,7 +779,10 @@ export default function ProductsPage({ session }) {
             purchased_at: p.purchased_at || '',
             opened_at: p.opened_at || '',
             expires_at: p.expires_at || '',
-            pao_months: p.pao_months || null,
+            pao_months:          p.pao_months || null,
+            store_name:          p.store_name || '',
+            direct_url:          p.direct_url || '',
+            direct_store_name:   p.direct_store_name || '',
           }
         })
         setProducts(map)
@@ -804,7 +825,10 @@ export default function ProductsPage({ session }) {
       purchased_at: product.purchased_at || null,
       opened_at: product.opened_at || null,
       expires_at: product.expires_at || null,
-      pao_months: product.pao_months || null,
+      pao_months:          product.pao_months || null,
+      store_name:          product.store_name || null,
+      direct_url:          product.direct_url || null,
+      direct_store_name:   product.direct_store_name || null,
     }
     if (!row.id) {
       row.id = crypto.randomUUID()
