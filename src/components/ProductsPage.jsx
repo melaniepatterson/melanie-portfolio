@@ -796,8 +796,8 @@ function ProductLibrary({ products, catalogProducts, onEdit, onAdd, onDelete }) 
 
   function CheckItem({ label, checked, onChange }) {
     return (
-      <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: checked ? T.text : T.textMuted, cursor: 'pointer', padding: '3px 0' }}>
-        <div style={{ width: 14, height: 14, borderRadius: 3, border: '1.5px solid ' + (checked ? T.pinkDeep : T.border), background: checked ? T.pinkDeep : 'transparent', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <label onClick={onChange} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: checked ? T.text : T.textMuted, cursor: 'pointer', padding: '3px 0', userSelect: 'none' }}>
+        <div style={{ width: 14, height: 14, borderRadius: 3, border: '1.5px solid ' + (checked ? T.pinkDeep : T.border), background: checked ? T.pinkDeep : 'transparent', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
           {checked && <span style={{ color: '#fff', fontSize: 9, lineHeight: 1 }}>✓</span>}
         </div>
         {label}
