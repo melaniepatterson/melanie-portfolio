@@ -3672,6 +3672,7 @@ export default function GlowUpCalendar({ session }) {
         { data: sp },
         { data: tr },
         { data: ct },
+        { data: cat },
       ] = await Promise.all([
         supabase.from('routine_periods').select('*').eq('user_id', userId).order('start_date'),
         supabase.from('products').select('*').eq('user_id', userId),
