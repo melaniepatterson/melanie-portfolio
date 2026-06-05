@@ -615,8 +615,8 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts }
   const directStoreName = p.direct_store_name || cat?.direct_store_name
 
   return (
-    <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1000, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
-      <div onClick={e => e.stopPropagation()} style={{ background: T.white, borderRadius: '16px 16px 0 0', width: '100%', maxWidth: 600, maxHeight: '85vh', overflowY: 'auto', padding: '24px 20px 40px' }}>
+    <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+      <div onClick={e => e.stopPropagation()} style={{ background: T.white, borderRadius: 16, width: '100%', maxWidth: 520, maxHeight: '85vh', overflowY: 'auto', padding: '24px 20px 32px' }}>
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
           <div style={{ flex: 1, paddingRight: 12 }}>
@@ -708,12 +708,12 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts }
 // ─── PRODUCT LIBRARY ─────────────────────────────────────────
 function ProductLibrary({ products, catalogProducts, onEdit, onAdd, onDelete }) {
   const [libTab, setLibTab] = useState('all')
-  const [selectedProduct, setSelectedProduct] = useState(null)
-  const [filterCat, setFilterCat] = useState('all')
+  const [filterCats, setFilterCats] = useState([])
   const [filterFlags, setFilterFlags] = useState([])
   const [filterUsing, setFilterUsing] = useState(false)
   const [filterBuyAgain, setFilterBuyAgain] = useState(false)
   const [search, setSearch] = useState('')
+  const [selectedProduct, setSelectedProduct] = useState(null)
 
   const ETHICS_FILTERS = [
     { key: 'black_owned',       label: 'Black-owned'      },
@@ -725,14 +725,22 @@ function ProductLibrary({ products, catalogProducts, onEdit, onAdd, onDelete }) 
     { key: 'vegan',             label: 'Vegan'            },
     { key: 'certified_organic', label: 'Organic'          },
     { key: 'fair_trade',        label: 'Fair trade'       },
-    { key: 'clean_formula',     label: 'Clean'            },
+    { key: 'clean_formula',     label: 'Clean formula'    },
     { key: 'science_backed',    label: 'Science-backed'   },
-    { key: 'is_prescription',   label: '℞ Rx'        },
+    { key: 'is_prescription',   label: '℞ Prescription'  },
   ]
 
+  function toggleCat(cat) {
+    setFilterCats(prev => prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat])
+  }
   function toggleFlag(key) {
     setFilterFlags(prev => prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key])
   }
+  function clearAll() {
+    setFilterCats([]); setFilterFlags([]); setFilterUsing(false); setFilterBuyAgain(false); setSearch('')
+  }
+
+  const hasFilters = filterCats.length > 0 || filterFlags.length > 0 || filterUsing || filterBuyAgain || search.trim()
 
   function getMergedProducts() {
     const userArr = Object.values(products)
@@ -752,7 +760,7 @@ function ProductLibrary({ products, catalogProducts, onEdit, onAdd, onDelete }) 
   function applyFilters(arr) {
     return arr
       .filter(p => {
-        const matchCat = filterCat === 'all' || p.category === filterCat
+        const matchCat = filterCats.length === 0 || filterCats.includes(p.category)
         const matchSearch = !search.trim() || p.name.toLowerCase().includes(search.toLowerCase()) || (p.brand || '').toLowerCase().includes(search.toLowerCase())
         const matchFlags = filterFlags.length === 0 || filterFlags.every(f => p[f])
         const matchUsing = !filterUsing || p.currentlyUsing
@@ -772,72 +780,126 @@ function ProductLibrary({ products, catalogProducts, onEdit, onAdd, onDelete }) 
   const list = applyFilters(pool)
   const isCatalogCard = p => p._isCatalog && !p._isLinked
 
-  return (
-    <div style={{ padding: '12px 20px' }}>
-      <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
-        {[
-          { key: 'all',         label: 'All',         count: getMergedProducts().length },
-          { key: 'mine',        label: 'Mine',        count: Object.keys(products).length },
-          { key: 'recommended', label: 'Recommended', count: Object.keys(catalogProducts || {}).length },
-        ].map(t => (
-          <button key={t.key} onClick={() => { setLibTab(t.key); setFilterCat('all'); setFilterFlags([]) }} style={{
-            padding: '6px 14px', borderRadius: 20, fontSize: 12, cursor: 'pointer',
-            border: '0.5px solid ' + (libTab === t.key ? T.pinkDeep : T.border),
-            background: libTab === t.key ? T.pink : 'transparent', color: T.text, fontFamily: 'inherit',
-          }}>{t.label} <span style={{ fontSize: 10, color: T.textMuted }}>({t.count})</span></button>
-        ))}
+  // Sidebar filter section component
+  function FilterSection({ title, children, defaultOpen = true }) {
+    const [open, setOpen] = useState(defaultOpen)
+    return (
+      <div style={{ borderBottom: '0.5px solid ' + T.border, paddingBottom: 12, marginBottom: 12 }}>
+        <button onClick={() => setOpen(o => !o)} style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0', marginBottom: open ? 8 : 0 }}>
+          <span style={{ fontSize: 11, fontWeight: 600, color: T.text, letterSpacing: '0.06em', textTransform: 'uppercase' }}>{title}</span>
+          <span style={{ fontSize: 12, color: T.textLight }}>{open ? '−' : '+'}</span>
+        </button>
+        {open && children}
       </div>
+    )
+  }
 
-      <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search products..."
-        style={{ width: '100%', fontSize: 12, padding: '7px 10px', border: '0.5px solid ' + T.border, borderRadius: 8, background: T.white, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box', marginBottom: 8 }} />
-
-      <div style={{ display: 'flex', gap: 8, marginBottom: 8, flexWrap: 'wrap' }}>
-        <select value={filterCat} onChange={e => setFilterCat(e.target.value)}
-          style={{ fontSize: 12, padding: '7px 10px', border: '0.5px solid ' + T.border, borderRadius: 8, background: T.white, color: T.text, fontFamily: 'inherit', outline: 'none' }}>
-          <option value="all">All categories</option>
-          {PRODUCT_CATEGORIES.map(cat => <option key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</option>)}
-        </select>
-        <button onClick={() => setFilterUsing(s => !s)} style={{ padding: '4px 10px', borderRadius: 20, fontSize: 11, cursor: 'pointer', border: '0.5px solid ' + (filterUsing ? T.pinkDeep : T.border), background: filterUsing ? T.pink : 'transparent', color: T.text, fontFamily: 'inherit' }}>Currently using</button>
-        <button onClick={() => setFilterBuyAgain(s => !s)} style={{ padding: '4px 10px', borderRadius: 20, fontSize: 11, cursor: 'pointer', border: '0.5px solid ' + (filterBuyAgain ? T.pinkDeep : T.border), background: filterBuyAgain ? T.pink : 'transparent', color: T.text, fontFamily: 'inherit' }}>Would buy again</button>
-      </div>
-
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 14 }}>
-        {ETHICS_FILTERS.map(({ key, label }) => {
-          const active = filterFlags.includes(key)
-          return <button key={key} onClick={() => toggleFlag(key)} style={{ padding: '4px 10px', borderRadius: 20, fontSize: 11, cursor: 'pointer', border: '0.5px solid ' + (active ? T.pinkDeep : T.border), background: active ? T.pink : 'transparent', color: T.text, fontFamily: 'inherit' }}>{label}</button>
-        })}
-        {(filterFlags.length > 0 || filterUsing || filterBuyAgain) && (
-          <button onClick={() => { setFilterFlags([]); setFilterUsing(false); setFilterBuyAgain(false) }} style={{ padding: '4px 10px', borderRadius: 20, fontSize: 11, cursor: 'pointer', border: '0.5px solid ' + T.border, background: 'transparent', color: T.textMuted, fontFamily: 'inherit' }}>Clear all ×</button>
-        )}
-      </div>
-
-      {list.length === 0 && (
-        <div style={{ fontSize: 13, color: T.textMuted, fontStyle: 'italic', padding: '20px 0', textAlign: 'center' }}>
-          {pool.length === 0 ? 'No products yet — tap + Add product to get started.' : 'No products match your filters.'}
+  function CheckItem({ label, checked, onChange }) {
+    return (
+      <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: checked ? T.text : T.textMuted, cursor: 'pointer', padding: '3px 0' }}>
+        <div style={{ width: 14, height: 14, borderRadius: 3, border: '1.5px solid ' + (checked ? T.pinkDeep : T.border), background: checked ? T.pinkDeep : 'transparent', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          {checked && <span style={{ color: '#fff', fontSize: 9, lineHeight: 1 }}>✓</span>}
         </div>
-      )}
+        {label}
+      </label>
+    )
+  }
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
-        {list.map(p => (
-          <div key={p.id} onClick={() => setSelectedProduct(p)} style={{ background: T.white, border: '0.5px solid ' + T.border, borderRadius: 10, padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 4, position: 'relative', cursor: 'pointer' }}>
-            {(isCatalogCard(p) || p._isLinked) && (
-              <div style={{ position: 'absolute', top: 8, right: 8, fontSize: 9, background: T.pink, color: T.pinkDeep, borderRadius: 10, padding: '2px 6px', fontWeight: 600 }}>We recommend</div>
-            )}
-            <div style={{ paddingRight: (isCatalogCard(p) || p._isLinked) ? 80 : 0 }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 2 }}>{p.name}</div>
-              {p.brand && <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 4 }}>{p.brand}</div>}
-              {p.category && <div style={{ fontSize: 11, color: T.textLight, marginBottom: 4 }}>{p.category.charAt(0).toUpperCase() + p.category.slice(1)}</div>}
-            </div>
-            <ProductFlagBadges product={p} max={4} />
-            {p.pao_months && <span style={{ display: 'inline-flex', alignItems: 'center', gap: 2, fontSize: 10, color: T.textMuted, marginTop: 2 }}><PaoIcon months={p.pao_months} size={13} /></span>}
-            {p.effectiveness > 0 && <div style={{ marginTop: 4 }}><StarRating value={p.effectiveness} size={11} /></div>}
-            {p.currentlyUsing && <div style={{ fontSize: 10, color: T.pinkDeep, fontWeight: 600, marginTop: 4 }}>Currently using</div>}
-            {(p.purchaseUrl || p.direct_url) && (
-              <div style={{ fontSize: 10, color: T.pinkDeep, marginTop: 6 }}>Tap to shop →</div>
-            )}
-          </div>
-        ))}
+  return (
+    <div style={{ display: 'flex', gap: 0, minHeight: 400 }}>
+
+      {/* ── Left Sidebar ─────────────────────────────────────── */}
+      <div style={{ width: 200, flexShrink: 0, borderRight: '0.5px solid ' + T.border, padding: '16px 16px 16px 20px', overflowY: 'auto' }}>
+
+        {/* Clear filters */}
+        {hasFilters && (
+          <button onClick={clearAll} style={{ fontSize: 11, color: T.pinkDeep, background: 'none', border: 'none', cursor: 'pointer', padding: '0 0 12px', fontFamily: 'inherit' }}>
+            Clear all filters ×
+          </button>
+        )}
+
+        {/* Product type */}
+        <FilterSection title="Product type">
+          {PRODUCT_CATEGORIES.map(cat => (
+            <CheckItem key={cat}
+              label={cat.charAt(0).toUpperCase() + cat.slice(1)}
+              checked={filterCats.includes(cat)}
+              onChange={() => toggleCat(cat)} />
+          ))}
+        </FilterSection>
+
+        {/* Currently using / buy again */}
+        <FilterSection title="Status">
+          <CheckItem label="Currently using" checked={filterUsing} onChange={() => setFilterUsing(s => !s)} />
+          <CheckItem label="Would buy again" checked={filterBuyAgain} onChange={() => setFilterBuyAgain(s => !s)} />
+        </FilterSection>
+
+        {/* Ethics */}
+        <FilterSection title="Ethics & values">
+          {ETHICS_FILTERS.map(({ key, label }) => (
+            <CheckItem key={key}
+              label={label}
+              checked={filterFlags.includes(key)}
+              onChange={() => toggleFlag(key)} />
+          ))}
+        </FilterSection>
+
       </div>
+
+      {/* ── Main Content ──────────────────────────────────────── */}
+      <div style={{ flex: 1, padding: '16px 20px', minWidth: 0 }}>
+
+        {/* Tabs */}
+        <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
+          {[
+            { key: 'all',         label: 'All',         count: getMergedProducts().length },
+            { key: 'mine',        label: 'Mine',        count: Object.keys(products).length },
+            { key: 'recommended', label: 'Recommended', count: Object.keys(catalogProducts || {}).length },
+          ].map(t => (
+            <button key={t.key} onClick={() => { setLibTab(t.key) }} style={{
+              padding: '5px 12px', borderRadius: 20, fontSize: 12, cursor: 'pointer',
+              border: '0.5px solid ' + (libTab === t.key ? T.pinkDeep : T.border),
+              background: libTab === t.key ? T.pink : 'transparent', color: T.text, fontFamily: 'inherit',
+            }}>{t.label} <span style={{ fontSize: 10, color: T.textMuted }}>({t.count})</span></button>
+          ))}
+        </div>
+
+        {/* Search */}
+        <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search products..."
+          style={{ width: '100%', fontSize: 12, padding: '7px 10px', border: '0.5px solid ' + T.border, borderRadius: 8, background: T.white, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box', marginBottom: 12 }} />
+
+        {/* Empty state */}
+        {list.length === 0 && (
+          <div style={{ fontSize: 13, color: T.textMuted, fontStyle: 'italic', padding: '40px 0', textAlign: 'center' }}>
+            {pool.length === 0 ? 'No products yet.' : 'No products match your filters.'}
+          </div>
+        )}
+
+        {/* Grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 10 }}>
+          {list.map(p => (
+            <div key={p.id} onClick={() => setSelectedProduct(p)} style={{ background: T.white, border: '0.5px solid ' + T.border, borderRadius: 10, padding: '12px 12px', display: 'flex', flexDirection: 'column', gap: 3, position: 'relative', cursor: 'pointer' }}
+              onMouseEnter={e => e.currentTarget.style.borderColor = T.pinkDeep}
+              onMouseLeave={e => e.currentTarget.style.borderColor = T.border}>
+              {(isCatalogCard(p) || p._isLinked) && (
+                <div style={{ position: 'absolute', top: 8, right: 8, fontSize: 9, background: T.pink, color: T.pinkDeep, borderRadius: 10, padding: '2px 6px', fontWeight: 600 }}>We recommend</div>
+              )}
+              <div style={{ paddingRight: (isCatalogCard(p) || p._isLinked) ? 72 : 0 }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: T.text, marginBottom: 2, lineHeight: 1.3 }}>{p.name}</div>
+                {p.brand && <div style={{ fontSize: 11, color: T.textMuted }}>{p.brand}</div>}
+              </div>
+              {p.currentlyUsing && <div style={{ fontSize: 10, color: T.pinkDeep, fontWeight: 600 }}>Currently using</div>}
+              {p.effectiveness > 0 && <StarRating value={p.effectiveness} size={10} />}
+              <ProductFlagBadges product={p} max={3} />
+              {(p.purchaseUrl || p.direct_url) && (
+                <div style={{ fontSize: 10, color: T.textLight, marginTop: 4 }}>Tap to shop →</div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Modal */}
       {selectedProduct && (
         <ProductModal
           product={selectedProduct}
