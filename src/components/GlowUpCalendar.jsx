@@ -3782,6 +3782,34 @@ export default function GlowUpCalendar({ session }) {
   const [showExport,    setShowExport]    = useState(false)
   const [loading,       setLoading]       = useState(true)
 
+
+  // ── Handle actions from history page ─────────────────────────────────────
+  useEffect(() => {
+    const action = sessionStorage.getItem('glowup-history-action')
+    if (!action) return
+    sessionStorage.removeItem('glowup-history-action')
+    try {
+      const { type, data } = JSON.parse(action)
+      if (type === 'edit-skincare') {
+        setEditingPeriod(data)
+        setPanel(null)
+      } else if (type === 'new-skincare') {
+        setPanel('update')
+        setEditingPeriod(null)
+      } else if (type === 'edit-daily') {
+        setEditingDaily(data)
+        setPanel(null)
+      } else if (type === 'new-daily') {
+        openDailyEditor('new')
+      } else if (type === 'edit-shower') {
+        setEditingShower(data)
+        setPanel(null)
+      } else if (type === 'new-shower') {
+        openShowerEditor('new')
+      }
+    } catch(e) {}
+  }, [])
+
   // ── Load all data from Supabase on mount ─────────────────────────────────
   useEffect(() => {
     if (!userId) return
