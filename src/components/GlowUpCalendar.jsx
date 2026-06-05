@@ -1164,7 +1164,7 @@ function InfoTooltip({ text }) {
 }
 
 function RoutineHistoryPanel({ history, onClose, onEdit, onDelete, onAddNew, getActivePeriod, dailyHistory, onEditDaily, onDeleteDaily, showerHistory, onEditShower, onDeleteShower }) {
-  const sorted = [...history].sort((a, b) => b.startDate.localeCompare(a.startDate))
+  const sorted = [...history].sort((a, b) => b.startDate.localeCompare(a.startDate)).slice(0, 3)
   return (
     <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 12, padding: '16px 18px', marginBottom: 14 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
@@ -1316,6 +1316,14 @@ function RoutineHistoryPanel({ history, onClose, onEdit, onDelete, onAddNew, get
             )}
           </div>
         ))}
+      </div>
+
+      {/* See full history */}
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16 }}>
+        <button
+          onClick={() => window.location.href = '/routine/history'}
+          style={{ fontSize: 11, padding: '6px 16px', borderRadius: 20, border: `0.5px solid ${T.border}`, background: 'transparent', cursor: 'pointer', color: T.textMuted, fontFamily: 'inherit' }}
+        >See full history →</button>
       </div>
     </div>
   )
