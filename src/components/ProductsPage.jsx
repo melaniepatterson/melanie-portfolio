@@ -494,7 +494,27 @@ function ProductForm({ initial, onSave, onCancel }) {
 // ─── PRODUCT LIBRARY (standalone, no external deps) ──────────
 function ProductLibrary({ products, onEdit, onAdd, onDelete }) {
   const [filterCat, setFilterCat] = useState('all')
+  const [filterFlags, setFilterFlags] = useState([])
   const [search, setSearch] = useState('')
+
+  const ETHICS_FILTERS = [
+    { key: 'black_owned',      label: 'Black-owned'      },
+    { key: 'indigenous_owned', label: 'Indigenous-owned' },
+    { key: 'poc_owned',        label: 'POC-owned'        },
+    { key: 'woman_owned',      label: 'Woman-owned'      },
+    { key: 'lgbtq_owned',      label: 'LGBTQ+-owned'     },
+    { key: 'cruelty_free',     label: 'Cruelty-free'     },
+    { key: 'vegan',            label: 'Vegan'            },
+    { key: 'certified_organic',label: 'Organic'          },
+    { key: 'fair_trade',       label: 'Fair trade'       },
+    { key: 'clean_formula',    label: 'Clean'            },
+    { key: 'science_backed',   label: 'Science-backed'   },
+    { key: 'is_prescription',  label: '℞ Rx'             },
+  ]
+
+  function toggleFlag(key) {
+    setFilterFlags(prev => prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key])
+  }
 
   const list = Object.values(products)
     .filter(p => {
@@ -502,14 +522,15 @@ function ProductLibrary({ products, onEdit, onAdd, onDelete }) {
       const matchSearch = !search.trim() ||
         p.name.toLowerCase().includes(search.toLowerCase()) ||
         (p.brand || '').toLowerCase().includes(search.toLowerCase())
-      return matchCat && matchSearch
+      const matchFlags = filterFlags.length === 0 || filterFlags.every(f => p[f])
+      return matchCat && matchSearch && matchFlags
     })
     .sort((a, b) => (a.name || '').localeCompare(b.name || ''))
 
   return (
     <div style={{ padding: '12px 20px' }}>
       {/* Search + filter row */}
-      <div style={{ display: 'flex', gap: 8, marginBottom: 14, flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 10, flexWrap: 'wrap' }}>
         <input
           value={search}
           onChange={e => setSearch(e.target.value)}
@@ -526,6 +547,25 @@ function ProductLibrary({ products, onEdit, onAdd, onDelete }) {
             <option key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</option>
           ))}
         </select>
+      </div>
+      {/* Ethics filter pills */}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 14 }}>
+        {ETHICS_FILTERS.map(({ key, label }) => {
+          const active = filterFlags.includes(key)
+          return (
+            <button key={key} onClick={() => toggleFlag(key)} style={{
+              padding: '4px 10px', borderRadius: 20, fontSize: 11, cursor: 'pointer',
+              border: '0.5px solid ' + (active ? T.pinkDeep : T.border),
+              background: active ? T.pink : 'transparent',
+              color: T.text, fontFamily: 'inherit',
+            }}>{label}</button>
+          )
+        })}
+        {filterFlags.length > 0 && (
+          <button onClick={() => setFilterFlags([])} style={{ padding: '4px 10px', borderRadius: 20, fontSize: 11, cursor: 'pointer', border: '0.5px solid ' + T.border, background: 'transparent', color: T.textMuted, fontFamily: 'inherit' }}>
+            Clear filters ×
+          </button>
+        )}
       </div>
 
       {list.length === 0 && (
