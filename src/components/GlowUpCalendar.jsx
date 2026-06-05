@@ -1163,7 +1163,7 @@ function InfoTooltip({ text }) {
   )
 }
 
-function RoutineHistoryPanel({ history, onClose, onEdit, onDelete, onAddNew, dailyHistory, onEditDaily, onDeleteDaily, showerHistory, onEditShower, onDeleteShower }) {
+function RoutineHistoryPanel({ history, onClose, onEdit, onDelete, onAddNew, getActivePeriod, dailyHistory, onEditDaily, onDeleteDaily, showerHistory, onEditShower, onDeleteShower }) {
   const sorted = [...history].sort((a, b) => b.startDate.localeCompare(a.startDate))
   return (
     <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 12, padding: '16px 18px', marginBottom: 14 }}>
@@ -1174,7 +1174,7 @@ function RoutineHistoryPanel({ history, onClose, onEdit, onDelete, onAddNew, dai
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
         <div style={{ fontSize: 11, fontWeight: 600, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Skincare Routine</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-          <Btn variant="primary" onClick={() => onAddNew()} style={{ padding: '3px 10px', fontSize: 11 }}>+ Start new routine</Btn>
+          <Btn variant="primary" onClick={() => onAddNew(getActivePeriod(new Date(), history))} style={{ padding: '3px 10px', fontSize: 11 }}>+ Start new routine</Btn>
           <InfoTooltip text="Add a new routine when your approach is changing — it preserves your history and lets you track what you used before. Edit when you're correcting a mistake. Think of each routine as a chapter." />
         </div>
       </div>
@@ -1902,6 +1902,24 @@ function StarRating({ value, onChange, size = 12 }) {
 
 // ProductForm — add or edit a product
 
+
+// ─── PAO ICON ────────────────────────────────────────────────
+const PAO_OPTIONS = [3, 6, 9, 12, 18, 24, 36]
+
+function PaoIcon({ months, size = 20 }) {
+  if (!months) return null
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, verticalAlign: 'middle' }}>
+      <svg width={size} height={size} viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="4" y="8" width="12" height="9" rx="1" stroke="currentColor" strokeWidth="1.3" fill="none"/>
+        <path d="M4 8V6.5C4 5.67 6.69 5 10 5s6 .67 6 1.5V8" stroke="currentColor" strokeWidth="1.3" fill="none"/>
+        <path d="M7 5.2L6 3.5M13 5.2L14 3.5" stroke="currentColor" strokeWidth="1" strokeLinecap="round"/>
+        <text x="10" y="14.5" textAnchor="middle" fontSize="5" fontWeight="700" fill="currentColor">{months}M</text>
+      </svg>
+    </span>
+  )
+}
+
 // ─── PRODUCT FLAG BADGES ──────────────────────────────────────
 const PRODUCT_FLAGS = [
   { key: 'black_owned',       label: 'Black-owned',       bg: '#1a1a1a', color: '#fff'    },
@@ -1913,7 +1931,7 @@ const PRODUCT_FLAGS = [
   { key: 'vegan',             label: '🌱 Vegan',           bg: '#ECFDF5', color: '#065F46' },
   { key: 'certified_organic', label: '🌿 Organic',         bg: '#F0FDF4', color: '#166534' },
   { key: 'fair_trade',        label: '🤝 Fair trade',      bg: '#FEF3C7', color: '#92400E' },
-  { key: 'bdsCompliant',      label: 'BDS safe',           bg: '#EFF6FF', color: '#1D4ED8' },
+  { key: 'is_prescription',    label: '℞ Prescription',      bg: '#FFF7ED', color: '#9A3412' },
   { key: 'clean_formula',      label: '✨ Clean',             bg: '#FDF4FF', color: '#7E22CE' },
   { key: 'science_backed',     label: '🔬 Science-backed',    bg: '#EFF6FF', color: '#1D4ED8' },
 ]
@@ -1947,7 +1965,8 @@ function ProductForm({ initial, onSave, onCancel }) {
     ingredient_category: '', ingredient_form: '',
     black_owned: false, indigenous_owned: false, poc_owned: false, woman_owned: false,
     lgbtq_owned: false, cruelty_free: false, vegan: false, certified_organic: false, fair_trade: false,
-    clean_formula: false, science_backed: false,
+    clean_formula: false, science_backed: false, is_prescription: false,
+    purchased_at: '', opened_at: '', expires_at: '', pao_months: null,
     ...initial
   })
   const [tagInput, setTagInput] = useState('')
@@ -2006,7 +2025,51 @@ function ProductForm({ initial, onSave, onCancel }) {
       <div style={{ display: 'flex', gap: 10, marginBottom: 8, flexWrap: 'wrap' }}>
         <Toggle checked={!!form.currentlyUsing} onChange={e => set('currentlyUsing', e.target.checked)} label="I'm currently using this" />
 
-        <FieldLabel>Ownership & ethics</FieldLabel>
+
+          {/* Purchase & expiry tracking */}
+          <div style={{ borderTop: `0.5px solid ${T.border}`, paddingTop: 12, marginBottom: 8 }}>
+            <FieldLabel>
+              Purchase & expiry
+              <span style={{ fontWeight: 400, color: T.textLight, marginLeft: 4 }}>(optional)</span>
+            </FieldLabel>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 10 }}>
+            <div>
+              <FieldLabel>Purchased</FieldLabel>
+              <input type="date" value={form.purchased_at || ''} onChange={e => set('purchased_at', e.target.value)}
+                style={{ width: '100%', fontSize: 12, padding: '7px 10px', border: `0.5px solid ${T.border}`, borderRadius: 8, background: T.cream, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
+            </div>
+            <div>
+              <FieldLabel>Opened</FieldLabel>
+              <input type="date" value={form.opened_at || ''} onChange={e => set('opened_at', e.target.value)}
+                style={{ width: '100%', fontSize: 12, padding: '7px 10px', border: `0.5px solid ${T.border}`, borderRadius: 8, background: T.cream, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
+            </div>
+            <div>
+              <FieldLabel>Expires</FieldLabel>
+              <input type="date" value={form.expires_at || ''} onChange={e => set('expires_at', e.target.value)}
+                style={{ width: '100%', fontSize: 12, padding: '7px 10px', border: `0.5px solid ${T.border}`, borderRadius: 8, background: T.cream, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
+            </div>
+            <div>
+              <FieldLabel style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                <PaoIcon months={form.pao_months} size={14} />
+                PAO
+                <InfoTooltip text="Period After Opening — how long the product is safe to use once opened. Look for the open jar symbol on packaging." />
+              </FieldLabel>
+              <select value={form.pao_months || ''} onChange={e => set('pao_months', e.target.value ? Number(e.target.value) : null)}
+                style={{ width: '100%', fontSize: 12, padding: '7px 10px', border: `0.5px solid ${T.border}`, borderRadius: 8, background: T.cream, color: form.pao_months ? T.text : T.textMuted, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }}>
+                <option value="">— Select PAO —</option>
+                {PAO_OPTIONS.map(m => <option key={m} value={m}>{m} months</option>)}
+              </select>
+            </div>
+          </div>
+          {form.opened_at && form.pao_months && (
+            <div style={{ fontSize: 11, color: T.textMuted, fontStyle: 'italic', marginBottom: 10 }}>
+              Use by: {new Date(new Date(form.opened_at).setMonth(new Date(form.opened_at).getMonth() + form.pao_months)).toLocaleDateString()}
+            </div>
+          )}
+        <div style={{ borderTop: `0.5px solid ${T.border}`, paddingTop: 12, marginBottom: 8 }}>
+          <FieldLabel>Ownership & ethics</FieldLabel>
+        </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 10 }}>
           {[
             { key: 'black_owned',       label: 'Black-owned'       },
@@ -2018,6 +2081,7 @@ function ProductForm({ initial, onSave, onCancel }) {
             { key: 'vegan',             label: 'Vegan'             },
             { key: 'certified_organic', label: 'Certified organic' },
             { key: 'fair_trade',        label: 'Fair trade'        },
+            { key: 'is_prescription',   label: '℞ Prescription'    },
             { key: 'clean_formula',     label: 'Clean formula'     },
             { key: 'science_backed',    label: 'Science-backed'    },
           ].map(({ key, label }) => (
@@ -2034,7 +2098,6 @@ function ProductForm({ initial, onSave, onCancel }) {
             >{label}</button>
           ))}
         </div>
-        <Toggle checked={form.bdsCompliant} onChange={e => set('bdsCompliant', e.target.checked)} label="BDS compliant" />
         <Toggle checked={form.buyAgain === true} onChange={e => set('buyAgain', e.target.checked ? true : null)} label="Would buy again" />
       </div>
 
@@ -2243,6 +2306,7 @@ function ProductLibrary({ products, onEdit, onAdd, onDelete, onClose }) {
             {p.brand && <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 4 }}>{p.brand}</div>}
             <div style={{ fontSize: 11, color: T.textLight, marginBottom: 4 }}>{p.category ? p.category.charAt(0).toUpperCase() + p.category.slice(1) : ''}</div>
             <ProductFlagBadges product={p} max={3} />
+            {p.pao_months && <span style={{ display: 'inline-flex', alignItems: 'center', gap: 2, fontSize: 10, color: T.textMuted, marginTop: 2 }}><PaoIcon months={p.pao_months} size={13} /></span>}
             {p.effectiveness > 0 && <StarRating value={p.effectiveness} size={11} />}
             <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 6 }}>
               {p.currentlyUsing && <span style={{ fontSize: 9, padding: '1px 5px', borderRadius: 3, background: '#DCFCE7', color: '#166534', border: '0.5px solid #4ADE80' }}>In use</span>}
@@ -2301,7 +2365,7 @@ const SHOWER_PRESETS = [
     items: [
       'Hair mask',
       'Oil treatment (castor, argan, jojoba, etc.)',
-      'Bond builder (Olaplex, etc.)',
+      'Bond builder',
       'Protein treatment',
       'Apple cider vinegar rinse',
       'DIY hair treatment (rice water, rosemary, etc.)',
@@ -2968,6 +3032,8 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
         </div>
       ) : (
         <>
+          {/* Skincare section header */}
+          {tab === 'am' && period && <div style={{ fontSize: 10, fontWeight: 700, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8, paddingBottom: 4, borderBottom: `0.5px solid ${T.border}` }}>Skincare</div>}
           {/* AM: normal routine unless it's an AM treatment */}
           {tab === 'am' && !isRecovery && !(isTreatment && treatTod === 'am') && renderSteps(period ? getStepsForDayType(period, 'am') : getDefaultSteps('am'), T.pinkDeep, 'am')}
           {tab === 'am' && isRecovery && renderSteps(getStepsForDayType(period, 'recovery'), T.pinkDeep, 'recovery')}
@@ -3779,6 +3845,11 @@ export default function GlowUpCalendar({ session }) {
           fair_trade:           p.fair_trade || false,
           clean_formula:        p.clean_formula || false,
           science_backed:       p.science_backed || false,
+          is_prescription:      p.is_prescription || false,
+          purchased_at:         p.purchased_at || '',
+          opened_at:            p.opened_at || '',
+          expires_at:           p.expires_at || '',
+          pao_months:           p.pao_months || null,
         }
       })
       // Seed products removed — users add their own products with full taxonomy
@@ -3865,6 +3936,11 @@ export default function GlowUpCalendar({ session }) {
           fair_trade:          p.fair_trade || false,
           clean_formula:       p.clean_formula || false,
           science_backed:      p.science_backed || false,
+          is_prescription:     p.is_prescription || false,
+          purchased_at:        p.purchased_at || null,
+          opened_at:           p.opened_at || null,
+          expires_at:          p.expires_at || null,
+          pao_months:          p.pao_months || null,
         }))
       if (rows.length > 0) await supabase.from('products').upsert(rows)
     }
@@ -4036,7 +4112,12 @@ export default function GlowUpCalendar({ session }) {
   }
 
   function openDailyEditor(period) {
-    setEditingDaily(period || 'new')
+    if (period === 'new') {
+      const current = getActiveDailyPeriod(new Date(), dailyHistory)
+      setEditingDaily(current ? { ...current, startDate: '', id: null, _prefill: true } : 'new')
+    } else {
+      setEditingDaily(period)
+    }
     setEditingShower(null)
     setPanel(null)
     setDayFlyout(null)
@@ -4069,7 +4150,12 @@ export default function GlowUpCalendar({ session }) {
   }
 
   function openShowerEditor(period) {
-    setEditingShower(period || 'new')
+    if (period === 'new') {
+      const current = getActiveShowerPeriod(new Date(), showerHistory)
+      setEditingShower(current ? { ...current, startDate: '', id: null, _prefill: true } : 'new')
+    } else {
+      setEditingShower(period)
+    }
     setPanel(null)
     setDayFlyout(null)
   }
@@ -4419,7 +4505,7 @@ export default function GlowUpCalendar({ session }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <button onClick={prevMonth} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 8, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.text }}>←</button>
           <button onClick={nextMonth} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 8, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.text }}>→</button>
-          <Btn variant={['update','setup'].includes(panel) ? 'active' : 'primary'} style={{ fontSize: 11, padding: '5px 10px' }} onClick={() => { setPanel(p => ['update','setup'].includes(p) ? null : (hasRoutine ? 'update' : 'setup')); setEditingPeriod(null); setDayFlyout(null) }}>+ Start new routine</Btn>
+          <Btn variant={['update','setup'].includes(panel) ? 'active' : 'primary'} style={{ fontSize: 11, padding: '5px 10px' }} onClick={() => { setPanel(p => ['update','setup'].includes(p) ? null : (hasRoutine ? 'update' : 'setup')); if (hasRoutine) { setEditingPeriod({ ...getActivePeriod(today, routineHistory), startDate: '', _prefill: true }) } else { setEditingPeriod(null) }; setDayFlyout(null) }}>+ Start new routine</Btn>
           <Btn variant={showTreatments ? 'active' : 'default'} style={{ fontSize: 11, padding: '5px 10px' }} onClick={() => { setShowTreatments(s => !s); setDayFlyout(null) }}>My treatments</Btn>
         </div>
         {/* Right — hamburger */}
