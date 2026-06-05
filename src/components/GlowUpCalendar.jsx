@@ -193,6 +193,222 @@ const AVAILABLE_SECONDARY_ACTIVES = [
   { key: 'pha',          label: 'PHAs (gentle acids)',    stepKey: 'pm_pha',            defaultNights: 'off'  },
 ]
 
+// ─── STEP TAXONOMY ───────────────────────────────────────────
+// Steps are application-order positions in the routine.
+// Ingredient tagging lives on the product, not the step.
+// dayTypes: am / main (active nights) / off / recovery / pause
+
+const INGREDIENT_CATEGORIES = {
+  micellar_water: {
+    label: 'Micellar / cleansing water', order: 1,
+    dayTypes: { am: true, main: true, off: true, recovery: true, pause: true },
+    optional: true,
+    forms: ['Micellar water', 'Cleansing water', 'Other'],
+    productCategories: ['micellar water', 'cleansing water'],
+  },
+  oil_cleanser: {
+    label: 'Oil / balm cleanser', order: 2,
+    dayTypes: { am: false, main: true, off: true, recovery: true, pause: true },
+    optional: true,
+    forms: ['Cleansing oil', 'Cleansing balm', 'Cleansing butter', 'Other'],
+    productCategories: ['cleansing oil', 'cleansing balm', 'cleansing oil / balm'],
+  },
+  cleanser: {
+    label: 'Water-based cleanser', order: 3,
+    dayTypes: { am: true, main: true, off: true, recovery: true, pause: true },
+    optional: false,
+    forms: ['Gel cleanser', 'Foam cleanser', 'Cream cleanser', 'Other'],
+    productCategories: ['cleanser', 'face wash'],
+  },
+  aha_bha_toner: {
+    label: 'Exfoliant toner (AHA / BHA)', order: 4,
+    dayTypes: { am: false, main: false, off: true, recovery: false, pause: false },
+    optional: true,
+    forms: ['AHA toner (glycolic)', 'AHA toner (lactic)', 'BHA toner (salicylic)', 'Mixed AHA+BHA', 'PHA toner', 'Other'],
+    productCategories: ['aha toner', 'bha toner', 'exfoliant toner'],
+  },
+  toner: {
+    label: 'Toner', order: 5,
+    dayTypes: { am: true, main: true, off: true, recovery: true, pause: true },
+    optional: true,
+    forms: ['Hydrating toner', 'Softening toner', 'Balancing toner', 'Other'],
+    productCategories: ['toner'],
+  },
+  essence: {
+    label: 'Essence', order: 6,
+    dayTypes: { am: true, main: true, off: true, recovery: true, pause: true },
+    optional: true,
+    forms: ['Hydrating essence', 'Fermented essence', 'Treatment essence', 'Other'],
+    productCategories: ['essence'],
+  },
+  watery_serum: {
+    label: 'Watery serum', order: 7,
+    dayTypes: { am: true, main: true, off: true, recovery: true, pause: true },
+    optional: true,
+    forms: ['Hyaluronic acid serum', 'Niacinamide serum', 'Snail mucin', 'Centella serum', 'Vitamin C powder (mix-in)', 'Other watery serum'],
+    productCategories: ['serum', 'hyaluronic acid', 'niacinamide', 'snail mucin'],
+    ingredientCategories: ['hyaluronic_acid', 'niacinamide', 'snail_mucin', 'centella'],
+  },
+  treatment_serum: {
+    label: 'Treatment serum', order: 8,
+    dayTypes: { am: true, main: true, off: true, recovery: false, pause: false },
+    optional: true,
+    forms: ['Vitamin C serum', 'Peptide serum', 'Tranexamic acid', 'Alpha arbutin', 'Retinol serum', 'Bakuchiol', 'Other treatment serum'],
+    productCategories: ['serum', 'vitamin c', 'peptides'],
+    ingredientCategories: ['vitamin_c', 'peptides', 'tranexamic_acid', 'alpha_arbutin', 'kojic_acid', 'bakuchiol', 'antioxidant'],
+  },
+  retinoid: {
+    label: 'Retinoid', order: 8.5,
+    dayTypes: { am: false, main: true, off: false, recovery: false, pause: false },
+    optional: false,
+    forms: ['Tretinoin (prescription)', 'Adapalene', 'Retinol', 'Retinaldehyde', 'Tazarotene', 'Other retinoid'],
+    productCategories: ['retinoid', 'retinol', 'tretinoin'],
+    ingredientCategories: ['retinoid'],
+  },
+  spot_treatment: {
+    label: 'Spot treatment', order: 9,
+    dayTypes: { am: true, main: false, off: true, recovery: false, pause: false },
+    optional: true,
+    forms: ['Benzoyl peroxide', 'Azelaic acid', 'Salicylic acid spot treatment', 'Sulfur treatment', 'Other'],
+    productCategories: ['spot treatment', 'azelaic acid', 'benzoyl peroxide'],
+    ingredientCategories: ['benzoyl_peroxide', 'azelaic_acid', 'bha', 'aha'],
+  },
+  eye_cream: {
+    label: 'Eye cream', order: 10,
+    dayTypes: { am: true, main: true, off: true, recovery: true, pause: true },
+    optional: true,
+    forms: ['Eye cream', 'Eye gel', 'Eye serum', 'Other'],
+    productCategories: ['eye cream', 'eye gel'],
+  },
+  moisturizer: {
+    label: 'Moisturizer', order: 11,
+    dayTypes: { am: true, main: true, off: true, recovery: true, pause: true },
+    optional: false,
+    forms: ['Gel moisturizer', 'Cream moisturizer', 'Lotion', 'Gel-cream', 'Barrier cream', 'Other'],
+    productCategories: ['moisturizer', 'lotion', 'barrier cream'],
+  },
+  face_oil: {
+    label: 'Face oil', order: 12,
+    dayTypes: { am: false, main: true, off: true, recovery: 'professional', pause: true },
+    optional: true,
+    forms: ['Rosehip oil', 'Squalane', 'Jojoba oil', 'Marula oil', 'Argan oil', 'Other'],
+    productCategories: ['face oil', 'facial oil', 'oil'],
+  },
+  occlusive: {
+    label: 'Occlusive / slug', order: 13,
+    dayTypes: { am: false, main: true, off: true, recovery: true, pause: true },
+    optional: true,
+    forms: ['Petrolatum / Vaseline', 'Lanolin', 'Plant-based occlusive', 'Other'],
+    productCategories: ['occlusive', 'petrolatum'],
+  },
+  spf: {
+    label: 'SPF', order: 14,
+    dayTypes: { am: true, main: false, off: false, recovery: true, pause: true },
+    optional: false,
+    forms: ['Chemical SPF', 'Mineral SPF', 'Hybrid SPF', 'Tinted SPF', 'Other'],
+    productCategories: ['spf', 'sunscreen', 'sun protection'],
+  },
+}
+
+// ─── PRODUCT INGREDIENT TAXONOMY ─────────────────────────────
+// Separate from steps — used to tag products for conflict detection
+const PRODUCT_INGREDIENT_CATEGORIES = {
+  vitamin_c:       { label: 'Vitamin C',          forms: ['L-ascorbic acid (most potent)','Ascorbyl glucoside (stable)','Sodium ascorbyl phosphate','Ascorbyl tetraisopalmitate (oil-soluble)','Vitamin C powder (mix-in)','Other vitamin C derivative'] },
+  niacinamide:     { label: 'Niacinamide',         forms: ['Niacinamide serum','Niacinamide toner','Other'] },
+  hyaluronic_acid: { label: 'Hyaluronic acid',     forms: ['Low molecular weight','High molecular weight','Multi-weight blend','Other'] },
+  peptides:        { label: 'Peptides',             forms: ['Matrixyl','Argireline','Copper peptides','Other peptides'] },
+  retinoid:        { label: 'Retinoid',             forms: ['Tretinoin (prescription)','Adapalene','Retinol','Retinaldehyde','Tazarotene','Other retinoid'] },
+  aha:             { label: 'AHA',                  forms: ['Glycolic acid','Lactic acid','Mandelic acid','Citric acid','Other AHA'] },
+  bha:             { label: 'BHA',                  forms: ['Salicylic acid (leave-on)','Salicylic acid (rinse-off)','Betaine salicylate','Other BHA'] },
+  pha:             { label: 'PHA',                  forms: ['Gluconolactone','Lactobionic acid','Other PHA'] },
+  azelaic_acid:    { label: 'Azelaic acid',         forms: ['10% or under (OTC)','15-20% (prescription)','Other'] },
+  benzoyl_peroxide:{ label: 'Benzoyl peroxide',     forms: ['2.5%','5%','10%'] },
+  tranexamic_acid: { label: 'Tranexamic acid',      forms: ['Tranexamic acid serum','Other'] },
+  alpha_arbutin:   { label: 'Alpha arbutin',        forms: ['Alpha arbutin serum','Other'] },
+  kojic_acid:      { label: 'Kojic acid',           forms: ['Kojic acid serum','Other'] },
+  bakuchiol:       { label: 'Bakuchiol',            forms: ['Bakuchiol serum','Other'] },
+  centella:        { label: 'Centella / Cica',      forms: ['Centella serum','Cica cream','Madecassoside serum','Other'] },
+  snail_mucin:     { label: 'Snail mucin',          forms: ['Snail mucin essence','Snail mucin serum','Other'] },
+  antioxidant:     { label: 'Antioxidant',          forms: ['Resveratrol','Coenzyme Q10','Vitamin E','Ferulic acid','Other antioxidant'] },
+  ceramide:        { label: 'Ceramide',             forms: ['Ceramide serum','Ceramide moisturizer','Other'] },
+  squalane:        { label: 'Squalane',             forms: ['100% squalane','Squalane blend','Other'] },
+}
+
+
+const INGREDIENT_CONFLICTS = [
+  { a: 'vitamin_c', aForms: ['L-ascorbic acid (most potent)'], b: 'aha_bha_toner', severity: 'hard', message: 'L-ascorbic acid and AHA/BHA toner are pH-incompatible and destabilize each other.' },
+  { a: 'vitamin_c', aForms: ['L-ascorbic acid (most potent)'], b: 'aha',           severity: 'hard', message: 'L-ascorbic acid conflicts with AHA — pH incompatibility reduces efficacy of both.' },
+  { a: 'vitamin_c', aForms: ['L-ascorbic acid (most potent)'], b: 'bha',           severity: 'hard', message: 'L-ascorbic acid conflicts with BHA — pH incompatibility reduces efficacy of both.' },
+  { a: 'vitamin_c', aForms: null, b: 'benzoyl_peroxide', severity: 'hard', message: 'Benzoyl peroxide oxidizes vitamin C, rendering both less effective.' },
+  { a: 'retinoid',  aForms: null, b: 'benzoyl_peroxide', severity: 'hard', message: 'Benzoyl peroxide oxidizes retinoids, significantly reducing their efficacy.' },
+  { a: 'retinoid',  aForms: null, b: 'aha',              severity: 'hard', message: 'Retinoid + AHA in the same session risks severe irritation and over-exfoliation.' },
+  { a: 'retinoid',  aForms: null, b: 'bha',              severity: 'hard', message: 'Retinoid + BHA in the same session risks severe irritation and over-exfoliation.' },
+  { a: 'retinoid',  aForms: null, b: 'aha_bha_toner',    severity: 'hard', message: 'Retinoid + AHA/BHA toner risks severe irritation. Use on separate nights.' },
+  { a: 'peptides',  aForms: ['Copper peptides'], b: 'vitamin_c',    severity: 'hard', message: 'Copper peptides are destabilized by vitamin C — use on separate days.' },
+  { a: 'peptides',  aForms: ['Copper peptides'], b: 'aha',           severity: 'hard', message: 'Acid environments degrade copper peptides.' },
+  { a: 'peptides',  aForms: ['Copper peptides'], b: 'bha',           severity: 'hard', message: 'Acid environments degrade copper peptides.' },
+  { a: 'peptides',  aForms: ['Copper peptides'], b: 'aha_bha_toner', severity: 'hard', message: 'Acid environments degrade copper peptides.' },
+  { a: 'vitamin_c', aForms: null, b: 'aha_bha_toner', severity: 'soft', message: "Vitamin C derivatives and AHA/BHA toners may reduce each other's efficacy. Consider separate AM/PM use." },
+  { a: 'vitamin_c', aForms: null, b: 'aha',           severity: 'soft', message: 'Vitamin C and AHA are both pH-dependent. Using together may reduce efficacy.' },
+  { a: 'vitamin_c', aForms: null, b: 'bha',           severity: 'soft', message: "Vitamin C and BHA may reduce each other's efficacy at low pH." },
+  { a: 'niacinamide', aForms: null, b: 'vitamin_c',  severity: 'soft', message: 'At high temps, niacinamide and L-ascorbic acid may form niacin. Not harmful but may cause temporary flushing.' },
+  { a: 'retinoid',  aForms: null, b: 'vitamin_c',    severity: 'soft', message: 'Retinoid and vitamin C together can increase irritation. AM vitamin C / PM retinoid is the gold standard.' },
+  { a: 'peptides',  aForms: ['Argireline'], b: 'vitamin_c', severity: 'soft', message: 'Argireline may have reduced efficacy when combined with vitamin C.' },
+  { a: 'benzoyl_peroxide', aForms: null, b: 'niacinamide', severity: 'soft', message: 'At high BP concentrations, combining with niacinamide may cause temporary yellowing.' },
+]
+
+function checkIngredientConflicts(periodProducts, products) {
+  const warnings = []
+  const assigned = Object.entries(periodProducts || {})
+    .map(([stepId, productId]) => products[productId])
+    .filter(p => p?.ingredient_category)
+  for (let i = 0; i < assigned.length; i++) {
+    for (let j = i + 1; j < assigned.length; j++) {
+      const a = assigned[i], b = assigned[j]
+      for (const rule of INGREDIENT_CONFLICTS) {
+        const matchAB = rule.a === a.ingredient_category && rule.b === b.ingredient_category && (!rule.aForms || rule.aForms.includes(a.ingredient_form))
+        const matchBA = rule.a === b.ingredient_category && rule.b === a.ingredient_category && (!rule.aForms || rule.aForms.includes(b.ingredient_form))
+        if (matchAB || matchBA) warnings.push({ severity: rule.severity, message: rule.message })
+      }
+    }
+  }
+  return warnings
+}
+
+function getDefaultSteps(dayType) {
+  return Object.entries(INGREDIENT_CATEGORIES)
+    .filter(([, cat]) => {
+      const dt = cat.dayTypes[dayType]
+      return dt === true || dt === 'professional'
+    })
+    .sort(([, a], [, b]) => a.order - b.order)
+    .map(([key, cat]) => ({
+      id: `${dayType}_${key}`,
+      categoryKey: key,
+      label: cat.label,
+      optional: cat.optional,
+      enabled: true, // all steps visible by default; user can toggle off
+      professionalOnly: cat.dayTypes[dayType] === 'professional',
+    }))
+}
+
+function getPeriodSteps(period, dayType) {
+  if (period?.steps?.[dayType]) return period.steps[dayType]
+  return getDefaultSteps(dayType)
+}
+
+function getStepsForDayType(period, dayType) {
+  return getPeriodSteps(period, dayType)
+    .filter(s => s.enabled)
+    .sort((a, b) => {
+      const orderA = INGREDIENT_CATEGORIES[a.categoryKey]?.order ?? 99
+      const orderB = INGREDIENT_CATEGORIES[b.categoryKey]?.order ?? 99
+      return orderA - orderB
+    })
+}
+
+
+
 const NIGHTS_OPTIONS = [
   { key: 'main', label: 'Active nights'  },
   { key: 'off',  label: 'Off nights'     },
@@ -751,7 +967,7 @@ function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = false, lo
           <div style={{ marginBottom: 8, marginTop: 8 }}>
             <FieldLabel>Which one?</FieldLabel>
             <select
-              value={MAIN_ACTIVE_OPTIONS.find(o => o.value === form.activeName) ? form.activeName : 'other'}
+              value={MAIN_ACTIVE_OPTIONS.find(o => o.value === form.activeName) ? form.activeName : 'tretinoin'}
               onChange={e => set('activeName', e.target.value)}
               style={{ fontSize: 12, padding: '5px 8px', border: `0.5px solid ${T.border}`, borderRadius: 6, background: T.cream, color: T.text }}
             >
@@ -852,38 +1068,28 @@ function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = false, lo
             <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 8 }}>Assign products to each routine step. Unassigned steps will be faded in the day flyout.</div>
             {/* Product assignment split by routine section */}
             {[
-              { section: 'Morning', steps: AM_STEPS },
-              { section: form.activeName ? `Active nights (${form.activeName})` : 'Active nights', steps: [
-                { key: 'pm_cleanse1', label: 'Cleanse 1' }, { key: 'pm_cleanse2', label: 'Cleanse 2' },
-                { key: 'pm_essence', label: 'Essence' },
-                { key: 'pm_tret', label: form.activeName ? form.activeName.charAt(0).toUpperCase() + form.activeName.slice(1) : 'Evening treatment' },
-                ...(form.secondaryActives||[]).filter(sa => sa.enabled && (sa.nights==='main'||sa.nights==='all')).map(sa => {
-                  const d = AVAILABLE_SECONDARY_ACTIVES.find(a=>a.key===sa.key); return d ? { key: d.stepKey, label: d.label } : null
-                }).filter(Boolean),
-                { key: 'pm_moisturizer', label: 'Moisturizer' }, { key: 'pm_eye', label: 'Eye cream' },
-              ]},
+              { section: 'Morning', steps: getDefaultSteps('am') },
+              { section: form.activeName ? `Active nights (${form.activeName})` : 'Active nights', steps: getDefaultSteps('main') },
               { section: 'Off nights', steps: [
-                { key: 'pm_cleanse1', label: 'Cleanse 1' }, { key: 'pm_cleanse2', label: 'Cleanse 2' },
+                ...getDefaultSteps('off'),
                 ...(form.secondaryActives||[]).filter(sa => sa.enabled && (sa.nights==='off'||sa.nights==='all')).map(sa => {
-                  const d = AVAILABLE_SECONDARY_ACTIVES.find(a=>a.key===sa.key); return d ? { key: d.stepKey, label: d.label } : null
+                  const d = AVAILABLE_SECONDARY_ACTIVES.find(a=>a.key===sa.key)
+                  return d ? { id: 'off_' + d.stepKey, categoryKey: d.stepKey, label: d.label, optional: true, enabled: true } : null
                 }).filter(Boolean),
-                { key: 'pm_moisturizer', label: 'Moisturizer' }, { key: 'pm_eye', label: 'Eye cream' },
               ]},
-              { section: 'Recovery days', steps: [
-                { key: 'pm_cleanse1', label: 'Gentle cleanse' },
-                { key: 'pm_recovery', label: 'Recovery / barrier product' },
-                { key: 'pm_moisturizer', label: 'Moisturizer' },
-              ]},
+              { section: 'Recovery days', steps: getDefaultSteps('recovery') },
+              { section: 'Pause nights', steps: getDefaultSteps('pause') },
             ].map(({ section, steps }) => (
               <div key={section}>
                 <div style={{ fontSize: 10, fontWeight: 600, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', margin: '10px 0 6px' }}>{section}</div>
-                {[...new Map(steps.map(s => [s.key, s])).values()].map(step => {
-              const pid = form.products?.[step.key]
+                {steps.filter((s, i, arr) => arr.findIndex(x => (x.id||x.key) === (s.id||s.key)) === i).map(step => {
+              const sid = step.id || step.key
+              const pid = form.products?.[sid]
               const prod = pid ? products[pid] : null
-              const isOpen = openStep === step.key
+              const isOpen = openStep === sid
               return (
-                <div key={step.key} style={{ marginBottom: 6 }}>
-                  <div onClick={() => setOpenStep(isOpen ? null : step.key)} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 6, border: `0.5px solid ${isOpen ? T.pinkDeep : T.border}`, cursor: 'pointer', background: isOpen ? T.pink : T.white }}>
+                <div key={sid} style={{ marginBottom: 6 }}>
+                  <div onClick={() => setOpenStep(isOpen ? null : sid)} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 6, border: `0.5px solid ${isOpen ? T.pinkDeep : T.border}`, cursor: 'pointer', background: isOpen ? T.pink : T.white }}>
                     <div style={{ fontSize: 11, fontWeight: 500, color: T.text, flex: 1 }}>{step.label}</div>
                     {prod ? (
                       <span style={{ fontSize: 11, color: T.textMuted }}>{prod.name}</span>
@@ -900,10 +1106,11 @@ function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = false, lo
                       />
                     ) : (
                       <ProductPicker
-                        stepKey={step.key}
+                        stepKey={sid}
+                        categoryKey={step.categoryKey}
                         currentProductId={pid}
                         products={products}
-                        onSelect={(id) => { setProductAssignment(step.key, id); setOpenStep(null) }}
+                        onSelect={(id) => { setProductAssignment(sid, id); setOpenStep(null) }}
                         onAddNew={() => setAddingProd(true)}
                         onClose={() => setOpenStep(null)}
                       />
@@ -929,6 +1136,33 @@ function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = false, lo
 }
 
 // ─── ROUTINE HISTORY PANEL ───────────────────────────────────
+
+// ─── TOOLTIP ─────────────────────────────────────────────────
+function InfoTooltip({ text }) {
+  const [pos, setPos] = useState(null)
+  const ref = useRef(null)
+  function show() {
+    if (ref.current) {
+      const r = ref.current.getBoundingClientRect()
+      setPos({ top: r.top - 8, left: r.left + r.width / 2 })
+    }
+  }
+  return (
+    <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', marginLeft: 4 }}>
+      <span ref={ref} onMouseEnter={show} onMouseLeave={() => setPos(null)}
+        onTouchStart={e => { e.stopPropagation(); pos ? setPos(null) : show() }}
+        style={{ width: 14, height: 14, borderRadius: '50%', background: T.border, color: T.textMuted, fontSize: 9, fontWeight: 700, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'default', userSelect: 'none', flexShrink: 0 }}
+      >i</span>
+      {pos && (
+        <span style={{ position: 'fixed', top: pos.top, left: Math.min(pos.left, window.innerWidth - 240), transform: 'translate(-50%, -100%)', background: T.text, color: T.white, fontSize: 11, lineHeight: 1.5, padding: '8px 10px', borderRadius: 8, width: 220, zIndex: 9999, boxShadow: '0 4px 16px rgba(0,0,0,0.15)', pointerEvents: 'none' }}>
+          {text}
+          <span style={{ position: 'absolute', top: '100%', left: '50%', transform: 'translateX(-50%)', borderWidth: 4, borderStyle: 'solid', borderColor: `${T.text} transparent transparent transparent` }} />
+        </span>
+      )}
+    </span>
+  )
+}
+
 function RoutineHistoryPanel({ history, onClose, onEdit, onDelete, onAddNew, dailyHistory, onEditDaily, onDeleteDaily, showerHistory, onEditShower, onDeleteShower }) {
   const sorted = [...history].sort((a, b) => b.startDate.localeCompare(a.startDate))
   return (
@@ -939,7 +1173,10 @@ function RoutineHistoryPanel({ history, onClose, onEdit, onDelete, onAddNew, dai
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
         <div style={{ fontSize: 11, fontWeight: 600, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Skincare Routine</div>
-        <Btn variant="primary" onClick={() => onAddNew()} style={{ padding: '3px 10px', fontSize: 11 }}>+ Start new routine</Btn>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+          <Btn variant="primary" onClick={() => onAddNew()} style={{ padding: '3px 10px', fontSize: 11 }}>+ Start new routine</Btn>
+          <InfoTooltip text="Add a new routine when your approach is changing — it preserves your history and lets you track what you used before. Edit when you're correcting a mistake. Think of each routine as a chapter." />
+        </div>
       </div>
 
       {sorted.length === 0 && (
@@ -999,7 +1236,10 @@ function RoutineHistoryPanel({ history, onClose, onEdit, onDelete, onAddNew, dai
       <div style={{ borderTop: `0.5px solid ${T.border}`, marginTop: 16, paddingTop: 14 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
           <div style={{ fontSize: 11, fontWeight: 600, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Extras</div>
-          <Btn onClick={() => onEditDaily('new')} variant="primary" style={{ padding: '3px 10px', fontSize: 11 }}>+ Start new routine</Btn>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <Btn onClick={() => onEditDaily('new')} variant="primary" style={{ padding: '3px 10px', fontSize: 11 }}>+ Start new routine</Btn>
+            <InfoTooltip text="Add a new routine when your approach is changing — it preserves your history and lets you track what you used before. Edit when you're correcting a mistake. Think of each routine as a chapter." />
+          </div>
         </div>
         {(!dailyHistory || dailyHistory.length === 0) && (
           <div style={{ fontSize: 12, color: T.textLight, fontStyle: 'italic' }}>No extras saved yet — add brow serums, eye patches, tools, and more.</div>
@@ -1039,7 +1279,10 @@ function RoutineHistoryPanel({ history, onClose, onEdit, onDelete, onAddNew, dai
       <div style={{ borderTop: `0.5px solid ${T.border}`, marginTop: 16, paddingTop: 14 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
           <div style={{ fontSize: 11, fontWeight: 600, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Shower Routine</div>
-          <Btn onClick={() => onEditShower('new')} variant="primary" style={{ padding: '3px 10px', fontSize: 11 }}>+ Start new routine</Btn>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <Btn onClick={() => onEditShower('new')} variant="primary" style={{ padding: '3px 10px', fontSize: 11 }}>+ Start new routine</Btn>
+            <InfoTooltip text="Add a new routine when your approach is changing — it preserves your history and lets you track what you used before. Edit when you're correcting a mistake. Think of each routine as a chapter." />
+          </div>
         </div>
         {(!showerHistory || showerHistory.length === 0) && (
           <div style={{ fontSize: 12, color: T.textLight, fontStyle: 'italic' }}>No shower routine saved yet — add body washes, hair treatments, and more.</div>
@@ -1658,12 +1901,53 @@ function StarRating({ value, onChange, size = 12 }) {
 }
 
 // ProductForm — add or edit a product
+
+// ─── PRODUCT FLAG BADGES ──────────────────────────────────────
+const PRODUCT_FLAGS = [
+  { key: 'black_owned',       label: 'Black-owned',       bg: '#1a1a1a', color: '#fff'    },
+  { key: 'indigenous_owned',  label: 'Indigenous-owned',  bg: '#7C3AED', color: '#fff'    },
+  { key: 'poc_owned',         label: 'POC-owned',         bg: '#D97706', color: '#fff'    },
+  { key: 'woman_owned',       label: 'Woman-owned',       bg: '#DB2777', color: '#fff'    },
+  { key: 'lgbtq_owned',       label: 'LGBTQ+-owned',      bg: 'linear-gradient(90deg,#FF6B6B,#FFE66D,#4ECDC4)', color: '#1a1a1a' },
+  { key: 'cruelty_free',      label: '🐰 Cruelty-free',   bg: '#D1FAE5', color: '#065F46' },
+  { key: 'vegan',             label: '🌱 Vegan',           bg: '#ECFDF5', color: '#065F46' },
+  { key: 'certified_organic', label: '🌿 Organic',         bg: '#F0FDF4', color: '#166534' },
+  { key: 'fair_trade',        label: '🤝 Fair trade',      bg: '#FEF3C7', color: '#92400E' },
+  { key: 'bdsCompliant',      label: 'BDS safe',           bg: '#EFF6FF', color: '#1D4ED8' },
+  { key: 'clean_formula',      label: '✨ Clean',             bg: '#FDF4FF', color: '#7E22CE' },
+  { key: 'science_backed',     label: '🔬 Science-backed',    bg: '#EFF6FF', color: '#1D4ED8' },
+]
+
+function ProductFlagBadges({ product, max }) {
+  const active = PRODUCT_FLAGS.filter(f => product[f.key])
+  const shown = max ? active.slice(0, max) : active
+  const rest = max && active.length > max ? active.length - max : 0
+  if (!shown.length) return null
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 3, marginTop: 4 }}>
+      {shown.map(f => (
+        <span key={f.key} style={{
+          fontSize: 9, padding: '2px 6px', borderRadius: 10,
+          background: f.bg, color: f.color,
+          border: '0.5px solid rgba(0,0,0,0.08)', fontWeight: 500,
+          whiteSpace: 'nowrap',
+        }}>{f.label}</span>
+      ))}
+      {rest > 0 && <span style={{ fontSize: 9, color: T.textLight, padding: '2px 4px' }}>+{rest} more</span>}
+    </div>
+  )
+}
+
 function ProductForm({ initial, onSave, onCancel }) {
   const [form, setForm] = useState({
     name: '', brand: '', category: 'cleanser',
     imageUrl: '', purchaseUrl: '',
     bdsCompliant: true, tags: [],
     effectiveness: 0, buyAgain: null, notes: '',
+    ingredient_category: '', ingredient_form: '',
+    black_owned: false, indigenous_owned: false, poc_owned: false, woman_owned: false,
+    lgbtq_owned: false, cruelty_free: false, vegan: false, certified_organic: false, fair_trade: false,
+    clean_formula: false, science_backed: false,
     ...initial
   })
   const [tagInput, setTagInput] = useState('')
@@ -1721,6 +2005,35 @@ function ProductForm({ initial, onSave, onCancel }) {
 
       <div style={{ display: 'flex', gap: 10, marginBottom: 8, flexWrap: 'wrap' }}>
         <Toggle checked={!!form.currentlyUsing} onChange={e => set('currentlyUsing', e.target.checked)} label="I'm currently using this" />
+
+        <FieldLabel>Ownership & ethics</FieldLabel>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 10 }}>
+          {[
+            { key: 'black_owned',       label: 'Black-owned'       },
+            { key: 'indigenous_owned',  label: 'Indigenous-owned'  },
+            { key: 'poc_owned',         label: 'POC-owned'         },
+            { key: 'woman_owned',       label: 'Woman-owned'       },
+            { key: 'lgbtq_owned',       label: 'LGBTQ+-owned'      },
+            { key: 'cruelty_free',      label: 'Cruelty-free'      },
+            { key: 'vegan',             label: 'Vegan'             },
+            { key: 'certified_organic', label: 'Certified organic' },
+            { key: 'fair_trade',        label: 'Fair trade'        },
+            { key: 'clean_formula',     label: 'Clean formula'     },
+            { key: 'science_backed',    label: 'Science-backed'    },
+          ].map(({ key, label }) => (
+            <button
+              key={key}
+              type="button"
+              onClick={() => set(key, !form[key])}
+              style={{
+                padding: '5px 12px', borderRadius: 20, fontSize: 11, cursor: 'pointer',
+                border: `0.5px solid ${form[key] ? T.pinkDeep : T.border}`,
+                background: form[key] ? T.pink : 'transparent',
+                color: T.text, fontFamily: 'inherit',
+              }}
+            >{label}</button>
+          ))}
+        </div>
         <Toggle checked={form.bdsCompliant} onChange={e => set('bdsCompliant', e.target.checked)} label="BDS compliant" />
         <Toggle checked={form.buyAgain === true} onChange={e => set('buyAgain', e.target.checked ? true : null)} label="Would buy again" />
       </div>
@@ -1746,6 +2059,32 @@ function ProductForm({ initial, onSave, onCancel }) {
       </div>
 
       <div style={{ marginBottom: 10 }}>
+        <FieldLabel>Ingredient category <span style={{ fontWeight: 400, color: T.textLight }}>(optional — enables conflict detection)</span></FieldLabel>
+        <select
+          value={form.ingredient_category || ''}
+          onChange={e => set('ingredient_category', e.target.value)}
+          style={{ width: '100%', fontSize: 12, padding: '8px 10px', border: `0.5px solid ${T.border}`, borderRadius: 8, background: T.cream, color: form.ingredient_category ? T.text : T.textMuted, fontFamily: 'inherit', marginBottom: 8, outline: 'none', boxSizing: 'border-box' }}
+        >
+          <option value="">— Select ingredient category —</option>
+          {Object.entries(PRODUCT_INGREDIENT_CATEGORIES).map(([key, cat]) => (
+            <option key={key} value={key}>{cat.label}</option>
+          ))}
+        </select>
+        {form.ingredient_category && PRODUCT_INGREDIENT_CATEGORIES[form.ingredient_category]?.forms?.length > 0 && (<>
+          <FieldLabel>Ingredient form <span style={{ fontWeight: 400, color: T.textLight }}>(optional)</span></FieldLabel>
+          <select
+            value={form.ingredient_form || ''}
+            onChange={e => set('ingredient_form', e.target.value)}
+            style={{ width: '100%', fontSize: 12, padding: '8px 10px', border: `0.5px solid ${T.border}`, borderRadius: 8, background: T.cream, color: form.ingredient_form ? T.text : T.textMuted, fontFamily: 'inherit', marginBottom: 8, outline: 'none', boxSizing: 'border-box' }}
+          >
+            <option value="">— Select form —</option>
+            {PRODUCT_INGREDIENT_CATEGORIES[form.ingredient_category].forms.map(f => (
+              <option key={f} value={f}>{f}</option>
+            ))}
+          </select>
+        </>)}
+      </div>
+      <div style={{ marginBottom: 10 }}>
         <FieldLabel>Notes</FieldLabel>
         <textarea value={form.notes} onChange={e => set('notes', e.target.value)} placeholder="Any notes..." style={{ width: '100%', fontSize: 12, padding: '5px 8px', border: `0.5px solid ${T.border}`, borderRadius: 6, background: T.cream, color: T.text, resize: 'vertical', minHeight: 60, fontFamily: 'inherit' }} />
       </div>
@@ -1760,16 +2099,27 @@ function ProductForm({ initial, onSave, onCancel }) {
 
 // ProductPicker — shown when clicking a step in the flyout
 // Lets user pick from existing products or add a new one
-function ProductPicker({ stepKey, currentProductId, products, onSelect, onAddNew, onClose }) {
-  const category = STEP_CATEGORIES[stepKey]
-  // No category mapping → show all by default (e.g. extras items use stepKey='other')
+function ProductPicker({ stepKey, currentProductId, products, onSelect, onAddNew, onClose, categoryKey }) {
+  // Derive categoryKey from stepKey if not passed directly (e.g. 'main_cleanser' → 'cleanser')
+  const derivedCategoryKey = categoryKey || (stepKey ? stepKey.replace(/^(am|main|off|recovery|pause|nr)_/, '') : null)
+  const ingredientCat = derivedCategoryKey ? INGREDIENT_CATEGORIES[derivedCategoryKey] : null
+  // Fall back to old STEP_CATEGORIES for backwards compat
+  const oldCategory = STEP_CATEGORIES?.[stepKey]
   const [search, setSearch] = useState('')
-  const [showAll, setShowAll] = useState(!category)
+  const [showAll, setShowAll] = useState(false)
 
+  // Match by ingredient_category OR product category (old system fallback)
+  const stepDef = derivedCategoryKey ? INGREDIENT_CATEGORIES[derivedCategoryKey] : null
+  const catLabel = stepDef ? stepDef.label : null
   const filtered = Object.values(products).filter(p => {
-    const matchCat = showAll || !category || p.category === category
+    if (showAll) return !search || p.name.toLowerCase().includes(search.toLowerCase()) || (p.brand || '').toLowerCase().includes(search.toLowerCase())
+    const matchIngredient = !stepDef || (
+      (stepDef.ingredientCategories && stepDef.ingredientCategories.includes(p.ingredient_category)) ||
+      (stepDef.productCategories && stepDef.productCategories.some(cat => (p.category || '').toLowerCase().includes(cat))) ||
+      (!p.ingredient_category && !p.category)
+    )
     const matchSearch = !search || p.name.toLowerCase().includes(search.toLowerCase()) || (p.brand || '').toLowerCase().includes(search.toLowerCase())
-    return matchCat && matchSearch
+    return matchIngredient && matchSearch
   })
 
   return (
@@ -1784,9 +2134,14 @@ function ProductPicker({ stepKey, currentProductId, products, onSelect, onAddNew
         <Btn variant={showAll ? 'active' : 'default'} onClick={() => setShowAll(s => !s)} style={{ fontSize: 11, padding: '4px 8px' }}>All categories</Btn>
       </div>
 
+      {catLabel && !showAll && (
+        <div style={{ fontSize: 10, color: T.textMuted, marginBottom: 6, fontStyle: 'italic' }}>
+          Showing {catLabel} products · <span style={{ cursor: 'pointer', textDecoration: 'underline' }} onClick={() => setShowAll(true)}>show all</span>
+        </div>
+      )}
       {filtered.length === 0 && (
         <div style={{ fontSize: 11, color: T.textLight, fontStyle: 'italic', marginBottom: 8 }}>
-          {category ? `No products in "${category}" yet` : 'No products added yet'}
+          {catLabel ? `No ${catLabel.toLowerCase()} products yet — add one in the product library, or tap show all` : 'No products added yet'}
         </div>
       )}
 
@@ -1887,10 +2242,11 @@ function ProductLibrary({ products, onEdit, onAdd, onDelete, onClose }) {
             <div style={{ fontSize: 12, fontWeight: 500, color: T.text, marginBottom: 2 }}>{p.name}</div>
             {p.brand && <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 4 }}>{p.brand}</div>}
             <div style={{ fontSize: 11, color: T.textLight, marginBottom: 4 }}>{p.category ? p.category.charAt(0).toUpperCase() + p.category.slice(1) : ''}</div>
+            <ProductFlagBadges product={p} max={3} />
             {p.effectiveness > 0 && <StarRating value={p.effectiveness} size={11} />}
             <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 6 }}>
               {p.currentlyUsing && <span style={{ fontSize: 9, padding: '1px 5px', borderRadius: 3, background: '#DCFCE7', color: '#166534', border: '0.5px solid #4ADE80' }}>In use</span>}
-              {p.bdsCompliant && <span style={{ fontSize: 9, padding: '1px 5px', borderRadius: 3, background: '#E1F5EE', color: '#085041', border: '0.5px solid #5DCAA5' }}>BDS safe</span>}
+              
               {p.buyAgain === true && <span style={{ fontSize: 9, padding: '1px 5px', borderRadius: 3, background: T.pink, color: '#9F1239', border: `0.5px solid ${T.pinkDeep}` }}>Buy again</span>}
               {Object.entries(p.applicationArea || {}).filter(([,v])=>v).map(([k]) => (
                 <span key={k} style={{ fontSize: 9, padding: '1px 5px', borderRadius: 3, background: T.creamDark, color: T.textMuted, border: `0.5px solid ${T.border}` }}>
@@ -2394,7 +2750,7 @@ const AM_STEPS = [
 
 
 
-function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allTypes, onClose, onAddTreatment, onTabChange, onEditDaily, onEditShower, onUpdatePeriodProducts, onAddProduct }) {
+function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allTypes, onClose, onAddTreatment, onTabChange, onEditDaily, onEditShower, onUpdatePeriodProducts, onUpdatePeriodSteps, onAddProduct }) {
   const [massageOpen, setMassageOpen] = useState(false)
   const tab = flyout.tab  // always read from parent — no local drift
   const [openStepKey, setOpenStepKey] = useState(null)
@@ -2417,7 +2773,7 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
     if (dayType === 'tret') return 'main'
     return 'off'
   })()
-  const pmSteps = getPmSteps(period, nightType)
+  const pmSteps = period ? getStepsForDayType(period, nightType) : getDefaultSteps(nightType)
   const isRecovery = dayType === 'pca' || dayType === 'recovery'
 
   const periodProducts = period?.products || {}
@@ -2443,21 +2799,27 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
     })
   })()
 
-  function renderSteps(steps, dotColor) {
+  function renderSteps(steps, dotColor, dayTypeKey) {
     const result = []
     steps.forEach(step => {
-      const productId = periodProducts[step.key]
+      const stepKey = step.id || step.key
+      const productId = periodProducts[stepKey]
       const product = productId ? products[productId] : null
-      const isThisOpen = openStepKey === step.key
+      const isThisOpen = openStepKey === stepKey
       result.push(
-        <div key={step.key}>
+        <div key={stepKey}>
           <div
-            onClick={() => period && setOpenStepKey(isThisOpen ? null : step.key)}
-            style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '7px 0', borderBottom: `0.5px solid ${T.border}`, cursor: period ? 'pointer' : 'default', opacity: product ? 1 : 0.45 }}
+            onClick={() => period && setOpenStepKey(isThisOpen ? null : stepKey)}
+            style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '7px 0', borderBottom: `0.5px solid ${T.border}`, cursor: period ? 'pointer' : 'default', opacity: product ? 1 : 0.45, position: 'relative' }}
           >
             <div style={{ width: 8, height: 8, borderRadius: '50%', background: dotColor, flexShrink: 0 }} />
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 12, fontWeight: 500, color: T.text }}>{step.label}</div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flex: 1 }}>
+                <div style={{ fontSize: 12, fontWeight: 500, color: T.text }}>{step.label}</div>
+                {step.optional && !product && period && (
+                  <button onClick={e => { e.stopPropagation(); onUpdatePeriodSteps?.(period.startDate, stepKey, false) }} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 14, padding: '0 2px', lineHeight: 1, flexShrink: 0 }} title="Hide this step">×</button>
+                )}
+              </div>
               {product ? (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
                   {product.imageUrl && <img src={product.imageUrl} alt="" style={{ width: 16, height: 16, borderRadius: 3, objectFit: 'cover' }} onError={e => e.target.style.display='none'} />}
@@ -2480,10 +2842,11 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
               />
             ) : (
               <ProductPicker
-                stepKey={step.key}
+                stepKey={stepKey}
+                categoryKey={step.categoryKey}
                 currentProductId={productId}
                 products={products}
-                onSelect={(pid) => handleSelectProduct(step.key, pid)}
+                onSelect={(pid) => handleSelectProduct(stepKey, pid)}
                 onAddNew={() => setAddingProduct(true)}
                 onClose={() => setOpenStepKey(null)}
               />
@@ -2528,6 +2891,30 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
         )
       }
     })
+
+    // Show hidden optional steps at bottom with + to re-enable
+    const hiddenSteps = dayTypeKey ? getPeriodSteps(period, dayTypeKey).filter(s => !s.enabled && s.optional) : []
+    if (hiddenSteps.length > 0 && period) {
+      result.push(
+        <div key="hidden-steps" style={{ marginTop: 8 }}>
+          <div style={{ marginBottom: 6 }}>
+            <div style={{ fontSize: 10, color: T.textLight, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Removed steps</div>
+            <div style={{ fontSize: 10, color: T.textLight, fontStyle: 'italic', marginTop: 2 }}>Tap + to add back to your routine</div>
+          </div>
+          {hiddenSteps.map(s => (
+            <div key={s.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '5px 0', borderBottom: '0.5px solid ' + T.border, opacity: 0.5 }}>
+              <div style={{ fontSize: 12, color: T.textMuted }}>{s.label}</div>
+              <button
+                onClick={() => onUpdatePeriodSteps?.(period.startDate, s.id, true)}
+                style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.pinkDeep, fontSize: 16, padding: '0 4px', lineHeight: 1, fontWeight: 600 }}
+                title="Restore this step"
+              >+</button>
+            </div>
+          ))}
+        </div>
+      )
+    }
+
     return result
   }
 
@@ -2582,8 +2969,8 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
       ) : (
         <>
           {/* AM: normal routine unless it's an AM treatment */}
-          {tab === 'am' && !isRecovery && !(isTreatment && treatTod === 'am') && renderSteps(AM_STEPS, T.pinkDeep)}
-          {tab === 'am' && isRecovery && renderSteps(getPmSteps(period, 'recovery'), T.pinkDeep)}
+          {tab === 'am' && !isRecovery && !(isTreatment && treatTod === 'am') && renderSteps(period ? getStepsForDayType(period, 'am') : getDefaultSteps('am'), T.pinkDeep, 'am')}
+          {tab === 'am' && isRecovery && renderSteps(getStepsForDayType(period, 'recovery'), T.pinkDeep, 'recovery')}
           {tab === 'am' && isTreatment && treatTod === 'am' && (
             <div style={{ fontSize: 12, color: T.textMuted, padding: '8px 0' }}>
               <span style={{ fontWeight: 500, color: T.text }}>Treatment this morning.</span> Skip your regular routine and follow your provider's instructions. Recovery products start tonight.
@@ -2612,7 +2999,7 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
               Pre-treatment pause — skip actives tonight. Regular cleanse and moisturizer only.
             </div>
           )}
-          {tab === 'pm' && renderSteps(pmSteps, dayType === 'tret' ? '#A78BFA' : T.orange)}
+          {tab === 'pm' && renderSteps(pmSteps, dayType === 'tret' ? '#A78BFA' : T.orange, nightType)}
         </>
       )}
     </div>
@@ -2794,7 +3181,7 @@ function generateICS({ routineHistory, treatments, allTypes, products, settings 
       : null
 
     const amDesc = period ? buildStepDescription(AM_STEPS, periodProducts, products) : null
-    const pmSteps = period ? getPmSteps(period, nightType) : []
+    const pmSteps = period ? getStepsForDayType(period, nightType) : getDefaultSteps(nightType)
     const pmDesc = info.isTreatment && !period ? 'Follow provider aftercare instructions'
       : pmSteps.length ? buildStepDescription(pmSteps, periodProducts, products)
       : null
@@ -3355,6 +3742,7 @@ export default function GlowUpCalendar({ session }) {
         tretStartDate:   p.tret_start_date,
         secondaryActives:p.secondary_actives || [],
         products:        p.products || {},
+        steps:           p.steps || null,
         _dbId:           p.id,
         createdAt:       p.created_at,
         updatedAt:       p.updated_at,
@@ -3365,35 +3753,35 @@ export default function GlowUpCalendar({ session }) {
       SEED_PRODUCTS.forEach(p => { prodMap[p.id] = p })
       ;(pr || []).forEach(p => {
         prodMap[p.id] = {
-          id:              p.id,
-          name:            p.name,
-          brand:           p.brand,
-          category:        p.category,
-          imageUrl:        p.image_url,
-          purchaseUrl:     p.purchase_url,
-          bdsCompliant:    p.bds_compliant,
-          currentlyUsing:  p.currently_using,
-          applicationArea: p.application_area || {},
-          effectiveness:   p.effectiveness,
-          buyAgain:        p.buy_again,
-          tags:            (p.tags || []).map(t => t ? t.charAt(0).toUpperCase() + t.slice(1) : t),
-          notes:           p.notes,
+          id:                  p.id,
+          name:                p.name,
+          brand:               p.brand,
+          category:            p.category,
+          imageUrl:            p.image_url,
+          purchaseUrl:         p.purchase_url,
+          bdsCompliant:        p.bds_compliant,
+          currentlyUsing:      p.currently_using,
+          applicationArea:     p.application_area || {},
+          effectiveness:       p.effectiveness,
+          buyAgain:            p.buy_again,
+          tags:                (p.tags || []).map(t => t ? t.charAt(0).toUpperCase() + t.slice(1) : t),
+          notes:               p.notes,
+          ingredient_category:  p.ingredient_category || '',
+          ingredient_form:      p.ingredient_form || '',
+          black_owned:          p.black_owned || false,
+          indigenous_owned:     p.indigenous_owned || false,
+          poc_owned:            p.poc_owned || false,
+          woman_owned:          p.woman_owned || false,
+          lgbtq_owned:          p.lgbtq_owned || false,
+          cruelty_free:         p.cruelty_free || false,
+          vegan:                p.vegan || false,
+          certified_organic:    p.certified_organic || false,
+          fair_trade:           p.fair_trade || false,
+          clean_formula:        p.clean_formula || false,
+          science_backed:       p.science_backed || false,
         }
       })
-      // Seed any missing seeds into DB
-      const missingSeedIds = SEED_PRODUCTS.filter(s => !(pr || []).find(p => p.id === s.id))
-      if (missingSeedIds.length > 0) {
-        await supabase.from('products').upsert(
-          missingSeedIds.map(s => ({
-            id: s.id, user_id: userId,
-            name: s.name, brand: s.brand, category: s.category,
-            image_url: s.imageUrl, purchase_url: s.purchaseUrl,
-            bds_compliant: s.bdsCompliant, currently_using: s.currentlyUsing,
-            application_area: s.applicationArea, effectiveness: s.effectiveness,
-            buy_again: s.buyAgain, tags: s.tags, notes: s.notes,
-          }))
-        )
-      }
+      // Seed products removed — users add their own products with full taxonomy
       setProducts(prodMap)
 
       // Extras periods
@@ -3463,6 +3851,19 @@ export default function GlowUpCalendar({ session }) {
           bds_compliant: p.bdsCompliant, currently_using: p.currentlyUsing,
           application_area: p.applicationArea || {}, effectiveness: p.effectiveness,
           buy_again: p.buyAgain, tags: p.tags || [], notes: p.notes,
+          ingredient_category: p.ingredient_category || null,
+          ingredient_form:     p.ingredient_form || null,
+          black_owned:         p.black_owned || false,
+          indigenous_owned:    p.indigenous_owned || false,
+          poc_owned:           p.poc_owned || false,
+          woman_owned:         p.woman_owned || false,
+          lgbtq_owned:         p.lgbtq_owned || false,
+          cruelty_free:        p.cruelty_free || false,
+          vegan:               p.vegan || false,
+          certified_organic:   p.certified_organic || false,
+          fair_trade:          p.fair_trade || false,
+          clean_formula:       p.clean_formula || false,
+          science_backed:      p.science_backed || false,
         }))
       if (rows.length > 0) await supabase.from('products').upsert(rows)
     }
@@ -3690,6 +4091,18 @@ export default function GlowUpCalendar({ session }) {
   async function deleteProduct(productId) {
     await supabase.from('products').delete().eq('id', productId).eq('user_id', userId)
     setProducts(p => { const n = { ...p }; delete n[productId]; return n })
+  }
+
+  function updatePeriodStep(periodStartDate, stepId, enabled) {
+    const dayType = stepId.split('_')[0]
+    setRoutineHistory(h => h.map(p => {
+      if (p.startDate !== periodStartDate) return p
+      const existingSteps = p.steps?.[dayType] || getDefaultSteps(dayType)
+      const updatedSteps = existingSteps.map(s => s.id === stepId ? { ...s, enabled } : s)
+      const newSteps = { ...(p.steps || {}), [dayType]: updatedSteps }
+      if (p._dbId) supabase.from('routine_periods').update({ steps: newSteps }).eq('id', p._dbId)
+      return { ...p, steps: newSteps }
+    }))
   }
 
   // Assigns a product to a specific step in a specific routine period
@@ -3953,6 +4366,7 @@ export default function GlowUpCalendar({ session }) {
               onEditDaily={() => openDailyEditor(getActiveDailyPeriod(dayFlyout.date, dailyHistory))}
               onEditShower={() => openShowerEditor(getActiveShowerPeriod(dayFlyout.date, showerHistory))}
               onUpdatePeriodProducts={updatePeriodProducts}
+              onUpdatePeriodSteps={updatePeriodStep}
               onAddProduct={saveProduct}
             />
           </div>
