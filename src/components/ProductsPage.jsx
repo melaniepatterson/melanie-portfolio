@@ -806,10 +806,10 @@ function ProductLibrary({ products, catalogProducts, onEdit, onAdd, onDelete }) 
   }
 
   return (
-    <div style={{ display: 'flex', gap: 0, minHeight: 400 }}>
+    <div style={{ display: 'flex', gap: 0, height: 'calc(100vh - 120px)', overflow: 'hidden' }}>
 
       {/* ── Left Sidebar ─────────────────────────────────────── */}
-      <div style={{ width: 200, flexShrink: 0, borderRight: '0.5px solid ' + T.border, padding: '16px 16px 16px 20px', overflowY: 'auto' }}>
+      <div style={{ width: 200, flexShrink: 0, borderRight: '0.5px solid ' + T.border, padding: '16px 16px 16px 20px', overflowY: 'auto', position: 'sticky', top: 0, height: '100%' }}>
 
         {/* Clear filters */}
         {hasFilters && (
@@ -847,14 +847,14 @@ function ProductLibrary({ products, catalogProducts, onEdit, onAdd, onDelete }) 
       </div>
 
       {/* ── Main Content ──────────────────────────────────────── */}
-      <div style={{ flex: 1, padding: '16px 20px', minWidth: 0 }}>
+      <div style={{ flex: 1, padding: '16px 20px', minWidth: 0, overflowY: 'auto', height: '100%' }}>
 
         {/* Tabs */}
         <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
           {[
-            { key: 'all',         label: 'All',         count: getMergedProducts().length },
-            { key: 'mine',        label: 'Mine',        count: Object.keys(products).length },
-            { key: 'recommended', label: 'Recommended', count: Object.keys(catalogProducts || {}).length },
+            { key: 'all',         label: 'All products',         count: getMergedProducts().length },
+            { key: 'mine',        label: 'My products',        count: Object.keys(products).length },
+            { key: 'recommended', label: 'Recommended products', count: Object.keys(catalogProducts || {}).length },
           ].map(t => (
             <button key={t.key} onClick={() => { setLibTab(t.key) }} style={{
               padding: '5px 12px', borderRadius: 20, fontSize: 12, cursor: 'pointer',
