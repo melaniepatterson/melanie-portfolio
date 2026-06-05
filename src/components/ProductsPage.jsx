@@ -178,24 +178,15 @@ const INGREDIENT_CATEGORIES = {
   },
 }
 
+const PRODUCT_CATEGORIES = [
+  'cleanser', 'cleansing oil / balm', 'toner', 'essence',
+  'serum', 'moisturizer', 'spf', 'eye cream',
+  'bha', 'azelaic acid', 'tretinoin',
+  'body wash', 'body treatment', 'haircare', 'hair growth', 'boosts', 'other'
+]
+
 function FieldLabel({ children }) {
   return <div style={{ fontSize: 11, color: T.textLight, marginBottom: 3 }}>{children}</div>
-}
-
-function TextInput({ value, onChange, placeholder, width = 140 }) {
-  return <input type="text" value={value} onChange={onChange} placeholder={placeholder} style={{ width, fontSize: 12, padding: '5px 8px', border: `0.5px solid ${T.border}`, borderRadius: 6, background: T.cream, color: T.text }} />
-}
-
-function Btn({ onClick, children, variant = 'default', style: sx = {}, disabled = false }) {
-  const base = { padding: '6px 14px', borderRadius: 8, fontSize: 12, cursor: disabled ? 'default' : 'pointer', opacity: disabled ? 0.5 : 1 }
-  const variants = {
-    default:   { border: `0.5px solid ${T.border}`,   background: 'transparent', color: T.textMuted },
-    primary:   { border: `0.5px solid ${T.pinkDeep}`, background: T.pink,        color: T.text, fontWeight: 600 },
-    danger:    { border: '0.5px solid #FB7185',        background: 'transparent', color: '#9F1239' },
-    secondary: { border: `0.5px solid ${T.border}`,   background: T.creamDark,   color: T.text },
-    active:    { border: `0.5px solid ${T.pinkDeep}`, background: T.pink,        color: T.text },
-  }
-  return <button onClick={onClick} disabled={disabled} style={{ ...base, ...variants[variant], ...sx }}>{children}</button>
 }
 
 function InfoTooltip({ text }) {
@@ -247,6 +238,22 @@ function Toggle({ checked, onChange, label }) {
       {label}
     </label>
   )
+}
+
+function TextInput({ value, onChange, placeholder, width = 140 }) {
+  return <input type="text" value={value} onChange={onChange} placeholder={placeholder} style={{ width, fontSize: 12, padding: '5px 8px', border: `0.5px solid ${T.border}`, borderRadius: 6, background: T.cream, color: T.text }} />
+}
+
+function Btn({ onClick, children, variant = 'default', style: sx = {}, disabled = false }) {
+  const base = { padding: '6px 14px', borderRadius: 8, fontSize: 12, cursor: disabled ? 'default' : 'pointer', opacity: disabled ? 0.5 : 1 }
+  const variants = {
+    default:   { border: `0.5px solid ${T.border}`,   background: 'transparent', color: T.textMuted },
+    primary:   { border: `0.5px solid ${T.pinkDeep}`, background: T.pink,        color: T.text, fontWeight: 600 },
+    danger:    { border: '0.5px solid #FB7185',        background: 'transparent', color: '#9F1239' },
+    secondary: { border: `0.5px solid ${T.border}`,   background: T.creamDark,   color: T.text },
+    active:    { border: `0.5px solid ${T.pinkDeep}`, background: T.pink,        color: T.text },
+  }
+  return <button onClick={onClick} disabled={disabled} style={{ ...base, ...variants[variant], ...sx }}>{children}</button>
 }
 
 function PaoIcon({ months, size = 20 }) {
@@ -484,76 +491,92 @@ function ProductForm({ initial, onSave, onCancel }) {
   )
 }
 
-function ProductLibrary({ products, onEdit, onAdd, onDelete, onClose }) {
+// ─── PRODUCT LIBRARY (standalone, no external deps) ──────────
+function ProductLibrary({ products, onEdit, onAdd, onDelete }) {
   const [filterCat, setFilterCat] = useState('all')
-  const [filterArea, setFilterArea] = useState('all')
   const [search, setSearch] = useState('')
 
-  const filtered = Object.values(products).filter(p => {
-    const matchCat = filterCat === 'all' || p.category === filterCat
-    const matchArea = filterArea === 'all' || !!(p.applicationArea?.[filterArea])
-    const matchSearch = !search || p.name.toLowerCase().includes(search.toLowerCase()) || (p.brand || '').toLowerCase().includes(search.toLowerCase())
-    return matchCat && matchArea && matchSearch
-  })
+  const list = Object.values(products)
+    .filter(p => {
+      const matchCat = filterCat === 'all' || p.category === filterCat
+      const matchSearch = !search.trim() ||
+        p.name.toLowerCase().includes(search.toLowerCase()) ||
+        (p.brand || '').toLowerCase().includes(search.toLowerCase())
+      return matchCat && matchSearch
+    })
+    .sort((a, b) => (a.name || '').localeCompare(b.name || ''))
 
   return (
-    <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 12, padding: '16px 18px', marginBottom: 14 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-        <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>Product library</div>
-        <div style={{ display: 'flex', gap: 6 }}>
-          <Btn variant="primary" onClick={onAdd} style={{ fontSize: 11, padding: '4px 10px' }}>+ Add product</Btn>
-          <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 16, color: T.textMuted, padding: '0 4px', lineHeight: 1 }}>×</button>
-        </div>
-      </div>
-
-      <div style={{ display: 'flex', gap: 8, marginBottom: 10, flexWrap: 'wrap', alignItems: 'center' }}>
-        <TextInput value={search} onChange={e => setSearch(e.target.value)} placeholder="Search products..." width={150} />
-        <select value={filterCat} onChange={e => setFilterCat(e.target.value)} style={{ fontSize: 12, padding: '5px 8px', border: `0.5px solid ${T.border}`, borderRadius: 6, background: T.cream, color: T.text }}>
+    <div style={{ padding: '12px 20px' }}>
+      {/* Search + filter row */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 14, flexWrap: 'wrap' }}>
+        <input
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          placeholder="Search products..."
+          style={{ flex: 1, minWidth: 140, fontSize: 12, padding: '7px 10px', border: '0.5px solid ' + T.border, borderRadius: 8, background: T.white, color: T.text, fontFamily: 'inherit', outline: 'none' }}
+        />
+        <select
+          value={filterCat}
+          onChange={e => setFilterCat(e.target.value)}
+          style={{ fontSize: 12, padding: '7px 10px', border: '0.5px solid ' + T.border, borderRadius: 8, background: T.white, color: T.text, fontFamily: 'inherit', outline: 'none' }}
+        >
           <option value="all">All categories</option>
-          {PRODUCT_CATEGORIES.map(c => <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>)}
-        </select>
-        <select value={filterArea} onChange={e => setFilterArea(e.target.value)} style={{ fontSize: 12, padding: '5px 8px', border: `0.5px solid ${T.border}`, borderRadius: 6, background: T.cream, color: T.text }}>
-          <option value="all">All uses</option>
-          <option value="face">Face</option>
-          <option value="body">Body</option>
-          <option value="hair">Hair</option>
+          {PRODUCT_CATEGORIES.map(cat => (
+            <option key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</option>
+          ))}
         </select>
       </div>
 
-      {filtered.length === 0 && (
-        <div style={{ fontSize: 12, color: T.textLight, fontStyle: 'italic' }}>No products yet — add your first one above.</div>
+      {list.length === 0 && (
+        <div style={{ fontSize: 13, color: T.textMuted, fontStyle: 'italic', padding: '20px 0', textAlign: 'center' }}>
+          {Object.keys(products).length === 0
+            ? 'No products yet — tap + Add product to get started.'
+            : 'No products match your search.'}
+        </div>
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 8 }}>
-        {filtered.map(p => (
-          <div key={p.id} style={{ border: `0.5px solid ${T.border}`, borderRadius: 8, padding: '10px 12px', background: T.cream }}>
-            {p.imageUrl && (
-              <img src={p.imageUrl} alt={p.name} style={{ width: '100%', height: 80, objectFit: 'cover', borderRadius: 6, marginBottom: 8 }} onError={e => e.target.style.display='none'} />
-            )}
-            <div style={{ fontSize: 12, fontWeight: 500, color: T.text, marginBottom: 2 }}>{p.name}</div>
-            {p.brand && <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 4 }}>{p.brand}</div>}
-            <div style={{ fontSize: 11, color: T.textLight, marginBottom: 4 }}>{p.category ? p.category.charAt(0).toUpperCase() + p.category.slice(1) : ''}</div>
-            <ProductFlagBadges product={p} max={3} />
-            {p.pao_months && <span style={{ display: 'inline-flex', alignItems: 'center', gap: 2, fontSize: 10, color: T.textMuted, marginTop: 2 }}><PaoIcon months={p.pao_months} size={13} /></span>}
-            {p.effectiveness > 0 && <StarRating value={p.effectiveness} size={11} />}
-            <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 6 }}>
-              {p.currentlyUsing && <span style={{ fontSize: 9, padding: '1px 5px', borderRadius: 3, background: '#DCFCE7', color: '#166534', border: '0.5px solid #4ADE80' }}>In use</span>}
-              
-              {p.buyAgain === true && <span style={{ fontSize: 9, padding: '1px 5px', borderRadius: 3, background: T.pink, color: '#9F1239', border: `0.5px solid ${T.pinkDeep}` }}>Buy again</span>}
-              {Object.entries(p.applicationArea || {}).filter(([,v])=>v).map(([k]) => (
-                <span key={k} style={{ fontSize: 9, padding: '1px 5px', borderRadius: 3, background: T.creamDark, color: T.textMuted, border: `0.5px solid ${T.border}` }}>
-                  {k.charAt(0).toUpperCase() + k.slice(1)}
+      {list.map(p => (
+        <div key={p.id} style={{ background: T.white, border: '0.5px solid ' + T.border, borderRadius: 10, padding: '12px 14px', marginBottom: 10 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 2 }}>{p.name}</div>
+              {p.brand && <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 4 }}>{p.brand}</div>}
+              {p.category && (
+                <div style={{ fontSize: 11, color: T.textLight, marginBottom: 4 }}>
+                  {p.category.charAt(0).toUpperCase() + p.category.slice(1)}
+                </div>
+              )}
+              <ProductFlagBadges product={p} max={4} />
+              {p.pao_months && (
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 2, fontSize: 10, color: T.textMuted, marginTop: 4 }}>
+                  <PaoIcon months={p.pao_months} size={13} />
                 </span>
-              ))}
-              {(p.tags || []).slice(0,2).map(t => <span key={t} style={{ fontSize: 9, padding: '1px 5px', borderRadius: 3, background: T.creamDark, color: T.textMuted, border: `0.5px solid ${T.border}` }}>{t}</span>)}
+              )}
+              {p.effectiveness > 0 && (
+                <div style={{ marginTop: 4 }}>
+                  <StarRating value={p.effectiveness} size={11} />
+                </div>
+              )}
+              {p.currentlyUsing && (
+                <div style={{ fontSize: 10, color: T.pinkDeep, fontWeight: 600, marginTop: 4 }}>Currently using</div>
+              )}
+              {p.notes && (
+                <div style={{ fontSize: 11, color: T.textMuted, marginTop: 6, lineHeight: 1.5, fontStyle: 'italic' }}>{p.notes}</div>
+              )}
             </div>
-            <div style={{ marginTop: 8, display: 'flex', gap: 4 }}>
-              <Btn onClick={() => onEdit(p)} style={{ fontSize: 11, padding: '3px 8px', flex: 1, textAlign: 'center' }}>Edit</Btn>
-              {onDelete && <button onClick={() => { if (window.confirm('Remove this product from your library?')) onDelete(p.id) }} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 16, padding: '0 4px', lineHeight: 1 }}>×</button>}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, flexShrink: 0 }}>
+              <Btn onClick={() => onEdit(p)} style={{ fontSize: 11, padding: '3px 10px' }}>Edit</Btn>
+              <button
+                onClick={() => {
+                  if (window.confirm('Delete ' + p.name + '? This cannot be undone.')) onDelete(p)
+                }}
+                style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 18, lineHeight: 1, padding: 0 }}
+              >×</button>
             </div>
           </div>
-        ))}
-      </div>
+        </div>
+      ))}
     </div>
   )
 }
@@ -582,14 +605,22 @@ export default function ProductsPage({ session }) {
             notes: p.notes,
             ingredient_category: p.ingredient_category || '',
             ingredient_form: p.ingredient_form || '',
-            black_owned: p.black_owned || false, indigenous_owned: p.indigenous_owned || false,
-            poc_owned: p.poc_owned || false, woman_owned: p.woman_owned || false,
-            lgbtq_owned: p.lgbtq_owned || false, cruelty_free: p.cruelty_free || false,
-            vegan: p.vegan || false, certified_organic: p.certified_organic || false,
-            fair_trade: p.fair_trade || false, clean_formula: p.clean_formula || false,
-            science_backed: p.science_backed || false, is_prescription: p.is_prescription || false,
-            purchased_at: p.purchased_at || '', opened_at: p.opened_at || '',
-            expires_at: p.expires_at || '', pao_months: p.pao_months || null,
+            black_owned: p.black_owned || false,
+            indigenous_owned: p.indigenous_owned || false,
+            poc_owned: p.poc_owned || false,
+            woman_owned: p.woman_owned || false,
+            lgbtq_owned: p.lgbtq_owned || false,
+            cruelty_free: p.cruelty_free || false,
+            vegan: p.vegan || false,
+            certified_organic: p.certified_organic || false,
+            fair_trade: p.fair_trade || false,
+            clean_formula: p.clean_formula || false,
+            science_backed: p.science_backed || false,
+            is_prescription: p.is_prescription || false,
+            purchased_at: p.purchased_at || '',
+            opened_at: p.opened_at || '',
+            expires_at: p.expires_at || '',
+            pao_months: p.pao_months || null,
           }
         })
         setProducts(map)
@@ -601,25 +632,38 @@ export default function ProductsPage({ session }) {
 
   async function saveProduct(product) {
     const row = {
-      id: product.id, user_id: userId,
-      name: product.name, brand: product.brand, category: product.category,
-      image_url: product.imageUrl, purchase_url: product.purchaseUrl,
-      bds_compliant: product.bdsCompliant, currently_using: product.currentlyUsing,
+      id: product.id,
+      user_id: userId,
+      name: product.name,
+      brand: product.brand,
+      category: product.category,
+      image_url: product.imageUrl,
+      purchase_url: product.purchaseUrl,
+      bds_compliant: product.bdsCompliant,
+      currently_using: product.currentlyUsing,
       application_area: product.applicationArea || {},
-      effectiveness: product.effectiveness, buy_again: product.buyAgain,
-      tags: product.tags || [], notes: product.notes,
+      effectiveness: product.effectiveness,
+      buy_again: product.buyAgain,
+      tags: product.tags || [],
+      notes: product.notes,
       ingredient_category: product.ingredient_category || null,
       ingredient_form: product.ingredient_form || null,
       black_owned: product.black_owned || false,
       indigenous_owned: product.indigenous_owned || false,
-      poc_owned: product.poc_owned || false, woman_owned: product.woman_owned || false,
-      lgbtq_owned: product.lgbtq_owned || false, cruelty_free: product.cruelty_free || false,
-      vegan: product.vegan || false, certified_organic: product.certified_organic || false,
-      fair_trade: product.fair_trade || false, clean_formula: product.clean_formula || false,
+      poc_owned: product.poc_owned || false,
+      woman_owned: product.woman_owned || false,
+      lgbtq_owned: product.lgbtq_owned || false,
+      cruelty_free: product.cruelty_free || false,
+      vegan: product.vegan || false,
+      certified_organic: product.certified_organic || false,
+      fair_trade: product.fair_trade || false,
+      clean_formula: product.clean_formula || false,
       science_backed: product.science_backed || false,
       is_prescription: product.is_prescription || false,
-      purchased_at: product.purchased_at || null, opened_at: product.opened_at || null,
-      expires_at: product.expires_at || null, pao_months: product.pao_months || null,
+      purchased_at: product.purchased_at || null,
+      opened_at: product.opened_at || null,
+      expires_at: product.expires_at || null,
+      pao_months: product.pao_months || null,
     }
     if (!row.id) {
       row.id = crypto.randomUUID()
@@ -631,7 +675,6 @@ export default function ProductsPage({ session }) {
   }
 
   async function deleteProduct(product) {
-    if (!window.confirm('Delete ' + product.name + '? This cannot be undone.')) return
     if (product.id) await supabase.from('products').delete().eq('id', product.id)
     setProducts(prev => {
       const next = { ...prev }
@@ -642,9 +685,11 @@ export default function ProductsPage({ session }) {
 
   return (
     <div style={{ fontFamily: 'inherit', minHeight: '100vh', background: T.cream, paddingBottom: 40 }}>
+      {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 20px 16px', borderBottom: '0.5px solid ' + T.border, background: T.white }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <button onClick={() => window.history.back()} style={{ border: '0.5px solid ' + T.border, background: 'transparent', borderRadius: 8, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.text }}>←</button>
+          <button onClick={() => window.history.back()}
+            style={{ border: '0.5px solid ' + T.border, background: 'transparent', borderRadius: 8, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.text }}>←</button>
           <div style={{ fontSize: 15, fontWeight: 600, color: T.text }}>Product library</div>
           <div style={{ fontSize: 12, color: T.textMuted }}>({Object.keys(products).length})</div>
         </div>
@@ -654,6 +699,7 @@ export default function ProductsPage({ session }) {
         </button>
       </div>
 
+      {/* Form */}
       {editingProduct && (
         <div style={{ padding: '16px 20px' }}>
           <ProductForm
@@ -664,15 +710,15 @@ export default function ProductsPage({ session }) {
         </div>
       )}
 
+      {/* Library */}
       {!editingProduct && (
         loading
-          ? <div style={{ padding: '40px 20px', fontSize: 13, color: T.textMuted }}>Loading your products...</div>
+          ? <div style={{ padding: '40px 20px', fontSize: 13, color: T.textMuted, textAlign: 'center' }}>Loading your products...</div>
           : <ProductLibrary
               products={products}
-              onEdit={(p) => setEditingProduct(p)}
+              onEdit={p => setEditingProduct(p)}
               onAdd={() => setEditingProduct('new')}
               onDelete={deleteProduct}
-              onClose={() => window.history.back()}
             />
       )}
     </div>
