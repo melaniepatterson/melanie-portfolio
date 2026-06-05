@@ -2926,7 +2926,7 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
           {MONTHS[date.getMonth()]} {date.getDate()}
         </div>
         <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
-          <Btn onClick={onAddTreatment} style={{ fontSize: 11, padding: '4px 10px', whiteSpace: 'nowrap' }}>{flyout.isTreatment ? 'Edit treatment' : '+ Treatment'}</Btn>
+          <Btn onClick={onAddTreatment} style={{ fontSize: 11, padding: '4px 10px', whiteSpace: 'nowrap' }}>{flyout.isTreatment ? 'Edit treatment' : '+ Add treatment'}</Btn>
           <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 16, color: T.textMuted, padding: '0 4px', lineHeight: 1 }}>×</button>
         </div>
       </div>
