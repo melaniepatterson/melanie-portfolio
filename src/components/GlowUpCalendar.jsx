@@ -3812,6 +3812,7 @@ export default function GlowUpCalendar({ session }) {
         supabase.from('shower_periods').select('*').eq('user_id', userId).order('start_date'),
         supabase.from('treatments').select('*').eq('user_id', userId),
         supabase.from('custom_treatment_types').select('*').eq('user_id', userId),
+        supabase.from('catalog_products').select('*'),
       ])
 
       // Routine periods — convert snake_case from DB to camelCase
@@ -3830,8 +3831,24 @@ export default function GlowUpCalendar({ session }) {
         updatedAt:       p.updated_at,
       })))
 
-      // Products — Supabase only, no seeds
+      // Products — catalog (global) + user products
       const prodMap = {}
+      // Load catalog first so user products override if same id
+      ;(cat || []).forEach(p => {
+        prodMap[p.id] = {
+          ...p,
+          _isCatalog: true,
+          imageUrl: p.image_url,
+          purchaseUrl: p.purchase_url,
+          applicationArea: p.application_area || {},
+          tags: (p.tags || []).map(t => t ? t.charAt(0).toUpperCase() + t.slice(1) : t),
+          ingredient_category: p.ingredient_category || '',
+          ingredient_form: p.ingredient_form || '',
+          store_name: p.store_name || '',
+          direct_url: p.direct_url || '',
+          direct_store_name: p.direct_store_name || '',
+        }
+      })
       ;(pr || []).forEach(p => {
         prodMap[p.id] = {
           id:                  p.id,
@@ -3865,6 +3882,7 @@ export default function GlowUpCalendar({ session }) {
           opened_at:            p.opened_at || '',
           expires_at:           p.expires_at || '',
           pao_months:           p.pao_months || null,
+          _isCatalog:           false,
           store_name:           p.store_name || '',
           direct_url:           p.direct_url || '',
           direct_store_name:    p.direct_store_name || '',

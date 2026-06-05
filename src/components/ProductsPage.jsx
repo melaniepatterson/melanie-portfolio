@@ -560,7 +560,8 @@ function getStoreName(url) {
 
 
 // ─── PRODUCT LIBRARY (standalone, no external deps) ──────────
-function ProductLibrary({ products, onEdit, onAdd, onDelete }) {
+function ProductLibrary({ products, catalogProducts, onEdit, onAdd, onDelete }) {
+  const [libTab, setLibTab] = useState('catalog')
   const [filterCat, setFilterCat] = useState('all')
   const [filterFlags, setFilterFlags] = useState([])
   const [filterUsing, setFilterUsing] = useState(false)
@@ -588,7 +589,8 @@ function ProductLibrary({ products, onEdit, onAdd, onDelete }) {
 
   const hasFilters = filterCat !== 'all' || filterFlags.length > 0 || filterUsing || filterBuyAgain
 
-  const list = Object.values(products)
+  const pool = libTab === 'catalog' ? Object.values(catalogProducts || {}) : Object.values(products)
+  const list = pool
     .filter(p => {
       const matchCat = filterCat === 'all' || p.category === filterCat
       const matchSearch = !search.trim() ||
@@ -624,6 +626,20 @@ function ProductLibrary({ products, onEdit, onAdd, onDelete }) {
 
   return (
     <div style={{ padding: '12px 20px' }}>
+      {/* Library tabs */}
+      <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
+        {[
+          { key: 'catalog', label: 'Recommended', count: Object.keys(catalogProducts || {}).length },
+          { key: 'mine',    label: 'My products',  count: Object.keys(products).length },
+        ].map(t => (
+          <button key={t.key} onClick={() => { setLibTab(t.key); setFilterCat('all'); setFilterFlags([]) }} style={{
+            padding: '6px 14px', borderRadius: 20, fontSize: 12, cursor: 'pointer',
+            border: '0.5px solid ' + (libTab === t.key ? T.pinkDeep : T.border),
+            background: libTab === t.key ? T.pink : 'transparent',
+            color: T.text, fontFamily: 'inherit',
+          }}>{t.label} <span style={{ fontSize: 10, color: T.textMuted }}>({t.count})</span></button>
+        ))}
+      </div>
       {/* Search */}
       <input
         value={search}
@@ -722,13 +738,13 @@ function ProductLibrary({ products, onEdit, onAdd, onDelete }) {
                     )}
                   </div>
                   <div style={{ display: 'flex', gap: 4, flexShrink: 0, alignSelf: 'flex-start' }}>
-                    <Btn onClick={() => onEdit(p)} style={{ fontSize: 11, padding: '3px 10px' }}>Edit</Btn>
-                    <button
-                      onClick={() => {
-                        if (window.confirm('Delete ' + p.name + '? This cannot be undone.')) onDelete(p)
-                      }}
-                      style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 18, lineHeight: 1, padding: 0 }}
-                    >×</button>
+                    {!p._isCatalog && <>
+                      <Btn onClick={() => onEdit(p)} style={{ fontSize: 11, padding: '3px 10px' }}>Edit</Btn>
+                      <button
+                        onClick={() => { if (window.confirm('Delete ' + p.name + '? This cannot be undone.')) onDelete(p) }}
+                        style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 18, lineHeight: 1, padding: 0 }}
+                      >×</button>
+                    </>}
                   </div>
                 </div>
               </div>
@@ -743,14 +759,39 @@ function ProductLibrary({ products, onEdit, onAdd, onDelete }) {
 // ─── PRODUCTS PAGE ────────────────────────────────────────────
 export default function ProductsPage({ session }) {
   const [products, setProducts] = useState({})
+  const [catalogProducts, setCatalogProducts] = useState({})
   const [editingProduct, setEditingProduct] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [tab, setTab] = useState('catalog')
   const userId = session?.user?.id
 
   useEffect(() => {
     if (!userId) return
     async function load() {
-      const { data } = await supabase.from('products').select('*').eq('user_id', userId)
+      const [{ data }, { data: cat }] = await Promise.all([
+        supabase.from('products').select('*').eq('user_id', userId),
+        supabase.from('catalog_products').select('*'),
+      ])
+      if (cat) {
+        const catMap = {}
+        cat.forEach(p => {
+          catMap[p.id] = {
+            ...p,
+            _isCatalog: true,
+            imageUrl: p.image_url, purchaseUrl: p.purchase_url,
+            applicationArea: {}, currentlyUsing: false, buyAgain: null,
+            effectiveness: 0, bdsCompliant: true,
+            tags: (p.tags || []).map(t => t ? t.charAt(0).toUpperCase() + t.slice(1) : t),
+            ingredient_category: p.ingredient_category || '',
+            ingredient_form: p.ingredient_form || '',
+            _isCatalog: false,
+            store_name: p.store_name || '',
+            direct_url: p.direct_url || '',
+            direct_store_name: p.direct_store_name || '',
+          }
+        })
+        setCatalogProducts(catMap)
+      }
       if (data) {
         const map = {}
         data.forEach(p => {
@@ -881,6 +922,7 @@ export default function ProductsPage({ session }) {
           ? <div style={{ padding: '40px 20px', fontSize: 13, color: T.textMuted, textAlign: 'center' }}>Loading your products...</div>
           : <ProductLibrary
               products={products}
+              catalogProducts={catalogProducts}
               onEdit={p => setEditingProduct(p)}
               onAdd={() => setEditingProduct('new')}
               onDelete={deleteProduct}
