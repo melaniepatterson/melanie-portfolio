@@ -3916,9 +3916,14 @@ export default function GlowUpCalendar({ session }) {
   const [editFromHistory, setEditFromHistory] = useState(false)
   const [dailyFromHistory, setDailyFromHistory] = useState(false)
   const [showerFromHistory, setShowerFromHistory] = useState(false)
-  const [showAllBadges, setShowAllBadges] = useState(false)
+  const [showAllBadges, setShowAllBadges] = useState(() => localStorage.getItem('glowup-show-all-badges') === 'true')
 
   // Persistence
+  // Persist badge toggle
+  useEffect(() => { localStorage.setItem('glowup-show-all-badges', showAllBadges) }, [showAllBadges])
+  // Persist calendar month/year
+  useEffect(() => { localStorage.setItem('glowup-calendar-month', month); localStorage.setItem('glowup-calendar-year', year) }, [month, year])
+
   // Persistence — save to Supabase whenever state changes
   // Routine periods
   useEffect(() => {
@@ -4538,6 +4543,9 @@ export default function GlowUpCalendar({ session }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <button onClick={prevMonth} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 8, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.text }}>←</button>
           <button onClick={nextMonth} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 8, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.text }}>→</button>
+          {(month !== now.getMonth() || year !== now.getFullYear()) && (
+            <button onClick={() => { setMonth(now.getMonth()); setYear(now.getFullYear()) }} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 8, padding: '5px 10px', cursor: 'pointer', fontSize: 11, color: T.textMuted, fontFamily: 'inherit' }}>Today</button>
+          )}
           <Btn variant={['update','setup'].includes(panel) ? 'active' : 'primary'} style={{ fontSize: 11, padding: '5px 10px' }} onClick={() => { setPanel(p => ['update','setup'].includes(p) ? null : (hasRoutine ? 'update' : 'setup')); setEditingPeriod(null); setDayFlyout(null) }}>+ Start new routine</Btn>
           <Btn variant={showTreatments ? 'active' : 'default'} style={{ fontSize: 11, padding: '5px 10px' }} onClick={() => { setShowTreatments(s => !s); setDayFlyout(null) }}>My treatments</Btn>
         </div>
