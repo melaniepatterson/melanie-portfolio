@@ -3127,7 +3127,7 @@ function NewRoutinePeriodPicker({ routineHistory, dailyHistory, showerHistory, p
           )}
           {chosen === 'daily' && (
             <DailyEditor
-              initial={null}
+              initial={getActiveDailyPeriod(now, dailyHistory) ? { ...getActiveDailyPeriod(now, dailyHistory), startDate: '', endDate: null, id: null } : null}
               onSave={onSaveDaily}
               onCancel={onCancel}
               allPeriods={dailyHistory}
@@ -3138,7 +3138,7 @@ function NewRoutinePeriodPicker({ routineHistory, dailyHistory, showerHistory, p
           )}
           {chosen === 'shower' && (
             <ShowerEditor
-              initial={null}
+              initial={getActiveShowerPeriod(now, showerHistory) ? { ...getActiveShowerPeriod(now, showerHistory), startDate: '', endDate: null, id: null } : null}
               onSave={onSaveShower}
               onCancel={onCancel}
               allPeriods={showerHistory}
@@ -4502,7 +4502,7 @@ export default function GlowUpCalendar({ session }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <button onClick={prevMonth} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 8, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.text }}>←</button>
           <button onClick={nextMonth} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 8, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.text }}>→</button>
-          <Btn variant={['update','setup'].includes(panel) ? 'active' : 'primary'} style={{ fontSize: 11, padding: '5px 10px' }} onClick={() => { setPanel(p => ['update','setup'].includes(p) ? null : (hasRoutine ? 'update' : 'setup')); if (hasRoutine) { setEditingPeriod({ ...getActivePeriod(today, routineHistory), startDate: '', _prefill: true }) } else { setEditingPeriod(null) }; setDayFlyout(null) }}>+ Start new routine</Btn>
+          <Btn variant={['update','setup'].includes(panel) ? 'active' : 'primary'} style={{ fontSize: 11, padding: '5px 10px' }} onClick={() => { setPanel(p => ['update','setup'].includes(p) ? null : (hasRoutine ? 'update' : 'setup')); setEditingPeriod(null); setDayFlyout(null) }}>+ Start new routine</Btn>
           <Btn variant={showTreatments ? 'active' : 'default'} style={{ fontSize: 11, padding: '5px 10px' }} onClick={() => { setShowTreatments(s => !s); setDayFlyout(null) }}>My treatments</Btn>
         </div>
         {/* Right — hamburger */}
