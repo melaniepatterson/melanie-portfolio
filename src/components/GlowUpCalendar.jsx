@@ -4502,7 +4502,7 @@ export default function GlowUpCalendar({ session }) {
 
   // ── Render ────────────────────────────────────────────────
   // Determine if any overlay panel is open
-  const hasOverlay = !!(panel || editingPeriod || editingDaily || editingShower || showLibrary || editingProduct || selector || showExport || showTreatments || showFeedback)
+  const hasOverlay = !!(panel || editingPeriod || editingDaily || editingShower || editingProduct || selector || showExport || showTreatments || showFeedback)
 
   function closeAllPanels() {
     setPanel(null); setEditingPeriod(null); setEditingDaily(null); setEditingShower(null)
@@ -4567,7 +4567,7 @@ export default function GlowUpCalendar({ session }) {
           session={session}
           onClose={() => setShowMenu(false)}
           onHistory={() => { setPanel(p => p === 'history' ? null : 'history'); setEditingPeriod(null); setDayFlyout(null) }}
-          onLibrary={() => { setShowLibrary(s => !s); setEditingProduct(null); setDayFlyout(null) }}
+          onLibrary={() => { window.location.href = '/routine/products' }}
           onExport={() => { setShowExport(s => !s); setDayFlyout(null) }}
           onSignOut={handleSignOut}
           onFeedback={() => { setShowFeedback(true); setShowMenu(false) }}

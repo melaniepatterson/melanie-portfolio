@@ -14,6 +14,7 @@ import GlowUpCalendar from './components/GlowUpCalendar'
 import Auth from './components/Auth'
 import Profile from './components/Profile'
 import RoutineHistory from './components/RoutineHistory'
+import ProductsPage from './components/ProductsPage'
 import { supabase } from './lib/supabase'
 
 function Layout() {
@@ -21,7 +22,7 @@ function Layout() {
   const isHome = location.pathname === "/";
   const isWork = location.pathname === "/portfolio";
   const isWorkDetail = location.pathname.startsWith("/portfolio/");
-  const isRoutine = location.pathname === "/routine" || location.pathname === "/routine/profile" || location.pathname === "/routine/history";
+  const isRoutine = location.pathname.startsWith("/routine");
 
   const [session, setSession] = useState(undefined)
 
@@ -45,6 +46,7 @@ function Layout() {
       "/routine": "Routine — melanie.studio",
       "/routine/profile": "Profile — melanie.studio",
       "/routine/history": "History — melanie.studio",
+      "/routine/products": "Products — melanie.studio",
     };
     const title = titles[location.pathname];
     if (title) {
@@ -62,6 +64,7 @@ function Layout() {
   // Profile page — full screen, no nav/logo/footer chrome
   if (location.pathname === "/routine/profile") return <Profile session={session} />
   if (location.pathname === "/routine/history") return <RoutineHistory session={session} />
+  if (location.pathname === "/routine/products") return <ProductsPage session={session} />
 
   return (
     <div className="layout">
@@ -87,6 +90,7 @@ function Layout() {
               <Route path="/routine" element={<GlowUpCalendar session={session} />} />
               <Route path="/routine/profile" element={<Profile session={session} />} />
               <Route path="/routine/history" element={<RoutineHistory session={session} />} />
+              <Route path="/routine/products" element={<ProductsPage session={session} />} />
             </Routes>
           </PageTransition>
         </main>
