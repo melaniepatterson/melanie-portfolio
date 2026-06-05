@@ -838,6 +838,15 @@ function ProductLibrary({ products, catalogProducts, onEdit, onAdd, onDelete }) 
           </div>
         ))}
       </div>
+      {selectedProduct && (
+        <ProductModal
+          product={selectedProduct}
+          onClose={() => setSelectedProduct(null)}
+          onEdit={p => { setSelectedProduct(null); onEdit(p) }}
+          onDelete={onDelete}
+          catalogProducts={catalogProducts}
+        />
+      )}
     </div>
   )
 }
