@@ -182,6 +182,10 @@ function FieldLabel({ children }) {
   return <div style={{ fontSize: 11, color: T.textLight, marginBottom: 3 }}>{children}</div>
 }
 
+function TextInput({ value, onChange, placeholder, width = 140 }) {
+  return <input type="text" value={value} onChange={onChange} placeholder={placeholder} style={{ width, fontSize: 12, padding: '5px 8px', border: `0.5px solid ${T.border}`, borderRadius: 6, background: T.cream, color: T.text }} />
+}
+
 function Btn({ onClick, children, variant = 'default', style: sx = {}, disabled = false }) {
   const base = { padding: '6px 14px', borderRadius: 8, fontSize: 12, cursor: disabled ? 'default' : 'pointer', opacity: disabled ? 0.5 : 1 }
   const variants = {
