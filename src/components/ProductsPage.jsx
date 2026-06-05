@@ -536,8 +536,9 @@ function ProductLibrary({ products, onEdit, onAdd, onDelete }) {
         </div>
       )}
 
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
       {list.map(p => (
-        <div key={p.id} style={{ background: T.white, border: '0.5px solid ' + T.border, borderRadius: 10, padding: '12px 14px', marginBottom: 10 }}>
+        <div key={p.id} style={{ background: T.white, border: '0.5px solid ' + T.border, borderRadius: 10, padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 4 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 2 }}>{p.name}</div>
@@ -565,7 +566,7 @@ function ProductLibrary({ products, onEdit, onAdd, onDelete }) {
                 <div style={{ fontSize: 11, color: T.textMuted, marginTop: 6, lineHeight: 1.5, fontStyle: 'italic' }}>{p.notes}</div>
               )}
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, flexShrink: 0 }}>
+            <div style={{ display: 'flex', gap: 4, flexShrink: 0, alignSelf: 'flex-start' }}>
               <Btn onClick={() => onEdit(p)} style={{ fontSize: 11, padding: '3px 10px' }}>Edit</Btn>
               <button
                 onClick={() => {
@@ -577,6 +578,7 @@ function ProductLibrary({ products, onEdit, onAdd, onDelete }) {
           </div>
         </div>
       ))}
+      </div>
     </div>
   )
 }
