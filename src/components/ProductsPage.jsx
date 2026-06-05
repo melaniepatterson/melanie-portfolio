@@ -182,6 +182,18 @@ function FieldLabel({ children }) {
   return <div style={{ fontSize: 11, color: T.textLight, marginBottom: 3 }}>{children}</div>
 }
 
+function Btn({ onClick, children, variant = 'default', style: sx = {}, disabled = false }) {
+  const base = { padding: '6px 14px', borderRadius: 8, fontSize: 12, cursor: disabled ? 'default' : 'pointer', opacity: disabled ? 0.5 : 1 }
+  const variants = {
+    default:   { border: `0.5px solid ${T.border}`,   background: 'transparent', color: T.textMuted },
+    primary:   { border: `0.5px solid ${T.pinkDeep}`, background: T.pink,        color: T.text, fontWeight: 600 },
+    danger:    { border: '0.5px solid #FB7185',        background: 'transparent', color: '#9F1239' },
+    secondary: { border: `0.5px solid ${T.border}`,   background: T.creamDark,   color: T.text },
+    active:    { border: `0.5px solid ${T.pinkDeep}`, background: T.pink,        color: T.text },
+  }
+  return <button onClick={onClick} disabled={disabled} style={{ ...base, ...variants[variant], ...sx }}>{children}</button>
+}
+
 function InfoTooltip({ text }) {
   const [pos, setPos] = useState(null)
   const ref = useRef(null)
