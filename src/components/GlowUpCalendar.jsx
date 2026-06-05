@@ -3832,6 +3832,7 @@ export default function GlowUpCalendar({ session }) {
         tret_start_date:   p.tretStartDate || null,
         secondary_actives: p.secondaryActives || [],
         products:          p.products || {},
+        steps:             p.steps || null,
       }))
       if (rows.length > 0) await supabase.from('routine_periods').upsert(rows)
     }
