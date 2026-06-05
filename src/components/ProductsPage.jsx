@@ -302,7 +302,7 @@ function ProductForm({ initial, onSave, onCancel }) {
     lgbtq_owned: false, cruelty_free: false, vegan: false, certified_organic: false, fair_trade: false,
     clean_formula: false, science_backed: false, is_prescription: false,
     purchased_at: '', opened_at: '', expires_at: '', pao_months: null,
-    ...initial
+    ...(initial ? { ...initial, tags: initial.tags || [] } : {})
   })
   const [tagInput, setTagInput] = useState('')
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
@@ -311,12 +311,12 @@ function ProductForm({ initial, onSave, onCancel }) {
     const raw = tagInput.trim()
     if (!raw) return
     const t = raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase()
-    if (form.tags.map(x => x.toLowerCase()).includes(t.toLowerCase())) return
+    if ((form.tags || []).map(x => x.toLowerCase()).includes(t.toLowerCase())) return
     set('tags', [...form.tags, t])
     setTagInput('')
   }
 
-  function removeTag(t) { set('tags', form.tags.filter(x => x !== t)) }
+  function removeTag(t) { set('tags', (form.tags || []).filter(x => x !== t)) }
 
   return (
     <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 12, padding: '14px 16px', marginBottom: 10 }}>
@@ -440,7 +440,7 @@ function ProductForm({ initial, onSave, onCancel }) {
       <div style={{ marginBottom: 8 }}>
         <FieldLabel>Tags (fragrance free, silicone free, etc.)</FieldLabel>
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 6 }}>
-          {form.tags.map(t => (
+          {(form.tags || []).map(t => (
             <span key={t} style={{ fontSize: 11, padding: '2px 8px', borderRadius: 20, background: T.pink, color: T.text, border: `0.5px solid ${T.pinkDeep}`, cursor: 'pointer' }} onClick={() => removeTag(t)}>
               {t} ×
             </span>
