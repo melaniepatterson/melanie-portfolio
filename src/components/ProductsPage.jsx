@@ -625,7 +625,7 @@ function ProductLibrary({ products, catalogProducts, onEdit, onAdd, onDelete }) 
     { key: 'fair_trade',        label: 'Fair trade'       },
     { key: 'clean_formula',     label: 'Clean'            },
     { key: 'science_backed',    label: 'Science-backed'   },
-    { key: 'is_prescription',   label: '\u211e Rx'        },
+    { key: 'is_prescription',   label: '℞ Rx'        },
   ]
 
   function toggleFlag(key) {
@@ -705,13 +705,13 @@ function ProductLibrary({ products, catalogProducts, onEdit, onAdd, onDelete }) 
           return <button key={key} onClick={() => toggleFlag(key)} style={{ padding: '4px 10px', borderRadius: 20, fontSize: 11, cursor: 'pointer', border: '0.5px solid ' + (active ? T.pinkDeep : T.border), background: active ? T.pink : 'transparent', color: T.text, fontFamily: 'inherit' }}>{label}</button>
         })}
         {(filterFlags.length > 0 || filterUsing || filterBuyAgain) && (
-          <button onClick={() => { setFilterFlags([]); setFilterUsing(false); setFilterBuyAgain(false) }} style={{ padding: '4px 10px', borderRadius: 20, fontSize: 11, cursor: 'pointer', border: '0.5px solid ' + T.border, background: 'transparent', color: T.textMuted, fontFamily: 'inherit' }}>Clear all &times;</button>
+          <button onClick={() => { setFilterFlags([]); setFilterUsing(false); setFilterBuyAgain(false) }} style={{ padding: '4px 10px', borderRadius: 20, fontSize: 11, cursor: 'pointer', border: '0.5px solid ' + T.border, background: 'transparent', color: T.textMuted, fontFamily: 'inherit' }}>Clear all ×</button>
         )}
       </div>
 
       {list.length === 0 && (
         <div style={{ fontSize: 13, color: T.textMuted, fontStyle: 'italic', padding: '20px 0', textAlign: 'center' }}>
-          {pool.length === 0 ? 'No products yet \u2014 tap + Add product to get started.' : 'No products match your filters.'}
+          {pool.length === 0 ? 'No products yet — tap + Add product to get started.' : 'No products match your filters.'}
         </div>
       )}
 
@@ -733,14 +733,14 @@ function ProductLibrary({ products, catalogProducts, onEdit, onAdd, onDelete }) 
             {p.notes && <div style={{ fontSize: 11, color: T.textMuted, marginTop: 6, lineHeight: 1.5, fontStyle: 'italic' }}>{p.notes}</div>}
             {(p.purchaseUrl || p.direct_url) && (
               <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 8 }}>
-                {p.purchaseUrl && <a href={p.purchaseUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', fontSize: 11, padding: '4px 12px', borderRadius: 20, background: T.pinkDeep, color: '#fff', textDecoration: 'none', fontWeight: 500 }}>Buy at {p.store_name || getStoreName(p.purchaseUrl) || 'store'} &rarr;</a>}
-                {p.direct_url && <a href={p.direct_url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', fontSize: 11, padding: '4px 12px', borderRadius: 20, background: 'transparent', color: T.pinkDeep, textDecoration: 'none', fontWeight: 500, border: '0.5px solid ' + T.pinkDeep }}>{p.direct_store_name || getStoreName(p.direct_url) || 'View direct'} &rarr;</a>}
+                {p.purchaseUrl && <a href={p.purchaseUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', fontSize: 11, padding: '4px 12px', borderRadius: 20, background: T.pinkDeep, color: '#fff', textDecoration: 'none', fontWeight: 500 }}>Buy at {p.store_name || getStoreName(p.purchaseUrl) || 'store'} →</a>}
+                {p.direct_url && <a href={p.direct_url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', fontSize: 11, padding: '4px 12px', borderRadius: 20, background: 'transparent', color: T.pinkDeep, textDecoration: 'none', fontWeight: 500, border: '0.5px solid ' + T.pinkDeep }}>{p.direct_store_name || getStoreName(p.direct_url) || 'View direct'} →</a>}
               </div>
             )}
             {!isCatalogCard(p) && (
               <div style={{ display: 'flex', gap: 4, marginTop: 8 }}>
                 <Btn onClick={() => onEdit(p)} style={{ fontSize: 11, padding: '3px 10px' }}>Edit</Btn>
-                <button onClick={() => { if (window.confirm('Delete ' + p.name + '? This cannot be undone.')) onDelete(p) }} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 18, lineHeight: 1, padding: 0 }}>&times;</button>
+                <button onClick={() => { if (window.confirm('Delete ' + p.name + '? This cannot be undone.')) onDelete(p) }} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 18, lineHeight: 1, padding: 0 }}>×</button>
               </div>
             )}
           </div>
@@ -896,7 +896,7 @@ export default function ProductsPage({ session }) {
     <div style={{ fontFamily: 'inherit', minHeight: '100vh', background: T.cream, paddingBottom: 40 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 20px 16px', borderBottom: '0.5px solid ' + T.border, background: T.white }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <button onClick={() => window.history.back()} style={{ border: '0.5px solid ' + T.border, background: 'transparent', borderRadius: 8, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.text }}>\u2190</button>
+          <button onClick={() => window.history.back()} style={{ border: '0.5px solid ' + T.border, background: 'transparent', borderRadius: 8, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.text }}>←</button>
           <div style={{ fontSize: 15, fontWeight: 600, color: T.text }}>Product library</div>
           <div style={{ fontSize: 12, color: T.textMuted }}>({Object.keys(products).length + Object.keys(catalogProducts).length})</div>
         </div>

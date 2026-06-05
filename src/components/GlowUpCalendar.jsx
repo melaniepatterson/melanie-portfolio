@@ -3834,6 +3834,7 @@ export default function GlowUpCalendar({ session }) {
       // Products — catalog (global) + user products
       const prodMap = {}
       // Load catalog first so user products override if same id
+      if (catErr) console.warn('catalog_products fetch error:', catErr.message)
       ;(cat || []).forEach(p => {
         prodMap[p.id] = {
           ...p,
