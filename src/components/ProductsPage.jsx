@@ -402,7 +402,6 @@ function ProductForm({ initial, onSave, onCancel, catalogProducts }) {
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 8 }}>
         <div><FieldLabel>Image URL</FieldLabel><TextInput value={form.imageUrl} onChange={e => set('imageUrl', e.target.value)} placeholder="https://..." width="100%" /></div>
-        <div><FieldLabel>Purchase URL</FieldLabel><TextInput value={form.purchaseUrl} onChange={e => set('purchaseUrl', e.target.value)} placeholder="https://..." width="100%" /></div>
       </div>
 
       <div style={{ marginBottom: 8 }}>
@@ -542,23 +541,8 @@ function ProductForm({ initial, onSave, onCancel, catalogProducts }) {
           </select>
         </>)}
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 10 }}>
-        <div>
-          <FieldLabel>Store name <span style={{ fontWeight: 400, color: T.textLight }}>(e.g. Ulta)</span></FieldLabel>
-          <input value={form.store_name || ''} onChange={e => set('store_name', e.target.value)} placeholder="e.g. Sephora"
-            style={{ width: '100%', fontSize: 12, padding: '7px 10px', border: `0.5px solid ${T.border}`, borderRadius: 8, background: T.cream, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
-        </div>
-        <div>
-          <FieldLabel>Direct URL <span style={{ fontWeight: 400, color: T.textLight }}>(brand site)</span></FieldLabel>
-          <input value={form.direct_url || ''} onChange={e => set('direct_url', e.target.value)} placeholder="https://..."
-            style={{ width: '100%', fontSize: 12, padding: '7px 10px', border: `0.5px solid ${T.border}`, borderRadius: 8, background: T.cream, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
-        </div>
-        <div style={{ gridColumn: '1 / -1' }}>
-          <FieldLabel>Direct store name <span style={{ fontWeight: 400, color: T.textLight }}>(e.g. The Ordinary)</span></FieldLabel>
-          <input value={form.direct_store_name || ''} onChange={e => set('direct_store_name', e.target.value)} placeholder="e.g. The Ordinary"
-            style={{ width: '100%', fontSize: 12, padding: '7px 10px', border: `0.5px solid ${T.border}`, borderRadius: 8, background: T.cream, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
-        </div>
-      </div>
+
+      )}
       <div style={{ marginBottom: 10 }}>
         <FieldLabel>Notes</FieldLabel>
         <textarea value={form.notes} onChange={e => set('notes', e.target.value)} placeholder="Any notes..." style={{ width: '100%', fontSize: 12, padding: '5px 8px', border: `0.5px solid ${T.border}`, borderRadius: 6, background: T.cream, color: T.text, resize: 'vertical', minHeight: 60, fontFamily: 'inherit' }} />
@@ -620,9 +604,111 @@ function getStoreName(url) {
     return null
   }
 }
+// ─── PRODUCT DETAIL MODAL ────────────────────────────────────
+function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts }) {
+  if (!p) return null
+  const isCatalog = p._isCatalog && !p._isLinked
+  const cat = p.catalog_product_id ? (catalogProducts || {})[p.catalog_product_id] : null
+  const purchaseUrl = p.purchaseUrl || cat?.purchaseUrl
+  const storeName = p.store_name || cat?.store_name
+  const directUrl = p.direct_url || cat?.direct_url
+  const directStoreName = p.direct_store_name || cat?.direct_store_name
+
+  return (
+    <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1000, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
+      <div onClick={e => e.stopPropagation()} style={{ background: T.white, borderRadius: '16px 16px 0 0', width: '100%', maxWidth: 600, maxHeight: '85vh', overflowY: 'auto', padding: '24px 20px 40px' }}>
+        {/* Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+          <div style={{ flex: 1, paddingRight: 12 }}>
+            <div style={{ fontSize: 18, fontWeight: 600, color: T.text, marginBottom: 4 }}>{p.name}</div>
+            {p.brand && <div style={{ fontSize: 13, color: T.textMuted }}>{p.brand}</div>}
+          </div>
+          <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 22, color: T.textLight, padding: 0, lineHeight: 1 }}>×</button>
+        </div>
+
+        {/* Recommended badge */}
+        {(isCatalog || p._isLinked) && (
+          <div style={{ display: 'inline-block', fontSize: 11, background: T.pink, color: T.pinkDeep, borderRadius: 20, padding: '3px 10px', fontWeight: 600, marginBottom: 12 }}>We recommend</div>
+        )}
+
+        {/* Currently using */}
+        {p.currentlyUsing && (
+          <div style={{ fontSize: 11, color: T.pinkDeep, fontWeight: 600, marginBottom: 12 }}>Currently using</div>
+        )}
+
+        {/* Category + ingredient */}
+        {(p.category || p.ingredient_category) && (
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
+            {p.category && <span style={{ fontSize: 12, background: T.creamDark, color: T.textMuted, borderRadius: 20, padding: '3px 10px' }}>{p.category.charAt(0).toUpperCase() + p.category.slice(1)}</span>}
+            {p.ingredient_category && <span style={{ fontSize: 12, background: T.creamDark, color: T.textMuted, borderRadius: 20, padding: '3px 10px' }}>{p.ingredient_category.replace(/_/g, ' ')}</span>}
+            {p.ingredient_form && <span style={{ fontSize: 12, background: T.creamDark, color: T.textMuted, borderRadius: 20, padding: '3px 10px' }}>{p.ingredient_form}</span>}
+          </div>
+        )}
+
+        {/* Effectiveness */}
+        {p.effectiveness > 0 && (
+          <div style={{ marginBottom: 12 }}>
+            <StarRating value={p.effectiveness} size={14} />
+          </div>
+        )}
+
+        {/* Flags */}
+        <ProductFlagBadges product={p} />
+
+        {/* Notes */}
+        {p.notes && (
+          <div style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.7, marginTop: 14, marginBottom: 14, padding: '12px 14px', background: T.cream, borderRadius: 8 }}>{p.notes}</div>
+        )}
+
+        {/* PAO + dates */}
+        {(p.pao_months || p.opened_at || p.expires_at || p.purchased_at) && (
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 14 }}>
+            {p.pao_months && <div style={{ fontSize: 12 }}><span style={{ color: T.textLight }}>PAO: </span><span style={{ color: T.text, display: 'inline-flex', alignItems: 'center', gap: 4 }}><PaoIcon months={p.pao_months} size={13} /> {p.pao_months} months</span></div>}
+            {p.purchased_at && <div style={{ fontSize: 12 }}><span style={{ color: T.textLight }}>Purchased: </span><span style={{ color: T.text }}>{p.purchased_at}</span></div>}
+            {p.opened_at && <div style={{ fontSize: 12 }}><span style={{ color: T.textLight }}>Opened: </span><span style={{ color: T.text }}>{p.opened_at}</span></div>}
+            {p.expires_at && <div style={{ fontSize: 12 }}><span style={{ color: T.textLight }}>Expires: </span><span style={{ color: T.text }}>{p.expires_at}</span></div>}
+          </div>
+        )}
+
+        {/* Buy buttons */}
+        {(purchaseUrl || directUrl) && (
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
+            {purchaseUrl && (
+              <a href={purchaseUrl} target="_blank" rel="noopener noreferrer"
+                style={{ fontSize: 13, padding: '8px 18px', borderRadius: 20, background: T.pinkDeep, color: '#fff', textDecoration: 'none', fontWeight: 500 }}>
+                Buy at {storeName || getStoreName(purchaseUrl) || 'store'} →
+              </a>
+            )}
+            {directUrl && (
+              <a href={directUrl} target="_blank" rel="noopener noreferrer"
+                style={{ fontSize: 13, padding: '8px 18px', borderRadius: 20, background: 'transparent', color: T.pinkDeep, textDecoration: 'none', fontWeight: 500, border: '0.5px solid ' + T.pinkDeep }}>
+                {directStoreName || getStoreName(directUrl) || 'View direct'} →
+              </a>
+            )}
+          </div>
+        )}
+
+        {/* Edit button — user products only */}
+        {!isCatalog && (
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button onClick={() => { onClose(); onEdit(p) }} style={{ flex: 1, padding: '10px', borderRadius: 10, border: '0.5px solid ' + T.border, background: T.creamDark, color: T.text, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 500 }}>
+              Edit this product
+            </button>
+            <button onClick={() => { if (window.confirm('Delete ' + p.name + '? This cannot be undone.')) { onDelete(p); onClose() } }} style={{ padding: '10px 16px', borderRadius: 10, border: '0.5px solid ' + T.border, background: 'transparent', color: T.textLight, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit' }}>
+              Delete
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+
 // ─── PRODUCT LIBRARY ─────────────────────────────────────────
 function ProductLibrary({ products, catalogProducts, onEdit, onAdd, onDelete }) {
   const [libTab, setLibTab] = useState('all')
+  const [selectedProduct, setSelectedProduct] = useState(null)
   const [filterCat, setFilterCat] = useState('all')
   const [filterFlags, setFilterFlags] = useState([])
   const [filterUsing, setFilterUsing] = useState(false)
@@ -733,9 +819,9 @@ function ProductLibrary({ products, catalogProducts, onEdit, onAdd, onDelete }) 
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
         {list.map(p => (
-          <div key={p.id} style={{ background: T.white, border: '0.5px solid ' + T.border, borderRadius: 10, padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 4, position: 'relative' }}>
+          <div key={p.id} onClick={() => setSelectedProduct(p)} style={{ background: T.white, border: '0.5px solid ' + T.border, borderRadius: 10, padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 4, position: 'relative', cursor: 'pointer' }}>
             {(isCatalogCard(p) || p._isLinked) && (
-              <div style={{ position: 'absolute', top: 8, right: 8, fontSize: 9, background: T.pink, color: T.pinkDeep, borderRadius: 10, padding: '2px 6px', fontWeight: 600 }}>Recommended</div>
+              <div style={{ position: 'absolute', top: 8, right: 8, fontSize: 9, background: T.pink, color: T.pinkDeep, borderRadius: 10, padding: '2px 6px', fontWeight: 600 }}>We recommend</div>
             )}
             <div style={{ paddingRight: (isCatalogCard(p) || p._isLinked) ? 80 : 0 }}>
               <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 2 }}>{p.name}</div>
@@ -746,18 +832,8 @@ function ProductLibrary({ products, catalogProducts, onEdit, onAdd, onDelete }) 
             {p.pao_months && <span style={{ display: 'inline-flex', alignItems: 'center', gap: 2, fontSize: 10, color: T.textMuted, marginTop: 2 }}><PaoIcon months={p.pao_months} size={13} /></span>}
             {p.effectiveness > 0 && <div style={{ marginTop: 4 }}><StarRating value={p.effectiveness} size={11} /></div>}
             {p.currentlyUsing && <div style={{ fontSize: 10, color: T.pinkDeep, fontWeight: 600, marginTop: 4 }}>Currently using</div>}
-            {p.notes && <div style={{ fontSize: 11, color: T.textMuted, marginTop: 6, lineHeight: 1.5, fontStyle: 'italic' }}>{p.notes}</div>}
             {(p.purchaseUrl || p.direct_url) && (
-              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 8 }}>
-                {p.purchaseUrl && <a href={p.purchaseUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', fontSize: 11, padding: '4px 12px', borderRadius: 20, background: T.pinkDeep, color: '#fff', textDecoration: 'none', fontWeight: 500 }}>Buy at {p.store_name || getStoreName(p.purchaseUrl) || 'store'} →</a>}
-                {p.direct_url && <a href={p.direct_url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', fontSize: 11, padding: '4px 12px', borderRadius: 20, background: 'transparent', color: T.pinkDeep, textDecoration: 'none', fontWeight: 500, border: '0.5px solid ' + T.pinkDeep }}>{p.direct_store_name || getStoreName(p.direct_url) || 'View direct'} →</a>}
-              </div>
-            )}
-            {!isCatalogCard(p) && (
-              <div style={{ display: 'flex', gap: 4, marginTop: 8 }}>
-                <Btn onClick={() => onEdit(p)} style={{ fontSize: 11, padding: '3px 10px' }}>Edit</Btn>
-                <button onClick={() => { if (window.confirm('Delete ' + p.name + '? This cannot be undone.')) onDelete(p) }} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 18, lineHeight: 1, padding: 0 }}>×</button>
-              </div>
+              <div style={{ fontSize: 10, color: T.pinkDeep, marginTop: 6 }}>Tap to shop →</div>
             )}
           </div>
         ))}
