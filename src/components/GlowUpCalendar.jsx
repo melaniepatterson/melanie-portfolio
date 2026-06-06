@@ -3755,6 +3755,8 @@ export default function GlowUpCalendar({ session }) {
           store_name:           p.store_name || '',
           direct_url:           p.direct_url || '',
           direct_store_name:    p.direct_store_name || '',
+          description:          p.description || '',
+          ingredients:          p.ingredients || '',
         }
       })
       // Seed products removed — users add their own products with full taxonomy

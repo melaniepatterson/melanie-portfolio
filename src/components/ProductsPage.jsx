@@ -655,9 +655,22 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts }
         {/* Flags */}
         <ProductFlagBadges product={p} />
 
+        {/* Description */}
+        {p.description && (
+          <div style={{ fontSize: 13, color: T.text, lineHeight: 1.7, marginTop: 14, marginBottom: 14 }}>{p.description}</div>
+        )}
+
+        {/* Ingredients */}
+        {p.ingredients && (
+          <div style={{ marginTop: 14, marginBottom: 14 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Ingredients</div>
+            <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.8, padding: '10px 12px', background: T.cream, borderRadius: 8 }}>{p.ingredients}</div>
+          </div>
+        )}
+
         {/* Notes */}
         {p.notes && (
-          <div style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.7, marginTop: 14, marginBottom: 14, padding: '12px 14px', background: T.cream, borderRadius: 8 }}>{p.notes}</div>
+          <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.7, marginTop: 14, marginBottom: 14, padding: '10px 12px', background: T.cream, borderRadius: 8, fontStyle: 'italic' }}>{p.notes}</div>
         )}
 
         {/* PAO + dates */}
@@ -942,6 +955,8 @@ export default function ProductsPage({ session }) {
             store_name: p.store_name || '',
             direct_url: p.direct_url || '',
             direct_store_name: p.direct_store_name || '',
+            description: p.description || '',
+            ingredients: p.ingredients || '',
           }
         })
         setCatalogProducts(catMap)
@@ -961,6 +976,8 @@ export default function ProductsPage({ session }) {
             ingredient_form: p.ingredient_form || '',
             _isCatalog: false,
             catalog_product_id: p.catalog_product_id || null,
+            description:         p.description || '',
+            ingredients:         p.ingredients || '',
             store_name: p.store_name || '',
             direct_url: p.direct_url || '',
             direct_store_name: p.direct_store_name || '',
