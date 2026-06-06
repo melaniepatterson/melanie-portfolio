@@ -881,7 +881,7 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
 
 
 // ─── PRODUCT LIBRARY ─────────────────────────────────────────
-function ProductLibrary({ products, catalogProducts, userProductData, activeRoutineNames, onEdit, onAdd, onDelete, onAddToLibrary, onRemoveFromLibrary }) {
+function ProductLibrary({ products, catalogProducts, userProductData, activeRoutineNames, onEdit, onAdd, onDelete, onAddToLibrary, onRemoveFromLibrary, onSaveUserProductData }) {
   function isWhatWeUsing(p) {
     if (p.bds_compliant === false) return false
     if (!activeRoutineNames || activeRoutineNames.size === 0) return false
@@ -1353,6 +1353,7 @@ export default function ProductsPage({ session }) {
               onDelete={deleteProduct}
               onAddToLibrary={addToLibrary}
               onRemoveFromLibrary={removeFromLibrary}
+              onSaveUserProductData={saveUserProductData}
             />
       )}
     </div>
