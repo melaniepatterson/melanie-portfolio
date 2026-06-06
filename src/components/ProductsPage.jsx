@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 
 const T = {
@@ -291,7 +291,91 @@ function ProductFlagBadges({ product, max }) {
   )
 }
 
-function ProductForm({ initial, onSave, onCancel, catalogProducts }) {
+
+// ─── PRODUCT IMAGE UPLOAD ──────────────────────────────────────────────────
+const PRODUCT_IMAGES_URL = 'https://brcjhshptisevcndqavz.supabase.co/storage/v1/object/public/product-images/'
+
+async function imageToWebP(file, maxDim = 600, quality = 0.88) {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    const url = URL.createObjectURL(file)
+    img.onload = () => {
+      URL.revokeObjectURL(url)
+      const scale = Math.min(1, maxDim / Math.max(img.width, img.height))
+      const w = Math.round(img.width * scale)
+      const h = Math.round(img.height * scale)
+      const canvas = document.createElement('canvas')
+      canvas.width = w; canvas.height = h
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h)
+      canvas.toBlob(
+        b => b ? resolve(b) : reject(new Error('toBlob failed')),
+        'image/webp', quality
+      )
+    }
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Image load failed')) }
+    img.src = url
+  })
+}
+
+function ProductImageUpload({ value, onChange, session, productName }) {
+  const [uploading, setUploading] = useState(false)
+  const [preview, setPreview]     = useState(value || null)
+  const ref = useRef(null)
+
+  useEffect(() => { setPreview(value || null) }, [value])
+
+  async function handleFile(e) {
+    const file = e.target.files?.[0]
+    if (!file || !file.type.startsWith('image/')) return
+    if (file.size > 10 * 1024 * 1024) { alert('Image must be under 10MB'); return }
+    setUploading(true)
+    try {
+      const webp = await imageToWebP(file)
+      const userId = session?.user?.id || 'anon'
+      const slug = (productName || 'product').toLowerCase().replace(/[^a-z0-9]/g, '-').slice(0, 40)
+      const path = `${userId}/${slug}-${Date.now()}.webp`
+      const { error } = await supabase.storage
+        .from('product-images')
+        .upload(path, webp, { upsert: true, contentType: 'image/webp' })
+      if (error) throw error
+      const publicUrl = PRODUCT_IMAGES_URL + path
+      setPreview(publicUrl)
+      onChange(publicUrl)
+    } catch (err) {
+      console.error('Upload failed:', err)
+      alert('Upload failed — please try again')
+    } finally {
+      setUploading(false)
+      e.target.value = ''
+    }
+  }
+
+  return (
+    <div>
+      {preview && (
+        <div style={{ position: 'relative', marginBottom: 6, width: '100%', height: 120, borderRadius: 8, overflow: 'hidden', border: `0.5px solid ${T.border}` }}>
+          <img src={preview} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <button
+            onClick={() => { setPreview(null); onChange('') }}
+            style={{ position: 'absolute', top: 4, right: 4, background: 'rgba(0,0,0,0.5)', border: 'none', borderRadius: '50%', width: 20, height: 20, color: '#fff', cursor: 'pointer', fontSize: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>
+            ×
+          </button>
+        </div>
+      )}
+      <div style={{ display: 'flex', gap: 6 }}>
+        <button
+          onClick={() => ref.current?.click()}
+          disabled={uploading}
+          style={{ flex: 1, padding: '6px 10px', borderRadius: 8, border: `0.5px solid ${T.border}`, background: T.creamDark, color: T.textMuted, fontSize: 11, cursor: uploading ? 'default' : 'pointer', fontFamily: 'inherit' }}>
+          {uploading ? 'Uploading...' : preview ? '↑ Replace image' : '↑ Upload image'}
+        </button>
+        <input ref={ref} type="file" accept="image/*" onChange={handleFile} style={{ display: 'none' }} />
+      </div>
+    </div>
+  )
+}
+
+function ProductForm({ initial, onSave, onCancel, catalogProducts, session }) {
   const [form, setForm] = useState({
     name: '', brand: '', category: 'cleanser',
     imageUrl: '', purchaseUrl: '',
@@ -401,7 +485,13 @@ function ProductForm({ initial, onSave, onCancel, catalogProducts }) {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 8 }}>
-        <div><FieldLabel>Image URL</FieldLabel><TextInput value={form.imageUrl} onChange={e => set('imageUrl', e.target.value)} placeholder="https://..." width="100%" /></div>
+        <div><FieldLabel>Product image</FieldLabel>
+          <ProductImageUpload
+            value={form.imageUrl}
+            onChange={url => set('imageUrl', url)}
+            session={session}
+            productName={form.name}
+          /></div>
       </div>
 
       <div style={{ marginBottom: 8 }}>
