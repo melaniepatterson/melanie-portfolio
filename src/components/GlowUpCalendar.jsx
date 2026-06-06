@@ -3182,6 +3182,9 @@ function generateICS({ routineHistory, treatments, allTypes, products, settings 
   const getPM = dow => pmMode === 'same' ? (pmTime || '22:30') : (pmTimes?.[dow] || '22:30')
 
   const lines = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//GlowUp Calendar//EN','CALSCALE:GREGORIAN','METHOD:PUBLISH']
+  // Sequence number — increments each export so calendar apps update existing events
+  const seqNum = Math.floor(Date.now() / 1000)
+  const dtstamp = (() => { const n = new Date(); return `${n.getUTCFullYear()}${String(n.getUTCMonth()+1).padStart(2,'0')}${String(n.getUTCDate()).padStart(2,'0')}T${String(n.getUTCHours()).padStart(2,'0')}${String(n.getUTCMinutes()).padStart(2,'0')}${String(n.getUTCSeconds()).padStart(2,'0')}Z` })()
   const today = new Date(); today.setHours(0,0,0,0)
 
   for (let offset = 0; offset < daysAhead; offset++) {
@@ -3218,14 +3221,14 @@ function generateICS({ routineHistory, treatments, allTypes, products, settings 
 
     if (format === 'allday') {
       const desc = `${amDesc ? `MORNING\n${amDesc}\n\n` : ``}${statusLabel ? `EVENING (${statusLabel})` : 'EVENING'}\n${pmDesc}`
-      lines.push('BEGIN:VEVENT',`UID:${uid('allday')}`,`DTSTART;VALUE=DATE:${icsDate(dt)}`,`DTEND;VALUE=DATE:${icsDate(new Date(dt.getTime()+86400000))}`,`SUMMARY:${statusLabel ? `Skincare — ${statusLabel}` : 'Skincare routine'}`,`DESCRIPTION:${icsEscape(desc)}`,'END:VEVENT')
+      lines.push('BEGIN:VEVENT',`UID:${uid('allday')}`,`DTSTAMP:${dtstamp}`,`SEQUENCE:${seqNum}`,`DTSTART;VALUE=DATE:${icsDate(dt)}`,`DTEND;VALUE=DATE:${icsDate(new Date(dt.getTime()+86400000))}`,`SUMMARY:${statusLabel ? `Skincare — ${statusLabel}` : 'Skincare routine'}`,`DESCRIPTION:${icsEscape(desc)}`,'END:VEVENT')
 
     } else {
       // separate AM + PM
       const at = getAM(dow)
-      lines.push('BEGIN:VEVENT',`UID:${uid('am')}`,`DTSTART:${icsDateTime(dt, at)}`,`DTEND:${icsDateTime(dt, addMins(at, 30))}`,`SUMMARY:Morning routine`,`DESCRIPTION:${icsEscape('MORNING\n'+amDesc)}`,'END:VEVENT')
+      lines.push('BEGIN:VEVENT',`UID:${uid('am')}`,`DTSTAMP:${dtstamp}`,`SEQUENCE:${seqNum}`,`DTSTART:${icsDateTime(dt, at)}`,`DTEND:${icsDateTime(dt, addMins(at, 30))}`,`SUMMARY:Morning routine`,`DESCRIPTION:${icsEscape('MORNING\n'+amDesc)}`,'END:VEVENT')
       const pt = getPM(dow)
-      lines.push('BEGIN:VEVENT',`UID:${uid('pm')}`,`DTSTART:${icsDateTime(dt, pt)}`,`DTEND:${icsDateTime(dt, addMins(pt, 30))}`,`SUMMARY:${statusLabel ? `Evening routine — ${statusLabel}` : 'Evening routine'}`,`DESCRIPTION:${icsEscape('EVENING\n'+pmDesc)}`,'END:VEVENT')
+      lines.push('BEGIN:VEVENT',`UID:${uid('pm')}`,`DTSTAMP:${dtstamp}`,`SEQUENCE:${seqNum}`,`DTSTART:${icsDateTime(dt, pt)}`,`DTEND:${icsDateTime(dt, addMins(pt, 30))}`,`SUMMARY:${statusLabel ? `Evening routine — ${statusLabel}` : 'Evening routine'}`,`DESCRIPTION:${icsEscape('EVENING\n'+pmDesc)}`,'END:VEVENT')
     }
   }
   lines.push('END:VCALENDAR')
