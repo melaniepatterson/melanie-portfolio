@@ -12,6 +12,7 @@ import PageTransition from "./PageTransition";
 import NotFound from "./pages/NotFound";
 import GlowUpCalendar from './components/GlowUpCalendar'
 import GlowUpLoader from './components/GlowUpLoader'
+import { ErrorBoundary } from './components/ErrorBoundary'
 import Auth from './components/Auth'
 import Profile from './components/Profile'
 import RoutineHistory from './components/RoutineHistory'
@@ -88,10 +89,10 @@ function Layout() {
               <Route path="/portfolio/:slug" element={<WorkDetail />} />
               <Route path="/about-contact" element={<AboutContact />} />
               <Route path="*" element={<NotFound />} />
-              <Route path="/routine" element={<GlowUpCalendar session={session} />} />
-              <Route path="/routine/profile" element={<Profile session={session} />} />
-              <Route path="/routine/history" element={<RoutineHistory session={session} />} />
-              <Route path="/routine/products" element={<ProductsPage session={session} />} />
+              <Route path="/routine" element={<ErrorBoundary><GlowUpCalendar session={session} /></ErrorBoundary>} />
+              <Route path="/routine/profile" element={<ErrorBoundary><Profile session={session} /></ErrorBoundary>} />
+              <Route path="/routine/history" element={<ErrorBoundary><RoutineHistory session={session} /></ErrorBoundary>} />
+              <Route path="/routine/products" element={<ErrorBoundary><ProductsPage session={session} /></ErrorBoundary>} />
             </Routes>
           </PageTransition>
         </main>
