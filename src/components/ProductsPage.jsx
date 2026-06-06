@@ -381,6 +381,8 @@ function ProductForm({ initial, onSave, onCancel, catalogProducts, session }) {
     imageUrl: '', purchaseUrl: '',
     bdsCompliant: true, tags: [],
     effectiveness: 0, buyAgain: null, notes: '',
+    _effectiveness: initial?.effectiveness || 0,
+    _buyAgain: initial?.buyAgain ?? null,
     ingredient_category: '', ingredient_form: '',
     black_owned: false, indigenous_owned: false, poc_owned: false, woman_owned: false,
     lgbtq_owned: false, cruelty_free: false, vegan: false, certified_organic: false, fair_trade: false,
@@ -510,11 +512,6 @@ function ProductForm({ initial, onSave, onCancel, catalogProducts, session }) {
         </div>
       </div>
 
-      {/* Currently using + Would buy again — same row */}
-      <div style={{ display: 'flex', gap: 20, marginBottom: 12, flexWrap: 'wrap' }}>
-        <Toggle checked={!!form.currentlyUsing} onChange={e => set('currentlyUsing', e.target.checked)} label="I'm currently using this" />
-      </div>
-
       {/* Purchase & expiry tracking */}
       <div style={{ borderTop: `0.5px solid ${T.border}`, paddingTop: 12, marginBottom: 10 }}>
         <FieldLabel>Purchase & expiry <span style={{ fontWeight: 400, color: T.textLight }}>(optional)</span></FieldLabel>
@@ -585,8 +582,20 @@ function ProductForm({ initial, onSave, onCancel, catalogProducts, session }) {
       </div>
 
       <div style={{ marginBottom: 8 }}>
-        <FieldLabel>Effectiveness</FieldLabel>
-        <StarRating value={form.effectiveness} onChange={v => set('effectiveness', v)} size={18} />
+        <FieldLabel>My rating</FieldLabel>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+          <StarRating value={form.effectiveness} onChange={v => set('effectiveness', v)} size={18} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontSize: 11, color: T.textMuted }}>Would buy again?</span>
+            {[['Yes', true], ['No', false], ['—', null]].map(([label, val]) => (
+              <button key={label} type="button"
+                onClick={() => set('buyAgain', form.buyAgain === val ? null : val)}
+                style={{ padding: '4px 10px', borderRadius: 20, fontSize: 11, cursor: 'pointer', fontFamily: 'inherit', border: `0.5px solid ${T.border}`, background: form.buyAgain === val ? T.pinkDeep : T.cream, color: form.buyAgain === val ? '#fff' : T.textMuted }}>
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
       <div style={{ marginBottom: 8 }}>
@@ -631,7 +640,6 @@ function ProductForm({ initial, onSave, onCancel, catalogProducts, session }) {
         </>)}
       </div>
 
-      )}
       <div style={{ marginBottom: 10 }}>
         <FieldLabel>Notes</FieldLabel>
         <textarea value={form.notes} onChange={e => set('notes', e.target.value)} placeholder="Any notes..." style={{ width: '100%', fontSize: 12, padding: '5px 8px', border: `0.5px solid ${T.border}`, borderRadius: 6, background: T.cream, color: T.text, resize: 'vertical', minHeight: 60, fontFamily: 'inherit' }} />
@@ -1565,7 +1573,20 @@ export default function ProductsPage({ session }) {
     }
     const { data: saved } = await supabase.from('products')
       .upsert(row, { onConflict: 'name,brand' }).select().single()
-    if (saved) setProducts(prev => ({ ...prev, [saved.id]: { ...product, id: saved.id, _isCatalog: false } }))
+    if (saved) {
+      setProducts(prev => ({ ...prev, [saved.id]: { ...product, id: saved.id, _isCatalog: false } }))
+      // Save personal effectiveness + buy again to user_product_data
+      if (product.effectiveness || product.buyAgain !== null) {
+        const { data: updRow } = await supabase.from('user_product_data')
+          .upsert({
+            user_id: userId, product_id: saved.id, in_library: true,
+            effectiveness: product.effectiveness || null,
+            buy_again: product.buyAgain ?? null,
+          }, { onConflict: 'user_id,product_id' })
+          .select().single()
+        if (updRow) setUserProductData(prev => ({ ...prev, [saved.id]: updRow }))
+      }
+    }
     setEditingProduct(null)
   }
 
