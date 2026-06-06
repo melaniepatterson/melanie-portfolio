@@ -730,6 +730,7 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
 function ProductLibrary({ products, catalogProducts, activeRoutineNames, onEdit, onAdd, onDelete }) {
   function isWhatWeUsing(p) {
     if (p.bds_compliant === false) return false
+    if (!activeRoutineNames || activeRoutineNames.size === 0) return false
     const key = ((p.name || '') + '|' + (p.brand || '')).toLowerCase()
     return activeRoutineNames.has(key)
   }
@@ -1034,10 +1035,12 @@ export default function ProductsPage({ session }) {
       if (routinePeriods?.[0]) {
         const period = routinePeriods[0]
         const nameSet = new Set()
-        // Products referenced in this period
+        // period.products is a map of {id: {name, brand, ...}} — full product objects
         const periodProds = period.products || {}
-        Object.values(periodProds).forEach((p) => {
-          if (p && p.name) nameSet.add((p.name + '|' + (p.brand || '')).toLowerCase())
+        Object.values(periodProds).forEach((prod) => {
+          if (prod?.name) {
+            nameSet.add((prod.name + '|' + (prod.brand || '')).toLowerCase())
+          }
         })
         setActiveRoutineNames(nameSet)
       }
