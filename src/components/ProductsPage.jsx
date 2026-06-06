@@ -1034,15 +1034,25 @@ export default function ProductsPage({ session }) {
 
       if (routinePeriods?.[0]) {
         const period = routinePeriods[0]
-        const nameSet = new Set()
-        // period.products is a map of {id: {name, brand, ...}} — full product objects
-        const periodProds = period.products || {}
-        Object.values(periodProds).forEach((prod) => {
-          if (prod?.name) {
-            nameSet.add((prod.name + '|' + (prod.brand || '')).toLowerCase())
-          }
-        })
-        setActiveRoutineNames(nameSet)
+        // products field is { stepKey: productId } — collect unique product IDs
+        const productIds = [...new Set(
+          Object.values(period.products || {})
+            .filter(id => id && !String(id).startsWith('seed-'))
+        )]
+        if (productIds.length > 0) {
+          // Look up those IDs in catalog_products to get name+brand
+          const { data: routineProds } = await supabase
+            .from('catalog_products')
+            .select('name, brand, bds_compliant')
+            .in('id', productIds)
+          const nameSet = new Set()
+          ;(routineProds || []).forEach(p => {
+            if (p.bds_compliant !== false) {
+              nameSet.add((p.name + '|' + (p.brand || '')).toLowerCase())
+            }
+          })
+          setActiveRoutineNames(nameSet)
+        }
       }
 
       setLoading(false)
