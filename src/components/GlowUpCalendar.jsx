@@ -4611,11 +4611,7 @@ export default function GlowUpCalendar({ session }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [recoveryRoutines])
 
-  if (loading) return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', fontFamily: 'inherit', color: '#78716C', fontSize: 13 }}>
-      Loading your routine...
-    </div>
-  )
+  if (loading) return <GlowUpLoader message="Loading your routine..." />
 
   return (
     <div onClick={() => { if (dayFlyout) setDayFlyout(null) }} style={{ fontFamily: 'inherit', padding: '1rem 0.75rem', maxWidth: 900, position: 'relative', margin: '0 auto' }}>

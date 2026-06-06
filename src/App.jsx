@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import PageTransition from "./PageTransition";
 import NotFound from "./pages/NotFound";
 import GlowUpCalendar from './components/GlowUpCalendar'
+import GlowUpLoader from './components/GlowUpLoader'
 import Auth from './components/Auth'
 import Profile from './components/Profile'
 import RoutineHistory from './components/RoutineHistory'
@@ -58,7 +59,7 @@ function Layout() {
     }
   }, [location.pathname]);
 
-  if (isRoutine && session === undefined) return null
+  if (isRoutine && session === undefined) return <GlowUpLoader />
   if (isRoutine && !session) return <Auth />
 
   // Profile page — full screen, no nav/logo/footer chrome
