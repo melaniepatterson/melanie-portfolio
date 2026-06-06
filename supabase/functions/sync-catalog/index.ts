@@ -8,13 +8,13 @@ const COLUMNS = [
   'description', 'ingredients', 'image_url', 'purchase_url', 'store_name', 'direct_url', 'direct_store_name',
   'tags', 'black_owned', 'indigenous_owned', 'poc_owned', 'woman_owned', 'lgbtq_owned',
   'cruelty_free', 'vegan', 'certified_organic', 'fair_trade', 'clean_formula',
-  'science_backed', 'is_prescription', 'currently_using', 'buy_again',
+  'science_backed', 'is_prescription',
 ]
 
 const BOOLEAN_COLUMNS = new Set([
   'black_owned', 'indigenous_owned', 'poc_owned', 'woman_owned', 'lgbtq_owned',
   'cruelty_free', 'vegan', 'certified_organic', 'fair_trade', 'clean_formula',
-  'science_backed', 'is_prescription', 'currently_using', 'buy_again',
+  'science_backed', 'is_prescription',
 ])
 
 function parseRow(row: string[]) {
@@ -26,6 +26,8 @@ function parseRow(row: string[]) {
       obj[col] = raw.toUpperCase() === 'TRUE'
     } else if (col === 'tags') {
       obj[col] = raw ? raw.split(',').map((t: string) => t.trim()).filter(Boolean) : []
+    } else if (col === 'brand') {
+      obj[col] = raw || ''  // empty string not null — so unique constraint works
     } else {
       obj[col] = raw || null
     }

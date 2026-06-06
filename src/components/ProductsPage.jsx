@@ -605,7 +605,7 @@ function getStoreName(url) {
   }
 }
 // ─── PRODUCT DETAIL MODAL ────────────────────────────────────
-function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts }) {
+function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, isWhatWeUsing }) {
   if (!p) return null
   const isCatalog = p._isCatalog && !p._isLinked
   const cat = p.catalog_product_id ? (catalogProducts || {})[p.catalog_product_id] : null
@@ -635,8 +635,8 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts }
         </div>
 
         {/* Recommended badge */}
-        {(isCatalog || p._isLinked) && (
-          <div style={{ display: 'inline-block', fontSize: 11, background: T.pink, color: T.pinkDeep, borderRadius: 20, padding: '3px 10px', fontWeight: 600, marginBottom: 12 }}>We recommend</div>
+        {(isCatalog || p._isLinked) && isWhatWeUsing && isWhatWeUsing(p) && (
+          <div style={{ display: 'inline-block', fontSize: 11, background: T.pink, color: T.pinkDeep, borderRadius: 20, padding: '3px 10px', fontWeight: 600, marginBottom: 12 }}>What we're using!</div>
         )}
 
         {/* Currently using */}
@@ -727,7 +727,12 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts }
 
 
 // ─── PRODUCT LIBRARY ─────────────────────────────────────────
-function ProductLibrary({ products, catalogProducts, onEdit, onAdd, onDelete }) {
+function ProductLibrary({ products, catalogProducts, activeRoutineNames, onEdit, onAdd, onDelete }) {
+  function isWhatWeUsing(p) {
+    if (p.bds_compliant === false) return false
+    const key = ((p.name || '') + '|' + (p.brand || '')).toLowerCase()
+    return activeRoutineNames.has(key)
+  }
   const [libTab, setLibTab] = useState('all')
   const [filterCats, setFilterCats] = useState([])
   const [filterFlags, setFilterFlags] = useState([])
@@ -902,8 +907,8 @@ function ProductLibrary({ products, catalogProducts, onEdit, onAdd, onDelete }) 
             <div key={p.id} onClick={() => setSelectedProduct(p)} style={{ background: T.white, border: '0.5px solid ' + T.border, borderRadius: 10, padding: '12px 12px', display: 'flex', flexDirection: 'column', gap: 3, position: 'relative', cursor: 'pointer' }}
               onMouseEnter={e => e.currentTarget.style.borderColor = T.pinkDeep}
               onMouseLeave={e => e.currentTarget.style.borderColor = T.border}>
-              {(isCatalogCard(p) || p._isLinked) && (
-                <div style={{ position: 'absolute', top: 8, right: 8, fontSize: 9, background: T.pink, color: T.pinkDeep, borderRadius: 10, padding: '2px 6px', fontWeight: 600 }}>We recommend</div>
+              {isWhatWeUsing(p) && (
+                <div style={{ position: 'absolute', top: 8, right: 8, fontSize: 9, background: T.pink, color: T.pinkDeep, borderRadius: 10, padding: '2px 6px', fontWeight: 600 }}>What we're using!</div>
               )}
               {(p.imageUrl || p.image_url) && (
                 <div style={{ margin: '-12px -12px 10px', height: 120, overflow: 'hidden', borderRadius: '10px 10px 0 0' }}>
@@ -934,6 +939,7 @@ function ProductLibrary({ products, catalogProducts, onEdit, onAdd, onDelete }) 
           onEdit={p => { setSelectedProduct(null); onEdit(p) }}
           onDelete={onDelete}
           catalogProducts={catalogProducts}
+          isWhatWeUsing={isWhatWeUsing}
         />
       )}
     </div>
@@ -945,7 +951,9 @@ export default function ProductsPage({ session }) {
   const [catalogProducts, setCatalogProducts] = useState({})
   const [editingProduct, setEditingProduct] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [activeRoutineNames, setActiveRoutineNames] = useState(new Set())
   const userId = session?.user?.id
+  const CURATOR_ID = '27fbf9cd-5cfe-4032-9594-398e96fd0ccf'
 
   useEffect(() => {
     if (!userId) return
@@ -1015,6 +1023,25 @@ export default function ProductsPage({ session }) {
         })
         setProducts(map)
       }
+      // Fetch curator's active routine to power "What we're using!" badge
+      const { data: routinePeriods } = await supabase
+        .from('routine_periods')
+        .select('products, steps')
+        .eq('user_id', CURATOR_ID)
+        .order('start_date', { ascending: false })
+        .limit(1)
+
+      if (routinePeriods?.[0]) {
+        const period = routinePeriods[0]
+        const nameSet = new Set()
+        // Products referenced in this period
+        const periodProds = period.products || {}
+        Object.values(periodProds).forEach((p) => {
+          if (p && p.name) nameSet.add((p.name + '|' + (p.brand || '')).toLowerCase())
+        })
+        setActiveRoutineNames(nameSet)
+      }
+
       setLoading(false)
     }
     load()
@@ -1117,6 +1144,7 @@ export default function ProductsPage({ session }) {
           : <ProductLibrary
               products={products}
               catalogProducts={catalogProducts}
+              activeRoutineNames={activeRoutineNames}
               onEdit={p => setEditingProduct(p)}
               onAdd={() => setEditingProduct('new')}
               onDelete={deleteProduct}
