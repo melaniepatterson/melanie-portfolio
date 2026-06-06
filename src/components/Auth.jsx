@@ -75,11 +75,11 @@ export default function Auth() {
     setLoading(true)
     setErrorMsg('')
     try {
-      const { error } = await supabase.from('waitlist').upsert({
-        email,
-        skin_type: skinType || null,
-        how_heard: howHeard || null,
-      }, { onConflict: 'email' })
+      const { error } = await supabase.rpc('join_waitlist', {
+        p_email: email,
+        p_skin_type: skinType || null,
+        p_how_heard: howHeard || null,
+      })
       if (error) throw error
       setScreen('joined')
     } catch (err) {
