@@ -605,7 +605,7 @@ function getStoreName(url) {
   }
 }
 // ─── PRODUCT DETAIL MODAL ────────────────────────────────────
-function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, isWhatWeUsing, upd, onAddToLibrary, onRemoveFromLibrary }) {
+function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, isWhatWeUsing, upd, onAddToLibrary, onRemoveFromLibrary, onSaveUserProductData }) {
   if (!p) return null
   const isCatalog = p._isCatalog && !p._isLinked
   const cat = p.catalog_product_id ? (catalogProducts || {})[p.catalog_product_id] : null
@@ -709,22 +709,25 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
           </div>
         )}
 
-        {/* Personal notes from user_product_data */}
-        {upd?.notes && (
-          <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.7, marginTop: 14, padding: '10px 12px', background: T.cream, borderRadius: 8, fontStyle: 'italic' }}>{upd.notes}</div>
+        {/* ── Personal data section (catalog products with upd, or own products) ── */}
+        {(isCatalog ? upd?.in_library : true) && (
+          <PersonalDataForm
+            productId={p.id}
+            isCatalog={isCatalog}
+            upd={upd}
+            product={p}
+            onSaveUpd={onSaveUserProductData}
+            onEdit={onEdit}
+            onDelete={onDelete}
+            onClose={onClose}
+          />
         )}
 
         {/* Community effectiveness */}
         {p.effectivenessAvg > 0 && (
-          <div style={{ fontSize: 11, color: T.textMuted, marginTop: 8 }}>
-            Community rating: <StarRating value={Math.round(p.effectivenessAvg)} size={11} />
-          </div>
-        )}
-
-        {/* Personal effectiveness */}
-        {upd?.effectiveness > 0 && (
-          <div style={{ fontSize: 11, color: T.textMuted, marginTop: 4 }}>
-            Your rating: <StarRating value={upd.effectiveness} size={11} />
+          <div style={{ fontSize: 11, color: T.textMuted, marginTop: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span>Community rating:</span>
+            <StarRating value={Math.round(p.effectivenessAvg)} size={11} readonly />
           </div>
         )}
 
@@ -741,16 +744,10 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
                   + Add to my products
                 </button>
           ) : (
-            <>
-              <button onClick={() => { onClose(); onEdit(p) }}
-                style={{ flex: 1, padding: '10px', borderRadius: 10, border: '0.5px solid ' + T.border, background: T.creamDark, color: T.text, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 500 }}>
-                Edit this product
-              </button>
-              <button onClick={() => { if (window.confirm('Delete ' + p.name + '? This cannot be undone.')) { onDelete(p); onClose() } }}
-                style={{ padding: '10px 16px', borderRadius: 10, border: '0.5px solid ' + T.border, background: 'transparent', color: T.textLight, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit' }}>
-                Delete
-              </button>
-            </>
+            <button onClick={() => { if (window.confirm('Delete ' + p.name + '? This cannot be undone.')) { onDelete(p); onClose() } }}
+              style={{ padding: '10px 16px', borderRadius: 10, border: '0.5px solid ' + T.border, background: 'transparent', color: T.textLight, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit' }}>
+              Delete
+            </button>
           )}
         </div>
       </div>
@@ -984,6 +981,7 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
           upd={(userProductData || {})[selectedProduct?.id]}
           onAddToLibrary={onAddToLibrary}
           onRemoveFromLibrary={onRemoveFromLibrary}
+          onSaveUserProductData={saveUserProductData}
         />
       )}
     </div>
