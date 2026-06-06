@@ -3613,7 +3613,7 @@ export default function GlowUpCalendar({ session }) {
 
   const [routineHistory, setRoutineHistory] = useState([])
   const [products,       setProducts]       = useState({})
-  const catalogIds = React.useRef(new Set())
+  const catalogIds = useRef(new Set())
   const [dailyHistory,   setDailyHistory]   = useState([])
   const [showerHistory,  setShowerHistory]  = useState([])
   const [treatments,     setTreatments]     = useState({})
