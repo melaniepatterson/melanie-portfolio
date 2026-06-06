@@ -3159,7 +3159,7 @@ function icsDateTime(dt, timeStr) {
 
 function buildStepDescription(steps, periodProducts, products) {
   return steps.map(step => {
-    const pid = periodProducts?.[step.key]
+    const pid = periodProducts?.[step.key || step.id]
     const prod = pid ? products?.[pid] : null
     return prod ? `${step.label}: ${prod.name}${prod.brand ? ' ('+prod.brand+')' : ''}` : step.label
   }).join('\n')
@@ -3208,19 +3208,7 @@ function generateICS({ routineHistory, treatments, allTypes, products, settings 
       : null
 
     const amDesc = period ? buildStepDescription(AM_STEPS, periodProducts, products) : null
-    // For recovery days with a scoped routine, use those steps; else use period/defaults
-  const pmSteps = (() => {
-    if (activeRecovery?.steps) {
-      return activeRecovery.steps
-        .filter(s => s.enabled)
-        .sort((a, b) => {
-          const oA = INGREDIENT_CATEGORIES[a.categoryKey]?.order ?? 99
-          const oB = INGREDIENT_CATEGORIES[b.categoryKey]?.order ?? 99
-          return oA - oB
-        })
-    }
-    return period ? getStepsForDayType(period, nightType) : getDefaultSteps(nightType)
-  })()
+    const pmSteps = period ? getStepsForDayType(period, nightType) : getDefaultSteps(nightType)
     const pmDesc = info.isTreatment && !period ? 'Follow provider aftercare instructions'
       : pmSteps.length ? buildStepDescription(pmSteps, periodProducts, products)
       : null
