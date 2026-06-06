@@ -225,17 +225,17 @@ export default function Profile({ session }) {
           <input ref={fileInputRef} type="file" accept="image/*" onChange={handleAvatarUpload} style={{ display: 'none' }} />
         </div>
 
-        {/* Email */}
-        <div style={{ marginBottom: 20 }}>
-          <SectionLabel>Email</SectionLabel>
-          <div style={{ fontSize: 13, color: T.textMuted, padding: '10px 12px', background: T.creamDark, borderRadius: 8, border: `0.5px solid ${T.border}` }}>{email}</div>
-        </div>
-
         {/* Display name */}
-        <div style={{ marginBottom: 24 }}>
+        <div style={{ marginBottom: 20 }}>
           <SectionLabel>Display name</SectionLabel>
           <input type="text" value={displayName} onChange={e => setDisplayName(e.target.value)} placeholder="Your name"
             style={{ width: '100%', fontSize: 13, padding: '10px 12px', border: `0.5px solid ${T.border}`, borderRadius: 8, background: T.white, color: T.text, boxSizing: 'border-box', outline: 'none', fontFamily: 'inherit' }} />
+        </div>
+
+        {/* Email */}
+        <div style={{ marginBottom: 24 }}>
+          <SectionLabel>Email</SectionLabel>
+          <div style={{ fontSize: 13, color: T.textMuted, padding: '10px 12px', background: T.creamDark, borderRadius: 8, border: `0.5px solid ${T.border}` }}>{email}</div>
         </div>
 
         <div style={{ height: 1, background: T.border, marginBottom: 24 }} />
