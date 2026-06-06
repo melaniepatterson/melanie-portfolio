@@ -958,7 +958,7 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
         const matchCat = filterCats.length === 0 || filterCats.includes(p.category)
         const matchSearch = !search.trim() || p.name.toLowerCase().includes(search.toLowerCase()) || (p.brand || '').toLowerCase().includes(search.toLowerCase())
         const matchFlags = filterFlags.length === 0 || filterFlags.every(f => p[f])
-        const matchUsing = !filterUsing || p.currentlyUsing
+        const matchUsing = !filterUsing || isWhatWeUsing(p)
         const matchBuyAgain = !filterBuyAgain || p.buyAgain === true
         return matchBrand && matchCat && matchSearch && matchFlags && matchUsing && matchBuyAgain
       })
