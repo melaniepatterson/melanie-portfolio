@@ -2710,6 +2710,15 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
     if (dayType === 'tret') return 'main'
     return 'off'
   })()
+  const isRecovery = dayType === 'pca' || dayType === 'recovery'
+
+  // Use treatment-scoped recovery routine if available
+  const activeRecovery = isRecovery && activeTreatmentType
+    ? recoveryRoutines?.[activeTreatmentType]
+    : null
+
+  const periodProducts = activeRecovery?.products || period?.products || {}
+
   // For recovery days with a scoped routine, use those steps; else use period/defaults
   const pmSteps = (() => {
     if (activeRecovery?.steps) {
@@ -2723,14 +2732,6 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
     }
     return period ? getStepsForDayType(period, nightType) : getDefaultSteps(nightType)
   })()
-  const isRecovery = dayType === 'pca' || dayType === 'recovery'
-
-  // Use treatment-scoped recovery routine if available
-  const activeRecovery = isRecovery && activeTreatmentType
-    ? recoveryRoutines?.[activeTreatmentType]
-    : null
-
-  const periodProducts = activeRecovery?.products || period?.products || {}
 
   function handleSelectProduct(stepKey, productId) {
     if (activeRecovery !== null && onUpdateRecoveryProducts) {

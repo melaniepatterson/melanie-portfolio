@@ -896,7 +896,7 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
   const [filterBrands, setFilterBrands] = useState([])
   const [search, setSearch] = useState('')
   const [selectedProduct, setSelectedProduct] = useState(null)
-  const [sortBy, setSortBy] = useState('name')
+  const [sortBy, setSortBy] = useState('routine')
   const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 640)
   const [filterSheetOpen, setFilterSheetOpen] = useState(false)
 
