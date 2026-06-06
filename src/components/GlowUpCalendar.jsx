@@ -1517,7 +1517,7 @@ function DraggableItem({ item, index, total, onRemove, isDragging, onDragStart, 
           </div>
         )}
         {/* Cycle start day — only for non-daily/alternate frequencies */}
-        {onWeekStartChange && item.frequency && item.frequency !== 'daily' && item.frequency !== 'alternate' && (
+        {onWeekStartChange && item.frequency && item.frequency !== 'daily' && (
           <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap', alignItems: 'center', marginBottom: 2 }}>
             <span style={{ fontSize: 9, color: T.textLight }}>cycle starts:</span>
             {DAYS.map((d, i) => (
@@ -2426,9 +2426,9 @@ function DraggableShowerItem({ item, index, onRemove, onFreqChange, onWeekStartC
             >{f.label}</button>
           ))}
         </div>
-        {item.frequency !== 'daily' && item.frequency !== 'alternate' && (
+        {item.frequency !== 'daily' && (
           <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap', alignItems: 'center' }}>
-            <span style={{ fontSize: 9, color: T.textLight }}>cycle starts:</span>
+            <span style={{ fontSize: 9, color: T.textLight }}>{item.frequency === 'alternate' ? 'starts on:' : 'cycle starts:'}</span>
             {DAYS.map((d, i) => (
               <button key={i} onClick={e => { e.stopPropagation(); onWeekStartChange(index, i) }}
                 style={{ fontSize: 9, padding: '1px 5px', borderRadius: 3, cursor: 'pointer', border: `0.5px solid ${(item.weekStartDay ?? 1) === i ? T.orange : T.border}`, background: (item.weekStartDay ?? 1) === i ? T.orangeLight : 'transparent', color: (item.weekStartDay ?? 1) === i ? '#9A3412' : T.textLight }}
