@@ -945,7 +945,7 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
         )}
 
         {/* Action buttons */}
-        <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
+        <div style={{ display: 'flex', gap: 8, marginTop: 16, flexWrap: 'wrap' }}>
           {isCatalog ? (
             upd?.in_library
               ? <button onClick={() => { onRemoveFromLibrary(p.id); onClose() }}
@@ -957,10 +957,16 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
                   + Add to my products
                 </button>
           ) : (
-            <button onClick={() => { if (window.confirm('Delete ' + p.name + '? This cannot be undone.')) { onDelete(p); onClose() } }}
-              style={{ padding: '10px 16px', borderRadius: 10, border: '0.5px solid ' + T.border, background: 'transparent', color: T.textLight, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit' }}>
-              Delete
-            </button>
+            <>
+              <button onClick={() => { onClose(); onEdit(p) }}
+                style={{ flex: 1, padding: '10px', borderRadius: 10, border: '0.5px solid ' + T.border, background: T.creamDark, color: T.text, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 500 }}>
+                Edit this product
+              </button>
+              <button onClick={() => { if (window.confirm('Delete ' + p.name + '? This cannot be undone.')) { onDelete(p); onClose() } }}
+                style={{ padding: '10px 16px', borderRadius: 10, border: '0.5px solid ' + T.border, background: 'transparent', color: T.textLight, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit' }}>
+                Delete
+              </button>
+            </>
           )}
         </div>
       </div>
