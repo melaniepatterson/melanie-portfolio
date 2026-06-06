@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 import Avatar from './Avatar'
+import CropModal from './CropModal'
 
 const T = {
   white:    '#FFFFFF',
@@ -22,42 +23,13 @@ const SKIN_GOALS = [
 ]
 
 const SUPABASE_URL = 'https://brcjhshptisevcndqavz.supabase.co'
-const MAX_DIMENSION = 400  // resize avatar to 400x400 max before upload
-const WEBP_QUALITY  = 0.85
-
-// Convert any image file to a square-cropped WebP blob via canvas
-async function toWebP(file) {
-  return new Promise((resolve, reject) => {
-    const img = new Image()
-    const objectUrl = URL.createObjectURL(file)
-    img.onload = () => {
-      URL.revokeObjectURL(objectUrl)
-      // Square-crop from center
-      const size = Math.min(img.width, img.height)
-      const sx   = (img.width  - size) / 2
-      const sy   = (img.height - size) / 2
-      const dim  = Math.min(size, MAX_DIMENSION)
-      const canvas = document.createElement('canvas')
-      canvas.width  = dim
-      canvas.height = dim
-      canvas.getContext('2d').drawImage(img, sx, sy, size, size, 0, 0, dim, dim)
-      canvas.toBlob(
-        blob => blob ? resolve(blob) : reject(new Error('Canvas toBlob failed')),
-        'image/webp',
-        WEBP_QUALITY
-      )
-    }
-    img.onerror = () => { URL.revokeObjectURL(objectUrl); reject(new Error('Image load failed')) }
-    img.src = objectUrl
-  })
-}
-
 export default function Profile({ session }) {
   const [profile,     setProfile]     = useState(null)
   const [displayName, setDisplayName] = useState('')
   const [skinType,    setSkinType]    = useState('')
   const [skinGoals,   setSkinGoals]   = useState([])
   const [avatarUrl,   setAvatarUrl]   = useState(null)
+  const [cropSrc,     setCropSrc]     = useState(null)   // object URL waiting for crop
   const [uploading,   setUploading]   = useState(false)
   const [loading,     setLoading]     = useState(true)
   const [saving,      setSaving]      = useState(false)
@@ -83,41 +55,44 @@ export default function Profile({ session }) {
     load()
   }, [userId])
 
-  async function handleAvatarUpload(e) {
+  function handleAvatarUpload(e) {
     const file = e.target.files?.[0]
     if (!file || !userId) return
     if (!file.type.startsWith('image/')) return
     if (file.size > 10 * 1024 * 1024) { alert('Photo must be under 10MB'); return }
+    // Show crop modal with the raw image
+    setCropSrc(URL.createObjectURL(file))
+    e.target.value = ''
+  }
 
+  async function handleCropConfirm(webpBlob) {
     setUploading(true)
     try {
-      // Convert to square WebP via canvas
-      const webpBlob = await toWebP(file)
       const path = `${userId}.webp`
-
       const { error } = await supabase.storage
         .from('avatars')
         .upload(path, webpBlob, { upsert: true, contentType: 'image/webp' })
-
       if (error) throw error
 
-      // Bust cache with timestamp
       const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/avatars/${path}?t=${Date.now()}`
-
       await supabase.from('profiles').upsert({
         id: userId, email,
         avatar_url: publicUrl,
         updated_at: new Date().toISOString(),
       })
-
       setAvatarUrl(publicUrl)
+      setCropSrc(null)
     } catch (err) {
       console.error('Upload failed:', err)
       alert('Upload failed — please try again')
     } finally {
       setUploading(false)
-      e.target.value = ''
     }
+  }
+
+  function handleCropCancel() {
+    if (cropSrc) URL.revokeObjectURL(cropSrc)
+    setCropSrc(null)
   }
 
   async function handleSave() {
@@ -152,6 +127,14 @@ export default function Profile({ session }) {
 
   return (
     <div style={{ fontFamily: 'inherit', minHeight: '100vh', background: T.cream, padding: '0 0 40px' }}>
+      {cropSrc && (
+        <CropModal
+          imageSrc={cropSrc}
+          onConfirm={handleCropConfirm}
+          onCancel={handleCropCancel}
+          uploading={uploading}
+        />
+      )}
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '20px 20px 16px', borderBottom: `0.5px solid ${T.border}`, background: T.white }}>
         <button onClick={() => window.location.href = '/routine'}
