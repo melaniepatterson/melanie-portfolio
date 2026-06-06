@@ -955,8 +955,12 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
         return matchBrand && matchCat && matchSearch && matchFlags && matchUsing && matchBuyAgain
       })
       .sort((a, b) => {
+        const aUsing = isWhatWeUsing(a)
+        const bUsing = isWhatWeUsing(b)
+        if (aUsing && !bUsing) return -1
+        if (!aUsing && bUsing) return 1
         if (sortBy === 'brand') {
-          const brandCmp = (a.brand || '').localeCompare(b.brand || '')
+          const brandCmp = (a.brand || '').toLowerCase().localeCompare((b.brand || '').toLowerCase())
           return brandCmp !== 0 ? brandCmp : (a.name || '').localeCompare(b.name || '')
         }
         return (a.name || '').localeCompare(b.name || '')
@@ -1226,7 +1230,7 @@ export default function ProductsPage({ session }) {
         if (productIds.length > 0) {
           const { data: routineProds } = await supabase
             .from('products')
-            .select('name, brand, bds_compliant')
+            .select('id, name, brand, bds_compliant')
             .in('id', productIds)
             .eq('is_catalog', true)
           const nameSet = new Set()
@@ -1235,6 +1239,22 @@ export default function ProductsPage({ session }) {
               nameSet.add((p.name + '|' + (p.brand || '')).toLowerCase())
           })
           setActiveRoutineNames(nameSet)
+
+          // Auto-add routine products to user's library (in_library=true) if not already tracked
+          const autoRows = (routineProds || []).map(p => ({
+            user_id: userId,
+            product_id: p.id,
+            in_library: true,
+          }))
+          if (autoRows.length > 0) {
+            const { data: newUpd } = await supabase
+              .from('user_product_data')
+              .upsert(autoRows, { onConflict: 'user_id,product_id', ignoreDuplicates: true })
+              .select()
+            // Merge any newly created rows into updMap
+            ;(newUpd || []).forEach(row => { updMap[row.product_id] = row })
+            setUserProductData({ ...updMap })
+          }
         }
       }
       setLoading(false)
