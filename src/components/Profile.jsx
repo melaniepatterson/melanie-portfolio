@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../lib/supabase'
+import Avatar from './Avatar'
 
 const T = {
   white:    '#FFFFFF',
@@ -142,7 +143,6 @@ export default function Profile({ session }) {
     setSkinGoals(g => g.includes(goal) ? g.filter(x => x !== goal) : [...g, goal])
   }
 
-  const initials = (displayName || email || '?').charAt(0).toUpperCase()
 
   if (loading) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', fontFamily: 'inherit', color: T.textMuted, fontSize: 13 }}>
@@ -166,26 +166,15 @@ export default function Profile({ session }) {
         {/* Avatar */}
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 28 }}>
           <div style={{ position: 'relative', width: 88, height: 88 }}>
-            <div
+            <Avatar
+              avatarUrl={avatarUrl}
+              displayName={displayName}
+              email={email}
+              size={88}
               onClick={() => !uploading && fileInputRef.current?.click()}
-              style={{
-                width: 88, height: 88, borderRadius: '50%',
-                background: avatarUrl ? 'transparent' : T.pink,
-                border: `2px solid ${T.border}`,
-                overflow: 'hidden',
-                cursor: uploading ? 'default' : 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                opacity: uploading ? 0.6 : 1,
-                transition: 'opacity 0.2s',
-              }}
-            >
-              {avatarUrl
-                ? <img src={avatarUrl} alt="Profile"
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                : <span style={{ fontSize: 32, fontWeight: 700, color: T.pinkDeep }}>{initials}</span>
-              }
-            </div>
-            {/* Edit ring on hover */}
+              style={{ opacity: uploading ? 0.6 : 1, transition: 'opacity 0.2s', border: `2px solid ${T.border}`, cursor: uploading ? 'default' : 'pointer' }}
+            />
+            {/* Hover overlay */}
             {!uploading && (
               <div
                 onClick={() => fileInputRef.current?.click()}
@@ -195,10 +184,10 @@ export default function Profile({ session }) {
                   alignItems: 'center', justifyContent: 'center',
                   cursor: 'pointer', transition: 'background 0.15s',
                 }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.32)'; e.currentTarget.firstChild && (e.currentTarget.firstChild.style.opacity = '1') }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,0,0,0)'; e.currentTarget.firstChild && (e.currentTarget.firstChild.style.opacity = '0') }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.32)'; e.currentTarget.querySelector('span').style.opacity = '1' }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,0,0,0)'; e.currentTarget.querySelector('span').style.opacity = '0' }}
               >
-                <span style={{ fontSize: 11, color: '#fff', fontWeight: 600, opacity: 0, transition: 'opacity 0.15s' }}>Change</span>
+                <span style={{ fontSize: 11, color: '#fff', fontWeight: 600, opacity: 0, transition: 'opacity 0.15s', pointerEvents: 'none' }}>Change</span>
               </div>
             )}
           </div>

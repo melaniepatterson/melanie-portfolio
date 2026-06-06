@@ -31,6 +31,7 @@
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react'
+import Avatar from './Avatar'
 import { supabase } from '../lib/supabase'
 
 // ─── DESIGN TOKENS ───────────────────────────────────────────
@@ -3550,16 +3551,12 @@ function SideMenu({ session, onClose, onHistory, onLibrary, onExport, onSignOut,
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               {/* Avatar */}
-              <div style={{ width: 44, height: 44, borderRadius: '50%', overflow: 'hidden', flexShrink: 0, background: T.creamDark, border: `0.5px solid ${T.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                {avatarUrl ? (
-                  <img src={avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => e.target.style.display='none'} />
-                ) : (
-                  <svg viewBox="0 0 44 44" width="44" height="44" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="22" cy="17" r="8" fill="#C8B8A2" />
-                    <ellipse cx="22" cy="38" rx="14" ry="10" fill="#C8B8A2" />
-                  </svg>
-                )}
-              </div>
+              <Avatar
+                avatarUrl={avatarUrl}
+                displayName={displayName}
+                email={email}
+                size={44}
+              />
               {/* Name + email */}
               <div style={{ minWidth: 0 }}>
                 <div style={{ fontSize: 13, fontWeight: 600, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{displayName}</div>
