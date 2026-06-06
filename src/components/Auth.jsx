@@ -62,8 +62,8 @@ export default function Auth() {
         setScreen('waitlist')
       }
     } catch (err) {
-      setErrorMsg('Something went wrong. Please try again.')
-      console.error(err)
+      setErrorMsg(err?.message || err?.error_description || JSON.stringify(err) || 'Something went wrong. Please try again.')
+      console.error('Auth error:', JSON.stringify(err))
     } finally {
       setLoading(false)
     }
@@ -83,8 +83,8 @@ export default function Auth() {
       if (error) throw error
       setScreen('joined')
     } catch (err) {
-      setErrorMsg('Something went wrong — please try again.')
-      console.error(err)
+      setErrorMsg(err?.message || err?.error_description || JSON.stringify(err) || 'Something went wrong — please try again.')
+      console.error('Waitlist error:', JSON.stringify(err))
     } finally {
       setLoading(false)
     }
