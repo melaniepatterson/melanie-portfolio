@@ -1,0 +1,63 @@
+@charset "utf-8";
+
+/*
+ * File       : font.css
+ * Author     : STUDIO-JT (Chaehee)
+ *
+ * SUMMARY:
+ * Zenith
+ * TheFuture
+ * NotoSerif
+ */
+
+
+
+/* ************************************** *
+ * Zenith
+ * ************************************** */  
+@font-face {
+    font-family: 'Zenith';
+    font-weight: 400;
+    src: url('../fonts/Zenith/Zenith-Regular.woff2') format('woff2'), 
+         url('../fonts/Zenith/Zenith-Regular.woff') format('woff');
+}
+
+
+
+/* ************************************** *
+ * TheFuture
+ * ************************************** */
+@font-face {
+    font-family: 'TheFuture';
+    font-style: normal;
+    font-weight: 400;
+    src: url('../fonts/TheFuture/the-future-regular.woff2') format('woff2'),
+         url('../fonts/TheFuture/the-future-regular.woff') format('woff'),
+}
+
+@font-face {
+    font-family: 'TheFuture';
+    font-style: normal;
+    font-weight: 500;
+    src: url('../fonts/TheFuture/the-future-medium.woff2') format('woff2'), 
+         url('../fonts/TheFuture/the-future-medium.woff') format('woff'), 
+}
+
+
+
+/* ************************************** *
+ * Pretendard
+ * ************************************** */  
+@font-face {
+    font-family: 'Pretendard';
+    font-weight: 400;
+    src: url('../fonts/Pretendard/woff2-subset/Pretendard-Regular.subset.woff2') format('woff2'), 
+         url('../fonts/Pretendard/woff-subset/Pretendard-Regular.subset.woff') format('woff');
+}
+
+@font-face {
+    font-family: 'Pretendard';
+    font-weight: 500;
+    src: url('../fonts/Pretendard/woff2-subset/Pretendard-Medium.subset.woff2') format('woff2'), 
+         url('../fonts/Pretendard/woff-subset/Pretendard-Medium.subset.woff') format('woff');
+}

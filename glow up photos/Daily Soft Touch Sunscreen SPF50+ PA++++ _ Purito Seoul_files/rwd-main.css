@@ -1,0 +1,318 @@
+@charset "utf-8";
+
+/*
+ * File       : rwd-main.css
+ * Author     : STUDIO-JT (Chaehee)
+ *
+ * SUMMARY:
+ * 1600px
+ * 1480px
+ * 1200px
+ * 1023px
+ * 860px
+ * 540px
+ */
+
+
+
+/* **************************************** *
+ * 1600px
+ * **************************************** */
+@media (max-width: 1600px){
+
+    body.home.logo-expand .logo-seoul { width: 238rem; margin-top: 47.5rem;}
+    body.home.logo-expand #header { height: 708rem; }
+    body.home.logo-expand .main-container { padding-top: 708rem; }
+
+    .main-brandstory__keyword-item { font-size: 140rem; line-height: 145rem; }
+    .main-brandstory__desc-wrap { margin-top: 32rem; }
+    .main-brandstory__desc-ko { font-size: 25rem; line-height: var(--font-lineheight-07); }
+
+    .main-skincare__bg-wrap { width: 60%; }
+    .main-skincare__content { width: 40%; }
+}
+
+
+
+/* **************************************** *
+ * 1480px
+ * **************************************** */
+@media (max-width: 1480px){
+
+    body.home.logo-expand .logo-seoul { width: 217rem; margin-top: 43rem; }
+    body.home.logo-expand #header { height: 666rem; }
+    body.home.logo-expand .main-container { padding-top: 666rem; }
+
+    .main-visual__btn-wrap { bottom: 120rem; }
+
+    .main-ingredient__title { max-width: 965rem; }
+    .main-ingredient__title--highlight > i { height: 52rem; }
+    .main-ingredient__slider-index-item { padding: 28rem 0; }
+    .main-ingredient__slider-index-title:after { width: 20rem; height: 20rem; top: -3rem; }
+
+    .main-brandstory__keyword-item { font-size: var(--font-size-01); line-height: var(--font-lineheight-01); }
+    .main-brandstory__keyword-wrap:before, .main-brandstory__keyword-wrap:after { line-height: inherit; top: 0rem; }
+    .main-brandstory__desc-wrap { margin-top: 28rem; }
+    .main-brandstory__desc-ko { font-size: 24rem; }
+    
+    .main-skincare__colgroup { height: 700rem; }
+
+}
+
+
+
+/* **************************************** *
+* 1200px
+* **************************************** */
+@media (max-width: 1200px){
+    
+    body.home.logo-expand .logo-seoul { width: 176rem; margin-top: 35rem; }
+    body.home.logo-expand #header { height: 570rem; }
+    body.home.logo-expand .main-container { padding-top: 570rem; }
+    
+    .main-visual__btn-wrap { bottom: 100rem; }
+    
+    .main-best__new-bg:before { height: 80%; }
+    .main-best__new-content { bottom: 75rem; }
+    .main-best__new-subtitle { margin-bottom: 20rem; }
+    .main-best__new-desc { margin-top: 20rem; }
+    .main-best__new .jt-btn__basic { margin-top: 32rem; }
+    
+    .main-ingredient__title { max-width: inherit; margin-left: 60rem; margin-right: 60rem; }
+    .main-ingredient__slider-index-list { margin: 0 36rem; }
+    .main-ingredient__slider-index-item { padding: 22rem 0; }
+    .main-ingredient__slider-index-title { margin-top: 2rem; }
+    .main-ingredient__slider-index-title:after { width: 16rem; height: 16rem; }
+    .main-ingredient__slider-index-title.jt-typo--05 { font-size: var(--font-size-06); line-height: var(--font-lineheight-06); }
+    .main-ingredient__slider-index-subtitle.jt-typo--13 { font-size: var(--font-size-14); line-height: var(--font-lineheight-14); }
+    
+    .main-ingredient__txt { padding: 0 36rem; bottom: 30rem; }
+    
+    .main-line__banner-label { padding: 11rem 32rem; border-radius: 8rem; }
+
+    .main-brandstory__content { padding: 0 30rem; }
+    .main-brandstory__keyword-wrap:before, .main-brandstory__keyword-wrap:after { top: -2rem; }
+    .main-brandstory__keyword-item { padding: 16rem 54rem; }
+    .main-brandstory__last { width: calc( 100% - 60rem); }
+
+    .main-brandstory__desc-ko { font-size: 22rem; }
+
+    .main-skincare__colgroup { height: 580rem; }
+
+}
+
+
+
+/* **************************************** *
+ * 1023px
+ * **************************************** */
+@media (max-width: 1023px){
+
+    body.home.logo-expand .logo-seoul { width: 148rem; margin-top: 30rem; }
+    body.home.logo-expand #logo { top: 70rem; }
+    body.home.logo-expand #header { height: 460rem; }
+    body.home.logo-expand .main-container { padding-top: 460rem; }
+
+    .main-visual__btn-wrap { bottom: 90rem; }
+
+    /* .main-best__new-content { opacity: 0; transition: .5s; } */
+    .main-best__new-bg:before { opacity: 0; transition: .5s; }
+    /* .main-best__new.banner--loaded .main-best__new-content { opacity: 1; } */
+    .main-best__new.banner--loaded .main-best__new-bg:before { opacity: .9; }
+    
+    .main-ingredient__title { max-width: 665rem; margin-left: auto; margin-right: auto; }
+    .main-ingredient__title--highlight > i { height: 40rem; }
+    
+    .main-line__banner-bg:before { opacity: 0; transition: .5s; }
+    .main-line__banner-content { bottom: 70rem; /* opacity: 0; transition: .5s; */ }
+    .main-line__banner-content .jt-btn__basic { margin-top: 32rem; }
+    .main-line__banner-desc { margin-top: 10rem; }
+    /* .main-line__banner.banner--loaded .main-line__banner-content { opacity: 1; } */
+    .main-line__banner.banner--loaded .main-line__banner-bg:before { opacity: .9; }
+
+    .main-skincare__colgroup { height: 500rem; }
+    .main-skincare__content { padding: 0 60rem; }
+
+    .main-brandstory__slider:after { content: ''; display: block; width: 100%; height: 50%; position: absolute; bottom: 0; left: 0; background: linear-gradient(1800deg, black, transparent); opacity: .2; pointer-events: none; }
+    .main-brandstory__slider-item--last .main-brandstory__desc { margin-top: 37rem; }
+    .main-brandstory__slider-item--last .jt-btn__basic { margin-top: 32rem; }
+    .main-brandstory__keyword-wrap { margin: -12rem 0; height: calc(var(--font-lineheight-01) + 24rem); }
+    .main-brandstory__keyword-item { padding: 12rem 40rem; }
+    .main-brandstory__keyword-wrap:before, .main-brandstory__keyword-wrap:after { top: 5rem; }
+    .main-brandstory__desc-wrap { margin-top: 20rem; }
+    .main-brandstory__desc-ko { font-size: 20rem; }
+    .main-brandstory__nav { display: none; }
+    .main-brandstory .swiper-pagination { display: block; }
+
+    .main-insta__list-item--video:before { width: 50rem; height: 50rem; margin-top: -25rem; margin-left: -25rem; }
+    .main-insta__list-item--video:after { border-left-width: 12rem; border-top-width: 8rem; border-bottom-width: 8rem; }
+
+}
+
+
+
+/* **************************************** *
+ * 860px
+ * **************************************** */
+@media (max-width: 860px){
+
+    body.home .main-container { padding-bottom: 100rem; }
+    body.home.logo-expand .logo-seoul { width: 112rem; margin-top: 22rem; }
+    body.home.logo-expand #header { height: 367rem; }
+    body.home.logo-expand .main-container { padding-top: 367rem; }
+    
+    .main-visual__btn-wrap { bottom: 60rem; }
+    
+    .main-best { padding-top: 80rem; }
+    .main-best .main-section__title { margin-bottom: 30rem; }
+    .main-best__new { border-radius: 8rem; }
+    .main-best__new-bg:before { height: 100%; }
+    .main-best__new-content { bottom: 45rem; padding: 0 60rem; }
+    .main-best__new-subtitle { margin-bottom: 18rem; }
+    .main-best__new-desc { margin-top: 18rem; }
+    .main-best__new .jt-btn__basic { margin-top: 24rem; }
+    .main-best__list-wrap { margin-top: 20rem; }
+
+    .main-ingredient { padding: 100rem 0 95rem; }
+    .main-ingredient__title { max-width: 600rem; margin-bottom: 40rem; }
+    .main-ingredient__btn-wrap { margin-top: 35rem; }
+    .main-ingredient__slider { position: relative; width: 100%; height: auto; }
+    .main-ingredient__slider-inner { height: auto; display: block; margin: -5rem; font-size: 0; }
+    .main-ingredient__slider-item { position: relative; display: inline-block; width: calc(50% - 10rem); border-radius: 8rem; overflow: hidden; margin: 5rem; }
+    .main-ingredient__slider-index { display: none; }
+    .main-ingredient__slider-index-list { margin: 0 32rem; }
+    .main-ingredient__slider-index-item {padding: 18rem 0;}
+    .main-ingredient__txt { padding: 32rem 24rem; bottom: auto; top: 0; }
+    /* .main-ingredient__txt.jt-typo--13 { font-size: var(--font-size-13); line-height: var(--font-lineheight-13); } */
+    .main-ingredient__bg-list-wrap .swiper-control { width: 18rem; right: 16rem; }
+    .main-ingredient__thumb-txt { position: absolute; top: 0; left: 0; padding: 32rem 24rem; display: block; }
+    .main-ingredient__thumb-txt > * { display: block; color: var(--color-tertiary); }
+    .main-ingredient__thumb-title { margin-top: 8rem; }
+    .main-ingredient__last .main-ingredient__bg:after { content: ''; display: block; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.00) 100%); opacity: .4; }
+
+    .main-line__banner-label { padding: 9rem 22rem; border-radius: 6rem; }
+    .main-line__banner-label.jt-typo--13 { font-size: var(--font-size-14); line-height: var(--font-lineheight-14); }
+    .main-line__banner-content { bottom: 45rem; }
+    .main-line__banner-content .jt-btn__basic { margin-top: 24rem; }
+      
+    .main-ingredient__first { z-index: 2; transition: .3s; }
+    .main-ingredient__colgroup { display: block; align-items: unset; gap: unset; width: 100%; padding-top: 100%; }
+    .main-ingredient__colgroup > * { position: absolute; display: block; top: 0; left: 0; border-radius: 0; width: 100%; height: 100%; }
+    .main-ingredient__colgroup--active .main-ingredient__first { opacity: 0; visibility: hidden; }
+    .main-ingredient__colgroup--active .main-ingredient__pop-btn { transform: rotate(45deg); }
+    
+    .main-ingredient__pop-btn { position: absolute; top: auto; left: auto; bottom: 24rem; right: 24rem; display: block; width: 44rem; height: 44rem; border-radius: 50%; background: rgba(252, 238, 163, .3); z-index: 3; transition: transform .6s, background .3s; }
+    .main-ingredient__pop-btn:before, .main-ingredient__pop-btn:after { content: ''; display: block; width: 16rem; height: 2rem; background: var(--color-tertiary); position: absolute; top: 50%; left: 50%; margin-top: -1rem; margin-left: -8rem; transition: background .3s; }
+    .main-ingredient__pop-btn:after { transform: rotate(90deg); }
+    
+    .main-slogan { padding: 100rem 0; }
+    
+    .main-skincare { padding-bottom: 100rem; }
+    .main-skincare__colgroup { flex-direction: column; gap: 12rem; height: auto; }
+    .main-skincare__bg-wrap { width: 100%; padding-top: 56.25%; border-radius: 8rem; }
+    .main-skincare__bg--large { opacity: 0; visibility: hidden; }
+    .main-skincare__bg--small { opacity: 1; visibility: visible; }
+    .main-skincare__content { width: 100%; padding: 60rem; border-radius: 8rem; }
+    .main-skincare__content-desc { margin-top: 18rem; }
+    .main-skincare__content .jt-btn__basic { margin-top: 24rem; }
+
+    .main-line__banner { border-radius: 8rem; }
+
+    .main-brandstory__content { padding: 0 20rem; }
+    .main-brandstory__keyword-wrap { margin: -10rem 0; height: calc(var(--font-lineheight-01) + 20rem); }
+    .main-brandstory__keyword-item { padding: 10rem 40rem; }
+    .main-brandstory__last { width: calc( 100% - 40rem); }
+
+    .main-insta { padding-top: 100rem; }
+    .main-insta__list-wrap { margin-top: 40rem; }
+    .main-insta__list { margin: -6rem; }
+    .main-insta__list-item { padding: 6rem; }
+    .main-insta__list-item--video:before { width: 44rem; height: 44rem; margin-top: -22rem; margin-left: -22rem; }
+    .main-insta__list-item--video:after { border-left-width: 10rem; border-top-width: 7rem; border-bottom-width: 7rem; }
+    .main-insta__list-figure { border-radius: 8rem; }
+    
+}
+
+
+
+/* **************************************** *
+ * 540px
+ * **************************************** */
+@media (max-width: 540px){
+
+    body.home .main-container { padding-bottom: 80rem; }
+    
+    body.home.logo-expand #logo { top: 64rem; }
+    body.home.logo-expand .logo-seoul { width: 55rem; margin-top: 11rem; }
+    body.home.logo-expand #header { height: 212rem; border-bottom-color: transparent; }
+    body.home.logo-expand .main-container { padding-top: 212rem; }
+
+    .main-visual { padding-top: 120.05%; }
+    .main-visual__bg--large { opacity: 0; visibility: hidden; pointer-events: none; }
+    .main-visual__bg--small { opacity: 1; visibility: visible; pointer-events: auto; }
+    .main-visual__btn-wrap { bottom: 40rem; }
+
+    .main-best { padding-top: 60rem; }
+    .main-best .main-section__title { margin-bottom: 24rem; }
+    .main-best .main-section__title br { display: block; }
+    .main-best__new-bg-wrap { padding-top: 153.63%; }
+    .main-best__new-bg:before { height: 100%; }
+    .main-best__new-bg--large { opacity: 0; visibility: hidden; }
+    .main-best__new-bg--small { opacity: 1; visibility: visible; }
+    .main-best__new-content { bottom: 43rem; padding: 0 20rem; }
+    .main-best__new-subtitle { margin-bottom: 16rem; }
+    .main-best__new-desc { margin-top: 16rem; }
+    .main-best__new .jt-btn__basic { margin-top: 19rem; }
+    .main-best__list-wrap { margin-top: 16rem; }
+    
+    .main-ingredient { padding: 80rem 0 75rem; }
+    .main-ingredient__title--highlight > i { height: 32rem; }
+    .main-ingredient__title-item br:not(.smbr) { display: none; }
+    
+    .main-ingredient__slider-inner { margin: 0; }
+    .main-ingredient__slider-item { width: 100%; margin: 0; }
+    .main-ingredient__slider-item + .main-ingredient__slider-item { margin-top: 8rem; }
+    
+    .main-line__banner-bg-wrap { padding-top: 153.63%; }
+    .main-line__banner-bg--large { opacity: 0; visibility: hidden; }
+    .main-line__banner-bg--small { opacity: 1; visibility: visible; }
+    .main-line__banner-bg:before { opacity: .6; }
+    .main-line__banner-label { padding: 8rem 20rem; border-radius: 4rem; top: 10rem; left: 10rem; }
+    .main-line__banner-desc { margin-top: 8rem; }
+    .main-line__banner-content { bottom: 42rem; padding: 0 20rem; }
+    .main-line__banner-content .jt-btn__basic { margin-top: 19rem; }
+    
+    .main-slogan { padding: 60rem 0; }
+    
+    .main-skincare { padding-bottom: 80rem; }
+    .main-skincare__colgroup { gap: 8rem; }
+    .main-skincare__bg-wrap { padding-top: 100%; }
+    .main-skincare__content { padding: 48rem 24rem; }
+    .main-skincare__content-desc { margin-top: 16rem; }
+    .main-skincare__content .jt-btn__basic { margin-top: 16rem; }
+    
+    .main-brandstory__content { padding: 0 16rem; bottom: 100rem; }
+    .main-brandstory__desc-wrap { height: calc(var(--font-lineheight-06) + 31rem); margin-top: 24rem; }
+    .main-brandstory__desc { flex-direction: column; gap: 4rem; }
+    .main-brandstory__desc-ko { font-size: 17rem; line-height: 27rem; }
+    .main-brandstory__last { top: calc(var(--font-lineheight-01) * 2 + 40rem); width: calc( 100% - 32rem); }
+    .main-brandstory__last .jt-btn__basic { margin-top: 35rem; }
+    .main-brandstory__last br:not(.smbr) { display: none; }
+    
+    .main-brandstory__title { gap: 9rem; flex-direction: column; }
+    .main-brandstory__keyword-wrap { margin: -6rem 0; height: calc(var(--font-lineheight-01) + 12rem); }
+    .main-brandstory__keyword-wrap:before, .main-brandstory__keyword-wrap:after { top: -1rem; }
+    .main-brandstory__keyword-wrap:before { left: 32rem; }
+    .main-brandstory__keyword-wrap:after { right: 32rem; }
+    .main-brandstory__keyword-item { padding: 6rem 24rem; }
+    
+    .main-insta { padding-top: 80rem; }
+    .main-insta__title br:not(.smbr) { display: none; }
+    .main-insta__title.jt-typo--01 { font-size: var(--font-size-02); line-height: var(--font-lineheight-02); }
+    .main-insta__txt { display: block; margin-top: 16rem; }
+    .main-insta__list-wrap { white-space: nowrap; margin-left: -20rem; margin-right: -20rem; }
+    .main-insta__list { margin: -4rem auto; margin-left: auto; margin-right: auto; font-size: 0; white-space: nowrap; -webkit-animation-iteration-count: infinite; animation-iteration-count: infinite; -webkit-animation-timing-function: linear; animation-timing-function: linear; -webkit-animation-name: Marquee; animation-name: Marquee; display: inline-block; vertical-align: top; }
+    .main-insta__list-item { float: none; display: inline-block; vertical-align: top; width: 50vw; padding: 4rem; }
+    .main-insta__list-item--txt { display: none; }
+
+}

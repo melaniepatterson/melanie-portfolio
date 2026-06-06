@@ -1,0 +1,93 @@
+@charset "utf-8";
+
+/*
+ * File       : jt-media-popup.css
+ * Author     : STUDIO-JT (KMS)
+ * Guideline  : JTstyle.2.0
+ *
+ * SUMMARY:
+ * 01) JT MEDIA POPUP
+ * 02) ANIMATIOM KEYFRAME
+ * 03) RWD
+ */
+
+
+
+/* **************************************** *
+ * JT MEDIA POPUP
+ * **************************************** */
+body.open-jt-mdp { width: 100%; overflow: hidden; }
+html:not(.mobile) body.open-jt-mdp { margin-right: 17rem; }
+
+.jt-mdp { width: 100%; height: 100%; max-width: inherit; max-height: inherit; margin: 0; padding: 0; position: fixed; left: 0; top: 0; background-color: rgba(0, 0, 0, 0.76); border: none; box-sizing: border-box; overflow-y: scroll; -ms-scroll-chaining: none; overscroll-behavior: none; }
+.jt-mdp::backdrop { background: transparent; }
+html.mobile .jt-dialog { background: #000; }
+
+.jt-mdp__container { display: flex; align-items: center; justify-content: center; width: 100%; height: auto; min-height: 100%; position: absolute; left: 0; top: 0; box-sizing: border-box; }
+.jt-mdp__content { max-width: 100%; margin: 0; padding: 0; position: relative; }
+
+.jt-mdp__loading-spinner { display: block; width: 50rem; height: 50rem; border: 3rem solid #fff; border-top: 3rem solid transparent; border-radius: 50%; animation: jt-mdp-spin .7s linear 0s infinite; }
+
+.jt-mdp__close { width: 60rem; height: 60rem; margin: 0; padding: 0; position: fixed; top: 27rem; right: 27rem; background: #fff; border: none; border-radius: 50%; outline: none; cursor: pointer; z-index: 1; }
+.jt-mdp__close > i { display: block; width: 24rem; position: absolute; top: 50%; left: 50%; translate: -50% -50%; }
+.jt-mdp__close > i > svg { display: block; width: 100%; height: auto; }
+.jt-mdp__close > i > svg > path { fill: #000; transition: fill .3s; }
+html.win .jt-mdp__close { right: 44rem; }
+
+/* IMAGE */
+.jt-mdp--image img { display: block; max-width: 100%; }
+
+/* IFRAME */
+.jt-mdp--iframe .jt-mdp__content { width: 90%; max-width: 1200rem; }
+.jt-mdp--iframe .jt-mdp__loading-spinner { position: absolute; top: 50%; left: 50%; translate: -50% -50%; }
+
+.jt-mdp__iframe-scaler { width: 100%; height: 0; overflow: hidden; padding-top: 56.25%; }
+.jt-mdp__iframe-scaler iframe { position: absolute; display: inline-block; top: 0; left: 0; width: 100%; height: 100%; background: #000 url(../../../images/layout/spin.png) no-repeat center center; background-size: 50rem auto; box-shadow: none; }
+
+
+
+/* **************************************** *
+ * ANIMATIOM KEYFRAME
+ * **************************************** */
+@keyframes jt-mdp-spin {
+    from { transform: rotate(0); }
+    to{ transform: rotate(359deg); }
+}
+
+
+
+/* **************************************** *
+ * RWD
+ * **************************************** */
+@media (max-width: 1200px){
+    
+    .jt-mdp__loading-spinner { width: 40rem; height: 40rem; }
+
+    .jt-mdp__close { width: 52rem; height: 52rem; }
+    .jt-mdp__close > i { width: 20rem; }
+
+    /* IFRAME */
+    .jt-mdp--iframe .jt-mdp__content { max-width: 1000rem; }
+
+}
+
+@media (max-width: 860px){
+
+    .jt-mdp__close { width: 45rem; height: 45rem; top: 22rem; right: 22rem; }
+    .jt-mdp__close > i { width: 17rem; }
+    html.win .jt-mdp__close { right: 39rem; }
+
+}
+
+@media (max-width: 540px){
+
+    .jt-mdp__loading-spinner { width: 40rem; height: 40rem; }
+
+    .jt-mdp__close { width: 36rem; height: 36rem; top: 18rem; right: 18rem; }
+    .jt-mdp__close > i { width: 14rem; }
+    html.win .jt-mdp__close { right: 35rem; }
+
+    /* IFRAME */
+    .jt-mdp--iframe .jt-mdp__content { width: 95%; }
+
+}

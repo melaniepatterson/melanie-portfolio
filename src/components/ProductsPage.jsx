@@ -895,6 +895,7 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
   const [filterBuyAgain, setFilterBuyAgain] = useState(false)
   const [search, setSearch] = useState('')
   const [selectedProduct, setSelectedProduct] = useState(null)
+  const [sortBy, setSortBy] = useState('name')
 
   const ETHICS_FILTERS = [
     { key: 'black_owned',       label: 'Black-owned'      },
@@ -949,8 +950,10 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
         return matchCat && matchSearch && matchFlags && matchUsing && matchBuyAgain
       })
       .sort((a, b) => {
-        if (a.currentlyUsing && !b.currentlyUsing) return -1
-        if (!a.currentlyUsing && b.currentlyUsing) return 1
+        if (sortBy === 'brand') {
+          const brandCmp = (a.brand || '').localeCompare(b.brand || '')
+          return brandCmp !== 0 ? brandCmp : (a.name || '').localeCompare(b.name || '')
+        }
         return (a.name || '').localeCompare(b.name || '')
       })
   }
@@ -1049,9 +1052,16 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
           ))}
         </div>
 
-        {/* Search */}
-        <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search products..."
-          style={{ width: '100%', fontSize: 12, padding: '7px 10px', border: '0.5px solid ' + T.border, borderRadius: 8, background: T.white, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box', marginBottom: 12 }} />
+        {/* Sort + Search */}
+        <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+          <select value={sortBy} onChange={e => setSortBy(e.target.value)}
+            style={{ padding: '7px 10px', borderRadius: 8, border: '0.5px solid ' + T.border, background: T.cream, color: T.text, fontSize: 12, fontFamily: 'inherit', cursor: 'pointer', flexShrink: 0 }}>
+            <option value="name">A–Z Name</option>
+            <option value="brand">A–Z Brand</option>
+          </select>
+          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search products..."
+            style={{ flex: 1, fontSize: 12, padding: '7px 10px', border: '0.5px solid ' + T.border, borderRadius: 8, background: T.white, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
+        </div>
 
         {/* Empty state */}
         {list.length === 0 && (

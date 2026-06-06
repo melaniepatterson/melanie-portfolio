@@ -1,0 +1,71 @@
+@charset "utf-8";
+
+/*
+ * File       : reset.css
+ * Author     : STUDIO-JT (KMS)
+ *
+ * SUMMARY:
+ * RESET FILES
+ * INPUT
+ */
+
+
+
+/* **************************************** *
+ * RESET FILES
+ * **************************************** */
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, time, figure, article, nav, header, footer, hgroup, video, audio, aside, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-weight: inherit;
+    font-style: inherit;
+    vertical-align: baseline;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+ol, ul { list-style: none; }
+table { border-collapse: separate; border-spacing: 0; }
+caption, th, td { text-align: start; font-weight: normal; }
+figure, article, header, footer, nav, hgroup, video, audio, aside, main { display: block; }
+
+/* RESET MOBILE DEFAULT STYLE */
+html { -ms-text-size-adjust: none; -webkit-text-size-adjust: none; -moz-text-size-adjust: none; text-size-adjust: none; }
+body, textarea:focus, input:focus, a:focus { -webkit-tap-highlight-color: rgba(107, 120, 245, .08); }
+body { -webkit-touch-callout: none; }
+
+/* SELECTION */
+::-moz-selection { background: rgba(33, 43, 53, .35); color: var(--color-white); } 
+::selection { background: rgba(33, 43, 53, .35); color: var(--color-white); } 
+::-moz-selection { background: rgba(33, 43, 53, .35); color: var(--color-white); }
+
+
+
+/* **************************************** *
+ * INPUT
+ * **************************************** */
+input[type=text],
+input[type=tel],
+input[type=email],
+input[type=password],
+input[type=url],
+input[type=number],
+input[type=search],
+textarea { -webkit-appearance: none; font-family: var(--font-primary); /* font-family: sans-serif; */ -moz-box-sizing: border-box; box-sizing: border-box; outline: none; }
+input[type=submit],
+input[type=button],
+button { -webkit-appearance: none; font-family: var(--font-primary); border-radius: 0rem; }
+input[type=radio] { border-radius: 100%; }
+
+/* PLACEHOLDER */
+::-webkit-input-placeholder { font-family: var(--font-primary); font-size: var(--font-size-ko-08); color: var(--color-gray-600); } 
+input:focus::-webkit-input-placeholder, textarea:focus::-webkit-input-placeholder { color: transparent; } 
+
+/* RESET SOME SHADOW DOM */
+input::-ms-clear { display: none; width: 0; height: 0; }
+input::-ms-reveal { display: none; width: 0; height: 0; }
+
+input::-webkit-search-decoration,
+input::-webkit-search-cancel-button,
+input::-webkit-search-results-button,
+input::-webkit-search-results-decoration { display: none; }

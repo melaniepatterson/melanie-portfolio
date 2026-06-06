@@ -1,0 +1,696 @@
+@charset "utf-8";
+
+/*
+ * File   : sub-hree.css
+ * Author : STUDIO-JT (HREE)
+ *
+ * SUMMARY:
+ * Contact Us
+ * FAQ
+ * Stores
+ * Ingredients Detail
+ * Brand Story
+ * Hover
+ * Keyframes
+ * RWD
+ */
+
+ 
+
+/* **************************************** *
+ * Contact Us
+ * **************************************** */
+.contact-email__list { display: flex; justify-content: space-between; gap: 16rem }
+.contact-email__item { position: relative; border-radius: 12rem; overflow: hidden; width: 33.33%; height: 380rem; }
+.contact-email__box { width: 100%; height: 100%; background: var(--color-gray-300); padding: 40rem; display: flex; flex-direction: column; justify-content: space-between; transition: background .3s; }
+.contact-email__title b { display: block; margin-bottom: 8rem; }
+.contact-email__address { border-bottom: 1px solid transparent; width: fit-content; padding: 6rem 8rem 6rem 4rem; transition: border .3s; }
+.contact-email__address span { vertical-align: middle; }
+.contact-email__address .jt-icon { width: 16rem; height: 16rem; vertical-align: middle; position: relative; top: -4rem; right: -4rem; transition: transform .2s; }
+.contact-email__address .jt-icon svg path { fill: var(--color-primary); }
+
+.contact-about { margin-top: 100rem; position: relative; width: 100%; border-radius: 12rem; overflow: hidden; }
+.contact-about__bg { width: 100%; padding-top: 60.44%; }
+.contact-about__bg .jt-fullvid-container { position: inherit; }
+.contact-about__bg::after { position: absolute; content: ''; width: 100%; height: 100%; top: 0; left: 0; background: rgba(0,0,0,0.35); }
+.contact-about__contents { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: var(--color-white); }
+.contact-about__contents .jt-btn__basic { padding: 2rem 0; }
+.contact-about__title { margin-bottom: 24rem; }
+.contact-about__desc { margin-bottom: 40rem; }
+
+.contact-koffice { margin-top: 100rem; }
+.contact-koffice__contents { background: var(--color-primary); padding: 160rem 0; text-align: center; color: var(--color-tertiary); border-radius : 12rem; }
+.contact-koffice__title { margin-bottom: 32rem; }
+
+
+
+/* **************************************** *
+ * FAQ
+ * **************************************** */
+.faq .jt-category-nav-wrap { margin-bottom: 60rem; }
+
+
+
+/* **************************************** *
+ * Stores
+ * **************************************** */
+.stores-tabs { display: flex; flex-wrap: nowrap; width: 100%; margin-bottom: 60rem; justify-content: center; gap: 8rem }
+.stores-tabs li { display: flex; position: relative; border: 1px solid var(--color-primary); cursor: pointer; border-radius: 50rem; transition: background .3s; }
+.stores-tabs li a { display: block; width: 100%; padding: 7rem 31rem 8rem; text-align: center; color: inherit; align-self: center; transition: color .3s; }
+
+.stores-tabs li.stores-tabs--active { background: var(--color-secondary); border: 1px solid var(--color-secondary); }
+.stores-tabs li.stores-tabs--active a { color: var(--color-white); }
+
+/* Online */
+.stores-online__link { box-shadow: 0 1px 0 transparent; transition: box-shadow .3s, color .3s; }
+.stores-online__link span { vertical-align: middle; }
+.stores-online__link .jt-icon { width: 16rem; height: 16rem; vertical-align: middle; position: relative; top: 1rem; opacity: 0; transition: opacity .3s; }
+.stores-online__link .jt-icon svg path { fill: var(--color-primary); }
+
+.stores-online-continent { width: 100%; background: var(--color-gray-200); border-radius: 12rem; margin-bottom: 16rem; padding: 80rem 153rem; display: flex; justify-content: space-between; }
+.stores-online-continent:last-child { margin-bottom: 0; }
+.stores-online-continent__list { display: grid; grid-template-columns: repeat(3, 290rem); gap: 48rem 16rem; margin-top: 14rem; }
+
+.stores-online-nation__title .stores-online__link { padding: 6rem 0; }
+.stores-online-nation__title .stores-online__link span { top: -4rem; position: relative; }
+.stores-online-nation__title .stores-online__link .jt-icon { top: -4rem; right: -1rem; opacity: 1; }
+.stores-online-nation__list { margin-top: 12rem; }
+.stores-online-nation__item { margin-bottom: 6rem; }
+.stores-online-nation__item a { color: var(--color-gray-700); }
+.stores-online-nation__item:last-child { margin-bottom: 0rem; }
+.stores-online-nation__item .stores-online__link { width: fit-content; display: block; }
+.stores-online-nation__item .stores-online__link span { position: relative; top: 2rem; }
+
+/* Offline */
+.stores-offline { display: flex; gap: 16rem; height: 900rem; }
+.stores-offline-map { width: calc(100% - 16rem - 596rem); background: var(--color-gray-200); border-radius: 12rem; overflow: hidden; }
+#jt-map { width: calc(100% + 4rem); height: calc(100% + 4rem); margin-top: -2rem; margin-left: -2rem; }
+
+.stores-offline-search { width: 596rem; padding: 60rem; background: var(--color-primary); border-radius: 12rem;  }
+.stores-offline-search .jt-search__bundle { width: 100%; }
+.stores-offline-search .jt-search__field { width: 100%; }
+.stores-offline-search .jt-search__input { height: 62rem; background: var(--color-gray-200); font-size: var(--font-size-14); border: none; border-radius: 8rem; font-family: sans-serif; }
+.stores-offline-search .jt-search__label { top: 17rem; left: 53rem; font-family: var(--font-secondary); font-size: var(--font-size-14); line-height: var(--font-lineheight-14); }
+.stores-offline-search .jt-search__submit { left: 12rem; }
+.stores-offline-search .jt-search__submit .jt-icon svg path { fill: var(--color-primary); }
+
+.stores-offline-search__contents { height: 100%; }
+.stores-offline-search__total { padding-bottom: 11rem; border-bottom: 1rem solid var(--color-tertiary); color: var(--color-tertiary); }
+.stores-offline-search__list { overflow-y: auto; height: calc(100% - 139rem); margin-right: -34rem; padding-right: 26rem; }
+.stores-offline-search__list::-webkit-scrollbar { width: 8rem; background: transparent; margin-left: 16rem; }
+.stores-offline-search__list::-webkit-scrollbar-track { background: rgba(255,255,255,0.08); border-radius: 99rem; }
+.stores-offline-search__list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 99rem; }
+.stores-offline-search__item:not(:last-child) { border-bottom: 1rem solid rgba(252, 238, 163, 0.2);}
+.stores-offline-search__item a { color: var(--color-tertiary); display: block; margin: 32rem 0 31rem; }
+.stores-offline-search__item b { display: block; margin-bottom: 8rem; }
+.stores-offline-search__no-list { height: calc(100% - 125rem); display: flex; align-items: center; }
+.stores-offline-search__no-list span { color: var(--color-tertiary); width: 100%; display: block; text-align: center; overflow: hidden; text-overflow: ellipsis; }
+
+.jt-custom-marker { background-color: var(--color-primary); color: var(--color-tertiary); padding: 6rem 16rem 8rem; border-radius: 8rem; font-family: var(--font-secondary); font-size: var(--font-size-15); line-height: var(--font-lineheight-15); margin-bottom: 80rem; }
+.jt-custom-marker::after { position: absolute; content: ''; background: url('../images/sub/stores/map-marker.png'); width: 80rem; height: 80rem; background-size: 80rem; top: 39rem; left: 50%; transform: translateX(-50%); }
+
+
+
+/* **************************************** *
+ * Ingredients Detail
+ * **************************************** */
+.ingredients-detail .article__header { padding-bottom: 160rem; }
+.ingredients-detail .article__visual { height: 660rem; margin-top: -94rem; }
+.ingredients-detail .article__visual-content { opacity: 1; }
+
+.ingredients-detail-colgroup { display: flex; align-items: center; justify-content: center; gap: 169rem }
+.ingredients-detail-colgroup__contents { width: 596rem; }
+.ingredients-detail-colgroup__title { margin-top: 12rem; }
+.ingredients-detail-colgroup__desc { margin-top: 40rem; }
+.ingredients-detail-colgroup__figure { width: 749rem; border-radius: 12rem; overflow: hidden; }
+.ingredients-detail-colgroup__figure .jt-lazyload { padding-top: 100%; }
+.ingredients-detail-colgroup + .ingredients-detail-colgroup { margin-top: 240rem; }
+
+.col-type--left .ingredients-detail-colgroup__figure .jt-lazyload { padding-top: 130%; }
+.col-type--gallery { align-items: start; gap: 0; }
+.col-type--gallery .ingredients-detail-colgroup__contents { padding-top: 196rem; }
+
+.ingredients-detail-colgroup__gallery { margin-left: -153rem; padding-right: 191rem; }
+.ingredients-detail-colgroup__gallery-figure { border-radius: 12rem; overflow: hidden; }
+.ingredients-detail-colgroup__gallery-figure:nth-child(1) { width: 619rem; margin-left: 59rem; }
+.ingredients-detail-colgroup__gallery-figure:nth-child(1) .jt-lazyload { padding-top: 78.5%; }
+.ingredients-detail-colgroup__gallery-figure:nth-child(2) { width: 402rem; margin-left: 477rem; margin-top: -85rem; }
+.ingredients-detail-colgroup__gallery-figure:nth-child(2) .jt-lazyload { padding-top: 100%; }
+.ingredients-detail-colgroup__gallery-figure:nth-child(3) { width: 673rem; margin-top: 151rem; margin-left: -91rem; }
+.ingredients-detail-colgroup__gallery-figure:nth-child(3) .jt-lazyload { padding-top: 76.5%; }
+.ingredients-detail-colgroup__gallery-figure:nth-child(4) { width: 495rem; margin-top: 53rem; margin-left: 246rem; }
+.ingredients-detail-colgroup__gallery-figure:nth-child(4) .jt-lazyload { padding-top: 76.7%; }
+
+.ingredients-detail-topography { margin-top: 200rem; position: relative; width: 100vw; left: 50%; transform: translateX(-50%); border-radius: 0; overflow: hidden; }
+.ingredients-detail-topography__bg-wrap { position: relative; padding-top: 60.44%; -webkit-mask-image: -webkit-radial-gradient(white, black); -webkit-backface-visibility: hidden; -moz-backface-visibility: hidden; }
+.ingredients-detail-topography__bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-repeat: no-repeat; background-position: center; background-size: cover; }
+.ingredients-detail-topography__bg::after { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 12rem; content: ''; background: rgba(0,0,0,0.35); }
+.ingredients-detail-topography__bg--small { opacity: 0; visibility: hidden; }
+.ingredients-detail-topography__contents { width: 100%; padding: 0 120rem; position: absolute; color: var(--color-white); top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; margin-top: -7rem; /* opacity: 0; transition: .8s; */ }
+.ingredients-detail-topography__title { margin-bottom: 60rem; }
+.ingredients-detail-topography__desc + .ingredients-detail-topography__desc { margin-top: 24rem; }
+/* .ingredients-detail-topography.banner--loaded .ingredients-detail-topography__contents { opacity: 1; } */
+
+.ingredients-detail-process { margin-top: 200rem; }
+.ingredients-detail-process__contents { text-align: center; margin-bottom: 100rem; }
+.ingredients-detail-process__title { margin-bottom: 40rem; }
+.ingredients-detail-process__list { display: flex; gap: 16rem }
+.ingredients-detail-process__card { width: 33.33%; padding: 20rem; background: var(--color-primary); border-radius: 12rem; display: flex; justify-content: space-between; flex-direction: column; gap: 69rem; }
+.ingredients-detail-process__card-contents { padding: 20rem 20rem 0 20rem; color: var(--color-tertiary); }
+.ingredients-detail-process__card-title { margin-top: 24rem; }
+.ingredients-detail-process__card-thumb { padding-top: 100%; width: 100%; border-radius: 12rem; overflow: hidden; }
+.ingredients-detail-process__comment { margin-top: 40rem; color: var(--color-gray-700); width: 100%; text-align: center; }
+
+.ingredients-detail-product { margin-top: 200rem; }
+.ingredients-detail-product__title { text-align: center; margin-bottom: 60rem; }
+
+.main-best__list.col-4 { display: flex; }
+.main-best__list.col-4 .main-best__list-item { width: calc(25% - 16rem); padding-top: 62rem; }
+.main-best__list.col-4 .main-best__list-content { padding: 20rem 32rem 32rem; }
+
+
+
+/* **************************************** *
+ * Brand Story
+ * **************************************** */
+.page-template-brand-story .main-container { padding-top: 0; }
+.page-template-brand-story .article__header { position: relative; z-index: 1; }
+
+.brandstory-slogan { padding: 160rem 0; }
+.brandstory-intro { margin-bottom: 200rem; }
+
+.brandstory-intro__bg { margin-bottom: 16rem; border-radius: 12rem; width: 100%; height: 954rem; position: relative; overflow: hidden; -webkit-mask-image: -webkit-radial-gradient(white, black); -webkit-backface-visibility: hidden; -moz-backface-visibility: hidden; }
+.brandstory-intro__bg-inner { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+.brandstory-intro__bg .jt-sound { right: 60rem; bottom: 50rem; }
+.brandstory-intro__contents { padding: 120rem 153rem; display: flex; gap: 114rem; border-radius: 12rem; background: var(--color-gray-300); }
+.brandstory-intro__contents-title { white-space: nowrap; }
+
+.brandstory-to__inner--pc { width: 100%; height: 100vh; background: var(--color-primary); display: flex }
+.brandstory-to__column { width: 50%; height: 100%; position: relative; }
+.brandstory-to__contents { position: relative; z-index: 10; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; flex-wrap: wrap; flex-direction: column; }
+.brandstory-to__title { margin-top: 192rem; /* font-size: 0; */ }
+.brandstory-to__title svg path { fill: var(--color-tertiary); }
+.brandstory-to__column--puri .brandstory-to__title { display: grid; grid-template-columns: repeat(2, auto); align-items: stretch; }
+.brandstory-to__title--hidden { display: inline-block; color: var(--color-tertiary); width: 0; opacity: 0; }
+.brandstory-to__title--hidden span { width: 100%; height: 100%; display: block; overflow: hidden; margin-top: 6rem; }
+.brandstory-to__desc { width: 100%; opacity: 0; color: var(--color-tertiary); margin-top: 39rem; text-align: center; transition: opacity .3s; }
+.brandstory-to__line { width: 1rem; background: rgba(255,255,255,0.3); position: absolute; top: 0; left: 50%; z-index: 10; }
+.brandstory-to__logo--hidden { width: 184rem; position: absolute; top: calc(50% + 128rem); left: 50%; transform: translate(-50%, -50%); }
+.brandstory-to__logo--hidden i { width: 184rem; display: block; }
+.brandstory-to__logo--hidden i svg { width: 100%; height: 100%; }
+.brandstory-to__logo--hidden i svg path { fill: var(--color-tertiary); }
+.brandstory-to__column--puri .brandstory-to__title i { width: 289rem; }
+.brandstory-to__column--puri .brandstory-to__title i svg { width: 100%; height: auto; }
+/* .brandstory-to__column--to .brandstory-to__title { margin-top: 212rem; } */
+.brandstory-to__column--to .brandstory-to__title i { display: inline-block; width: 130rem; }
+.brandstory-to__column--to .brandstory-to__title i svg { width: 100%; height: auto; }
+.brandstory-to__column .jt-lazyload { opacity: 0; padding-top: 100.3%; transition: all .3s; height: 100%; }
+.brandstory-to__column .jt-lazyload img { height: 100%; }
+
+.brandstory-to__bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; }
+.brandstory-to__column--puri .brandstory-to__bg--sub { left: 100%; }
+.brandstory-to__column--to .brandstory-to__bg--sub { left: -100%; } 
+
+.brandstory-to__inner--mo { display: none; width: 100%; height: 100vh; position: relative; }
+.brandstory-to__process { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 5rem; background: rgba(252,238,163,0.3); z-index: 10; }
+.brandstory-to__process.start { display: block; }
+.brandstory-to__process-bar { height: 100%; width: 0%; background: var(--color-tertiary); }
+.brandstory-to__slide { position: relative; width: 100%; height: 100vh; }
+.brandstory-to__slide-item { position: absolute; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; }
+.brandstory-to__slide-item:nth-child(1) { background: var(--color-primary); z-index: 4; }
+.brandstory-to__slide-item:nth-child(1) i { display: block; text-align: center; }
+.brandstory-to__slide-item:nth-child(1) i.brandstory-logo-seoul { margin-top: 17rem; }
+.brandstory-to__slide-item:nth-child(1) svg { width: 206rem; }
+.brandstory-to__slide-item:nth-child(1) svg path { fill: var(--color-tertiary); }
+
+.brandstory-to__slide-item:nth-child(2) { background: var(--color-primary); z-index: 3; }
+.brandstory-to__slide-item:nth-child(2) .brandstory-to__slide-inner > div { width: 100%; text-align: center; }
+.brandstory-to__slide-item:nth-child(2) svg path { fill: var(--color-tertiary); }
+.brandstory-to__slide-item:nth-child(2) i.brandstory-logo-puri svg { width: 126rem; }
+.brandstory-to__slide-item:nth-child(2) i.brandstory-logo-to svg { width: 50rem; }
+.brandstory-to__slide-item:nth-child(2) .puri { display: flex; align-items: center; }
+.brandstory-to__slide-item:nth-child(2) .puri span { color: var(--color-tertiary); font-size: var(--font-size-04); line-height: var(--font-lineheight-04); }
+.brandstory-to__slide-item:nth-child(2) .plus { position: relative; }
+.brandstory-to__slide-item:nth-child(2) .plus::before { position: absolute; content: ''; width: 24rem; height: 2rem; top: 0; left: calc(50% - 11rem); background: var(--color-tertiary); }
+.brandstory-to__slide-item:nth-child(2) .plus::after { position: absolute; content: ''; width: 2rem; height: 24rem; top: -11rem; left: 50%; background: var(--color-tertiary); }
+
+.brandstory-to__slide-item:nth-child(3) { background: url(../images/sub/brandstory/brandstory-bg-water-mo.jpg) no-repeat center; z-index: 2; background-size: cover; }
+.brandstory-to__slide-item:nth-child(3) .brandstory-to__slide-inner { text-align: center; }
+.brandstory-to__slide-item:nth-child(3) svg { width: 136rem; }
+.brandstory-to__slide-item:nth-child(3) svg path { fill: var(--color-white); }
+
+.brandstory-to__slide-item:nth-child(4) { background: url(../images/sub/brandstory/brandstory-bg-soil-mo.jpg) no-repeat center; z-index: 1; background-size: cover; }
+.brandstory-to__slide-item:nth-child(4) .brandstory-to__slide-inner { text-align: center; }
+.brandstory-to__slide-item:nth-child(4) svg { width: 63rem; }
+.brandstory-to__slide-item:nth-child(4) svg path { fill: var(--color-white); }
+.brandstory-to__slide-item .brandstory-to__desc { opacity: 1; color: var(--color-white); margin-top: 0; }
+
+.image-motion .brandstory-to__column .jt-lazyload { opacity: 1; }
+.image-motion .brandstory-to__title svg path { fill: var(--color-white); }
+.image-motion .brandstory-to__desc { color: var(--color-white); }
+.image-motion .brandstory-to__title--hidden { color: var(--color-white); }
+
+.image-motion .brandstory-to__column--puri .brandstory-to__bg { opacity: 0; }
+.image-motion .brandstory-to__column--puri.hover .brandstory-to__bg { opacity: 1; }
+.image-motion .brandstory-to__column--puri.hover .brandstory-to__bg--main .jt-lazyload { animation-name : scaleEffectMain; animation-duration : 1.3s; animation-duration: cubic-bezier(.55,0,.1,1) }
+.image-motion .brandstory-to__column--puri.hover .brandstory-to__bg--sub .jt-lazyload { animation-name : scaleEffectSub; animation-duration : 1.6s; animation-duration: cubic-bezier(.55,0,.1,1) }
+.image-motion .brandstory-to__column--puri.hover .brandstory-to__desc { opacity: 1; }
+
+.image-motion .brandstory-to__column--to .brandstory-to__bg { opacity: 0; }
+.image-motion .brandstory-to__column--to.hover .brandstory-to__bg { opacity: 1; }
+.image-motion .brandstory-to__column--to.hover .brandstory-to__bg--sub .jt-lazyload { animation-name : scaleEffectMain; animation-duration : 1.3s; animation-duration: cubic-bezier(.55,0,.1,1) }
+.image-motion .brandstory-to__column--to.hover .brandstory-to__bg--main .jt-lazyload { animation-name : scaleEffectSub; animation-duration : 1.6s; animation-duration: cubic-bezier(.55,0,.1,1) }
+.image-motion .brandstory-to__column--to.hover .brandstory-to__desc { opacity: 1; }
+
+.brandstory-philosophy { padding: 200rem 0; background: var(--color-gray-200); }
+.brandstory-philosophy__title { margin-bottom: 100rem; width: 100%; text-align: center; }
+.brandstory-philosophy__list { margin-top: -40rem; }
+.brandstory-philosophy__item { display: flex; gap: 80rem; align-items: center; padding: 40rem 0 39rem; border-bottom: 1rem solid var(--color-gray-500); }
+.brandstory-philosophy__item:last-child { border-bottom: 0; padding-bottom: 0; }
+.brandstory-philosophy__contents { width: calc(100% - 458rem - 80rem); }
+.brandstory-philosophy__contents-desc { margin-top: 24rem; padding-right: 60rem; }
+.brandstory-philosophy__figure { width: 458rem; border-radius: 12rem; overflow: hidden; }
+.brandstory-philosophy__figure .jt-lazyload { padding-top: 74.2%; }
+.brandstory-philosophy__contents-icon-list { display: flex; gap: 16rem; margin-top: 40rem; }
+.brandstory-philosophy__contents-icon { width: 80rem; }
+.brandstory-philosophy__contents-icon .jt-lazyload { padding-top: 100%; }
+.brandstory-philosophy__contents-btn { padding: 0; margin-top: 24rem; }
+
+
+
+/* **************************************** *
+ * Hover
+ * **************************************** */
+ @media (hover: hover) and (pointer: fine) {
+
+    /* Contact Us */
+    .contact-email__box:hover { background: var(--color-tertiary); }
+    .contact-email__address:hover { border-color: var(--color-primary); }
+
+    /* Stores */
+    .stores-tabs li:not(.stores-tabs--active):hover { background: var(--color-gray-200); }
+    .stores-online__link:hover { color: var(--color-primary); box-shadow: 0 1px 0 var(--color-primary); }
+    .stores-online__link:hover .jt-icon { opacity: 1; }
+    
+}
+
+
+
+/* **************************************** *
+ * Keyframes
+ * **************************************** */
+@keyframes scaleEffectMain {
+    from {
+        transform-origin: left top;
+        transform: scale(1.3); 
+        filter: blur(12rem);
+    }
+    to {
+        transform: scale(1); 
+        filter:blur(0);
+    }
+}
+
+@keyframes scaleEffectSub {
+    from {
+        transform-origin: right bottom;
+        transform: scale(1.3); 
+        filter: blur(12rem);
+    }
+    to {
+        transform: scale(1); 
+        filter:blur(0);
+    }
+}
+
+
+
+/* **************************************** *
+ * RWD
+ * **************************************** */
+ @media (min-width: 2000px){
+    /* .brandstory-to__column--puri .brandstory-to__title i { width: auto; } */
+    /* .brandstory-to__column--puri .brandstory-to__title i svg { height: -webkit-fill-available; } */
+    /* .brandstory-to__column--to .brandstory-to__title { margin-top: 209rem; } */
+ }
+
+
+
+@media (max-width: 1600px){
+
+    /* Ingredients Detail */
+    .ingredients-detail .article__visual { height: 600rem; }
+    .ingredients-detail-colgroup__contents { width: 50%; }
+    .ingredients-detail-colgroup__figure { width: 50%; }
+    .ingredients-detail-colgroup__gallery { width: 60%; margin-left: 0; }
+    .ingredients-detail-colgroup__gallery + .ingredients-detail-colgroup__contents { width: 40%; }
+
+    .col-type--gallery .ingredients-detail-colgroup__contents { padding: 179rem 0 0 0; }
+
+    .ingredients-detail-colgroup__gallery-figure:nth-child(1) { width: 82%; margin-left: 0; }
+    .ingredients-detail-colgroup__gallery-figure:nth-child(2) { width: 53.2%; margin-left: 55.3%; }
+    .ingredients-detail-colgroup__gallery-figure:nth-child(3) { width: 89.1%; margin-left: -20%; }
+    .ingredients-detail-colgroup__gallery-figure:nth-child(4) { width: 65.4%; margin-left: 24.8%; }
+
+    .ingredients-detail-topography__title { white-space: normal; }
+
+    /* Brand Story */
+    .brandstory-intro__bg { padding-top: 52.41%; height: auto; }
+    .brandstory-to__title--hidden span { font-size: 160rem; }
+    .brandstory-to__slide-item:nth-child(2) .puri span { font-size: var(--font-size-03); line-height: var(--font-lineheight-03); }
+
+    .stores-online-continent__list { gap: 40rem 16rem; }
+    
+
+}
+
+
+
+@media (max-width: 1480px){
+
+    /* Contact Us */
+    .contact-about { margin-top: 80rem; }
+    .contact-about__title { white-space: nowrap; }
+    .contact-about__desc { text-wrap: balance; }
+    .contact-about__desc br { display: none; }
+    
+    .contact-koffice { margin-top: 80rem; }
+
+    /* Stores */
+    .stores-online-continent { flex-wrap: wrap; padding: 80rem; }
+    .stores-online-continent__list { grid-template-columns: repeat(3, 270rem); }
+
+    .stores-offline { height: 700rem; }
+    .stores-offline-map { width: calc(100% - 16rem - 40%); }
+    .stores-offline-search { width: 40%; padding: 40rem; }
+    .stores-offline-search__list { margin-right: -22rem; }
+
+    /* Ingredients Detail */
+    .ingredients-detail .article__header { padding-bottom: 140rem; }
+    .ingredients-detail-colgroup + .ingredients-detail-colgroup { margin-top: 200rem; }
+    .ingredients-detail-topography,
+    .ingredients-detail-process,
+    .ingredients-detail-product { margin-top: 150rem; }
+    .ingredients-detail .article__visual { margin-top: -80rem; }
+
+    /* Brand Story */
+    .brandstory-intro { margin-bottom: 150rem; }
+    .brandstory-intro__bg .jt-sound { right: 40rem; bottom: 34rem; }
+    .brandstory-intro__contents { padding: 100rem 120rem; }
+    .brandstory-to__column--puri .brandstory-to__title i { width: 218rem; }
+    /* .brandstory-to__column--to .brandstory-to__title { margin-top: 206rem; } */
+    .brandstory-to__column--to .brandstory-to__title i { width: 94.6rem; }
+    .brandstory-to__logo--hidden { width: 139rem; top: calc(50% + 100rem); }
+    .brandstory-to__logo--hidden i { width: 139rem; }
+    .brandstory-to__title--hidden span { font-size: var(--font-size-01); position: relative; top: -1rem; margin-top: 0; }
+
+    .brandstory-philosophy { padding: 150rem 0; }
+    .brandstory-philosophy__title { margin-bottom: 80rem; }
+
+}
+
+
+
+@media (max-width: 1200px){
+
+    /* Contact Us */
+    .contact-email__item { height: 328rem; }
+    .contact-email__box { padding: 40rem; }
+    .contact-about { margin-top: 60rem; }
+    .contact-koffice { margin-top: 60rem; }
+    .contact-koffice__title  { margin-bottom: 28rem; }
+    .contact-koffice__contents { padding: 130rem 0; }
+
+    /* FAQ */
+    .faq .jt-category-nav-wrap { margin-bottom: 48rem; }
+
+    /* Stores */
+    .stores .jt-category-nav-wrap { margin-bottom: 48rem; }
+    .stores-tabs li a { padding: 6rem 30rem 7rem; }
+    .stores-offline-search { padding: 32rem; }
+    .stores-offline-search .jt-search { margin-bottom: 32rem; }
+    .stores-offline-search .jt-search__input { height: 54rem; padding-left: 45rem; }
+    .stores-offline-search .jt-search__label { left: 47rem; }
+    .stores-offline-search .jt-search__submit { left: 8rem; }
+    html.ios .stores-offline-search .jt-search__input { padding-bottom: 5rem; }
+    html.ios .stores-offline-search .jt-search__label { top: 12rem }
+    .stores-offline-search__total { padding-bottom: 8rem; }
+    .stores-offline-search__item a { margin: 24rem 0 23rem; }
+    .stores-offline-search__item b { margin-bottom: 3rem; }
+
+    .stores-online-continent__list { margin-top: 48rem; width: 100%; grid-template-columns: repeat(4, 1fr); }
+    .stores-offline-map { width: calc(100% - 16rem - 40%); }
+
+    /* Ingredients Detail */
+    .ingredients-detail .article__header { padding-bottom: 120rem; }
+    .ingredients-detail-colgroup { gap: 60rem; }
+    .ingredients-detail-colgroup + .ingredients-detail-colgroup { margin-top: 150rem; }
+    .col-type--gallery { gap: 0rem; }
+    .col-type--gallery .ingredients-detail-colgroup__contents { padding: 120rem 0 0 0rem; }
+    .ingredients-detail-colgroup__gallery { padding-right: 153rem; }
+    .ingredients-detail-topography__bg-wrap { padding-top: 75.3%; }
+    .ingredients-detail-topography__desc br { display: none; }
+    .ingredients-detail-process__contents { margin-bottom: 60rem; }
+    .ingredients-detail-process__card-title br:not(.smbr) { display: none; }
+
+    /* Brand Story */
+    .brandstory-intro { margin-bottom: 120rem; }
+    .brandstory-intro__contents { padding: 80rem 60rem; gap: 80rem; }
+    
+    .brandstory-philosophy { padding: 120rem 0; }
+    .brandstory-philosophy__title { margin-bottom: 60rem; }
+    .brandstory-philosophy__item { gap: 6%; }
+    .brandstory-philosophy__contents { width: 64%; }
+    .brandstory-philosophy__figure { width: 30%; }
+    .brandstory-philosophy__contents-icon-list { margin-top: 32rem; }
+    .brandstory-philosophy__contents-desc { padding-right: 0; }
+
+}
+
+
+
+@media (max-width: 1023px){
+
+    /* Contact Us */
+    .contact-email__list { flex-wrap: wrap; gap: 12rem; }
+    .contact-email__item { width: 100%; height: auto; }
+    .contact-email__title { margin-bottom: 40rem; }
+    .contact-email__address { padding-left: 0; padding-right: 0; }
+
+    /* Stores */
+    .stores-tabs li a { padding: 6rem 28rem 7rem; }
+    .stores-online-continent { padding: 48rem 60rem; margin-bottom: 12rem; }
+    .stores-online-continent__list { margin-top: 36rem; gap: 36rem 12rem; }
+    .stores-offline { gap: 12rem; }
+    .stores-offline { flex-wrap: wrap; height: auto; width: 100%; }
+    .stores-offline-map { width: 100%; height: 380rem; }
+    .stores-offline-search { width: 100%; max-height: 700rem; }
+    .stores-offline-search__no-list { height: auto; padding: 100rem 0; }
+    html.ios .stores-offline-search .jt-search__input { padding-bottom: 6rem; }
+    html.ios .stores-offline-search .jt-search__label { top: 14rem }
+    .stores-offline-search__item p { font-size: var(--font-size-16); line-height: var(--font-lineheight-16); }
+
+    /* Ingredients Detail */
+    .ingredients-detail .article__visual { margin-top: -70rem; }
+    .ingredients-detail-colgroup__gallery { padding-right: 113rem; }
+    .ingredients-detail-colgroup__desc br { display: none; }
+    .ingredients-detail-process__list { gap: 12rem; }
+
+    /* Brand Story */
+    .brandstory-intro__bg { margin-bottom: 12rem; }
+    .brandstory-intro__bg .jt-sound { right: 30rem; bottom: 24rem; }
+    .brandstory-intro__contents { flex-wrap: wrap; gap: 20rem; }
+
+    .brandstory-to__slide-item:nth-child(2) .puri span { font-size: var(--font-size-02); line-height: var(--font-lineheight-02); }
+    .brandstory-to__inner--pc { display: none; }
+    .brandstory-to__inner--mo { display: block }
+
+    .brandstory-philosophy__contents-icon-list { gap: 12rem; margin-top: 24rem; }
+    .brandstory-philosophy__contents-icon { width: 65rem; }
+
+}
+
+
+
+@media (max-width: 860px){
+
+    /* Contact Us */
+    .contact-email__item { border-radius: 8rem }
+    .contact-about { margin-top: 50rem; border-radius: 8rem; }
+    .contact-about__contents { width: 100%; padding: 0 60rem; }
+    .contact-about__title { margin-bottom: 18rem; }
+    .contact-about__desc { margin-bottom: 32rem; }
+    .contact-koffice { margin-top: 50rem; }
+    .contact-koffice__title { margin-bottom: 24rem; }
+    .contact-koffice__contents { padding: 100rem 60rem; border-radius: 8rem; }
+
+    /* FAQ */
+    .faq .jt-category-nav-wrap { margin-bottom: 40rem; }
+
+    /* Stores */
+    .stores-tabs li a { padding: 6rem 24rem 7rem; }
+    .stores .jt-category-nav-wrap { margin-bottom: 40rem; }
+    .stores-tabs { margin-bottom: 36rem; }
+    .stores-online-continent { border-radius: 8rem; }
+    .stores-online-continent__list { grid-template-columns: repeat(3, 1fr); }
+    .stores-offline-map { border-radius: 8rem; }
+    .stores-offline-search { border-radius: 8rem; }
+    .stores-offline-search .jt-search__input { border-radius: 6rem }
+
+    /* Ingredients Detail */
+    .ingredients-detail .article__header { padding-bottom: 90rem; }
+    .ingredients-detail-colgroup { flex-wrap: wrap; gap: 0; }
+    .ingredients-detail-colgroup__contents { width: 100%; margin-bottom: 40rem; text-align: center; }
+    .ingredients-detail-colgroup__figure { width: 100%; }
+    .ingredients-detail-colgroup__title br { display: none; }
+    .ingredients-detail-colgroup__desc { padding: 0 40rem; }
+    .ingredients-detail-colgroup + .ingredients-detail-colgroup { margin-top: 100rem; }
+
+    .col-type--gallery { flex-wrap: wrap-reverse; }
+    .col-type--gallery .ingredients-detail-colgroup__contents { padding: 0; }
+    .col-type--left { flex-wrap: wrap-reverse; }
+    .ingredients-detail-colgroup__figure { border-radius: 8rem; }
+    .ingredients-detail-colgroup__gallery { width: 100%; padding-right: 0; }
+    .ingredients-detail-colgroup__gallery + .ingredients-detail-colgroup__contents { width: 100%; }
+    .ingredients-detail-colgroup__gallery-figure { border-radius: 8rem; }
+    .ingredients-detail-colgroup__gallery-figure:nth-child(2) { width: 53%; margin-left: 47%; }
+
+    .ingredients-detail-topography,
+    .ingredients-detail-process,
+    .ingredients-detail-product { margin-top: 100rem; }
+    .ingredients-detail-topography__title { margin-bottom: 30rem; }
+    .ingredients-detail-topography__contents { opacity: 1; }
+
+    .ingredients-detail-process__list { overflow-y: scroll; white-space: nowrap; padding: 0 20rem; margin: 0 -20rem; }
+    .ingredients-detail-process__list { height: auto; display: flex; align-items: stretch; }
+    .ingredients-detail-process__card { min-width: 310rem; height: auto; gap: 40rem; }
+    .ingredients-detail-process__card:not(:last-child) { margin-right: 0rem; }
+    .ingredients-detail-process__card-title { margin-top: 18rem; white-space: normal; }
+    .ingredients-detail-process__desc { padding: 0 40rem; text-wrap: balance; }
+    .ingredients-detail-process__desc br { display: none; }
+    .ingredients-detail-process__comment { margin-top: 24rem; }
+
+    .ingredients-detail-colgroup__gallery-figure:nth-child(3) { margin-top: 80rem; }
+
+    /* Brand Story */
+    .brandstory-slogan { padding: 100rem 0; }
+    .brandstory-intro { margin-bottom: 100rem; }
+    .brandstory-intro__bg { border-radius: 8rem; }
+    .brandstory-intro__contents { padding: 60rem; gap: 18rem; border-radius: 8rem; }
+    
+    .brandstory-to { top: 0; height: 100vh; }
+    .brandstory-to__slide-item:nth-child(2) i.brandstory-logo-puri svg { width: 107rem; }
+
+    .brandstory-philosophy { padding: 100rem 0; }
+    .brandstory-philosophy__title { margin-bottom: 50rem; }
+    .brandstory-philosophy__contents-desc { margin-top: 18rem; }
+    .brandstory-philosophy__contents-btn { margin-top: 18rem; }
+
+}
+
+
+
+@media (max-width: 540px){
+
+    /* Contact Us */
+    .contact-email__box { padding: 24rem; }
+    .contact-email__address .jt-icon { width: 12rem; height: 12rem; top: 0; right: 0; }
+    .contact-about { margin-top: 40rem; }
+    .contact-about__bg { padding-top: 153.63%; }
+    .contact-about__title { white-space: inherit; }
+    .contact-about__contents { width: 100%; padding: 0 24rem; }
+    .contact-about__desc { margin-bottom: 24rem; }
+    .contact-koffice { margin-top: 40rem; }
+    .contact-koffice__title { margin-bottom: 18rem; }
+    .contact-koffice__contents { padding: 72rem 24rem; }
+    .contact-koffice__desc br { display: none; }
+
+    /* Stores */
+    .stores-online-continent { padding: 32rem; margin-bottom: 12rem; }
+    .stores-online-continent__list { grid-template-columns: repeat(1, 1fr); gap: 12rem; margin-top: 28rem; }
+    .stores-online-nation__list { margin-top: 8rem; }
+    .stores-online__link .jt-icon { width: 12rem; height: 12rem; }
+
+    .stores-offline { gap: 8rem; }
+    .stores-offline-map { height: 230rem; }
+    .stores-offline-search { padding: 24rem; max-height: 500rem; }
+    .stores-offline-search__no-list { padding: 80rem 0; }
+    .stores-offline-search .jt-search__input { height: 48rem; }
+    .stores-offline-search .jt-search__label { top: 11rem; left: 45rem; }
+    .stores-offline-search .jt-search__submit { left: 10rem; }
+    .stores-offline-search__list { margin-right: -15rem; height: calc(100% - 108rem); }
+    .stores-offline-search .jt-search { margin-bottom: 24rem; }
+    html.ios .stores-offline-search .jt-search__input { padding-bottom: 7rem; }
+    html.ios .stores-offline-search .jt-search__label { top: 12rem; }
+
+    #jt-map { margin-top: -3rem; height: calc(100% + 5rem); }
+    .jt-custom-marker { margin-bottom: 54rem; padding: 4rem 12rem 5rem; }
+    .jt-custom-marker::after { width: 60rem; height: 60rem; background-size: 60rem; top: 32rem; }
+    
+    /* Ingredients Detail */
+    .ingredients-detail .article__header { padding-bottom: 80rem; }
+    .ingredients-detail .article__visual { height: auto; padding-top: 120.05%; margin-top: -64rem; }
+    .ingredients-detail .article__visual-content { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
+    .ingredients-detail-colgroup__title { margin-top: 8rem; white-space: wrap; }
+    .ingredients-detail-colgroup__desc { margin-top: 24rem; padding: 0 20rem; }
+    .ingredients-detail-colgroup__contents { margin-bottom: 40rem; }
+    .ingredients-detail-colgroup__gallery-figure:nth-child(3) { margin-top: 74rem; }
+ 
+    .ingredients-detail-colgroup + .ingredients-detail-colgroup,
+    .ingredients-detail-topography,
+    .ingredients-detail-process,
+    .ingredients-detail-product { margin-top: 80rem; }
+
+    .ingredients-detail-topography__bg-wrap { padding-top: 153.63%; }
+    .ingredients-detail-topography__bg::after { border-radius: 8rem; }
+    .ingredients-detail-topography__bg--large { opacity: 0; visibility: hidden; }
+    .ingredients-detail-topography__bg--small { opacity: 1; visibility: visible; }
+    .ingredients-detail-topography__contents { width: 100%; padding: 0 30rem; }
+    .ingredients-detail-topography__title { margin-bottom: 24rem; margin-left: auto; margin-right: auto; font-size: var(--font-size-04); line-height: var(--font-lineheight-04); }
+    .ingredients-detail-topography__title br:not(.smbr) { display: none; }
+    
+    .ingredients-detail-process__title { margin-bottom: 24rem; }
+    .ingredients-detail-process__list { padding: 0 16rem; margin: 0 -16rem; }
+    .ingredients-detail-process__card { border-radius: 8rem; }
+    .ingredients-detail-process__card-thumb { border-radius: 8rem; }
+    .ingredients-detail-process__card-contents { padding: 16rem 0 0 0; }
+    .ingredients-detail-process__card-title { margin-top: 16rem; }
+    .ingredients-detail-process__contents { margin-bottom: 40rem; }
+    .ingredients-detail-process__desc { padding: 0 20rem; }
+    .ingredients-detail-product__title { margin-bottom: 24rem; }
+
+    /* Brand Story */
+    .brandstory-slogan { padding: 60rem 0; }
+
+    .brandstory-intro { margin-bottom: 80rem; }
+    .brandstory-intro__bg { padding-top: 100% }
+    .brandstory-intro__bg .jt-sound { right: 19rem; bottom: 16rem; }
+    .brandstory-intro__contents-title { white-space: inherit; text-wrap: balance; }
+    .brandstory-intro__contents { padding: 48rem 24rem; gap: 16rem; }
+
+    .brandstory-to__slide-item .brandstory-to__desc { padding: 0 30rem; }
+    .brandstory-to__slide-item .brandstory-to__desc br { display: none; }
+    .brandstory-to__slide-item:nth-child(2) .puri span { font-size: 59rem; }
+
+    .brandstory-philosophy { padding: 80rem 0; }
+    .brandstory-philosophy__list { margin-top: 0; }
+    .brandstory-philosophy__item { padding: 0 0 60rem; flex-wrap: wrap-reverse; gap: 24rem; border-bottom: none; }
+    .brandstory-philosophy__figure { width: 100%; border-radius: 8rem; }
+    .brandstory-philosophy__title { margin-bottom: 40rem; }
+    .brandstory-philosophy__contents { width: 100%; }
+    .brandstory-philosophy__contents-title { font-size: var(--font-size-05); line-height: var(--font-lineheight-06); }
+    .brandstory-philosophy__contents-desc { margin-top: 16rem; }
+    .brandstory-philosophy__contents-btn { margin-top: 16rem; }
+    .brandstory-philosophy__contents-icon-list { gap: 8rem; margin-top: 18rem; }
+    .brandstory-philosophy__contents-icon { width: 54rem; }
+
+}
+
+
+@media (orientation: landscape) {
+
+	/* Ingredients Detail */
+    html.mobile .col-type--gallery .ingredients-detail-colgroup__contents { padding-top: calc(50vh - 225rem); }
+    
+}
