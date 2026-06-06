@@ -1013,7 +1013,7 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
 
         {/* Product type */}
         <FilterSection title="Brand">
-          {[...new Set(pool.map(p => p.brand || '').filter(Boolean))].sort().map(brand => (
+          {[...new Set(pool.map(p => p.brand || '').filter(Boolean))].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase())).map(brand => (
             <label key={brand} style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', padding: '2px 0' }}>
               <input type="checkbox" checked={filterBrands.includes(brand)} onChange={() => toggleBrand(brand)}
                 style={{ accentColor: T.pinkDeep, cursor: 'pointer' }} />
