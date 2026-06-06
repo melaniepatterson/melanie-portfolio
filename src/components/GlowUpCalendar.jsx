@@ -3947,6 +3947,7 @@ export default function GlowUpCalendar({ session }) {
   const [showMenu,      setShowMenu]      = useState(false)
   const [showFeedback,  setShowFeedback]  = useState(false)
   const [recoveryRoutines, setRecoveryRoutines] = useState({})
+  const [loadError, setLoadError] = useState(null)
   const [editFromHistory, setEditFromHistory] = useState(false)
   const [dailyFromHistory, setDailyFromHistory] = useState(false)
   const [showerFromHistory, setShowerFromHistory] = useState(false)
@@ -4611,6 +4612,12 @@ export default function GlowUpCalendar({ session }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [recoveryRoutines])
 
+  if (loadError) return (
+    <LoadError
+      error={loadError}
+      onRetry={() => { setLoadError(null); setLoading(true) }}
+    />
+  )
   if (loading) return <GlowUpLoader message="Loading your routine..." />
 
   return (
