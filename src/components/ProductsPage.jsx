@@ -1105,7 +1105,7 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
           upd={(userProductData || {})[selectedProduct?.id]}
           onAddToLibrary={onAddToLibrary}
           onRemoveFromLibrary={onRemoveFromLibrary}
-          onSaveUserProductData={saveUserProductData}
+          onSaveUserProductData={onSaveUserProductData}
         />
       )}
     </div>
