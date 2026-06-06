@@ -501,7 +501,7 @@ function getDayInfo(dt, treatments, allTypes, routineHistory) {
     const cfg  = allTypes[tv.type] || { pre: 3, post: 3, pca: false }
     const diff = Math.round((dt - td) / 86400000)
     if (diff >= -cfg.pre && diff <= -1)      return { status: 'pause',    isTreatment: false }
-    if (diff >= 1 && diff <= cfg.post)       return { status: cfg.pca ? 'pca' : 'recovery', isTreatment: false }
+    if (diff >= 1 && diff <= cfg.post)       return { status: cfg.pca ? 'pca' : 'recovery', isTreatment: false, activeTreatmentType: tv.type }
   }
   const period  = getActivePeriod(dt, routineHistory)
   const tretBha = getTretBhaStatus(dt, period)
@@ -2687,13 +2687,13 @@ const AM_STEPS = [
 
 
 
-function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allTypes, onClose, onAddTreatment, onTabChange, onEditDaily, onEditShower, onUpdatePeriodProducts, onUpdatePeriodSteps, onAddProduct }) {
+function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allTypes, onClose, onAddTreatment, onTabChange, onEditDaily, onEditShower, onUpdatePeriodProducts, onUpdatePeriodSteps, onAddProduct, recoveryRoutines, onUpdateRecoveryProducts, onUpdateRecoverySteps }) {
   const [massageOpen, setMassageOpen] = useState(false)
   const tab = flyout.tab  // always read from parent — no local drift
   const [openStepKey, setOpenStepKey] = useState(null)
   const [addingProduct, setAddingProduct] = useState(false)
   function switchTab(t) { onTabChange?.(t); setOpenStepKey(null) }
-  const { date, dayType, isTreatment, treatmentTimeOfDay } = flyout
+  const { date, dayType, isTreatment, treatmentTimeOfDay, activeTreatmentType } = flyout
   const treatTod = treatmentTimeOfDay || 'am'
 
   // nightType: PM of treatment day always shows recovery steps
@@ -2710,13 +2710,34 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
     if (dayType === 'tret') return 'main'
     return 'off'
   })()
-  const pmSteps = period ? getStepsForDayType(period, nightType) : getDefaultSteps(nightType)
+  // For recovery days with a scoped routine, use those steps; else use period/defaults
+  const pmSteps = (() => {
+    if (activeRecovery?.steps) {
+      return activeRecovery.steps
+        .filter(s => s.enabled)
+        .sort((a, b) => {
+          const oA = INGREDIENT_CATEGORIES[a.categoryKey]?.order ?? 99
+          const oB = INGREDIENT_CATEGORIES[b.categoryKey]?.order ?? 99
+          return oA - oB
+        })
+    }
+    return period ? getStepsForDayType(period, nightType) : getDefaultSteps(nightType)
+  })()
   const isRecovery = dayType === 'pca' || dayType === 'recovery'
 
-  const periodProducts = period?.products || {}
+  // Use treatment-scoped recovery routine if available
+  const activeRecovery = isRecovery && activeTreatmentType
+    ? recoveryRoutines?.[activeTreatmentType]
+    : null
+
+  const periodProducts = activeRecovery?.products || period?.products || {}
 
   function handleSelectProduct(stepKey, productId) {
-    onUpdatePeriodProducts(period?.startDate, stepKey, productId)
+    if (activeRecovery !== null && onUpdateRecoveryProducts) {
+      onUpdateRecoveryProducts(activeTreatmentType, stepKey, productId)
+    } else {
+      onUpdatePeriodProducts(period?.startDate, stepKey, productId)
+    }
     setOpenStepKey(null)
   }
 
@@ -2830,7 +2851,12 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
     })
 
     // Show hidden optional steps at bottom with + to re-enable
-    const hiddenSteps = dayTypeKey ? getPeriodSteps(period, dayTypeKey).filter(s => !s.enabled && s.optional) : []
+    const hiddenSteps = (() => {
+      if (activeRecovery?.steps) {
+        return activeRecovery.steps.filter(s => !s.enabled && s.optional)
+      }
+      return dayTypeKey ? getPeriodSteps(period, dayTypeKey).filter(s => !s.enabled && s.optional) : []
+    })()
     if (hiddenSteps.length > 0 && period) {
       result.push(
         <div key="hidden-steps" style={{ marginTop: 8 }}>
@@ -3103,7 +3129,19 @@ function generateICS({ routineHistory, treatments, allTypes, products, settings 
       : null
 
     const amDesc = period ? buildStepDescription(AM_STEPS, periodProducts, products) : null
-    const pmSteps = period ? getStepsForDayType(period, nightType) : getDefaultSteps(nightType)
+    // For recovery days with a scoped routine, use those steps; else use period/defaults
+  const pmSteps = (() => {
+    if (activeRecovery?.steps) {
+      return activeRecovery.steps
+        .filter(s => s.enabled)
+        .sort((a, b) => {
+          const oA = INGREDIENT_CATEGORIES[a.categoryKey]?.order ?? 99
+          const oB = INGREDIENT_CATEGORIES[b.categoryKey]?.order ?? 99
+          return oA - oB
+        })
+    }
+    return period ? getStepsForDayType(period, nightType) : getDefaultSteps(nightType)
+  })()
     const pmDesc = info.isTreatment && !period ? 'Follow provider aftercare instructions'
       : pmSteps.length ? buildStepDescription(pmSteps, periodProducts, products)
       : null
@@ -3242,9 +3280,110 @@ function ExportPanel({ routineHistory, treatments, allTypes, products, dailyHist
 
 
 // ─── UPCOMING TREATMENTS PANEL ───────────────────────────────
-function UpcomingTreatmentsPanel({ treatments, allTypes, routineHistory, onClose, onEdit, onRemove, onAddNew }) {
+
+// ─── RECOVERY ROUTINE EDITOR ──────────────────────────────────────────────
+function RecoveryRoutineEditor({ typeKey, typeLabel, steps, products, allProducts, onStepToggle, onProductSelect, onClose }) {
+  const [openStepKey, setOpenStepKey] = useState(null)
+  const enabledSteps  = steps.filter(s => s.enabled).sort((a, b) => {
+    const oA = INGREDIENT_CATEGORIES[a.categoryKey]?.order ?? 99
+    const oB = INGREDIENT_CATEGORIES[b.categoryKey]?.order ?? 99
+    return oA - oB
+  })
+  const hiddenSteps = steps.filter(s => !s.enabled && s.optional)
+
+  return (
+    <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 12, padding: '16px 18px', marginBottom: 14 }}>
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+        <div>
+          <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>Recovery routine</div>
+          <div style={{ fontSize: 11, color: T.textMuted, marginTop: 2 }}>{typeLabel}</div>
+        </div>
+        <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 18, color: T.textMuted, lineHeight: 1 }}>×</button>
+      </div>
+
+      <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.6, padding: '8px 10px', background: T.creamDark, borderRadius: 8, marginBottom: 14, border: `0.5px solid ${T.border}` }}>
+        Choose which steps and products you use during recovery from a {typeLabel.toLowerCase()}. These will show automatically on recovery days for this treatment.
+      </div>
+
+      {/* Enabled steps with product pickers */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {enabledSteps.map(step => {
+          const assignedProductId = products[step.id]
+          const assignedProduct   = assignedProductId ? allProducts[assignedProductId] : null
+          const isOpen = openStepKey === step.id
+          return (
+            <div key={step.id}>
+              <div
+                onClick={() => setOpenStepKey(isOpen ? null : step.id)}
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  padding: '10px 12px', borderRadius: 8, cursor: 'pointer',
+                  background: isOpen ? T.pink : T.creamDark,
+                  border: `0.5px solid ${isOpen ? T.pinkDeep : T.border}`,
+                  transition: 'all 0.15s',
+                }}
+              >
+                <div>
+                  <div style={{ fontSize: 12, fontWeight: 500, color: T.text }}>{step.label}</div>
+                  {assignedProduct && (
+                    <div style={{ fontSize: 10, color: T.textMuted, marginTop: 2 }}>
+                      {assignedProduct.brand ? `${assignedProduct.brand} — ` : ''}{assignedProduct.name}
+                    </div>
+                  )}
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  {step.optional && (
+                    <button onClick={e => { e.stopPropagation(); onStepToggle(step.id, false) }}
+                      style={{ fontSize: 10, padding: '2px 8px', borderRadius: 6, border: `0.5px solid ${T.border}`, background: 'transparent', color: T.textMuted, cursor: 'pointer', fontFamily: 'inherit' }}>
+                      Remove
+                    </button>
+                  )}
+                  <span style={{ fontSize: 11, color: T.textMuted }}>{isOpen ? '▲' : '▼'}</span>
+                </div>
+              </div>
+
+              {/* Product picker */}
+              {isOpen && (
+                <ProductPicker
+                  stepKey={step.id}
+                  currentProductId={assignedProductId}
+                  products={allProducts}
+                  categoryKey={step.categoryKey}
+                  onSelect={(stepKey, productId) => { onProductSelect(stepKey, productId); setOpenStepKey(null) }}
+                  onAddNew={() => {}}
+                  onClose={() => setOpenStepKey(null)}
+                />
+              )}
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Hidden optional steps */}
+      {hiddenSteps.length > 0 && (
+        <div style={{ marginTop: 12, paddingTop: 12, borderTop: `0.5px solid ${T.border}` }}>
+          <div style={{ fontSize: 10, color: T.textLight, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
+            Add a step
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+            {hiddenSteps.map(step => (
+              <button key={step.id} onClick={() => onStepToggle(step.id, true)}
+                style={{ fontSize: 11, padding: '4px 10px', borderRadius: 20, border: `0.5px solid ${T.border}`, background: T.white, color: T.textMuted, cursor: 'pointer', fontFamily: 'inherit' }}>
+                + {step.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function UpcomingTreatmentsPanel({ treatments, allTypes, routineHistory, onClose, onEdit, onRemove, onAddNew, recoveryRoutines, onUpdateRecoveryProducts, onUpdateRecoverySteps, getRecoveryStepsForType, products }) {
   const now = new Date(); now.setHours(0,0,0,0)
   const [addingDate, setAddingDate] = useState('')
+  const [editingRecovery, setEditingRecovery] = useState(null) // typeKey being edited
   const sorted = Object.entries(treatments).sort(([a],[b]) => a.localeCompare(b))
   const upcoming = sorted.filter(([k]) => new Date(k+'T00:00:00') >= now)
   const past     = sorted.filter(([k]) => new Date(k+'T00:00:00') <  now)
@@ -3309,7 +3448,34 @@ function UpcomingTreatmentsPanel({ treatments, allTypes, routineHistory, onClose
           {!isPast && (
             <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
               <Btn onClick={() => onEdit(key)} style={{ fontSize: 10, padding: '3px 8px' }}>Edit</Btn>
+              {cfg.post > 0 && (
+                <Btn
+                  onClick={() => setEditingRecovery(editingRecovery === tv.type ? null : tv.type)}
+                  style={{ fontSize: 10, padding: '3px 8px', background: editingRecovery === tv.type ? T.pink : undefined, borderColor: editingRecovery === tv.type ? T.pinkDeep : undefined }}
+                >
+                  Recovery routine
+                </Btn>
+              )}
               <button onClick={() => onRemove(key)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 16, padding: '0 4px', lineHeight: 1 }}>×</button>
+            </div>
+          )}
+          {editingRecovery === tv.type && (
+            <div style={{ marginTop: 8 }}>
+              <RecoveryRoutineEditor
+                typeKey={tv.type}
+                typeLabel={allTypes[tv.type]?.label || tv.type}
+                steps={getRecoveryStepsForType(tv.type)}
+                products={recoveryRoutines?.[tv.type]?.products || {}}
+                allProducts={products}
+                onStepToggle={(stepId, enabled) => {
+                  const steps = getRecoveryStepsForType(tv.type).map(s =>
+                    s.id === stepId ? { ...s, enabled } : s
+                  )
+                  onUpdateRecoverySteps(tv.type, steps)
+                }}
+                onProductSelect={(stepKey, productId) => onUpdateRecoveryProducts(tv.type, stepKey, productId)}
+                onClose={() => setEditingRecovery(null)}
+              />
             </div>
           )}
         </div>
@@ -3628,6 +3794,7 @@ export default function GlowUpCalendar({ session }) {
       setLoading(true)
       const [
         { data: rp },
+        { data: profileRR },
         { data: pr },
         { data: ep },
         { data: sp },
@@ -3635,6 +3802,7 @@ export default function GlowUpCalendar({ session }) {
         { data: ct },
       ] = await Promise.all([
         supabase.from('routine_periods').select('*').eq('user_id', userId).order('start_date'),
+        supabase.from('profiles').select('recovery_routines').eq('id', userId).single(),
         supabase.from('products').select('*').or(`is_catalog.eq.true,user_id.eq.${userId}`),
         supabase.from('extras_periods').select('*').eq('user_id', userId).order('start_date'),
         supabase.from('shower_periods').select('*').eq('user_id', userId).order('start_date'),
@@ -3660,6 +3828,8 @@ export default function GlowUpCalendar({ session }) {
 
       // Products — single table, catalog + user unified
       const prodMap = {}
+      // Load recovery routines from profiles
+      if (profileRR?.recovery_routines) setRecoveryRoutines(profileRR.recovery_routines)
       catalogIds.current = new Set()
       ;(pr || []).forEach(p => {
         if (p.is_catalog) catalogIds.current.add(p.id)
@@ -3727,6 +3897,7 @@ export default function GlowUpCalendar({ session }) {
   const [showTreatments, setShowTreatments] = useState(false)
   const [showMenu,      setShowMenu]      = useState(false)
   const [showFeedback,  setShowFeedback]  = useState(false)
+  const [recoveryRoutines, setRecoveryRoutines] = useState({})
   const [editFromHistory, setEditFromHistory] = useState(false)
   const [dailyFromHistory, setDailyFromHistory] = useState(false)
   const [showerFromHistory, setShowerFromHistory] = useState(false)
@@ -4087,7 +4258,7 @@ export default function GlowUpCalendar({ session }) {
   function openDayFlyout(key, dt, tab) {
     const info = getDayInfo(dt, treatments, allTypes, routineHistory)
     const treatTod = info.isTreatment ? (treatments[key]?.timeOfDay || 'am') : null
-    setDayFlyout({ key, date: dt, tab, dayType: info.status, isTreatment: info.isTreatment, treatmentTimeOfDay: treatTod })
+    setDayFlyout({ key, date: dt, tab, dayType: info.status, isTreatment: info.isTreatment, treatmentTimeOfDay: treatTod, activeTreatmentType: info.activeTreatmentType || null })
     setPanel(null)
     setEditingPeriod(null)
     setEditingDaily(null)
@@ -4325,6 +4496,9 @@ export default function GlowUpCalendar({ session }) {
               onUpdatePeriodProducts={updatePeriodProducts}
               onUpdatePeriodSteps={updatePeriodStep}
               onAddProduct={saveProduct}
+              recoveryRoutines={recoveryRoutines}
+              onUpdateRecoveryProducts={updateRecoveryProducts}
+              onUpdateRecoverySteps={updateRecoverySteps}
             />
           </div>
         )}
@@ -4341,12 +4515,58 @@ export default function GlowUpCalendar({ session }) {
     setShowLibrary(false); setEditingProduct(null); setSelector(null); setShowExport(false); setShowTreatments(false); setShowFeedback(false)
   }
 
+
+  function updateRecoveryProducts(typeKey, stepKey, productId) {
+    setRecoveryRoutines(prev => {
+      const existing = prev[typeKey] || { steps: [], products: {} }
+      const products = { ...existing.products }
+      if (productId === null) delete products[stepKey]
+      else products[stepKey] = productId
+      return { ...prev, [typeKey]: { ...existing, products } }
+    })
+  }
+
+  function updateRecoverySteps(typeKey, steps) {
+    setRecoveryRoutines(prev => {
+      const existing = prev[typeKey] || { steps: [], products: {} }
+      return { ...prev, [typeKey]: { ...existing, steps } }
+    })
+  }
+
+  function getRecoveryStepsForType(typeKey) {
+    if (recoveryRoutines[typeKey]?.steps?.length > 0) return recoveryRoutines[typeKey].steps
+    return Object.entries(INGREDIENT_CATEGORIES)
+      .filter(([, cat]) => cat.dayTypes?.recovery === true)
+      .sort(([, a], [, b]) => a.order - b.order)
+      .map(([key, cat]) => ({
+        id: `recovery_${key}`,
+        categoryKey: key,
+        label: cat.label,
+        optional: cat.optional ?? true,
+        enabled: !cat.optional,
+        professionalOnly: false,
+      }))
+  }
+
   async function handleSignOut() {
     await supabase.auth.signOut()
     window.location.reload()
   }
 
-  if (loading) return (
+  if (loading) 
+
+  // Persist recovery routines to profiles whenever they change
+  useEffect(() => {
+    if (!userId || loading) return
+    supabase.from('profiles').upsert({
+      id: userId,
+      recovery_routines: recoveryRoutines,
+      updated_at: new Date().toISOString(),
+    })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [recoveryRoutines])
+
+  return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', fontFamily: 'inherit', color: '#78716C', fontSize: 13 }}>
       Loading your routine...
     </div>
@@ -4583,6 +4803,11 @@ export default function GlowUpCalendar({ session }) {
             {showTreatments && (
               <UpcomingTreatmentsPanel
                 treatments={treatments}
+                recoveryRoutines={recoveryRoutines}
+                onUpdateRecoveryProducts={updateRecoveryProducts}
+                onUpdateRecoverySteps={updateRecoverySteps}
+                getRecoveryStepsForType={getRecoveryStepsForType}
+                products={products}
                 allTypes={allTypes}
                 routineHistory={routineHistory}
                 onClose={() => setShowTreatments(false)}
