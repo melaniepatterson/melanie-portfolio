@@ -76,14 +76,15 @@ export default function Auth() {
     setLoading(true)
     setErrorMsg('')
     try {
-      const { data: isNew, error } = await supabase.rpc('join_waitlist', {
+      const { data: result, error } = await supabase.rpc('join_waitlist', {
         p_email: email,
         p_skin_type: skinType || null,
         p_how_heard: howHeard || null,
       })
       if (error) throw error
-      console.log('join_waitlist returned:', isNew, typeof isNew)
-      setAlreadyOnList(isNew === false || isNew === 0)
+      console.log('join_waitlist returned:', result, typeof result)
+      // 0 = already existed, 1 = newly added
+      setAlreadyOnList(result === 0 || result === '0')
       setScreen('joined')
     } catch (err) {
       setErrorMsg(err?.message || err?.error_description || JSON.stringify(err) || 'Something went wrong — please try again.')
