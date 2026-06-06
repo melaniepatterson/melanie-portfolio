@@ -1126,7 +1126,7 @@ function RoutineHistoryPanel({ history, onClose, onEdit, onDelete, onAddNew, get
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
         <div style={{ fontSize: 11, fontWeight: 600, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Skincare Routine</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-          <Btn variant="primary" onClick={() => onAddNew(getActivePeriod(new Date(), history))} style={{ padding: '3px 10px', fontSize: 11 }}>+ Start new routine</Btn>
+          <Btn variant="primary" onClick={e => { e.stopPropagation(); onAddNew() }} style={{ padding: '3px 10px', fontSize: 11 }}>+ Start new routine</Btn>
           <InfoTooltip text="Add a new routine when your approach is changing — it preserves your history and lets you track what you used before. Edit when you're correcting a mistake. Think of each routine as a chapter." />
         </div>
       </div>
@@ -4586,7 +4586,7 @@ export default function GlowUpCalendar({ session }) {
                 onClose={() => setPanel(null)}
                 onEdit={(period) => { startEdit(period); setPanel(null); setEditFromHistory(true) }}
                 onDelete={deletePeriod}
-                onAddNew={() => { setPanel('update'); setEditingPeriod(null) }}
+                onAddNew={() => { setPanel(routineHistory.length > 0 ? 'update' : 'setup'); setEditingPeriod(null) }}
                 dailyHistory={dailyHistory}
                 onEditDaily={(p) => { openDailyEditor(p); setPanel(null); setDailyFromHistory(true) }}
                 onDeleteDaily={deleteDaily}
