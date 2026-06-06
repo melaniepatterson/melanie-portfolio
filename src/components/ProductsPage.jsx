@@ -893,6 +893,7 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
   const [filterFlags, setFilterFlags] = useState([])
   const [filterUsing, setFilterUsing] = useState(false)
   const [filterBuyAgain, setFilterBuyAgain] = useState(false)
+  const [filterBrands, setFilterBrands] = useState([])
   const [search, setSearch] = useState('')
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [sortBy, setSortBy] = useState('name')
@@ -915,14 +916,17 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
   function toggleCat(cat) {
     setFilterCats(prev => prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat])
   }
+  function toggleBrand(brand) {
+    setFilterBrands(prev => prev.includes(brand) ? prev.filter(b => b !== brand) : [...prev, brand])
+  }
   function toggleFlag(key) {
     setFilterFlags(prev => prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key])
   }
   function clearAll() {
-    setFilterCats([]); setFilterFlags([]); setFilterUsing(false); setFilterBuyAgain(false); setSearch('')
+    setFilterCats([]); setFilterFlags([]); setFilterUsing(false); setFilterBuyAgain(false); setFilterBrands([]); setSearch('')
   }
 
-  const hasFilters = filterCats.length > 0 || filterFlags.length > 0 || filterUsing || filterBuyAgain || search.trim()
+  const hasFilters = filterCats.length > 0 || filterFlags.length > 0 || filterUsing || filterBuyAgain || filterBrands.length > 0 || search.trim()
 
   function getMergedProducts() {
     const userArr = Object.values(products)
@@ -942,12 +946,13 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
   function applyFilters(arr) {
     return arr
       .filter(p => {
+        const matchBrand = filterBrands.length === 0 || filterBrands.includes(p.brand || '')
         const matchCat = filterCats.length === 0 || filterCats.includes(p.category)
         const matchSearch = !search.trim() || p.name.toLowerCase().includes(search.toLowerCase()) || (p.brand || '').toLowerCase().includes(search.toLowerCase())
         const matchFlags = filterFlags.length === 0 || filterFlags.every(f => p[f])
         const matchUsing = !filterUsing || p.currentlyUsing
         const matchBuyAgain = !filterBuyAgain || p.buyAgain === true
-        return matchCat && matchSearch && matchFlags && matchUsing && matchBuyAgain
+        return matchBrand && matchCat && matchSearch && matchFlags && matchUsing && matchBuyAgain
       })
       .sort((a, b) => {
         if (sortBy === 'brand') {
@@ -1007,6 +1012,16 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
         )}
 
         {/* Product type */}
+        <FilterSection title="Brand">
+          {[...new Set(pool.map(p => p.brand || '').filter(Boolean))].sort().map(brand => (
+            <label key={brand} style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', padding: '2px 0' }}>
+              <input type="checkbox" checked={filterBrands.includes(brand)} onChange={() => toggleBrand(brand)}
+                style={{ accentColor: T.pinkDeep, cursor: 'pointer' }} />
+              <span style={{ fontSize: 12, color: T.text }}>{brand}</span>
+            </label>
+          ))}
+        </FilterSection>
+
         <FilterSection title="Product type">
           {PRODUCT_CATEGORIES.map(cat => (
             <CheckItem key={cat}
