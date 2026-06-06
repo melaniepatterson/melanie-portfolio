@@ -353,11 +353,11 @@ function ProductImageUpload({ value, onChange, session, productName }) {
   return (
     <div>
       {preview && (
-        <div style={{ position: 'relative', marginBottom: 6, width: '100%', height: 120, borderRadius: 8, overflow: 'hidden', border: `0.5px solid ${T.border}` }}>
-          <img src={preview} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        <div style={{ position: 'relative', marginBottom: 6, display: 'inline-block', borderRadius: 8, overflow: 'hidden', border: `0.5px solid ${T.border}`, background: T.creamDark, verticalAlign: 'top' }}>
+          <img src={preview} alt="" style={{ display: 'block', maxHeight: 88, maxWidth: 120, objectFit: 'contain' }} />
           <button
             onClick={() => { setPreview(null); onChange('') }}
-            style={{ position: 'absolute', top: 4, right: 4, background: 'rgba(0,0,0,0.5)', border: 'none', borderRadius: '50%', width: 20, height: 20, color: '#fff', cursor: 'pointer', fontSize: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>
+            style={{ position: 'absolute', top: 3, right: 3, background: 'rgba(0,0,0,0.5)', border: 'none', borderRadius: '50%', width: 18, height: 18, color: '#fff', cursor: 'pointer', fontSize: 11, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>
             ×
           </button>
         </div>
