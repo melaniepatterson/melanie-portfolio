@@ -605,7 +605,7 @@ function getStoreName(url) {
   }
 }
 // ─── PRODUCT DETAIL MODAL ────────────────────────────────────
-function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, isWhatWeUsing }) {
+function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, isWhatWeUsing, upd, onAddToLibrary, onRemoveFromLibrary }) {
   if (!p) return null
   const isCatalog = p._isCatalog && !p._isLinked
   const cat = p.catalog_product_id ? (catalogProducts || {})[p.catalog_product_id] : null
@@ -709,17 +709,50 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
           </div>
         )}
 
-        {/* Edit button — user products only */}
-        {!isCatalog && (
-          <div style={{ display: 'flex', gap: 8 }}>
-            <button onClick={() => { onClose(); onEdit(p) }} style={{ flex: 1, padding: '10px', borderRadius: 10, border: '0.5px solid ' + T.border, background: T.creamDark, color: T.text, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 500 }}>
-              Edit this product
-            </button>
-            <button onClick={() => { if (window.confirm('Delete ' + p.name + '? This cannot be undone.')) { onDelete(p); onClose() } }} style={{ padding: '10px 16px', borderRadius: 10, border: '0.5px solid ' + T.border, background: 'transparent', color: T.textLight, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit' }}>
-              Delete
-            </button>
+        {/* Personal notes from user_product_data */}
+        {upd?.notes && (
+          <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.7, marginTop: 14, padding: '10px 12px', background: T.cream, borderRadius: 8, fontStyle: 'italic' }}>{upd.notes}</div>
+        )}
+
+        {/* Community effectiveness */}
+        {p.effectivenessAvg > 0 && (
+          <div style={{ fontSize: 11, color: T.textMuted, marginTop: 8 }}>
+            Community rating: <StarRating value={Math.round(p.effectivenessAvg)} size={11} />
           </div>
         )}
+
+        {/* Personal effectiveness */}
+        {upd?.effectiveness > 0 && (
+          <div style={{ fontSize: 11, color: T.textMuted, marginTop: 4 }}>
+            Your rating: <StarRating value={upd.effectiveness} size={11} />
+          </div>
+        )}
+
+        {/* Action buttons */}
+        <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
+          {isCatalog ? (
+            upd?.in_library
+              ? <button onClick={() => { onRemoveFromLibrary(p.id); onClose() }}
+                  style={{ flex: 1, padding: '10px', borderRadius: 10, border: '0.5px solid ' + T.border, background: 'transparent', color: T.textMuted, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit' }}>
+                  Remove from my products
+                </button>
+              : <button onClick={() => { onAddToLibrary(p); onClose() }}
+                  style={{ flex: 1, padding: '10px', borderRadius: 10, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 500 }}>
+                  + Add to my products
+                </button>
+          ) : (
+            <>
+              <button onClick={() => { onClose(); onEdit(p) }}
+                style={{ flex: 1, padding: '10px', borderRadius: 10, border: '0.5px solid ' + T.border, background: T.creamDark, color: T.text, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 500 }}>
+                Edit this product
+              </button>
+              <button onClick={() => { if (window.confirm('Delete ' + p.name + '? This cannot be undone.')) { onDelete(p); onClose() } }}
+                style={{ padding: '10px 16px', borderRadius: 10, border: '0.5px solid ' + T.border, background: 'transparent', color: T.textLight, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit' }}>
+                Delete
+              </button>
+            </>
+          )}
+        </div>
       </div>
     </div>
   )
@@ -727,7 +760,7 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
 
 
 // ─── PRODUCT LIBRARY ─────────────────────────────────────────
-function ProductLibrary({ products, catalogProducts, activeRoutineNames, onEdit, onAdd, onDelete }) {
+function ProductLibrary({ products, catalogProducts, userProductData, activeRoutineNames, onEdit, onAdd, onDelete, onAddToLibrary, onRemoveFromLibrary }) {
   function isWhatWeUsing(p) {
     if (p.bds_compliant === false) return false
     if (!activeRoutineNames || activeRoutineNames.size === 0) return false
@@ -802,7 +835,11 @@ function ProductLibrary({ products, catalogProducts, activeRoutineNames, onEdit,
   }
 
   const pool = libTab === 'all' ? getMergedProducts()
-    : libTab === 'mine' ? Object.values(products)
+    : libTab === 'mine'
+      ? [
+          ...Object.values(products), // user's own additions
+          ...Object.values(catalogProducts || {}).filter(p => (userProductData || {})[p.id]?.in_library)
+        ]
     : Object.values(catalogProducts || {})
   const list = applyFilters(pool)
   const isCatalogCard = p => p._isCatalog && !p._isLinked
@@ -880,7 +917,7 @@ function ProductLibrary({ products, catalogProducts, activeRoutineNames, onEdit,
         <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
           {[
             { key: 'all',         label: 'All products',         count: getMergedProducts().length },
-            { key: 'mine',        label: 'My products',        count: Object.keys(products).length },
+            { key: 'mine',        label: 'My products',        count: Object.keys(products).length + Object.values(catalogProducts || {}).filter(p => (userProductData || {})[p.id]?.in_library).length },
             { key: 'recommended', label: 'Recommended products', count: Object.keys(catalogProducts || {}).length },
           ].map(t => (
             <button key={t.key} onClick={() => { setLibTab(t.key) }} style={{
@@ -910,6 +947,9 @@ function ProductLibrary({ products, catalogProducts, activeRoutineNames, onEdit,
               onMouseLeave={e => e.currentTarget.style.borderColor = T.border}>
               {isWhatWeUsing(p) && (
                 <div style={{ position: 'absolute', top: 8, right: 8, fontSize: 9, background: T.pink, color: T.pinkDeep, borderRadius: 10, padding: '2px 6px', fontWeight: 600 }}>What we're using!</div>
+              )}
+              {!isWhatWeUsing(p) && p._isCatalog && (userProductData || {})[p.id]?.in_library && (
+                <div style={{ position: 'absolute', top: 8, right: 8, fontSize: 9, background: T.creamDark, color: T.textMuted, borderRadius: 10, padding: '2px 6px', fontWeight: 500 }}>In my products</div>
               )}
               {(p.imageUrl || p.image_url) && (
                 <div style={{ margin: '-12px -12px 10px', height: 120, overflow: 'hidden', borderRadius: '10px 10px 0 0' }}>
@@ -941,6 +981,9 @@ function ProductLibrary({ products, catalogProducts, activeRoutineNames, onEdit,
           onDelete={onDelete}
           catalogProducts={catalogProducts}
           isWhatWeUsing={isWhatWeUsing}
+          upd={(userProductData || {})[selectedProduct?.id]}
+          onAddToLibrary={onAddToLibrary}
+          onRemoveFromLibrary={onRemoveFromLibrary}
         />
       )}
     </div>
@@ -950,6 +993,7 @@ function ProductLibrary({ products, catalogProducts, activeRoutineNames, onEdit,
 export default function ProductsPage({ session }) {
   const [products, setProducts] = useState({})
   const [catalogProducts, setCatalogProducts] = useState({})
+  const [userProductData, setUserProductData] = useState({}) // keyed by product_id
   const [editingProduct, setEditingProduct] = useState(null)
   const [loading, setLoading] = useState(true)
   const [activeRoutineNames, setActiveRoutineNames] = useState(new Set())
@@ -964,6 +1008,15 @@ export default function ProductsPage({ session }) {
         .from('products')
         .select('*')
         .or(`is_catalog.eq.true,user_id.eq.${userId}`)
+
+      // Load user_product_data overlay
+      const { data: upd } = await supabase
+        .from('user_product_data')
+        .select('*')
+        .eq('user_id', userId)
+      const updMap = {}
+      ;(upd || []).forEach(row => { updMap[row.product_id] = row })
+      setUserProductData(updMap)
 
       if (data) {
         const catMap = {}
@@ -1042,29 +1095,63 @@ export default function ProductsPage({ session }) {
     load()
   }, [userId])
 
+  async function addToLibrary(product) {
+    const { data } = await supabase.from('user_product_data')
+      .upsert({ user_id: userId, product_id: product.id, in_library: true }, { onConflict: 'user_id,product_id' })
+      .select().single()
+    if (data) setUserProductData(prev => ({ ...prev, [product.id]: data }))
+  }
+
+  async function removeFromLibrary(productId) {
+    await supabase.from('user_product_data')
+      .update({ in_library: false })
+      .eq('user_id', userId).eq('product_id', productId)
+    setUserProductData(prev => ({ ...prev, [productId]: { ...prev[productId], in_library: false } }))
+  }
+
+  async function saveUserProductData(productId, updates) {
+    const existing = userProductData[productId]
+    const { data } = await supabase.from('user_product_data')
+      .upsert({ user_id: userId, product_id: productId, in_library: true, ...existing, ...updates }, { onConflict: 'user_id,product_id' })
+      .select().single()
+    if (data) setUserProductData(prev => ({ ...prev, [productId]: data }))
+  }
+
   async function saveProduct(product) {
-    if (product._isCatalog) return // never write catalog products to user products
+    if (product._isCatalog) {
+      // For catalog products, save personal data to user_product_data instead
+      await saveUserProductData(product.id, {
+        notes: product.notes,
+        effectiveness: product.effectiveness,
+        buy_again: product.buyAgain,
+        purchased_at: product.purchased_at || null,
+        opened_at: product.opened_at || null,
+        expires_at: product.expires_at || null,
+        pao_months: product.pao_months || null,
+        in_library: true,
+      })
+      setEditingProduct(null)
+      return
+    }
     const row = {
-      id: product.id,
+      id: product.id || undefined,
       user_id: userId,
+      is_catalog: false,
       name: product.name,
-      brand: product.brand,
+      brand: product.brand || '',
       category: product.category,
       image_url: product.imageUrl,
       purchase_url: product.purchaseUrl,
       bds_compliant: product.bdsCompliant,
-      currently_using: product.currentlyUsing,
-      application_area: product.applicationArea || {},
-      effectiveness: product.effectiveness,
-      buy_again: product.buyAgain,
       tags: (product.tags || []),
-      notes: product.notes,
+      notes: product.notes || '',
       ingredient_category: product.ingredient_category || null,
       ingredient_form: product.ingredient_form || null,
-      catalog_product_id: product.catalog_product_id || null,
       store_name: product.store_name || null,
       direct_url: product.direct_url || null,
       direct_store_name: product.direct_store_name || null,
+      description: product.description || null,
+      ingredients: product.ingredients || null,
       black_owned: product.black_owned || false,
       indigenous_owned: product.indigenous_owned || false,
       poc_owned: product.poc_owned || false,
@@ -1077,10 +1164,6 @@ export default function ProductsPage({ session }) {
       clean_formula: product.clean_formula || false,
       science_backed: product.science_backed || false,
       is_prescription: product.is_prescription || false,
-      purchased_at: product.purchased_at || null,
-      opened_at: product.opened_at || null,
-      expires_at: product.expires_at || null,
-      pao_months: product.pao_months || null,
     }
     if (!row.id) {
       // Check for duplicate name+brand in user products
@@ -1095,8 +1178,9 @@ export default function ProductsPage({ session }) {
       row.id = crypto.randomUUID()
       product = { ...product, id: row.id }
     }
-    await supabase.from('products').upsert(row)
-    setProducts(prev => ({ ...prev, [row.id]: { ...product, id: row.id, _isCatalog: false } }))
+    const { data: saved } = await supabase.from('products')
+      .upsert(row, { onConflict: 'name,brand' }).select().single()
+    if (saved) setProducts(prev => ({ ...prev, [saved.id]: { ...product, id: saved.id, _isCatalog: false } }))
     setEditingProduct(null)
   }
 
@@ -1140,10 +1224,13 @@ export default function ProductsPage({ session }) {
           : <ProductLibrary
               products={products}
               catalogProducts={catalogProducts}
+              userProductData={userProductData}
               activeRoutineNames={activeRoutineNames}
               onEdit={p => setEditingProduct(p)}
               onAdd={() => setEditingProduct('new')}
               onDelete={deleteProduct}
+              onAddToLibrary={addToLibrary}
+              onRemoveFromLibrary={removeFromLibrary}
             />
       )}
     </div>

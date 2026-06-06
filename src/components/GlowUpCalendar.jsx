@@ -3712,12 +3712,9 @@ export default function GlowUpCalendar({ session }) {
           imageUrl:            p.image_url,
           purchaseUrl:         p.purchase_url,
           bdsCompliant:        p.bds_compliant,
-          currentlyUsing:      p.currently_using,
-          applicationArea:     p.application_area || {},
-          effectiveness:       p.effectiveness || 0,
-          buyAgain:            p.buy_again,
+          effectivenessAvg:    p.effectiveness_avg || 0,
           tags:                (p.tags || []).map(t => t ? t.charAt(0).toUpperCase() + t.slice(1) : t),
-          notes:               p.notes,
+          notes:               p.notes || '',
           ingredient_category: p.ingredient_category || '',
           ingredient_form:     p.ingredient_form || '',
           black_owned:         p.black_owned || false,
@@ -3732,10 +3729,6 @@ export default function GlowUpCalendar({ session }) {
           clean_formula:       p.clean_formula || false,
           science_backed:      p.science_backed || false,
           is_prescription:     p.is_prescription || false,
-          purchased_at:        p.purchased_at || '',
-          opened_at:           p.opened_at || '',
-          expires_at:          p.expires_at || '',
-          pao_months:          p.pao_months || null,
           _isCatalog:          p.is_catalog || false,
           store_name:          p.store_name || '',
           direct_url:          p.direct_url || '',
@@ -4068,16 +4061,35 @@ export default function GlowUpCalendar({ session }) {
       return
     }
     const row = {
-      id: product.id, user_id: userId,
-      name: product.name, brand: product.brand, category: product.category,
+      id: product.id || undefined,
+      user_id: userId,
+      is_catalog: false,
+      name: product.name, brand: product.brand || '', category: product.category,
       image_url: product.imageUrl, purchase_url: product.purchaseUrl,
-      bds_compliant: product.bdsCompliant, currently_using: product.currentlyUsing,
-      application_area: product.applicationArea || {}, effectiveness: product.effectiveness,
-      buy_again: product.buyAgain, tags: product.tags || [], notes: product.notes,
+      bds_compliant: product.bdsCompliant,
+      tags: product.tags || [], notes: product.notes || '',
+      ingredient_category: product.ingredient_category || null,
+      ingredient_form: product.ingredient_form || null,
+      store_name: product.store_name || null,
+      direct_url: product.direct_url || null,
+      direct_store_name: product.direct_store_name || null,
+      description: product.description || null,
+      ingredients: product.ingredients || null,
+      black_owned: product.black_owned || false,
+      indigenous_owned: product.indigenous_owned || false,
+      poc_owned: product.poc_owned || false,
+      woman_owned: product.woman_owned || false,
+      lgbtq_owned: product.lgbtq_owned || false,
+      cruelty_free: product.cruelty_free || false,
+      vegan: product.vegan || false,
+      certified_organic: product.certified_organic || false,
+      fair_trade: product.fair_trade || false,
+      clean_formula: product.clean_formula || false,
+      science_backed: product.science_backed || false,
+      is_prescription: product.is_prescription || false,
     }
-    if (!row.id) row.id = crypto.randomUUID()
-    await supabase.from('products').upsert(row)
-    setProducts(p => ({ ...p, [row.id]: { ...product, id: row.id } }))
+    const { data: saved } = await supabase.from('products').upsert(row, { onConflict: 'name,brand' }).select().single()
+    if (saved) setProducts(p => ({ ...p, [saved.id]: { ...product, id: saved.id, _isCatalog: false } }))
     setEditingProduct(null)
   }
 
