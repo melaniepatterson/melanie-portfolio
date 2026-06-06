@@ -3613,6 +3613,7 @@ export default function GlowUpCalendar({ session }) {
 
   const [routineHistory, setRoutineHistory] = useState([])
   const [products,       setProducts]       = useState({})
+  const catalogIds = React.useRef(new Set())
   const [dailyHistory,   setDailyHistory]   = useState([])
   const [showerHistory,  setShowerHistory]  = useState([])
   const [treatments,     setTreatments]     = useState({})
@@ -3702,6 +3703,7 @@ export default function GlowUpCalendar({ session }) {
 
       // Products — catalog (global) + user products
       const prodMap = {}
+      catalogIds.current = new Set((cat || []).map(p => p.id))
       // Load catalog first so user products override if same id
       ;(cat || []).forEach(p => {
         prodMap[p.id] = {
@@ -4079,7 +4081,7 @@ export default function GlowUpCalendar({ session }) {
   // ── Product handlers ──────────────────────────────────────
   async function saveProduct(product) {
     // Don't write catalog products to the user products table
-    if (product._isCatalog) {
+    if (catalogIds.current.has(product.id)) {
       setEditingProduct(null)
       return
     }
