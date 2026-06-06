@@ -3940,6 +3940,7 @@ export default function GlowUpCalendar({ session }) {
       setLoading(false)
       } catch(err) {
         console.error('loadAll error:', err)
+        setLoadError(err)
         setLoading(false)
       }
     }
