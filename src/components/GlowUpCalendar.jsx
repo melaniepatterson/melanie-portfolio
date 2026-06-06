@@ -3674,15 +3674,13 @@ export default function GlowUpCalendar({ session }) {
         { data: sp },
         { data: tr },
         { data: ct },
-        { data: cat },
       ] = await Promise.all([
         supabase.from('routine_periods').select('*').eq('user_id', userId).order('start_date'),
-        supabase.from('products').select('*').eq('user_id', userId),
+        supabase.from('products').select('*').or(`is_catalog.eq.true,user_id.eq.${userId}`),
         supabase.from('extras_periods').select('*').eq('user_id', userId).order('start_date'),
         supabase.from('shower_periods').select('*').eq('user_id', userId).order('start_date'),
         supabase.from('treatments').select('*').eq('user_id', userId),
         supabase.from('custom_treatment_types').select('*').eq('user_id', userId),
-        supabase.from('catalog_products').select('*'),
       ])
 
       // Routine periods — convert snake_case from DB to camelCase
@@ -3701,26 +3699,11 @@ export default function GlowUpCalendar({ session }) {
         updatedAt:       p.updated_at,
       })))
 
-      // Products — catalog (global) + user products
+      // Products — single table, catalog + user unified
       const prodMap = {}
-      catalogIds.current = new Set((cat || []).map(p => p.id))
-      // Load catalog first so user products override if same id
-      ;(cat || []).forEach(p => {
-        prodMap[p.id] = {
-          ...p,
-          _isCatalog: true,
-          imageUrl: p.image_url,
-          purchaseUrl: p.purchase_url,
-          applicationArea: p.application_area || {},
-          tags: (p.tags || []).map(t => t ? t.charAt(0).toUpperCase() + t.slice(1) : t),
-          ingredient_category: p.ingredient_category || '',
-          ingredient_form: p.ingredient_form || '',
-          store_name: p.store_name || '',
-          direct_url: p.direct_url || '',
-          direct_store_name: p.direct_store_name || '',
-        }
-      })
+      catalogIds.current = new Set()
       ;(pr || []).forEach(p => {
+        if (p.is_catalog) catalogIds.current.add(p.id)
         prodMap[p.id] = {
           id:                  p.id,
           name:                p.name,
@@ -3731,37 +3714,36 @@ export default function GlowUpCalendar({ session }) {
           bdsCompliant:        p.bds_compliant,
           currentlyUsing:      p.currently_using,
           applicationArea:     p.application_area || {},
-          effectiveness:       p.effectiveness,
+          effectiveness:       p.effectiveness || 0,
           buyAgain:            p.buy_again,
           tags:                (p.tags || []).map(t => t ? t.charAt(0).toUpperCase() + t.slice(1) : t),
           notes:               p.notes,
-          ingredient_category:  p.ingredient_category || '',
-          ingredient_form:      p.ingredient_form || '',
-          black_owned:          p.black_owned || false,
-          indigenous_owned:     p.indigenous_owned || false,
-          poc_owned:            p.poc_owned || false,
-          woman_owned:          p.woman_owned || false,
-          lgbtq_owned:          p.lgbtq_owned || false,
-          cruelty_free:         p.cruelty_free || false,
-          vegan:                p.vegan || false,
-          certified_organic:    p.certified_organic || false,
-          fair_trade:           p.fair_trade || false,
-          clean_formula:        p.clean_formula || false,
-          science_backed:       p.science_backed || false,
-          is_prescription:      p.is_prescription || false,
-          purchased_at:         p.purchased_at || '',
-          opened_at:            p.opened_at || '',
-          expires_at:           p.expires_at || '',
-          pao_months:           p.pao_months || null,
-          _isCatalog:           false,
-          store_name:           p.store_name || '',
-          direct_url:           p.direct_url || '',
-          direct_store_name:    p.direct_store_name || '',
-          description:          p.description || '',
-          ingredients:          p.ingredients || '',
+          ingredient_category: p.ingredient_category || '',
+          ingredient_form:     p.ingredient_form || '',
+          black_owned:         p.black_owned || false,
+          indigenous_owned:    p.indigenous_owned || false,
+          poc_owned:           p.poc_owned || false,
+          woman_owned:         p.woman_owned || false,
+          lgbtq_owned:         p.lgbtq_owned || false,
+          cruelty_free:        p.cruelty_free || false,
+          vegan:               p.vegan || false,
+          certified_organic:   p.certified_organic || false,
+          fair_trade:          p.fair_trade || false,
+          clean_formula:       p.clean_formula || false,
+          science_backed:      p.science_backed || false,
+          is_prescription:     p.is_prescription || false,
+          purchased_at:        p.purchased_at || '',
+          opened_at:           p.opened_at || '',
+          expires_at:          p.expires_at || '',
+          pao_months:          p.pao_months || null,
+          _isCatalog:          p.is_catalog || false,
+          store_name:          p.store_name || '',
+          direct_url:          p.direct_url || '',
+          direct_store_name:   p.direct_store_name || '',
+          description:         p.description || '',
+          ingredients:         p.ingredients || '',
         }
       })
-      // Seed products removed — users add their own products with full taxonomy
       setProducts(prodMap)
 
       // Extras periods

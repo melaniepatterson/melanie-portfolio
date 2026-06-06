@@ -959,51 +959,32 @@ export default function ProductsPage({ session }) {
   useEffect(() => {
     if (!userId) return
     async function load() {
-      const [{ data }, { data: cat }] = await Promise.all([
-        supabase.from('products').select('*').eq('user_id', userId),
-        supabase.from('catalog_products').select('*'),
-      ])
-      if (cat) {
+      // Single unified query — catalog (is_catalog=true) + user products
+      const { data } = await supabase
+        .from('products')
+        .select('*')
+        .or(`is_catalog.eq.true,user_id.eq.${userId}`)
+
+      if (data) {
         const catMap = {}
-        cat.forEach(p => {
-          catMap[p.id] = {
-            ...p, _isCatalog: true,
+        const userMap = {}
+        data.forEach(p => {
+          const mapped = {
+            id: p.id, name: p.name, brand: p.brand, category: p.category,
             imageUrl: p.image_url, purchaseUrl: p.purchase_url,
-            applicationArea: {}, currentlyUsing: p.currently_using || false,
-            buyAgain: p.buy_again || null, effectiveness: p.effectiveness || 0,
-            bdsCompliant: p.bds_compliant !== false,
+            bdsCompliant: p.bds_compliant, currentlyUsing: p.currently_using,
+            applicationArea: p.application_area || {},
+            effectiveness: p.effectiveness || 0, buyAgain: p.buy_again,
             tags: (p.tags || []).map(t => t ? t.charAt(0).toUpperCase() + t.slice(1) : t),
+            notes: p.notes,
             ingredient_category: p.ingredient_category || '',
             ingredient_form: p.ingredient_form || '',
+            _isCatalog: p.is_catalog || false,
             store_name: p.store_name || '',
             direct_url: p.direct_url || '',
             direct_store_name: p.direct_store_name || '',
             description: p.description || '',
             ingredients: p.ingredients || '',
-          }
-        })
-        setCatalogProducts(catMap)
-      }
-      if (data) {
-        const map = {}
-        data.forEach(p => {
-          map[p.id] = {
-            id: p.id, name: p.name, brand: p.brand, category: p.category,
-            imageUrl: p.image_url, purchaseUrl: p.purchase_url,
-            bdsCompliant: p.bds_compliant, currentlyUsing: p.currently_using,
-            applicationArea: p.application_area || {},
-            effectiveness: p.effectiveness, buyAgain: p.buy_again,
-            tags: (p.tags || []).map(t => t ? t.charAt(0).toUpperCase() + t.slice(1) : t),
-            notes: p.notes,
-            ingredient_category: p.ingredient_category || '',
-            ingredient_form: p.ingredient_form || '',
-            _isCatalog: false,
-            catalog_product_id: p.catalog_product_id || null,
-            description:         p.description || '',
-            ingredients:         p.ingredients || '',
-            store_name: p.store_name || '',
-            direct_url: p.direct_url || '',
-            direct_store_name: p.direct_store_name || '',
             black_owned: p.black_owned || false,
             indigenous_owned: p.indigenous_owned || false,
             poc_owned: p.poc_owned || false,
@@ -1021,47 +1002,48 @@ export default function ProductsPage({ session }) {
             expires_at: p.expires_at || '',
             pao_months: p.pao_months || null,
           }
+          if (p.is_catalog) catMap[p.id] = mapped
+          else if (p.user_id === userId) userMap[p.id] = mapped
         })
-        setProducts(map)
+        setCatalogProducts(catMap)
+        setProducts(userMap)
       }
-      // Fetch curator's active routine to power "What we're using!" badge
+
+      // Fetch curator's active routine for badge
+      const CURATOR_ID = '27fbf9cd-5cfe-4032-9594-398e96fd0ccf'
       const { data: routinePeriods } = await supabase
         .from('routine_periods')
-        .select('products, steps')
+        .select('products')
         .eq('user_id', CURATOR_ID)
         .order('start_date', { ascending: false })
         .limit(1)
 
       if (routinePeriods?.[0]) {
-        const period = routinePeriods[0]
-        // products field is { stepKey: productId } — collect unique product IDs
         const productIds = [...new Set(
-          Object.values(period.products || {})
+          Object.values(routinePeriods[0].products || {})
             .filter(id => id && !String(id).startsWith('seed-'))
         )]
         if (productIds.length > 0) {
-          // Look up those IDs in catalog_products to get name+brand
           const { data: routineProds } = await supabase
-            .from('catalog_products')
+            .from('products')
             .select('name, brand, bds_compliant')
             .in('id', productIds)
+            .eq('is_catalog', true)
           const nameSet = new Set()
           ;(routineProds || []).forEach(p => {
-            if (p.bds_compliant !== false) {
+            if (p.bds_compliant !== false)
               nameSet.add((p.name + '|' + (p.brand || '')).toLowerCase())
-            }
           })
           setActiveRoutineNames(nameSet)
         }
       }
-
       setLoading(false)
     }
     load()
   }, [userId])
 
   async function saveProduct(product) {
-    if (product._isCatalog) return
+    if (product._isCatalog) return // never write catalog products to user products
     const row = {
       id: product.id,
       user_id: userId,

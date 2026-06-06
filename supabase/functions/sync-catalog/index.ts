@@ -62,9 +62,11 @@ Deno.serve(async (req) => {
     const rows = values.map(parseRow).filter(Boolean)
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
+    const catalogRows = rows.map(r => ({ ...r, is_catalog: true, user_id: null }))
+
     const { data, error } = await supabase
-      .from('catalog_products')
-      .upsert(rows, { onConflict: 'name,brand', ignoreDuplicates: false })
+      .from('products')
+      .upsert(catalogRows, { onConflict: 'name,brand', ignoreDuplicates: false })
       .select('id')
 
     if (error) throw new Error(JSON.stringify(error))
