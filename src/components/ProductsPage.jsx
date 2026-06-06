@@ -729,7 +729,7 @@ function PersonalDataForm({ productId, isCatalog, upd, product, onSaveUpd, onClo
 }
 
 // ─── PRODUCT DETAIL MODAL ────────────────────────────────────
-function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, isWhatWeUsing, upd, onAddToLibrary, onRemoveFromLibrary, onSaveUserProductData }) {
+function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, isWhatWeUsing, userRoutineNames, upd, onAddToLibrary, onRemoveFromLibrary, onSaveUserProductData }) {
   if (!p) return null
   const isCatalog = p._isCatalog && !p._isLinked
   const cat = p.catalog_product_id ? (catalogProducts || {})[p.catalog_product_id] : null
@@ -966,10 +966,22 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
         return matchBrand && matchCat && matchSearch && matchFlags && matchUsing && matchBuyAgain
       })
       .sort((a, b) => {
-        const aUsing = isWhatWeUsing(a)
-        const bUsing = isWhatWeUsing(b)
-        if (aUsing && !bUsing) return -1
-        if (!aUsing && bUsing) return 1
+        const aKey = ((a.name || '') + '|' + (a.brand || '')).toLowerCase()
+        const bKey = ((b.name || '') + '|' + (b.brand || '')).toLowerCase()
+        const aWWU = isWhatWeUsing(a)
+        const bWWU = isWhatWeUsing(b)
+        const aUser = (userRoutineNames || new Set()).has(aKey)
+        const bUser = (userRoutineNames || new Set()).has(bKey)
+        if (sortBy === 'routine') {
+          // "What we're using!" first, then user's routine, then rest
+          const aPrio = aWWU ? 2 : aUser ? 1 : 0
+          const bPrio = bWWU ? 2 : bUser ? 1 : 0
+          if (aPrio !== bPrio) return bPrio - aPrio
+          return (a.name || '').localeCompare(b.name || '')
+        }
+        // For name/brand sorts still float "what we're using" to top
+        if (aWWU && !bWWU) return -1
+        if (!aWWU && bWWU) return 1
         if (sortBy === 'brand') {
           const brandCmp = (a.brand || '').toLowerCase().localeCompare((b.brand || '').toLowerCase())
           return brandCmp !== 0 ? brandCmp : (a.name || '').localeCompare(b.name || '')
@@ -1146,6 +1158,7 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
         <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
           <select value={sortBy} onChange={e => setSortBy(e.target.value)}
             style={{ padding: '7px 10px', borderRadius: 8, border: '0.5px solid ' + T.border, background: T.cream, color: T.text, fontSize: 12, fontFamily: 'inherit', cursor: 'pointer', flexShrink: 0 }}>
+            <option value="routine">My routine first</option>
             <option value="name">A–Z Name</option>
             <option value="brand">A–Z Brand</option>
           </select>
@@ -1169,7 +1182,10 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
               {isWhatWeUsing(p) && (
                 <div style={{ position: 'absolute', top: 8, right: 8, fontSize: 9, background: T.pink, color: T.pinkDeep, borderRadius: 10, padding: '2px 6px', fontWeight: 600 }}>What we're using!</div>
               )}
-              {!isWhatWeUsing(p) && p._isCatalog && (userProductData || {})[p.id]?.in_library && (
+              {!isWhatWeUsing(p) && (userRoutineNames || new Set()).has(((p.name||'')+'|'+(p.brand||'')).toLowerCase()) && (
+                <div style={{ position: 'absolute', top: 8, right: 8, fontSize: 9, background: T.creamDark, color: T.text, borderRadius: 10, padding: '2px 6px', fontWeight: 600, border: '0.5px solid ' + T.border }}>Currently using</div>
+              )}
+              {!isWhatWeUsing(p) && !(userRoutineNames || new Set()).has(((p.name||'')+'|'+(p.brand||'')).toLowerCase()) && p._isCatalog && (userProductData || {})[p.id]?.in_library && (
                 <div style={{ position: 'absolute', top: 8, right: 8, fontSize: 9, background: T.creamDark, color: T.textMuted, borderRadius: 10, padding: '2px 6px', fontWeight: 500 }}>In my products</div>
               )}
               {(p.imageUrl || p.image_url) && (
@@ -1202,6 +1218,7 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
           onDelete={onDelete}
           catalogProducts={catalogProducts}
           isWhatWeUsing={isWhatWeUsing}
+          userRoutineNames={userRoutineNames}
           upd={(userProductData || {})[selectedProduct?.id]}
           onAddToLibrary={onAddToLibrary}
           onRemoveFromLibrary={onRemoveFromLibrary}
