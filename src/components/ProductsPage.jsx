@@ -617,6 +617,14 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts }
   return (
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
       <div onClick={e => e.stopPropagation()} style={{ background: T.white, borderRadius: 16, width: '100%', maxWidth: 520, maxHeight: '85vh', overflowY: 'auto', padding: '24px 20px 32px' }}>
+        {/* Product image */}
+        {(p.imageUrl || p.image_url) && (
+          <div style={{ margin: '-24px -20px 16px', height: 220, overflow: 'hidden', borderRadius: '16px 16px 0 0' }}>
+            <img src={p.imageUrl || p.image_url} alt={p.name}
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          </div>
+        )}
+
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
           <div style={{ flex: 1, paddingRight: 12 }}>
@@ -896,6 +904,12 @@ function ProductLibrary({ products, catalogProducts, onEdit, onAdd, onDelete }) 
               onMouseLeave={e => e.currentTarget.style.borderColor = T.border}>
               {(isCatalogCard(p) || p._isLinked) && (
                 <div style={{ position: 'absolute', top: 8, right: 8, fontSize: 9, background: T.pink, color: T.pinkDeep, borderRadius: 10, padding: '2px 6px', fontWeight: 600 }}>We recommend</div>
+              )}
+              {(p.imageUrl || p.image_url) && (
+                <div style={{ margin: '-12px -12px 10px', height: 120, overflow: 'hidden', borderRadius: '10px 10px 0 0' }}>
+                  <img src={p.imageUrl || p.image_url} alt={p.name}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                </div>
               )}
               <div style={{ paddingRight: (isCatalogCard(p) || p._isLinked) ? 72 : 0 }}>
                 <div style={{ fontSize: 12, fontWeight: 600, color: T.text, marginBottom: 2, lineHeight: 1.3 }}>{p.name}</div>
