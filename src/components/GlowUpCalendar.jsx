@@ -3402,25 +3402,11 @@ function UpcomingTreatmentsPanel({ treatments, allTypes, routineHistory, onClose
 
 
 // ─── FEEDBACK PANEL ───────────────────────────────────────────
-function FeedbackPanel({ userId, onClose }) {
+function FeedbackPanel({ onClose }) {
   const [type,    setType]    = useState('general')
   const [message, setMessage] = useState('')
   const [sending, setSending] = useState(false)
   const [sent,    setSent]    = useState(false)
-  const [view,    setView]    = useState('compose') // 'compose' | 'history'
-  const [history, setHistory] = useState([])
-  const [loadingHistory, setLoadingHistory] = useState(false)
-
-  async function loadHistory() {
-    setLoadingHistory(true)
-    const { data } = await supabase.from('feedback').select('*').eq('user_id', userId).order('created_at', { ascending: false })
-    setHistory(data || [])
-    setLoadingHistory(false)
-  }
-
-  useEffect(() => {
-    if (view === 'history') loadHistory()
-  }, [view])
 
   const types = [
     { key: 'bug',     label: '🐛 Bug report' },
@@ -3431,7 +3417,8 @@ function FeedbackPanel({ userId, onClose }) {
   async function handleSend() {
     if (!message.trim()) return
     setSending(true)
-    await supabase.from('feedback').insert({ user_id: userId, type, message: message.trim() })
+    // user_id intentionally omitted — feedback is anonymous
+    await supabase.from('feedback').insert({ type, message: message.trim() })
     setSending(false)
     setSent(true)
     setTimeout(() => { setSent(false); setMessage(''); onClose() }, 2000)
@@ -3439,39 +3426,15 @@ function FeedbackPanel({ userId, onClose }) {
 
   return (
     <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 12, padding: '16px 18px', marginBottom: 14 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>Feedback</div>
-          <div style={{ display: 'flex', gap: 4 }}>
-            {[['compose','Write'],['history','My submissions']].map(([k,l]) => (
-              <button key={k} onClick={() => setView(k)} style={{ fontSize: 10, padding: '2px 8px', borderRadius: 6, border: `0.5px solid ${view===k ? T.pinkDeep : T.border}`, background: view===k ? T.pink : 'transparent', cursor: 'pointer', color: T.text }}>{l}</button>
-            ))}
-          </div>
-        </div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>Send feedback</div>
         <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 18, color: T.textMuted, lineHeight: 1 }}>×</button>
       </div>
 
-      {view === 'history' ? (
-        <div>
-          {loadingHistory ? (
-            <div style={{ fontSize: 12, color: T.textMuted, padding: '12px 0' }}>Loading...</div>
-          ) : history.length === 0 ? (
-            <div style={{ fontSize: 12, color: T.textMuted, fontStyle: 'italic', padding: '12px 0' }}>No submissions yet.</div>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxHeight: 320, overflowY: 'auto' }}>
-              {history.map(f => (
-                <div key={f.id} style={{ padding: '10px 12px', borderRadius: 8, background: T.creamDark, border: `0.5px solid ${T.border}` }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                    <span style={{ fontSize: 10, fontWeight: 600, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{f.type}</span>
-                    <span style={{ fontSize: 10, color: T.textLight }}>{fmtDate(f.created_at?.slice(0,10))}</span>
-                  </div>
-                  <div style={{ fontSize: 12, color: T.text, lineHeight: 1.5 }}>{f.message}</div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      ) : (<>
+      {/* Anonymity notice */}
+      <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.6, padding: '8px 10px', background: T.creamDark, borderRadius: 8, marginBottom: 12, border: `0.5px solid ${T.border}` }}>
+        🔒 Feedback is completely anonymous. Your name, account, and identity are never attached to what you write here.
+      </div>
 
       {/* Type picker */}
       <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
@@ -3479,7 +3442,7 @@ function FeedbackPanel({ userId, onClose }) {
           <button key={t.key} onClick={() => setType(t.key)} style={{
             flex: 1, padding: '6px 8px', borderRadius: 8, fontSize: 11, cursor: 'pointer',
             border: `0.5px solid ${type === t.key ? T.pinkDeep : T.border}`,
-            background: type === t.key ? T.pink : 'transparent', color: T.text,
+            background: type === t.key ? T.pink : 'transparent', color: T.text, fontFamily: 'inherit',
           }}>{t.label}</button>
         ))}
       </div>
@@ -3488,7 +3451,7 @@ function FeedbackPanel({ userId, onClose }) {
       <textarea
         value={message}
         onChange={e => setMessage(e.target.value)}
-        placeholder="What's on your mind? Be as specific as you can — screenshots or steps to reproduce a bug are super helpful."
+        placeholder="What's on your mind? Be as specific as you can — steps to reproduce a bug, or what you wish the app did differently."
         rows={5}
         style={{
           width: '100%', fontSize: 12, padding: '10px 12px', border: `0.5px solid ${T.border}`,
@@ -3509,7 +3472,6 @@ function FeedbackPanel({ userId, onClose }) {
           opacity: !message.trim() ? 0.5 : 1, transition: 'background 0.2s', fontFamily: 'inherit',
         }}
       >{sent ? '✓ Sent — thank you!' : sending ? 'Sending...' : 'Send feedback'}</button>
-      </>)}
     </div>
   )
 }
@@ -4647,7 +4609,6 @@ export default function GlowUpCalendar({ session }) {
             {/* Feedback panel */}
             {showFeedback && (
               <FeedbackPanel
-                userId={userId}
                 onClose={() => setShowFeedback(false)}
               />
             )}
