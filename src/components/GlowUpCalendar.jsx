@@ -33,6 +33,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import Avatar from './Avatar'
 import { supabase } from '../lib/supabase'
+import GlowUpLoader from './GlowUpLoader'
+import { LoadError } from './ErrorBoundary'
 
 // ─── DESIGN TOKENS ───────────────────────────────────────────
 const T = {
