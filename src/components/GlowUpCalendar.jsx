@@ -3453,7 +3453,7 @@ function UpcomingTreatmentsPanel({ treatments, allTypes, routineHistory, onClose
                   onClick={() => setEditingRecovery(editingRecovery === tv.type ? null : tv.type)}
                   style={{ fontSize: 10, padding: '3px 8px', background: editingRecovery === tv.type ? T.pink : undefined, borderColor: editingRecovery === tv.type ? T.pinkDeep : undefined }}
                 >
-                  Recovery routine
+                  Set recovery routine
                 </Btn>
               )}
               <button onClick={() => onRemove(key)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 16, padding: '0 4px', lineHeight: 1 }}>×</button>
@@ -3483,40 +3483,12 @@ function UpcomingTreatmentsPanel({ treatments, allTypes, routineHistory, onClose
     )
   }
 
-  function handleExportICS() {
-    const lines = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//GlowUp Calendar//EN','CALSCALE:GREGORIAN','METHOD:PUBLISH']
-    Object.entries(treatments).sort(([a],[b]) => a.localeCompare(b)).forEach(([key, tv]) => {
-      const cfg = { pre: tv.pre ?? allTypes[tv.type]?.pre ?? 0, post: tv.post ?? allTypes[tv.type]?.post ?? 0 }
-      const typeLabel = allTypes[tv.type]?.label || tv.type
-      const dt = new Date(key+'T00:00:00')
-      const preStart = new Date(dt); preStart.setDate(preStart.getDate() - cfg.pre)
-      const recEnd   = new Date(dt); recEnd.setDate(recEnd.getDate() + cfg.post)
-      const uid = `${key}-treatment-${Math.random().toString(36).slice(2)}@glowup`
-      const desc = `${typeLabel}\nPause actives from: ${fmtDate(dateKey(preStart))}\nRecovery through: ${fmtDate(dateKey(recEnd))}\nArea: ${tv.area || 'face'} · ${tv.timeOfDay === 'pm' ? 'Evening' : 'Morning'}`
-      lines.push(
-        'BEGIN:VEVENT', `UID:${uid}`,
-        `DTSTART;VALUE=DATE:${icsDate(dt)}`,
-        `DTEND;VALUE=DATE:${icsDate(new Date(dt.getTime()+86400000))}`,
-        `SUMMARY:${typeLabel}`,
-        `DESCRIPTION:${icsEscape(desc)}`,
-        'END:VEVENT'
-      )
-    })
-    lines.push('END:VCALENDAR')
-    const blob = new Blob([lines.join('\r\n')], { type: 'text/calendar;charset=utf-8' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a'); a.href = url; a.download = 'treatments.ics'; a.click()
-    URL.revokeObjectURL(url)
-  }
-
   return (
     <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 12, padding: '16px 18px', marginBottom: 14 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
         <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>Treatments</div>
         <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-          {Object.keys(treatments).length > 0 && (
-            <Btn onClick={handleExportICS} style={{ fontSize: 11, padding: '4px 10px' }}>↑ Export .ics</Btn>
-          )}
+
           <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 18, color: T.textMuted, padding: '0 2px', lineHeight: 1 }}>×</button>
         </div>
       </div>
