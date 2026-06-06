@@ -4078,6 +4078,11 @@ export default function GlowUpCalendar({ session }) {
 
   // ── Product handlers ──────────────────────────────────────
   async function saveProduct(product) {
+    // Don't write catalog products to the user products table
+    if (product._isCatalog) {
+      setEditingProduct(null)
+      return
+    }
     const row = {
       id: product.id, user_id: userId,
       name: product.name, brand: product.brand, category: product.category,
@@ -4086,8 +4091,9 @@ export default function GlowUpCalendar({ session }) {
       application_area: product.applicationArea || {}, effectiveness: product.effectiveness,
       buy_again: product.buyAgain, tags: product.tags || [], notes: product.notes,
     }
+    if (!row.id) row.id = crypto.randomUUID()
     await supabase.from('products').upsert(row)
-    setProducts(p => ({ ...p, [product.id]: product }))
+    setProducts(p => ({ ...p, [row.id]: { ...product, id: row.id } }))
     setEditingProduct(null)
   }
 

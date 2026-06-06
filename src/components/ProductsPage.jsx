@@ -1061,6 +1061,7 @@ export default function ProductsPage({ session }) {
   }, [userId])
 
   async function saveProduct(product) {
+    if (product._isCatalog) return
     const row = {
       id: product.id,
       user_id: userId,
