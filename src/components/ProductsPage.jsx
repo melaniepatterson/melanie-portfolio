@@ -962,7 +962,7 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
           const key = ((p.name || '') + '|' + (p.brand || '')).toLowerCase()
           return (userRoutineNames || new Set()).has(key)
         })()
-        const matchBuyAgain = !filterBuyAgain || p.buyAgain === true
+        const matchBuyAgain = !filterBuyAgain || (userProductData || {})[p.id]?.buy_again === true
         return matchBrand && matchCat && matchSearch && matchFlags && matchUsing && matchBuyAgain
       })
       .sort((a, b) => {
@@ -1343,19 +1343,27 @@ export default function ProductsPage({ session }) {
                 const { data: userProds } = await supabase
                   .from('products')
                   .select('name, brand')
-                  .in('id', userIds)
+                  .in('id', userIds)   // no is_catalog filter — includes personal non-BDS products
                 setUserRoutineNames(new Set(
                   (userProds || []).map(p => (p.name + '|' + (p.brand || '')).toLowerCase())
                 ))
               }
             }
           } else {
-            // User IS the curator — their routine names are the same (no BDS gate needed for filter)
-            const allNames = new Set()
-            ;(routineProds || []).forEach(p =>
-              allNames.add((p.name + '|' + (p.brand || '')).toLowerCase())
-            )
-            setUserRoutineNames(allNames)
+            // User IS the curator — fetch ALL products in their routine (including non-BDS personal ones)
+            const allRouteIds = [...new Set(
+              Object.values(routinePeriods[0].products || {})
+                .filter(id => id && !String(id).startsWith('seed-'))
+            )]
+            if (allRouteIds.length > 0) {
+              const { data: allRoutineProds } = await supabase
+                .from('products')
+                .select('name, brand')
+                .in('id', allRouteIds)  // no is_catalog filter — gets everything
+              setUserRoutineNames(new Set(
+                (allRoutineProds || []).map(p => (p.name + '|' + (p.brand || '')).toLowerCase())
+              ))
+            }
           }
 
           // Auto-add routine products to user's library (in_library=true) if not already tracked
