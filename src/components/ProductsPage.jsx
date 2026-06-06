@@ -1182,9 +1182,7 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
               {!isWhatWeUsing(p) && (userRoutineNames || new Set()).has(((p.name||'')+'|'+(p.brand||'')).toLowerCase()) && (
                 <div style={{ position: 'absolute', top: 8, right: 8, fontSize: 9, background: T.creamDark, color: T.text, borderRadius: 10, padding: '2px 6px', fontWeight: 600, border: '0.5px solid ' + T.border }}>Currently using</div>
               )}
-              {!isWhatWeUsing(p) && !(userRoutineNames || new Set()).has(((p.name||'')+'|'+(p.brand||'')).toLowerCase()) && p._isCatalog && (userProductData || {})[p.id]?.in_library && (
-                <div style={{ position: 'absolute', top: 8, right: 8, fontSize: 9, background: T.creamDark, color: T.textMuted, borderRadius: 10, padding: '2px 6px', fontWeight: 500 }}>In my products</div>
-              )}
+
               {(p.imageUrl || p.image_url) && (
                 <div style={{ margin: '-12px -12px 10px', height: 120, overflow: 'hidden', borderRadius: '10px 10px 0 0' }}>
                   <img src={p.imageUrl || p.image_url} alt={p.name}
