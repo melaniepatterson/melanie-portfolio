@@ -3214,18 +3214,18 @@ function generateICS({ routineHistory, treatments, allTypes, products, settings 
       : null
     // Skip days with no routine and no treatment
     if (!period && !info.isTreatment) continue
-    const uid = () => `${key}-${Math.random().toString(36).slice(2)}@glowup`
+    const uid = (slot) => `${key}-${slot}@glowup`
 
     if (format === 'allday') {
       const desc = `${amDesc ? `MORNING\n${amDesc}\n\n` : ``}${statusLabel ? `EVENING (${statusLabel})` : 'EVENING'}\n${pmDesc}`
-      lines.push('BEGIN:VEVENT',`UID:${uid()}`,`DTSTART;VALUE=DATE:${icsDate(dt)}`,`DTEND;VALUE=DATE:${icsDate(new Date(dt.getTime()+86400000))}`,`SUMMARY:${statusLabel ? `Skincare — ${statusLabel}` : 'Skincare routine'}`,`DESCRIPTION:${icsEscape(desc)}`,'END:VEVENT')
+      lines.push('BEGIN:VEVENT',`UID:${uid('allday')}`,`DTSTART;VALUE=DATE:${icsDate(dt)}`,`DTEND;VALUE=DATE:${icsDate(new Date(dt.getTime()+86400000))}`,`SUMMARY:${statusLabel ? `Skincare — ${statusLabel}` : 'Skincare routine'}`,`DESCRIPTION:${icsEscape(desc)}`,'END:VEVENT')
 
     } else {
       // separate AM + PM
       const at = getAM(dow)
-      lines.push('BEGIN:VEVENT',`UID:${uid()}`,`DTSTART:${icsDateTime(dt, at)}`,`DTEND:${icsDateTime(dt, addMins(at, 30))}`,`SUMMARY:Morning routine`,`DESCRIPTION:${icsEscape('MORNING\n'+amDesc)}`,'END:VEVENT')
+      lines.push('BEGIN:VEVENT',`UID:${uid('am')}`,`DTSTART:${icsDateTime(dt, at)}`,`DTEND:${icsDateTime(dt, addMins(at, 30))}`,`SUMMARY:Morning routine`,`DESCRIPTION:${icsEscape('MORNING\n'+amDesc)}`,'END:VEVENT')
       const pt = getPM(dow)
-      lines.push('BEGIN:VEVENT',`UID:${uid()}`,`DTSTART:${icsDateTime(dt, pt)}`,`DTEND:${icsDateTime(dt, addMins(pt, 30))}`,`SUMMARY:${statusLabel ? `Evening routine — ${statusLabel}` : 'Evening routine'}`,`DESCRIPTION:${icsEscape('EVENING\n'+pmDesc)}`,'END:VEVENT')
+      lines.push('BEGIN:VEVENT',`UID:${uid('pm')}`,`DTSTART:${icsDateTime(dt, pt)}`,`DTEND:${icsDateTime(dt, addMins(pt, 30))}`,`SUMMARY:${statusLabel ? `Evening routine — ${statusLabel}` : 'Evening routine'}`,`DESCRIPTION:${icsEscape('EVENING\n'+pmDesc)}`,'END:VEVENT')
     }
   }
   lines.push('END:VCALENDAR')
