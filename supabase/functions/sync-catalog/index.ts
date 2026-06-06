@@ -5,7 +5,7 @@ const SHEET_RANGE = 'Products!A2:Z1000'
 
 const COLUMNS = [
   'name', 'brand', 'category', 'ingredient_category', 'ingredient_form',
-  'notes', 'image_url', 'purchase_url', 'store_name', 'direct_url', 'direct_store_name',
+  'description', 'ingredients', 'image_url', 'purchase_url', 'store_name', 'direct_url', 'direct_store_name',
   'tags', 'black_owned', 'indigenous_owned', 'poc_owned', 'woman_owned', 'lgbtq_owned',
   'cruelty_free', 'vegan', 'certified_organic', 'fair_trade', 'clean_formula',
   'science_backed', 'is_prescription', 'currently_using', 'buy_again',
