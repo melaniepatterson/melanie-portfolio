@@ -30,6 +30,7 @@ export default function Auth() {
   const [howHeard,  setHowHeard]  = useState('')
   const [loading,   setLoading]   = useState(false)
   const [errorMsg,  setErrorMsg]  = useState('')
+  const [alreadyOnList, setAlreadyOnList] = useState(false)
 
   // ── Stage 1: check approval then send magic link or show waitlist ─────────
   async function handleEmailSubmit(e) {
@@ -75,12 +76,13 @@ export default function Auth() {
     setLoading(true)
     setErrorMsg('')
     try {
-      const { error } = await supabase.rpc('join_waitlist', {
+      const { data: isNew, error } = await supabase.rpc('join_waitlist', {
         p_email: email,
         p_skin_type: skinType || null,
         p_how_heard: howHeard || null,
       })
       if (error) throw error
+      setAlreadyOnList(isNew === false)
       setScreen('joined')
     } catch (err) {
       setErrorMsg(err?.message || err?.error_description || JSON.stringify(err) || 'Something went wrong — please try again.')
@@ -224,12 +226,15 @@ export default function Auth() {
           {/* ── SCREEN: joined waitlist ── */}
           {screen === 'joined' && (
             <div style={{ textAlign: 'center', padding: '8px 0' }}>
-              <div style={{ fontSize: 32, marginBottom: 12 }}>✨</div>
+              <div style={{ fontSize: 32, marginBottom: 12 }}>{alreadyOnList ? '🌸' : '✨'}</div>
               <div style={{ fontSize: 16, fontWeight: 600, color: T.text, marginBottom: 8 }}>
-                You're on the list
+                {alreadyOnList ? "You're already on the list" : "You're on the list"}
               </div>
               <div style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.6 }}>
-                We'll reach out to <strong style={{ color: T.text }}>{email}</strong> when your spot is ready. Thanks for your interest — we can't wait to have you.
+                {alreadyOnList
+                  ? <>We already have <strong style={{ color: T.text }}>{email}</strong> saved. We haven't forgotten you — we'll reach out as soon as your spot is ready.</>
+                  : <>We'll reach out to <strong style={{ color: T.text }}>{email}</strong> when your spot is ready. Thanks for your interest — we can't wait to have you.</>
+                }
               </div>
               <button onClick={() => { setScreen('email'); setEmail('') }}
                 style={{ ...btnStyle(false), marginTop: 20, color: T.textMuted }}>
