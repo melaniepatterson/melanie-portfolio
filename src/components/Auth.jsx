@@ -82,7 +82,8 @@ export default function Auth() {
         p_how_heard: howHeard || null,
       })
       if (error) throw error
-      setAlreadyOnList(isNew === false)
+      console.log('join_waitlist returned:', isNew, typeof isNew)
+      setAlreadyOnList(isNew === false || isNew === 0)
       setScreen('joined')
     } catch (err) {
       setErrorMsg(err?.message || err?.error_description || JSON.stringify(err) || 'Something went wrong — please try again.')
