@@ -897,6 +897,14 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
   const [search, setSearch] = useState('')
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [sortBy, setSortBy] = useState('name')
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 640)
+  const [filterSheetOpen, setFilterSheetOpen] = useState(false)
+
+  useEffect(() => {
+    function onResize() { setIsMobile(window.innerWidth < 640) }
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
 
   const ETHICS_FILTERS = [
     { key: 'black_owned',       label: 'Black-owned'      },
@@ -1002,20 +1010,24 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
     )
   }
 
-  return (
-    <div style={{ display: 'flex', gap: 0, height: 'calc(100vh - 120px)', overflow: 'hidden' }}>
+  // Inject slideUp animation once
+  useEffect(() => {
+    if (document.getElementById('glowup-sheet-style')) return
+    const s = document.createElement('style')
+    s.id = 'glowup-sheet-style'
+    s.textContent = '@keyframes slideUp { from { transform: translateY(100%) } to { transform: translateY(0) } }'
+    document.head.appendChild(s)
+  }, [])
 
-      {/* ── Left Sidebar ─────────────────────────────────────── */}
-      <div style={{ width: 200, flexShrink: 0, borderRight: '0.5px solid ' + T.border, padding: '16px 16px 16px 20px', overflowY: 'auto', position: 'sticky', top: 0, height: '100%' }}>
-
-        {/* Clear filters */}
+  // Shared filter content used in both sidebar and bottom sheet
+  function FilterContent() {
+    return (
+      <>
         {hasFilters && (
           <button onClick={clearAll} style={{ fontSize: 11, color: T.pinkDeep, background: 'none', border: 'none', cursor: 'pointer', padding: '0 0 12px', fontFamily: 'inherit' }}>
             Clear all filters ×
           </button>
         )}
-
-        {/* Product type */}
         <FilterSection title="Brand">
           {[...new Set(pool.map(p => p.brand || '').filter(Boolean))].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase())).map(brand => (
             <label key={brand} style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', padding: '2px 0' }}>
@@ -1025,6 +1037,64 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
             </label>
           ))}
         </FilterSection>
+      </>
+    )
+  }
+
+  return (
+    <div style={{ display: 'flex', gap: 0, height: 'calc(100vh - 120px)', overflow: 'hidden', position: 'relative' }}>
+
+      {/* ── Mobile bottom sheet overlay ─────────────────────── */}
+      {isMobile && filterSheetOpen && (
+        <>
+          {/* Backdrop */}
+          <div onClick={() => setFilterSheetOpen(false)}
+            style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 100 }} />
+          {/* Sheet */}
+          <div style={{
+            position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 101,
+            background: T.white, borderRadius: '16px 16px 0 0',
+            padding: '0 20px 32px', maxHeight: '75vh', overflowY: 'auto',
+            boxShadow: '0 -4px 24px rgba(0,0,0,0.12)',
+            animation: 'slideUp 0.22s ease',
+          }}>
+            {/* Handle */}
+            <div style={{ display: 'flex', justifyContent: 'center', padding: '12px 0 16px' }}>
+              <div style={{ width: 36, height: 4, borderRadius: 2, background: T.border }} />
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <div style={{ fontSize: 14, fontWeight: 600, color: T.text }}>Filters</div>
+              <button onClick={() => setFilterSheetOpen(false)}
+                style={{ border: 'none', background: 'transparent', fontSize: 20, color: T.textMuted, cursor: 'pointer', padding: '0 2px', lineHeight: 1 }}>×</button>
+            </div>
+            <FilterContent />
+          </div>
+        </>
+      )}
+
+      {/* ── Mobile filter pill button ────────────────────────── */}
+      {isMobile && (
+        <button onClick={() => setFilterSheetOpen(true)}
+          style={{
+            position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
+            zIndex: 99, padding: '10px 20px', borderRadius: 24,
+            background: hasFilters ? T.pinkDeep : T.text,
+            color: '#fff', border: 'none', cursor: 'pointer',
+            fontSize: 13, fontWeight: 600, fontFamily: 'inherit',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
+            display: 'flex', alignItems: 'center', gap: 6,
+          }}>
+          <span>⚙︎ Filters</span>
+          {hasFilters && <span style={{ background: 'rgba(255,255,255,0.3)', borderRadius: 10, padding: '1px 7px', fontSize: 11 }}>
+            {filterBrands.length + filterCats.length + filterFlags.length + (filterUsing ? 1 : 0) + (filterBuyAgain ? 1 : 0)}
+          </span>}
+        </button>
+      )}
+
+      {/* ── Left Sidebar — desktop only ──────────────────────── */}
+      {!isMobile && <div style={{ width: 200, flexShrink: 0, borderRight: '0.5px solid ' + T.border, padding: '16px 16px 16px 20px', overflowY: 'auto', position: 'sticky', top: 0, height: '100%' }}>
+
+        <FilterContent />
 
         <FilterSection title="Product type">
           {PRODUCT_CATEGORIES.map(cat => (
@@ -1051,7 +1121,7 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
           ))}
         </FilterSection>
 
-      </div>
+      </div>}
 
       {/* ── Main Content ──────────────────────────────────────── */}
       <div style={{ flex: 1, padding: '16px 20px', minWidth: 0, overflowY: 'auto', height: '100%' }}>
