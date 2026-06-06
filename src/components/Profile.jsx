@@ -20,8 +20,7 @@ const SUPABASE_URL = 'https://brcjhshptisevcndqavz.supabase.co'
 const SKIN_TYPES = ['Dry', 'Oily', 'Combination', 'Normal', 'Sensitive']
 
 const SKIN_GOALS = [
-  'Anti-aging', 'Acne', 'Hyperpigmentation', 'Hydration',
-  'Texture', 'Brightening', 'Redness', 'Pore size', 'Sun protection',
+  'Anti-aging', 'Texture', 'Brightening', 'Pore size', 'Sun protection',
 ]
 
 const SKIN_CONCERNS = [
@@ -92,6 +91,7 @@ export default function Profile({ session }) {
   const [ageRange,      setAgeRange]      = useState('')
   const [retinoidExp,   setRetinoidExp]   = useState('')
   const [climate,       setClimate]       = useState('')
+  const [newsletterOptIn, setNewsletterOptIn] = useState(false)
   const [avatarUrl,     setAvatarUrl]     = useState(null)
   const [cropSrc,       setCropSrc]       = useState(null)
   const [uploading,     setUploading]     = useState(false)
@@ -117,6 +117,7 @@ export default function Profile({ session }) {
           setRetinoidExp(data.retinoid_experience || '')
           setClimate(data.climate || '')
           if (data.avatar_url) setAvatarUrl(data.avatar_url)
+          setNewsletterOptIn(data.newsletter_opt_in || false)
         }
         setLoading(false)
       })
@@ -172,6 +173,7 @@ export default function Profile({ session }) {
       age_range:           ageRange || null,
       retinoid_experience: retinoidExp || null,
       climate:             climate || null,
+      newsletter_opt_in:   newsletterOptIn,
       updated_at:          new Date().toISOString(),
     })
     setSaving(false)
@@ -279,7 +281,7 @@ export default function Profile({ session }) {
 
         {/* Skin type */}
         <div style={{ marginBottom: 24 }}>
-          <SectionLabel>Skin type</SectionLabel>
+          <SectionLabel>Skin type <OptionalTag /></SectionLabel>
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
             {SKIN_TYPES.map(t => (
               <PillButton key={t} active={skinType === t} onClick={() => setSkinType(skinType === t ? '' : t)}>{t}</PillButton>
@@ -289,7 +291,7 @@ export default function Profile({ session }) {
 
         {/* Skin goals */}
         <div style={{ marginBottom: 24 }}>
-          <SectionLabel>Skin goals</SectionLabel>
+          <SectionLabel>What I'm working toward <OptionalTag /></SectionLabel>
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
             {SKIN_GOALS.map(g => (
               <PillButton key={g} active={skinGoals.includes(g)} onClick={() => toggleArr(setSkinGoals, g)}>{g}</PillButton>
@@ -299,8 +301,8 @@ export default function Profile({ session }) {
 
         {/* Specific concerns */}
         <div style={{ marginBottom: 24 }}>
-          <SectionLabel>Current concerns <OptionalTag /></SectionLabel>
-          <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 8 }}>What's bothering your skin right now?</div>
+          <SectionLabel>What I'm managing <OptionalTag /></SectionLabel>
+          
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
             {SKIN_CONCERNS.map(c => (
               <PillButton key={c} active={skinConcerns.includes(c)} onClick={() => toggleArr(setSkinConcerns, c)}>{c}</PillButton>
@@ -330,6 +332,28 @@ export default function Profile({ session }) {
               <PillButton key={c} active={climate === c} onClick={() => setClimate(climate === c ? '' : c)}>{c}</PillButton>
             ))}
           </div>
+        </div>
+
+        {/* Newsletter opt-in */}
+        <div style={{ marginBottom: 24, padding: '14px 16px', background: T.white, borderRadius: 10, border: `0.5px solid ${T.border}` }}>
+          <label style={{ display: 'flex', alignItems: 'flex-start', gap: 12, cursor: 'pointer' }}>
+            <div style={{ position: 'relative', flexShrink: 0, marginTop: 2 }}>
+              <input
+                type="checkbox"
+                checked={newsletterOptIn}
+                onChange={e => setNewsletterOptIn(e.target.checked)}
+                style={{ width: 18, height: 18, accentColor: T.pinkDeep, cursor: 'pointer', marginTop: 0 }}
+              />
+            </div>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 3 }}>
+                Subscribe to the newsletter
+              </div>
+              <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.5 }}>
+                Occasional updates on new products, routine tips, and what we're loving. No spam, unsubscribe any time.
+              </div>
+            </div>
+          </label>
         </div>
 
         {/* Privacy note */}
