@@ -881,7 +881,7 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
 
 
 // ─── PRODUCT LIBRARY ─────────────────────────────────────────
-function ProductLibrary({ products, catalogProducts, userProductData, activeRoutineNames, onEdit, onAdd, onDelete, onAddToLibrary, onRemoveFromLibrary, onSaveUserProductData }) {
+function ProductLibrary({ products, catalogProducts, userProductData, activeRoutineNames, userRoutineNames, onEdit, onAdd, onDelete, onAddToLibrary, onRemoveFromLibrary, onSaveUserProductData }) {
   function isWhatWeUsing(p) {
     if (p.bds_compliant === false) return false
     if (!activeRoutineNames || activeRoutineNames.size === 0) return false
@@ -958,7 +958,10 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
         const matchCat = filterCats.length === 0 || filterCats.includes(p.category)
         const matchSearch = !search.trim() || p.name.toLowerCase().includes(search.toLowerCase()) || (p.brand || '').toLowerCase().includes(search.toLowerCase())
         const matchFlags = filterFlags.length === 0 || filterFlags.every(f => p[f])
-        const matchUsing = !filterUsing || isWhatWeUsing(p)
+        const matchUsing = !filterUsing || (() => {
+          const key = ((p.name || '') + '|' + (p.brand || '')).toLowerCase()
+          return (userRoutineNames || new Set()).has(key)
+        })()
         const matchBuyAgain = !filterBuyAgain || p.buyAgain === true
         return matchBrand && matchCat && matchSearch && matchFlags && matchUsing && matchBuyAgain
       })
@@ -1215,7 +1218,8 @@ export default function ProductsPage({ session }) {
   const [userProductData, setUserProductData] = useState({}) // keyed by product_id
   const [editingProduct, setEditingProduct] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [activeRoutineNames, setActiveRoutineNames] = useState(new Set())
+  const [activeRoutineNames, setActiveRoutineNames] = useState(new Set())  // curator's, BDS-gated — drives badge
+  const [userRoutineNames, setUserRoutineNames] = useState(new Set())        // current user's — drives filter
   const userId = session?.user?.id
   const CURATOR_ID = '27fbf9cd-5cfe-4032-9594-398e96fd0ccf'
 
@@ -1307,6 +1311,38 @@ export default function ProductsPage({ session }) {
               nameSet.add((p.name + '|' + (p.brand || '')).toLowerCase())
           })
           setActiveRoutineNames(nameSet)
+
+          // Also build the current USER's routine name set (no BDS gate) for the filter
+          if (userId !== CURATOR_ID) {
+            const { data: userPeriods } = await supabase
+              .from('routine_periods')
+              .select('products')
+              .eq('user_id', userId)
+              .order('start_date', { ascending: false })
+              .limit(1)
+            if (userPeriods?.[0]) {
+              const userIds = [...new Set(
+                Object.values(userPeriods[0].products || {})
+                  .filter(id => id && !String(id).startsWith('seed-'))
+              )]
+              if (userIds.length > 0) {
+                const { data: userProds } = await supabase
+                  .from('products')
+                  .select('name, brand')
+                  .in('id', userIds)
+                setUserRoutineNames(new Set(
+                  (userProds || []).map(p => (p.name + '|' + (p.brand || '')).toLowerCase())
+                ))
+              }
+            }
+          } else {
+            // User IS the curator — their routine names are the same (no BDS gate needed for filter)
+            const allNames = new Set()
+            ;(routineProds || []).forEach(p =>
+              allNames.add((p.name + '|' + (p.brand || '')).toLowerCase())
+            )
+            setUserRoutineNames(allNames)
+          }
 
           // Auto-add routine products to user's library (in_library=true) if not already tracked
           const autoRows = (routineProds || []).map(p => ({
@@ -1461,6 +1497,7 @@ export default function ProductsPage({ session }) {
               catalogProducts={catalogProducts}
               userProductData={userProductData}
               activeRoutineNames={activeRoutineNames}
+              userRoutineNames={userRoutineNames}
               onEdit={p => setEditingProduct(p)}
               onAdd={() => setEditingProduct('new')}
               onDelete={deleteProduct}
