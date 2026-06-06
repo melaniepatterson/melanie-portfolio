@@ -979,9 +979,6 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
           if (aPrio !== bPrio) return bPrio - aPrio
           return (a.name || '').localeCompare(b.name || '')
         }
-        // For name/brand sorts still float "what we're using" to top
-        if (aWWU && !bWWU) return -1
-        if (!aWWU && bWWU) return 1
         if (sortBy === 'brand') {
           const brandCmp = (a.brand || '').toLowerCase().localeCompare((b.brand || '').toLowerCase())
           return brandCmp !== 0 ? brandCmp : (a.name || '').localeCompare(b.name || '')
@@ -1159,8 +1156,8 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
           <select value={sortBy} onChange={e => setSortBy(e.target.value)}
             style={{ padding: '7px 10px', borderRadius: 8, border: '0.5px solid ' + T.border, background: T.cream, color: T.text, fontSize: 12, fontFamily: 'inherit', cursor: 'pointer', flexShrink: 0 }}>
             <option value="routine">My routine first</option>
-            <option value="name">A–Z Name</option>
-            <option value="brand">A–Z Brand</option>
+            <option value="name">A–Z Product name</option>
+            <option value="brand">A–Z Brand name</option>
           </select>
           <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search products..."
             style={{ flex: 1, fontSize: 12, padding: '7px 10px', border: '0.5px solid ' + T.border, borderRadius: 8, background: T.white, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
