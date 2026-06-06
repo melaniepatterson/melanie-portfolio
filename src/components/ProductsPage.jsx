@@ -513,7 +513,6 @@ function ProductForm({ initial, onSave, onCancel, catalogProducts, session }) {
       {/* Currently using + Would buy again — same row */}
       <div style={{ display: 'flex', gap: 20, marginBottom: 12, flexWrap: 'wrap' }}>
         <Toggle checked={!!form.currentlyUsing} onChange={e => set('currentlyUsing', e.target.checked)} label="I'm currently using this" />
-        <Toggle checked={form.buyAgain === true} onChange={e => set('buyAgain', e.target.checked ? true : null)} label="Would buy again" />
       </div>
 
       {/* Purchase & expiry tracking */}
@@ -1352,7 +1351,7 @@ export default function ProductsPage({ session }) {
             imageUrl: p.image_url, purchaseUrl: p.purchase_url,
             bdsCompliant: p.bds_compliant, currentlyUsing: p.currently_using,
             applicationArea: p.application_area || {},
-            effectiveness: p.effectiveness || 0, buyAgain: p.buy_again,
+            effectiveness: p.effectiveness || 0,
             tags: (p.tags || []).map(t => t ? t.charAt(0).toUpperCase() + t.slice(1) : t),
             notes: p.notes,
             ingredient_category: p.ingredient_category || '',
@@ -1504,7 +1503,6 @@ export default function ProductsPage({ session }) {
       await saveUserProductData(product.id, {
         notes: product.notes,
         effectiveness: product.effectiveness,
-        buy_again: product.buyAgain,
         purchased_at: product.purchased_at || null,
         opened_at: product.opened_at || null,
         expires_at: product.expires_at || null,

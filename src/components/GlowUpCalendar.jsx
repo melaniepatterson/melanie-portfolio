@@ -2047,11 +2047,7 @@ function ProductForm({ initial, onSave, onCancel, userId }) {
         </div>
       </div>
 
-      {/* Currently using + Would buy again — same row */}
-      <div style={{ display: 'flex', gap: 20, marginBottom: 12, flexWrap: 'wrap' }}>
-        <Toggle checked={!!form.currentlyUsing} onChange={e => set('currentlyUsing', e.target.checked)} label="I'm currently using this" />
-        <Toggle checked={form.buyAgain === true} onChange={e => set('buyAgain', e.target.checked ? true : null)} label="Would buy again" />
-      </div>
+
 
       {/* Purchase & expiry tracking */}
       <div style={{ borderTop: `0.5px solid ${T.border}`, paddingTop: 12, marginBottom: 10 }}>
@@ -2328,9 +2324,7 @@ function ProductLibrary({ products, onEdit, onAdd, onDelete, onClose }) {
             {p.pao_months && <span style={{ display: 'inline-flex', alignItems: 'center', gap: 2, fontSize: 10, color: T.textMuted, marginTop: 2 }}><PaoIcon months={p.pao_months} size={13} /></span>}
             {p.effectiveness > 0 && <StarRating value={p.effectiveness} size={11} />}
             <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 6 }}>
-              {p.currentlyUsing && <span style={{ fontSize: 9, padding: '1px 5px', borderRadius: 3, background: '#DCFCE7', color: '#166534', border: '0.5px solid #4ADE80' }}>In use</span>}
-              
-              {p.buyAgain === true && <span style={{ fontSize: 9, padding: '1px 5px', borderRadius: 3, background: T.pink, color: '#9F1239', border: `0.5px solid ${T.pinkDeep}` }}>Buy again</span>}
+
               {Object.entries(p.applicationArea || {}).filter(([,v])=>v).map(([k]) => (
                 <span key={k} style={{ fontSize: 9, padding: '1px 5px', borderRadius: 3, background: T.creamDark, color: T.textMuted, border: `0.5px solid ${T.border}` }}>
                   {k.charAt(0).toUpperCase() + k.slice(1)}
@@ -3998,9 +3992,7 @@ export default function GlowUpCalendar({ session }) {
           id: p.id, user_id: userId,
           name: p.name, brand: p.brand, category: p.category,
           image_url: p.imageUrl, purchase_url: p.purchaseUrl,
-          bds_compliant: p.bdsCompliant, currently_using: p.currentlyUsing,
-          application_area: p.applicationArea || {}, effectiveness: p.effectiveness,
-          buy_again: p.buyAgain, tags: p.tags || [], notes: p.notes,
+          bds_compliant: p.bdsCompliant, tags: p.tags || [], notes: p.notes || '',
           ingredient_category: p.ingredient_category || null,
           ingredient_form:     p.ingredient_form || null,
           black_owned:         p.black_owned || false,
