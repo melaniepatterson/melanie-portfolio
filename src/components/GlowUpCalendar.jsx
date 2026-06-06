@@ -4553,8 +4553,6 @@ export default function GlowUpCalendar({ session }) {
     window.location.reload()
   }
 
-  if (loading) 
-
   // Persist recovery routines to profiles whenever they change
   useEffect(() => {
     if (!userId || loading) return
@@ -4566,7 +4564,7 @@ export default function GlowUpCalendar({ session }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [recoveryRoutines])
 
-  return (
+  if (loading) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', fontFamily: 'inherit', color: '#78716C', fontSize: 13 }}>
       Loading your routine...
     </div>
