@@ -1037,6 +1037,29 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
             </label>
           ))}
         </FilterSection>
+
+        <FilterSection title="Product type">
+          {PRODUCT_CATEGORIES.map(cat => (
+            <CheckItem key={cat}
+              label={cat.charAt(0).toUpperCase() + cat.slice(1)}
+              checked={filterCats.includes(cat)}
+              onChange={() => toggleCat(cat)} />
+          ))}
+        </FilterSection>
+
+        <FilterSection title="Status">
+          <CheckItem label="Currently using" checked={filterUsing} onChange={() => setFilterUsing(s => !s)} />
+          <CheckItem label="Would buy again" checked={filterBuyAgain} onChange={() => setFilterBuyAgain(s => !s)} />
+        </FilterSection>
+
+        <FilterSection title="Ethics & values">
+          {ETHICS_FILTERS.map(({ key, label }) => (
+            <CheckItem key={key}
+              label={label}
+              checked={filterFlags.includes(key)}
+              onChange={() => toggleFlag(key)} />
+          ))}
+        </FilterSection>
       </>
     )
   }
@@ -1095,31 +1118,6 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
       {!isMobile && <div style={{ width: 200, flexShrink: 0, borderRight: '0.5px solid ' + T.border, padding: '16px 16px 16px 20px', overflowY: 'auto', position: 'sticky', top: 0, height: '100%' }}>
 
         <FilterContent />
-
-        <FilterSection title="Product type">
-          {PRODUCT_CATEGORIES.map(cat => (
-            <CheckItem key={cat}
-              label={cat.charAt(0).toUpperCase() + cat.slice(1)}
-              checked={filterCats.includes(cat)}
-              onChange={() => toggleCat(cat)} />
-          ))}
-        </FilterSection>
-
-        {/* Currently using / buy again */}
-        <FilterSection title="Status">
-          <CheckItem label="Currently using" checked={filterUsing} onChange={() => setFilterUsing(s => !s)} />
-          <CheckItem label="Would buy again" checked={filterBuyAgain} onChange={() => setFilterBuyAgain(s => !s)} />
-        </FilterSection>
-
-        {/* Ethics */}
-        <FilterSection title="Ethics & values">
-          {ETHICS_FILTERS.map(({ key, label }) => (
-            <CheckItem key={key}
-              label={label}
-              checked={filterFlags.includes(key)}
-              onChange={() => toggleFlag(key)} />
-          ))}
-        </FilterSection>
 
       </div>}
 
