@@ -1283,7 +1283,7 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
                 {p.brand && <div style={{ fontSize: 11, color: T.textMuted }}>{p.brand}</div>}
               </div>
               {p.currentlyUsing && <div style={{ fontSize: 10, color: T.pinkDeep, fontWeight: 600 }}>Currently using</div>}
-              {p.effectiveness > 0 && <StarRating value={p.effectiveness} size={10} />}
+              {p.effectivenessAvg > 0 && <StarRating value={Math.round(p.effectivenessAvg)} size={10} />}
               <ProductFlagBadges product={p} max={3} />
               {(p.purchaseUrl || p.direct_url) && (
                 <div style={{ fontSize: 10, color: T.textLight, marginTop: 4 }}>Tap to shop →</div>
@@ -1351,7 +1351,7 @@ export default function ProductsPage({ session }) {
             imageUrl: p.image_url, purchaseUrl: p.purchase_url,
             bdsCompliant: p.bds_compliant, currentlyUsing: p.currently_using,
             applicationArea: p.application_area || {},
-            effectiveness: p.effectiveness || 0,
+            effectivenessAvg: p.effectiveness_avg || 0,
             tags: (p.tags || []).map(t => t ? t.charAt(0).toUpperCase() + t.slice(1) : t),
             notes: p.notes,
             ingredient_category: p.ingredient_category || '',
