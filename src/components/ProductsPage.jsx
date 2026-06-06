@@ -604,6 +604,130 @@ function getStoreName(url) {
     return null
   }
 }
+// ─── PERSONAL DATA FORM ────────────────────────────────────────────────────
+function PersonalDataForm({ productId, isCatalog, upd, product, onSaveUpd, onClose }) {
+  const [notes, setNotes]           = useState(upd?.notes || product?.notes || '')
+  const [effectiveness, setEff]     = useState(upd?.effectiveness || 0)
+  const [buyAgain, setBuyAgain]     = useState(upd?.buy_again ?? null)
+  const [purchasedAt, setPurchased] = useState(upd?.purchased_at || '')
+  const [openedAt, setOpened]       = useState(upd?.opened_at || '')
+  const [expiresAt, setExpires]     = useState(upd?.expires_at || '')
+  const [paoMonths, setPao]         = useState(upd?.pao_months || '')
+  const [saving, setSaving]         = useState(false)
+  const [saved, setSaved]           = useState(false)
+
+  async function handleSave() {
+    setSaving(true)
+    await onSaveUpd(productId, {
+      notes:         notes || null,
+      effectiveness: effectiveness || null,
+      buy_again:     buyAgain,
+      purchased_at:  purchasedAt || null,
+      opened_at:     openedAt || null,
+      expires_at:    expiresAt || null,
+      pao_months:    paoMonths ? parseInt(paoMonths) : null,
+    })
+    setSaving(false)
+    setSaved(true)
+    setTimeout(() => setSaved(false), 2000)
+  }
+
+  const inputStyle = {
+    width: '100%', boxSizing: 'border-box', padding: '8px 10px',
+    borderRadius: 8, border: `0.5px solid ${T.border}`,
+    background: T.cream, color: T.text, fontSize: 12,
+    fontFamily: 'inherit', outline: 'none', resize: 'vertical',
+  }
+  const labelStyle = {
+    fontSize: 10, fontWeight: 600, color: T.textMuted,
+    textTransform: 'uppercase', letterSpacing: '0.06em',
+    display: 'block', marginBottom: 4,
+  }
+
+  return (
+    <div style={{ marginTop: 20, borderTop: `0.5px solid ${T.border}`, paddingTop: 16 }}>
+      <div style={{ fontSize: 11, fontWeight: 600, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>My notes</div>
+
+      {/* Notes */}
+      <div style={{ marginBottom: 12 }}>
+        <textarea
+          value={notes}
+          onChange={e => setNotes(e.target.value)}
+          placeholder="How does this work for you? Any tips..."
+          rows={3}
+          style={inputStyle}
+        />
+      </div>
+
+      {/* Effectiveness + Buy again */}
+      <div style={{ display: 'flex', gap: 12, marginBottom: 12, alignItems: 'flex-start' }}>
+        <div style={{ flex: 1 }}>
+          <label style={labelStyle}>My rating</label>
+          <div style={{ display: 'flex', gap: 4, paddingTop: 2 }}>
+            {[1,2,3,4,5].map(n => (
+              <button key={n} onClick={() => setEff(effectiveness === n ? 0 : n)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 18, padding: 0, color: n <= effectiveness ? T.pinkDeep : T.border, lineHeight: 1 }}>
+                ★
+              </button>
+            ))}
+          </div>
+        </div>
+        <div>
+          <label style={labelStyle}>Buy again?</label>
+          <div style={{ display: 'flex', gap: 6, paddingTop: 2 }}>
+            {[['Yes', true], ['No', false], ['—', null]].map(([label, val]) => (
+              <button key={label} onClick={() => setBuyAgain(buyAgain === val ? null : val)}
+                style={{
+                  padding: '4px 10px', borderRadius: 20, fontSize: 11,
+                  cursor: 'pointer', fontFamily: 'inherit',
+                  border: `0.5px solid ${T.border}`,
+                  background: buyAgain === val ? T.pinkDeep : T.cream,
+                  color: buyAgain === val ? '#fff' : T.textMuted,
+                }}>
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Dates row */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
+        <div>
+          <label style={labelStyle}>Purchased</label>
+          <input type="date" value={purchasedAt} onChange={e => setPurchased(e.target.value)} style={{ ...inputStyle, resize: 'none' }} />
+        </div>
+        <div>
+          <label style={labelStyle}>Opened</label>
+          <input type="date" value={openedAt} onChange={e => setOpened(e.target.value)} style={{ ...inputStyle, resize: 'none' }} />
+        </div>
+        <div>
+          <label style={labelStyle}>Expires</label>
+          <input type="date" value={expiresAt} onChange={e => setExpires(e.target.value)} style={{ ...inputStyle, resize: 'none' }} />
+        </div>
+        <div>
+          <label style={labelStyle}>PAO (months)</label>
+          <input type="number" min="1" max="60" value={paoMonths}
+            onChange={e => setPao(e.target.value)}
+            placeholder="e.g. 12" style={{ ...inputStyle, resize: 'none' }} />
+        </div>
+      </div>
+
+      {/* Save */}
+      <button onClick={handleSave} disabled={saving}
+        style={{
+          width: '100%', padding: '10px', borderRadius: 10, border: 'none',
+          background: saved ? '#4caf50' : T.pinkDeep,
+          color: '#fff', cursor: saving ? 'default' : 'pointer',
+          fontSize: 13, fontFamily: 'inherit', fontWeight: 500,
+          transition: 'background 0.2s',
+        }}>
+        {saving ? 'Saving...' : saved ? '✓ Saved' : 'Save my notes'}
+      </button>
+    </div>
+  )
+}
+
 // ─── PRODUCT DETAIL MODAL ────────────────────────────────────
 function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, isWhatWeUsing, upd, onAddToLibrary, onRemoveFromLibrary, onSaveUserProductData }) {
   if (!p) return null
@@ -727,7 +851,7 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
         {p.effectivenessAvg > 0 && (
           <div style={{ fontSize: 11, color: T.textMuted, marginTop: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
             <span>Community rating:</span>
-            <StarRating value={Math.round(p.effectivenessAvg)} size={11} readonly />
+            <StarRating value={Math.round(p.effectivenessAvg)} size={11} />
           </div>
         )}
 
