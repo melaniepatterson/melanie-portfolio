@@ -1777,9 +1777,10 @@ function DailyEditor({ initial, onSave, onCancel, lockStartDate = false, allPeri
 
 // DailySection (Extras) — renders extras active today, filtered by frequency + AM/PM tab
 // Returns null when nothing is scheduled for that day+tab — no empty section shown
-function DailySection({ dt, dailyHistory, onEditDaily, tab, products }) {
+function DailySection({ dt, dailyHistory, onEditDaily, tab, products, onUpdateDailyItemProduct }) {
   const period = getActiveDailyPeriod(dt, dailyHistory)
   const allItems = period?.items || []
+  const [openItemId, setOpenItemId] = useState(null)
 
   // Filter: frequency match AND timeOfDay match for current tab
   const activeItems = allItems.filter(item => {
@@ -1797,32 +1798,52 @@ function DailySection({ dt, dailyHistory, onEditDaily, tab, products }) {
         <button onClick={onEditDaily} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 11, color: T.textLight, padding: '0 2px' }} aria-label="Edit extras">Edit</button>
       </div>
       {activeItems.length === 0 && (
-        <div style={{ fontSize: 11, color: '#A16207', fontStyle: 'italic', paddingBottom: 4 }}>
+        <div style={{ fontSize: 11, color: T.textMuted, fontStyle: 'italic', paddingBottom: 4 }}>
           {allItems.length === 0 ? 'No extras added — tap Edit to set up.' : 'No extras scheduled for today.'}
         </div>
       )}
       {activeItems.map(item => {
         const prod = item.productId ? products?.[item.productId] : null
+        const isOpen = openItemId === item.id
         return (
-          <div key={item.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, padding: '6px 0', borderBottom: `0.5px solid #FEF3C7` }}>
-            {prod?.imageUrl ? (
-              <img src={prod.imageUrl} alt="" style={{ width: 44, height: 44, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />
-            ) : (
-              <div style={{ width: 44, height: 44, borderRadius: 8, background: '#FEF3C7', border: '0.5px solid #FCD34D', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>🌿</div>
-            )}
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 12, fontWeight: 500, color: '#633806' }}>{item.label}</div>
-              {item.note && <div style={{ fontSize: 11, color: '#854F0B' }}>{item.note}</div>}
-              {prod ? (
-                <div style={{ marginTop: 2 }}>
-                  <div style={{ fontSize: 10, color: '#92400E', fontWeight: 500 }}>{prod.name}</div>
-                  {prod.brand && <div style={{ fontSize: 10, color: '#A16207' }}>{prod.brand}</div>}
-                  {prod.effectiveness > 0 && <StarRating value={prod.effectiveness} size={9} />}
-                </div>
-              ) : item.productName ? (
-                <div style={{ fontSize: 10, color: '#A16207', marginTop: 1 }}>↗ {item.productName}</div>
-              ) : null}
+          <div key={item.id} style={{ borderBottom: `0.5px solid ${T.border}`, paddingBottom: 6, marginBottom: 6 }}>
+            {/* Item header row */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+              <div style={{ fontSize: 12, fontWeight: 500, color: T.text, flex: 1 }}>{item.label}</div>
+              {item.note && <div style={{ fontSize: 11, color: T.textMuted }}>{item.note}</div>}
             </div>
+            {/* Product slot — tappable row matching skincare pattern */}
+            <div
+              onClick={() => setOpenItemId(isOpen ? null : item.id)}
+              style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 6, cursor: 'pointer', background: isOpen ? T.pink : T.creamDark, border: `0.5px solid ${isOpen ? T.pinkDeep : T.border}`, marginBottom: isOpen ? 4 : 0 }}
+            >
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: T.pinkDeep, flexShrink: 0 }} />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                {prod ? (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    {prod.imageUrl && <img src={prod.imageUrl} alt="" style={{ width: 28, height: 28, borderRadius: 5, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />}
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ fontSize: 11, fontWeight: 500, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{prod.name}</div>
+                      {prod.brand && <div style={{ fontSize: 10, color: T.textMuted }}>{prod.brand}</div>}
+                      {prod.effectiveness > 0 && <StarRating value={prod.effectiveness} size={9} />}
+                    </div>
+                  </div>
+                ) : (
+                  <span style={{ fontSize: 11, color: T.textLight, fontStyle: 'italic' }}>Tap to assign product</span>
+                )}
+              </div>
+              {prod && <button onClick={e => { e.stopPropagation(); onUpdateDailyItemProduct?.(period.id, item.id, null) }} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 13, padding: '0 2px', lineHeight: 1 }}>×</button>}
+              <span style={{ fontSize: 10, color: T.textLight, flexShrink: 0 }}>{isOpen ? '▲' : '▼'}</span>
+            </div>
+            {isOpen && (
+              <ProductPicker
+                stepKey="extras"
+                currentProductId={item.productId}
+                products={products}
+                onSelect={(pid) => { onUpdateDailyItemProduct?.(period.id, item.id, pid); setOpenItemId(null) }}
+                onClose={() => setOpenItemId(null)}
+              />
+            )}
           </div>
         )
       })}
@@ -2720,10 +2741,11 @@ function ShowerEditor({ initial, onSave, onCancel, allPeriods = [], onEditConfli
 }
 
 // ShowerSection — shows active shower items for this specific date in the flyout
-function ShowerSection({ dt, showerHistory, onEditShower, products }) {
+function ShowerSection({ dt, showerHistory, onEditShower, products, onUpdateShowerItemProduct }) {
   const period = getActiveShowerPeriod(dt, showerHistory)
   const allItems  = period?.items || []
   const activeItems = allItems.filter(item => isShowerItemActive(dt, item, period?.startDate))
+  const [openItemId, setOpenItemId] = useState(null)
 
   return (
     <div style={{ marginBottom: 10 }}>
@@ -2739,27 +2761,47 @@ function ShowerSection({ dt, showerHistory, onEditShower, products }) {
         activeItems.map(item => {
           const freq = SHOWER_FREQUENCIES.find(f => f.key === item.frequency)
           const prod = item.productId ? products?.[item.productId] : null
+          const isOpen = openItemId === item.id
           return (
-            <div key={item.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, padding: '6px 0', borderBottom: `0.5px solid #E0F2FE` }}>
-              {prod?.imageUrl ? (
-                <img src={prod.imageUrl} alt="" style={{ width: 44, height: 44, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />
-              ) : (
-                <div style={{ width: 44, height: 44, borderRadius: 8, background: '#E0F2FE', border: '0.5px solid #38BDF8', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>🚿</div>
-              )}
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 12, fontWeight: 500, color: '#0C4A6E' }}>{item.label}</div>
-                {item.note && <div style={{ fontSize: 11, color: '#0C447C' }}>{item.note}</div>}
-                {prod ? (
-                  <div style={{ marginTop: 2 }}>
-                    <div style={{ fontSize: 10, color: '#0C4A6E', fontWeight: 500 }}>{prod.name}</div>
-                    {prod.brand && <div style={{ fontSize: 10, color: '#0369A1' }}>{prod.brand}</div>}
-                    {prod.effectiveness > 0 && <StarRating value={prod.effectiveness} size={9} />}
-                  </div>
-                ) : item.productName ? (
-                  <div style={{ fontSize: 10, color: '#38BDF8', marginTop: 1 }}>↗ {item.productName}</div>
-                ) : null}
-                <div style={{ fontSize: 9, color: '#38BDF8', marginTop: 2 }}>{(freq?.label || item.frequency || 'Every day').replace('Every shower', 'Every day')}</div>
+            <div key={item.id} style={{ borderBottom: `0.5px solid ${T.border}`, paddingBottom: 6, marginBottom: 6 }}>
+              {/* Item header row */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+                <div style={{ fontSize: 12, fontWeight: 500, color: T.text, flex: 1 }}>{item.label}</div>
+                {item.note && <div style={{ fontSize: 11, color: T.textMuted }}>{item.note}</div>}
+                <div style={{ fontSize: 9, color: T.textLight }}>{(freq?.label || item.frequency || 'Every day').replace('Every shower', 'Every day')}</div>
               </div>
+              {/* Product slot — tappable row matching skincare pattern */}
+              <div
+                onClick={() => setOpenItemId(isOpen ? null : item.id)}
+                style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 6, cursor: 'pointer', background: isOpen ? T.pink : T.creamDark, border: `0.5px solid ${isOpen ? T.pinkDeep : T.border}`, marginBottom: isOpen ? 4 : 0 }}
+              >
+                <div style={{ width: 6, height: 6, borderRadius: '50%', background: T.pinkDeep, flexShrink: 0 }} />
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  {prod ? (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      {prod.imageUrl && <img src={prod.imageUrl} alt="" style={{ width: 28, height: 28, borderRadius: 5, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />}
+                      <div style={{ minWidth: 0 }}>
+                        <div style={{ fontSize: 11, fontWeight: 500, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{prod.name}</div>
+                        {prod.brand && <div style={{ fontSize: 10, color: T.textMuted }}>{prod.brand}</div>}
+                        {prod.effectiveness > 0 && <StarRating value={prod.effectiveness} size={9} />}
+                      </div>
+                    </div>
+                  ) : (
+                    <span style={{ fontSize: 11, color: T.textLight, fontStyle: 'italic' }}>Tap to assign product</span>
+                  )}
+                </div>
+                {prod && <button onClick={e => { e.stopPropagation(); onUpdateShowerItemProduct?.(period.id, item.id, null) }} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 13, padding: '0 2px', lineHeight: 1 }}>×</button>}
+                <span style={{ fontSize: 10, color: T.textLight, flexShrink: 0 }}>{isOpen ? '▲' : '▼'}</span>
+              </div>
+              {isOpen && (
+                <ProductPicker
+                  stepKey="shower"
+                  currentProductId={item.productId}
+                  products={products}
+                  onSelect={(pid) => { onUpdateShowerItemProduct?.(period.id, item.id, pid); setOpenItemId(null) }}
+                  onClose={() => setOpenItemId(null)}
+                />
+              )}
             </div>
           )
         })
@@ -2786,7 +2828,7 @@ const AM_STEPS = [
 
 
 
-function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allTypes, onClose, onAddTreatment, onTabChange, onEditDaily, onEditShower, onUpdatePeriodProducts, onUpdatePeriodSteps, onAddProduct, recoveryRoutines, onUpdateRecoveryProducts, onUpdateRecoverySteps }) {
+function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allTypes, onClose, onAddTreatment, onTabChange, onEditDaily, onEditShower, onUpdatePeriodProducts, onUpdatePeriodSteps, onAddProduct, recoveryRoutines, onUpdateRecoveryProducts, onUpdateRecoverySteps, onUpdateShowerItemProduct, onUpdateDailyItemProduct }) {
   const [massageOpen, setMassageOpen] = useState(false)
   const tab = flyout.tab  // always read from parent — no local drift
   const [openStepKey, setOpenStepKey] = useState(null)
@@ -3015,7 +3057,7 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
       })()}
 
       {/* 1. Shower routine — always at top */}
-      <ShowerSection dt={date} showerHistory={showerHistory} onEditShower={onEditShower} products={products} />
+      <ShowerSection dt={date} showerHistory={showerHistory} onEditShower={onEditShower} products={products} onUpdateShowerItemProduct={onUpdateShowerItemProduct} />
 
       {/* 2. Morning / Night tabs */}
       <div style={{ display: 'flex', gap: 6, marginBottom: 8, marginTop: 10 }}>
@@ -3024,7 +3066,7 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
       </div>
 
       {/* 3. Extras — filtered by frequency + current tab, hidden when nothing matches */}
-      <DailySection dt={date} dailyHistory={dailyHistory} onEditDaily={onEditDaily} tab={tab} products={products} />
+      <DailySection dt={date} dailyHistory={dailyHistory} onEditDaily={onEditDaily} tab={tab} products={products} onUpdateDailyItemProduct={onUpdateDailyItemProduct} />
 
       {/* 4. Skincare steps — tab-specific */}
       {!period ? (
@@ -4317,6 +4359,26 @@ export default function GlowUpCalendar({ session }) {
     setProducts(p => { const n = { ...p }; delete n[productId]; return n })
   }
 
+  // Assigns a product to a specific shower item in the flyout
+  function updateShowerItemProduct(periodId, itemId, productId) {
+    setShowerHistory(h => h.map(p => {
+      if (p.id !== periodId) return p
+      const newItems = p.items.map(it => it.id === itemId ? { ...it, productId: productId || null } : it)
+      if (p._dbId) supabase.from('shower_periods').update({ items: newItems }).eq('id', p._dbId)
+      return { ...p, items: newItems }
+    }))
+  }
+
+  // Assigns a product to a specific extras (daily) item in the flyout
+  function updateDailyItemProduct(periodId, itemId, productId) {
+    setDailyHistory(h => h.map(p => {
+      if (p.id !== periodId) return p
+      const newItems = p.items.map(it => it.id === itemId ? { ...it, productId: productId || null } : it)
+      if (p._dbId) supabase.from('daily_periods').update({ items: newItems }).eq('id', p._dbId)
+      return { ...p, items: newItems }
+    }))
+  }
+
   function updatePeriodStep(periodStartDate, stepId, enabled) {
     const dayType = stepId.split('_')[0]
     setRoutineHistory(h => h.map(p => {
@@ -4566,6 +4628,8 @@ export default function GlowUpCalendar({ session }) {
               recoveryRoutines={recoveryRoutines}
               onUpdateRecoveryProducts={updateRecoveryProducts}
               onUpdateRecoverySteps={updateRecoverySteps}
+              onUpdateShowerItemProduct={updateShowerItemProduct}
+              onUpdateDailyItemProduct={updateDailyItemProduct}
             />
           )
           return (
@@ -4681,12 +4745,12 @@ export default function GlowUpCalendar({ session }) {
 
       {/* Month/year with flanking nav arrows — fixed-width center keeps arrows static */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 6 }}>
-        <button onClick={prevMonth} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 8, padding: '5px 14px', cursor: 'pointer', fontSize: 15, color: T.text, flexShrink: 0 }}>←</button>
-        <div style={{ width: 200, textAlign: 'center' }}>
+        <button onClick={prevMonth} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 8, padding: '5px 20px', cursor: 'pointer', fontSize: 15, color: T.text, flexShrink: 0 }}>←</button>
+        <div style={{ width: 260, textAlign: 'center' }}>
           <div style={{ fontSize: 'clamp(28px, 6vw, 42px)', fontWeight: 700, color: T.text, lineHeight: 1.1, letterSpacing: '-0.02em' }}>{MONTHS[month]}</div>
           <div style={{ fontSize: 'clamp(13px, 2.5vw, 18px)', color: T.textMuted, fontWeight: 400, marginTop: 2 }}>{year}</div>
         </div>
-        <button onClick={nextMonth} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 8, padding: '5px 14px', cursor: 'pointer', fontSize: 15, color: T.text, flexShrink: 0 }}>→</button>
+        <button onClick={nextMonth} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 8, padding: '5px 20px', cursor: 'pointer', fontSize: 15, color: T.text, flexShrink: 0 }}>→</button>
       </div>
 
       {/* Header — always visible, never moves */}
@@ -4738,7 +4802,7 @@ export default function GlowUpCalendar({ session }) {
               position: 'fixed', top, left,
               width: FW, maxHeight: maxH,
               overflowY: 'auto', WebkitOverflowScrolling: 'touch',
-              zIndex: 100, borderRadius,
+              zIndex: 1000, borderRadius,
               border: `0.5px solid ${T.pinkDeep}`,
               background: T.white,
               boxShadow: '0 4px 20px rgba(0,0,0,0.12)',
@@ -4763,6 +4827,8 @@ export default function GlowUpCalendar({ session }) {
               recoveryRoutines={recoveryRoutines}
               onUpdateRecoveryProducts={updateRecoveryProducts}
               onUpdateRecoverySteps={updateRecoverySteps}
+              onUpdateShowerItemProduct={updateShowerItemProduct}
+              onUpdateDailyItemProduct={updateDailyItemProduct}
             />
           </div>
         )
