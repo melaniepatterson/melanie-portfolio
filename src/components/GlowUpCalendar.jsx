@@ -1654,13 +1654,13 @@ function DailyEditor({ initial, onSave, onCancel, lockStartDate = false, allPeri
                 <div style={{ marginLeft: 8, marginBottom: 4 }}>
                   <div
                     onClick={() => setItems(it => it.map((x,idx) => idx===i ? {...x,_pickingProduct:!x._pickingProduct} : x))}
-                    style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 6, cursor: 'pointer', background: isOpen ? T.pink : T.creamDark, border: `0.5px solid ${isOpen ? T.pinkDeep : T.border}`, marginBottom: isOpen ? 4 : 0 }}
+                    style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 6, cursor: 'pointer', background: isOpen ? T.pink : 'transparent', border: `0.5px solid ${isOpen ? T.pinkDeep : T.border}`, marginBottom: isOpen ? 4 : 0 }}
                   >
                     <div style={{ width: 6, height: 6, borderRadius: '50%', background: T.pinkDeep, flexShrink: 0 }} />
                     <div style={{ flex: 1, minWidth: 0 }}>
                       {prod ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          {prod.imageUrl && <img src={prod.imageUrl} alt="" style={{ width: 28, height: 28, borderRadius: 5, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />}
+                          {prod.imageUrl && <img src={prod.imageUrl} alt="" style={{ width: 36, height: 36, borderRadius: 6, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />}
                           <div style={{ minWidth: 0 }}>
                             <div style={{ fontSize: 11, fontWeight: 500, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{prod.name}</div>
                             {prod.brand && <div style={{ fontSize: 10, color: T.textMuted }}>{prod.brand}</div>}
@@ -1815,13 +1815,13 @@ function DailySection({ dt, dailyHistory, onEditDaily, tab, products, onUpdateDa
             {/* Product slot — tappable row matching skincare pattern */}
             <div
               onClick={() => setOpenItemId(isOpen ? null : item.id)}
-              style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 6, cursor: 'pointer', background: isOpen ? T.pink : T.creamDark, border: `0.5px solid ${isOpen ? T.pinkDeep : T.border}`, marginBottom: isOpen ? 4 : 0 }}
+              style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 6, cursor: 'pointer', background: isOpen ? T.pink : 'transparent', border: `0.5px solid ${isOpen ? T.pinkDeep : T.border}`, marginBottom: isOpen ? 4 : 0 }}
             >
               <div style={{ width: 6, height: 6, borderRadius: '50%', background: T.pinkDeep, flexShrink: 0 }} />
               <div style={{ flex: 1, minWidth: 0 }}>
                 {prod ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    {prod.imageUrl && <img src={prod.imageUrl} alt="" style={{ width: 28, height: 28, borderRadius: 5, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />}
+                    {prod.imageUrl && <img src={prod.imageUrl} alt="" style={{ width: 36, height: 36, borderRadius: 6, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />}
                     <div style={{ minWidth: 0 }}>
                       <div style={{ fontSize: 11, fontWeight: 500, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{prod.name}</div>
                       {prod.brand && <div style={{ fontSize: 10, color: T.textMuted }}>{prod.brand}</div>}
@@ -2630,13 +2630,13 @@ function ShowerEditor({ initial, onSave, onCancel, allPeriods = [], onEditConfli
                 <div style={{ marginLeft: 8, marginBottom: 4 }}>
                   <div
                     onClick={() => setItems(it => it.map((x,idx) => idx===i ? {...x,_pickingProduct:!x._pickingProduct} : x))}
-                    style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 6, cursor: 'pointer', background: isOpen ? T.pink : T.creamDark, border: `0.5px solid ${isOpen ? T.pinkDeep : T.border}`, marginBottom: isOpen ? 4 : 0 }}
+                    style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 6, cursor: 'pointer', background: isOpen ? T.pink : 'transparent', border: `0.5px solid ${isOpen ? T.pinkDeep : T.border}`, marginBottom: isOpen ? 4 : 0 }}
                   >
                     <div style={{ width: 6, height: 6, borderRadius: '50%', background: T.pinkDeep, flexShrink: 0 }} />
                     <div style={{ flex: 1, minWidth: 0 }}>
                       {prod ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          {prod.imageUrl && <img src={prod.imageUrl} alt="" style={{ width: 28, height: 28, borderRadius: 5, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />}
+                          {prod.imageUrl && <img src={prod.imageUrl} alt="" style={{ width: 36, height: 36, borderRadius: 6, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />}
                           <div style={{ minWidth: 0 }}>
                             <div style={{ fontSize: 11, fontWeight: 500, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{prod.name}</div>
                             {prod.brand && <div style={{ fontSize: 10, color: T.textMuted }}>{prod.brand}</div>}
@@ -2773,13 +2773,13 @@ function ShowerSection({ dt, showerHistory, onEditShower, products, onUpdateShow
               {/* Product slot — tappable row matching skincare pattern */}
               <div
                 onClick={() => setOpenItemId(isOpen ? null : item.id)}
-                style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 6, cursor: 'pointer', background: isOpen ? T.pink : T.creamDark, border: `0.5px solid ${isOpen ? T.pinkDeep : T.border}`, marginBottom: isOpen ? 4 : 0 }}
+                style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 6, cursor: 'pointer', background: isOpen ? T.pink : 'transparent', border: `0.5px solid ${isOpen ? T.pinkDeep : T.border}`, marginBottom: isOpen ? 4 : 0 }}
               >
                 <div style={{ width: 6, height: 6, borderRadius: '50%', background: T.pinkDeep, flexShrink: 0 }} />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   {prod ? (
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      {prod.imageUrl && <img src={prod.imageUrl} alt="" style={{ width: 28, height: 28, borderRadius: 5, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />}
+                      {prod.imageUrl && <img src={prod.imageUrl} alt="" style={{ width: 36, height: 36, borderRadius: 6, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />}
                       <div style={{ minWidth: 0 }}>
                         <div style={{ fontSize: 11, fontWeight: 500, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{prod.name}</div>
                         {prod.brand && <div style={{ fontSize: 10, color: T.textMuted }}>{prod.brand}</div>}
@@ -3453,7 +3453,7 @@ function RecoveryRoutineEditor({ typeKey, typeLabel, steps, products, allProduct
                 style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                   padding: '10px 12px', borderRadius: 8, cursor: 'pointer',
-                  background: isOpen ? T.pink : T.creamDark,
+                  background: isOpen ? T.pink : 'transparent',
                   border: `0.5px solid ${isOpen ? T.pinkDeep : T.border}`,
                   transition: 'all 0.15s',
                 }}
@@ -4489,7 +4489,15 @@ export default function GlowUpCalendar({ session }) {
   const daysInMonth = new Date(year, month + 1, 0).getDate()
   const cells = []
 
-  for (let i = 0; i < firstDow; i++) cells.push(<div key={`e${i}`} />)
+  const prevMonthLastDay = new Date(year, month, 0).getDate()
+  for (let i = 0; i < firstDow; i++) {
+    const dayNum = prevMonthLastDay - firstDow + i + 1
+    cells.push(
+      <div key={`prev${i}`} style={{ position: 'relative', borderRadius: 8, border: `0.5px solid transparent`, display: 'flex', flexDirection: 'column', minHeight: '88px' }}>
+        <div style={{ fontSize: 10, color: T.textLight, padding: '3px 5px', fontWeight: 400, opacity: 0.5 }}>{dayNum}</div>
+      </div>
+    )
+  }
 
   for (let d = 1; d <= daysInMonth; d++) {
     const dt      = new Date(year, month, d)
@@ -4607,43 +4615,17 @@ export default function GlowUpCalendar({ session }) {
           <div style={{ fontSize: 9, fontWeight: 600, color: isOpen && dayFlyout?.tab === 'pm' ? T.pinkDeep : dateColor, opacity: 0.8, letterSpacing: '0.04em' }}>PM</div>
           {pmBadges}
         </div>
-        {/* Mobile bottom sheet — stays in cell since it's position:fixed anyway */}
-        {isOpen && window.innerWidth < 640 && (() => {
-          const flyoutContent = (
-            <DayFlyout
-              flyout={dayFlyout}
-              period={activePeriod}
-              dailyHistory={dailyHistory}
-              showerHistory={showerHistory}
-              products={products}
-              allTypes={allTypes}
-              onClose={() => setDayFlyout(null)}
-              onTabChange={(t) => setDayFlyout(f => ({ ...f, tab: t }))}
-              onAddTreatment={() => { setSelector({ key: dayFlyout.key, date: dayFlyout.date }); setDayFlyout(null) }}
-              onEditDaily={() => openDailyEditor(getActiveDailyPeriod(dayFlyout.date, dailyHistory))}
-              onEditShower={() => openShowerEditor(getActiveShowerPeriod(dayFlyout.date, showerHistory))}
-              onUpdatePeriodProducts={updatePeriodProducts}
-              onUpdatePeriodSteps={updatePeriodStep}
-              onAddProduct={saveProduct}
-              recoveryRoutines={recoveryRoutines}
-              onUpdateRecoveryProducts={updateRecoveryProducts}
-              onUpdateRecoverySteps={updateRecoverySteps}
-              onUpdateShowerItemProduct={updateShowerItemProduct}
-              onUpdateDailyItemProduct={updateDailyItemProduct}
-            />
-          )
-          return (
-            <>
-              <div onClick={() => setDayFlyout(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 200 }} />
-              <div data-day-flyout="true" onClick={e => e.stopPropagation()} style={{ position: 'fixed', bottom: 0, left: 0, right: 0, height: '85vh', overflowY: 'auto', WebkitOverflowScrolling: 'touch', zIndex: 201, borderRadius: '16px 16px 0 0', border: `0.5px solid ${T.pinkDeep}`, borderBottom: 'none', background: T.white, boxShadow: '0 -4px 24px rgba(0,0,0,0.12)', animation: 'slideUp 0.25s ease' }}>
-                <div style={{ display: 'flex', justifyContent: 'center', padding: '10px 0 4px' }}>
-                  <div style={{ width: 36, height: 4, borderRadius: 2, background: T.border }} />
-                </div>
-                {flyoutContent}
-              </div>
-            </>
-          )
-        })()}
+      </div>
+    )
+  }
+
+  // Trailing ghost days — fill remaining cells in last row with next month's days
+  const totalCells = Math.ceil((firstDow + daysInMonth) / 7) * 7
+  const trailingCount = totalCells - firstDow - daysInMonth
+  for (let i = 1; i <= trailingCount; i++) {
+    cells.push(
+      <div key={`next${i}`} style={{ position: 'relative', borderRadius: 8, border: `0.5px solid transparent`, display: 'flex', flexDirection: 'column', minHeight: '88px' }}>
+        <div style={{ fontSize: 10, color: T.textLight, padding: '3px 5px', fontWeight: 400, opacity: 0.5 }}>{i}</div>
       </div>
     )
   }
@@ -4669,6 +4651,34 @@ export default function GlowUpCalendar({ session }) {
       }
     }
   }, [hasOverlay])
+
+  // Lock body scroll when flyout modal is open
+  useEffect(() => {
+    if (!dayFlyout) return
+    const y = window.scrollY
+    document.body.style.overflow = 'hidden'
+    document.body.style.position = 'fixed'
+    document.body.style.top = `-${y}px`
+    document.body.style.width = '100%'
+    return () => {
+      document.body.style.overflow = ''
+      document.body.style.position = ''
+      document.body.style.top = ''
+      document.body.style.width = ''
+      window.scrollTo(0, y)
+    }
+  }, [!!dayFlyout])
+
+  function goToPrevDay() {
+    if (!dayFlyout) return
+    const d = new Date(dayFlyout.date); d.setDate(d.getDate() - 1)
+    openDayFlyout(dateKey(d), d, dayFlyout.tab)
+  }
+  function goToNextDay() {
+    if (!dayFlyout) return
+    const d = new Date(dayFlyout.date); d.setDate(d.getDate() + 1)
+    openDayFlyout(dateKey(d), d, dayFlyout.tab)
+  }
 
   function closeAllPanels() {
     setPanel(null); setEditingPeriod(null); setEditingDaily(null); setEditingShower(null)
@@ -4775,62 +4785,69 @@ export default function GlowUpCalendar({ session }) {
         </button>
       </div>
 
-      {/* Desktop flyout — position:fixed, viewport-aware, never clipped */}
-      {dayFlyout && window.innerWidth >= 640 && (() => {
-        const rect = dayFlyout.cellRect
-        if (!rect) return null
-        const FW = 310
-        const MARGIN = 8
-        const maxH = Math.min(window.innerHeight * 0.8, 640)
-        // Horizontal: align to cell left, clamp to viewport
-        let left = Math.max(MARGIN, Math.min(rect.left, window.innerWidth - FW - MARGIN))
-        // Vertical: prefer opening below cell, but clamp so bottom never exits viewport
-        let top = rect.bottom + 2
-        if (top + maxH > window.innerHeight - MARGIN) {
-          // Slide it up until it fits
-          top = window.innerHeight - MARGIN - maxH
-          // If that puts it above the viewport, just pin to top
-          if (top < MARGIN) top = MARGIN
-        }
-        const borderRadius = top < rect.top ? '10px 10px 10px 0' : '0 10px 10px 10px'
-        const activePeriodDesktop = getActivePeriod(dayFlyout.date, routineHistory)
+      {/* Day flyout — unified centered modal, works on mobile and desktop */}
+      {dayFlyout && (() => {
+        const activePeriodFlyout = getActivePeriod(dayFlyout.date, routineHistory)
+        const fmt = new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'long', day: 'numeric' })
         return (
-          <div
-            data-day-flyout="true"
-            onClick={e => e.stopPropagation()}
-            style={{
-              position: 'fixed', top, left,
-              width: FW, maxHeight: maxH,
-              overflowY: 'auto', WebkitOverflowScrolling: 'touch',
-              zIndex: 1000, borderRadius,
-              border: `0.5px solid ${T.pinkDeep}`,
-              background: T.white,
-              boxShadow: '0 4px 20px rgba(0,0,0,0.12)',
-              animation: 'slideDown 0.2s ease',
-            }}
-          >
-            <DayFlyout
-              flyout={dayFlyout}
-              period={activePeriodDesktop}
-              dailyHistory={dailyHistory}
-              showerHistory={showerHistory}
-              products={products}
-              allTypes={allTypes}
-              onClose={() => setDayFlyout(null)}
-              onTabChange={(t) => setDayFlyout(f => ({ ...f, tab: t }))}
-              onAddTreatment={() => { setSelector({ key: dayFlyout.key, date: dayFlyout.date }); setDayFlyout(null) }}
-              onEditDaily={() => openDailyEditor(getActiveDailyPeriod(dayFlyout.date, dailyHistory))}
-              onEditShower={() => openShowerEditor(getActiveShowerPeriod(dayFlyout.date, showerHistory))}
-              onUpdatePeriodProducts={updatePeriodProducts}
-              onUpdatePeriodSteps={updatePeriodStep}
-              onAddProduct={saveProduct}
-              recoveryRoutines={recoveryRoutines}
-              onUpdateRecoveryProducts={updateRecoveryProducts}
-              onUpdateRecoverySteps={updateRecoverySteps}
-              onUpdateShowerItemProduct={updateShowerItemProduct}
-              onUpdateDailyItemProduct={updateDailyItemProduct}
-            />
-          </div>
+          <>
+            {/* Backdrop */}
+            <div onClick={() => setDayFlyout(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.35)', zIndex: 500 }} />
+            {/* Modal */}
+            <div
+              data-day-flyout="true"
+              onClick={e => e.stopPropagation()}
+              style={{
+                position: 'fixed',
+                top: '50%', left: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: 'min(460px, 95vw)',
+                maxHeight: '85vh',
+                display: 'flex', flexDirection: 'column',
+                zIndex: 501,
+                borderRadius: 16,
+                background: T.white,
+                border: `0.5px solid ${T.pinkDeep}`,
+                boxShadow: '0 8px 40px rgba(0,0,0,0.18)',
+                animation: 'slideDown 0.2s ease',
+                overflow: 'hidden',
+              }}
+            >
+              {/* Sticky header: prev/next day arrows + date + close */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 14px 10px', borderBottom: `0.5px solid ${T.border}`, flexShrink: 0, background: T.white }}>
+                <button onClick={goToPrevDay} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 8, padding: '5px 12px', cursor: 'pointer', fontSize: 14, color: T.text, flexShrink: 0 }}>←</button>
+                <div style={{ flex: 1, textAlign: 'center' }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: T.text }}>{fmt.format(dayFlyout.date)}</div>
+                </div>
+                <button onClick={goToNextDay} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 8, padding: '5px 12px', cursor: 'pointer', fontSize: 14, color: T.text, flexShrink: 0 }}>→</button>
+                <button onClick={() => setDayFlyout(null)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 18, color: T.textLight, padding: '0 2px', lineHeight: 1, flexShrink: 0 }}>×</button>
+              </div>
+              {/* Scrollable content */}
+              <div style={{ overflowY: 'auto', WebkitOverflowScrolling: 'touch', flex: 1 }}>
+                <DayFlyout
+                  flyout={dayFlyout}
+                  period={activePeriodFlyout}
+                  dailyHistory={dailyHistory}
+                  showerHistory={showerHistory}
+                  products={products}
+                  allTypes={allTypes}
+                  onClose={() => setDayFlyout(null)}
+                  onTabChange={(t) => setDayFlyout(f => ({ ...f, tab: t }))}
+                  onAddTreatment={() => { setSelector({ key: dayFlyout.key, date: dayFlyout.date }); setDayFlyout(null) }}
+                  onEditDaily={() => openDailyEditor(getActiveDailyPeriod(dayFlyout.date, dailyHistory))}
+                  onEditShower={() => openShowerEditor(getActiveShowerPeriod(dayFlyout.date, showerHistory))}
+                  onUpdatePeriodProducts={updatePeriodProducts}
+                  onUpdatePeriodSteps={updatePeriodStep}
+                  onAddProduct={saveProduct}
+                  recoveryRoutines={recoveryRoutines}
+                  onUpdateRecoveryProducts={updateRecoveryProducts}
+                  onUpdateRecoverySteps={updateRecoverySteps}
+                  onUpdateShowerItemProduct={updateShowerItemProduct}
+                  onUpdateDailyItemProduct={updateDailyItemProduct}
+                />
+              </div>
+            </div>
+          </>
         )
       })()}
 
