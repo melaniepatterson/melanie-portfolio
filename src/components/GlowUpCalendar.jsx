@@ -4408,6 +4408,7 @@ export default function GlowUpCalendar({ session }) {
   // ── Calendar grid ─────────────────────────────────────────
   const firstDow    = new Date(year, month, 1).getDay()
   const daysInMonth = new Date(year, month + 1, 0).getDate()
+  const totalRows   = Math.ceil((firstDow + daysInMonth) / 7)
   const cells = []
 
   for (let i = 0; i < firstDow; i++) cells.push(<div key={`e${i}`} />)
@@ -4420,6 +4421,9 @@ export default function GlowUpCalendar({ session }) {
     const isToday = dt.getTime() === now.getTime()
     const massage = isMassageDay(dt, info, period)
     const s       = info.status
+    // Which row is this cell in? Flip flyout upward on last 2 rows
+    const cellRow    = Math.floor((firstDow + d - 1) / 7)
+    const flipUp     = cellRow >= totalRows - 2
 
     const hasRoutinePeriod = !!getActivePeriod(dt, routineHistory)
     // Days with no routine period get plain white; active routine days get a subtle tint
@@ -4602,19 +4606,22 @@ export default function GlowUpCalendar({ session }) {
               onClick={e => e.stopPropagation()}
               style={{
                 position: 'absolute',
-                maxHeight: '80vh',
+                maxHeight: '70vh',
                 overflowY: 'auto',
                 WebkitOverflowScrolling: 'touch',
-                top: '100%',
+                ...(flipUp
+                  ? { bottom: '100%', top: 'auto', marginBottom: 2, borderRadius: '8px 8px 8px 0' }
+                  : { top: '100%',    bottom: 'auto', marginTop: 2,  borderRadius: '0 8px 8px 8px' }
+                ),
                 left: 0,
-                width: 'min(280px, 90vw)',
+                width: 'min(300px, 90vw)',
                 zIndex: 30,
-                marginTop: 2,
-                borderRadius: '0 8px 8px 8px',
                 border: `0.5px solid ${T.pinkDeep}`,
                 background: T.white,
-                boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-                animation: 'slideDown 0.2s ease',
+                boxShadow: flipUp
+                  ? '0 -4px 16px rgba(0,0,0,0.08)'
+                  : '0 4px 16px rgba(0,0,0,0.08)',
+                animation: flipUp ? 'slideDown 0.2s ease' : 'slideDown 0.2s ease',
               }}
             >
               {flyoutContent}
@@ -4710,7 +4717,7 @@ export default function GlowUpCalendar({ session }) {
   if (loading) return <GlowUpLoader message="Loading your routine..." />
 
   return (
-    <div onClick={() => { if (dayFlyout) setDayFlyout(null) }} style={{ fontFamily: 'inherit', padding: '1rem 0.75rem', maxWidth: 900, position: 'relative', margin: '0 auto', overflowX: 'hidden' }}>
+    <div onClick={() => { if (dayFlyout) setDayFlyout(null) }} style={{ fontFamily: 'inherit', padding: '1rem 0.75rem', maxWidth: 900, position: 'relative', margin: '0 auto' }}>
       <style>{`@keyframes slideDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } } @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } } @keyframes panelIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }`}</style>
 
       {/* Toast — always in flow at top, small so it doesn't displace much */}
