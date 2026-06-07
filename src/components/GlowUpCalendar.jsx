@@ -1812,28 +1812,27 @@ function DailySection({ dt, dailyHistory, onEditDaily, tab, products, onUpdateDa
               <div style={{ fontSize: 12, fontWeight: 500, color: T.text, flex: 1 }}>{item.label}</div>
               {item.note && <div style={{ fontSize: 11, color: T.textMuted }}>{item.note}</div>}
             </div>
-            {/* Product slot — tappable row matching skincare pattern */}
+            {/* Product slot — matches skincare renderSteps pattern */}
             <div
               onClick={() => setOpenItemId(isOpen ? null : item.id)}
-              style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 6, cursor: 'pointer', background: isOpen ? T.pink : 'transparent', border: `0.5px solid ${isOpen ? T.pinkDeep : T.border}`, marginBottom: isOpen ? 4 : 0 }}
+              style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '7px 0', borderBottom: `0.5px solid ${T.border}`, cursor: 'pointer', opacity: prod ? 1 : 0.45 }}
             >
-              <div style={{ width: 6, height: 6, borderRadius: '50%', background: T.pinkDeep, flexShrink: 0 }} />
+              <div style={{ width: 8, height: 8, borderRadius: '50%', background: T.pinkDeep, flexShrink: 0 }} />
               <div style={{ flex: 1, minWidth: 0 }}>
                 {prod ? (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
                     {prod.imageUrl && <img src={prod.imageUrl} alt="" style={{ width: 44, height: 44, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />}
                     <div style={{ minWidth: 0 }}>
-                      <div style={{ fontSize: 11, fontWeight: 500, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{prod.name}</div>
-                      {prod.brand && <div style={{ fontSize: 10, color: T.textMuted }}>{prod.brand}</div>}
+                      <div style={{ fontSize: 11, fontWeight: 500, color: T.textMuted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{prod.name}</div>
+                      {prod.brand && <div style={{ fontSize: 10, color: T.textLight }}>{prod.brand}</div>}
                       {prod.effectiveness > 0 && <StarRating value={prod.effectiveness} size={9} />}
                     </div>
                   </div>
                 ) : (
-                  <span style={{ fontSize: 11, color: T.textLight, fontStyle: 'italic' }}>Tap to assign product</span>
+                  <div style={{ fontSize: 11, color: T.textLight, fontStyle: 'italic' }}>Tap to assign product</div>
                 )}
               </div>
-              {prod && <button onClick={e => { e.stopPropagation(); onUpdateDailyItemProduct?.(period.id, item.id, null) }} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 13, padding: '0 2px', lineHeight: 1 }}>×</button>}
-              <span style={{ fontSize: 10, color: T.textLight, flexShrink: 0 }}>{isOpen ? '▲' : '▼'}</span>
+              <div style={{ fontSize: 10, color: T.textLight, flexShrink: 0 }}>{isOpen ? '▲' : '▼'}</div>
             </div>
             {isOpen && (
               <ProductPicker
@@ -2770,28 +2769,27 @@ function ShowerSection({ dt, showerHistory, onEditShower, products, onUpdateShow
                 {item.note && <div style={{ fontSize: 11, color: T.textMuted }}>{item.note}</div>}
                 <div style={{ fontSize: 9, color: T.textLight }}>{(freq?.label || item.frequency || 'Every day').replace('Every shower', 'Every day')}</div>
               </div>
-              {/* Product slot — tappable row matching skincare pattern */}
+              {/* Product slot — matches skincare renderSteps pattern */}
               <div
                 onClick={() => setOpenItemId(isOpen ? null : item.id)}
-                style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 6, cursor: 'pointer', background: isOpen ? T.pink : 'transparent', border: `0.5px solid ${isOpen ? T.pinkDeep : T.border}`, marginBottom: isOpen ? 4 : 0 }}
+                style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '7px 0', borderBottom: `0.5px solid ${T.border}`, cursor: 'pointer', opacity: prod ? 1 : 0.45 }}
               >
-                <div style={{ width: 6, height: 6, borderRadius: '50%', background: T.pinkDeep, flexShrink: 0 }} />
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: T.pinkDeep, flexShrink: 0 }} />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   {prod ? (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
                       {prod.imageUrl && <img src={prod.imageUrl} alt="" style={{ width: 44, height: 44, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />}
                       <div style={{ minWidth: 0 }}>
-                        <div style={{ fontSize: 11, fontWeight: 500, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{prod.name}</div>
-                        {prod.brand && <div style={{ fontSize: 10, color: T.textMuted }}>{prod.brand}</div>}
+                        <div style={{ fontSize: 11, fontWeight: 500, color: T.textMuted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{prod.name}</div>
+                        {prod.brand && <div style={{ fontSize: 10, color: T.textLight }}>{prod.brand}</div>}
                         {prod.effectiveness > 0 && <StarRating value={prod.effectiveness} size={9} />}
                       </div>
                     </div>
                   ) : (
-                    <span style={{ fontSize: 11, color: T.textLight, fontStyle: 'italic' }}>Tap to assign product</span>
+                    <div style={{ fontSize: 11, color: T.textLight, fontStyle: 'italic' }}>Tap to assign product</div>
                   )}
                 </div>
-                {prod && <button onClick={e => { e.stopPropagation(); onUpdateShowerItemProduct?.(period.id, item.id, null) }} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 13, padding: '0 2px', lineHeight: 1 }}>×</button>}
-                <span style={{ fontSize: 10, color: T.textLight, flexShrink: 0 }}>{isOpen ? '▲' : '▼'}</span>
+                <div style={{ fontSize: 10, color: T.textLight, flexShrink: 0 }}>{isOpen ? '▲' : '▼'}</div>
               </div>
               {isOpen && (
                 <ProductPicker
@@ -4487,7 +4485,7 @@ export default function GlowUpCalendar({ session }) {
   for (let i = 0; i < firstDow; i++) {
     const dayNum = prevMonthLastDay - firstDow + i + 1
     cells.push(
-      <div key={`prev${i}`} style={{ position: 'relative', borderRadius: 8, border: `0.5px solid transparent`, display: 'flex', flexDirection: 'column', minHeight: '88px' }}>
+      <div key={`prev${i}`} style={{ position: 'relative', borderRadius: 8, border: `0.5px solid ${T.border}`, display: 'flex', flexDirection: 'column', minHeight: '88px' }}>
         <div style={{ fontSize: 10, color: T.textLight, padding: '3px 5px', fontWeight: 400, opacity: 0.5 }}>{dayNum}</div>
       </div>
     )
@@ -4618,7 +4616,7 @@ export default function GlowUpCalendar({ session }) {
   const trailingCount = totalCells - firstDow - daysInMonth
   for (let i = 1; i <= trailingCount; i++) {
     cells.push(
-      <div key={`next${i}`} style={{ position: 'relative', borderRadius: 8, border: `0.5px solid transparent`, display: 'flex', flexDirection: 'column', minHeight: '88px' }}>
+      <div key={`next${i}`} style={{ position: 'relative', borderRadius: 8, border: `0.5px solid ${T.border}`, display: 'flex', flexDirection: 'column', minHeight: '88px' }}>
         <div style={{ fontSize: 10, color: T.textLight, padding: '3px 5px', fontWeight: 400, opacity: 0.5 }}>{i}</div>
       </div>
     )
