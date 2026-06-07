@@ -4327,10 +4327,10 @@ export default function GlowUpCalendar({ session }) {
   }
 
   // ── Treatment handlers ────────────────────────────────────
-  function openDayFlyout(key, dt, tab) {
+  function openDayFlyout(key, dt, tab, cellRect = null) {
     const info = getDayInfo(dt, treatments, allTypes, routineHistory)
     const treatTod = info.isTreatment ? (treatments[key]?.timeOfDay || 'am') : null
-    setDayFlyout({ key, date: dt, tab, dayType: info.status, isTreatment: info.isTreatment, treatmentTimeOfDay: treatTod, activeTreatmentType: info.activeTreatmentType || null })
+    setDayFlyout({ key, date: dt, tab, dayType: info.status, isTreatment: info.isTreatment, treatmentTimeOfDay: treatTod, activeTreatmentType: info.activeTreatmentType || null, cellRect })
     setPanel(null)
     setEditingPeriod(null)
     setEditingDaily(null)
@@ -4408,7 +4408,6 @@ export default function GlowUpCalendar({ session }) {
   // ── Calendar grid ─────────────────────────────────────────
   const firstDow    = new Date(year, month, 1).getDay()
   const daysInMonth = new Date(year, month + 1, 0).getDate()
-  const totalRows   = Math.ceil((firstDow + daysInMonth) / 7)
   const cells = []
 
   for (let i = 0; i < firstDow; i++) cells.push(<div key={`e${i}`} />)
@@ -4421,10 +4420,6 @@ export default function GlowUpCalendar({ session }) {
     const isToday = dt.getTime() === now.getTime()
     const massage = isMassageDay(dt, info, period)
     const s       = info.status
-    // Which row is this cell in? Flip flyout upward on last 2 rows
-    const cellRow    = Math.floor((firstDow + d - 1) / 7)
-    const flipUp     = cellRow >= totalRows - 2
-
     const hasRoutinePeriod = !!getActivePeriod(dt, routineHistory)
     // Days with no routine period get plain white; active routine days get a subtle tint
     let cellBg = hasRoutinePeriod ? '#FAF5FF' : T.white
@@ -4519,7 +4514,7 @@ export default function GlowUpCalendar({ session }) {
         </div>
         {/* AM half */}
         <div
-          onClick={e => { e.stopPropagation(); isOpen && dayFlyout?.tab === 'am' ? setDayFlyout(null) : openDayFlyout(key, dt, 'am') }}
+          onClick={e => { e.stopPropagation(); const r = e.currentTarget.parentElement?.getBoundingClientRect(); isOpen && dayFlyout?.tab === 'am' ? setDayFlyout(null) : openDayFlyout(key, dt, 'am', r) }}
           style={{ flex: 1, background: isOpen && dayFlyout?.tab === 'am' ? T.pink : cellBg, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '3px 4px', cursor: 'pointer', borderBottom: `0.5px solid ${isOpen ? T.pinkDeep : cellBorder}`, gap: 2, overflow: 'hidden', transition: 'background 0.15s' }}
         >
           <div style={{ fontSize: 9, fontWeight: 600, color: isOpen && dayFlyout?.tab === 'am' ? T.pinkDeep : dateColor, opacity: 0.8, letterSpacing: '0.04em' }}>AM</div>
@@ -4527,15 +4522,14 @@ export default function GlowUpCalendar({ session }) {
         </div>
         {/* PM half */}
         <div
-          onClick={e => { e.stopPropagation(); isOpen && dayFlyout?.tab === 'pm' ? setDayFlyout(null) : openDayFlyout(key, dt, 'pm') }}
+          onClick={e => { e.stopPropagation(); const r = e.currentTarget.parentElement?.getBoundingClientRect(); isOpen && dayFlyout?.tab === 'pm' ? setDayFlyout(null) : openDayFlyout(key, dt, 'pm', r) }}
           style={{ flex: 1, background: isOpen && dayFlyout?.tab === 'pm' ? T.pink : cellBg, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '3px 4px', cursor: 'pointer', gap: 2, overflow: 'hidden', borderRadius: isOpen ? '0' : '0 0 8px 8px', transition: 'background 0.15s' }}
         >
           <div style={{ fontSize: 9, fontWeight: 600, color: isOpen && dayFlyout?.tab === 'pm' ? T.pinkDeep : dateColor, opacity: 0.8, letterSpacing: '0.04em' }}>PM</div>
           {pmBadges}
         </div>
-        {/* Inline flyout — bottom sheet on mobile, absolute drop-down on desktop */}
-        {isOpen && (() => {
-          const mobile = window.innerWidth < 640
+        {/* Mobile bottom sheet — stays in cell since it's position:fixed anyway */}
+        {isOpen && window.innerWidth < 640 && (() => {
           const flyoutContent = (
             <DayFlyout
               flyout={dayFlyout}
@@ -4546,10 +4540,7 @@ export default function GlowUpCalendar({ session }) {
               allTypes={allTypes}
               onClose={() => setDayFlyout(null)}
               onTabChange={(t) => setDayFlyout(f => ({ ...f, tab: t }))}
-              onAddTreatment={() => {
-                setSelector({ key: dayFlyout.key, date: dayFlyout.date })
-                setDayFlyout(null)
-              }}
+              onAddTreatment={() => { setSelector({ key: dayFlyout.key, date: dayFlyout.date }); setDayFlyout(null) }}
               onEditDaily={() => openDailyEditor(getActiveDailyPeriod(dayFlyout.date, dailyHistory))}
               onEditShower={() => openShowerEditor(getActiveShowerPeriod(dayFlyout.date, showerHistory))}
               onUpdatePeriodProducts={updatePeriodProducts}
@@ -4560,72 +4551,16 @@ export default function GlowUpCalendar({ session }) {
               onUpdateRecoverySteps={updateRecoverySteps}
             />
           )
-          if (mobile) {
-            return (
-              <>
-                {/* Backdrop */}
-                <div
-                  onClick={() => setDayFlyout(null)}
-                  style={{
-                    position: 'fixed', inset: 0,
-                    background: 'rgba(0,0,0,0.3)',
-                    zIndex: 200,
-                  }}
-                />
-                {/* Bottom sheet */}
-                <div
-                  data-day-flyout="true"
-                  onClick={e => e.stopPropagation()}
-                  style={{
-                    position: 'fixed',
-                    bottom: 0, left: 0, right: 0,
-                    height: '85vh',
-                    overflowY: 'auto',
-                    WebkitOverflowScrolling: 'touch',
-                    zIndex: 201,
-                    borderRadius: '16px 16px 0 0',
-                    border: `0.5px solid ${T.pinkDeep}`,
-                    borderBottom: 'none',
-                    background: T.white,
-                    boxShadow: '0 -4px 24px rgba(0,0,0,0.12)',
-                    animation: 'slideUp 0.25s ease',
-                  }}
-                >
-                  {/* Drag handle */}
-                  <div style={{ display: 'flex', justifyContent: 'center', padding: '10px 0 4px' }}>
-                    <div style={{ width: 36, height: 4, borderRadius: 2, background: T.border }} />
-                  </div>
-                  {flyoutContent}
-                </div>
-              </>
-            )
-          }
           return (
-            <div
-              data-day-flyout="true"
-              onClick={e => e.stopPropagation()}
-              style={{
-                position: 'absolute',
-                maxHeight: '70vh',
-                overflowY: 'auto',
-                WebkitOverflowScrolling: 'touch',
-                ...(flipUp
-                  ? { bottom: '100%', top: 'auto', marginBottom: 2, borderRadius: '8px 8px 8px 0' }
-                  : { top: '100%',    bottom: 'auto', marginTop: 2,  borderRadius: '0 8px 8px 8px' }
-                ),
-                left: 0,
-                width: 'min(300px, 90vw)',
-                zIndex: 30,
-                border: `0.5px solid ${T.pinkDeep}`,
-                background: T.white,
-                boxShadow: flipUp
-                  ? '0 -4px 16px rgba(0,0,0,0.08)'
-                  : '0 4px 16px rgba(0,0,0,0.08)',
-                animation: flipUp ? 'slideDown 0.2s ease' : 'slideDown 0.2s ease',
-              }}
-            >
-              {flyoutContent}
-            </div>
+            <>
+              <div onClick={() => setDayFlyout(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 200 }} />
+              <div data-day-flyout="true" onClick={e => e.stopPropagation()} style={{ position: 'fixed', bottom: 0, left: 0, right: 0, height: '85vh', overflowY: 'auto', WebkitOverflowScrolling: 'touch', zIndex: 201, borderRadius: '16px 16px 0 0', border: `0.5px solid ${T.pinkDeep}`, borderBottom: 'none', background: T.white, boxShadow: '0 -4px 24px rgba(0,0,0,0.12)', animation: 'slideUp 0.25s ease' }}>
+                <div style={{ display: 'flex', justifyContent: 'center', padding: '10px 0 4px' }}>
+                  <div style={{ width: 36, height: 4, borderRadius: 2, background: T.border }} />
+                </div>
+                {flyoutContent}
+              </div>
+            </>
           )
         })()}
       </div>
@@ -4758,6 +4693,67 @@ export default function GlowUpCalendar({ session }) {
           <span style={{ display: 'block', width: 14, height: 1.5, background: T.text, borderRadius: 1 }} />
         </button>
       </div>
+
+      {/* Desktop flyout — position:fixed, viewport-aware, never clipped */}
+      {dayFlyout && window.innerWidth >= 640 && (() => {
+        const rect = dayFlyout.cellRect
+        if (!rect) return null
+        const FW = 310
+        const MARGIN = 8
+        const maxH = Math.min(window.innerHeight * 0.8, 640)
+        // Horizontal: align to cell left, clamp to viewport
+        let left = rect.left
+        if (left + FW > window.innerWidth - MARGIN) left = window.innerWidth - FW - MARGIN
+        if (left < MARGIN) left = MARGIN
+        // Vertical: prefer below, fall back to above, clamp if neither fits fully
+        const spaceBelow = window.innerHeight - rect.bottom - MARGIN
+        const spaceAbove = rect.top - MARGIN
+        let top, borderRadius
+        if (spaceBelow >= 200 || spaceBelow >= spaceAbove) {
+          top = Math.min(rect.bottom + 2, window.innerHeight - MARGIN - Math.min(maxH, 200))
+          borderRadius = '0 10px 10px 10px'
+        } else {
+          top = Math.max(MARGIN, rect.top - Math.min(maxH, spaceAbove) - 2)
+          borderRadius = '10px 10px 10px 0'
+        }
+        const activePeriodDesktop = getActivePeriod(dayFlyout.date, routineHistory)
+        return (
+          <div
+            data-day-flyout="true"
+            onClick={e => e.stopPropagation()}
+            style={{
+              position: 'fixed', top, left,
+              width: FW, maxHeight: maxH,
+              overflowY: 'auto', WebkitOverflowScrolling: 'touch',
+              zIndex: 100, borderRadius,
+              border: `0.5px solid ${T.pinkDeep}`,
+              background: T.white,
+              boxShadow: '0 4px 20px rgba(0,0,0,0.12)',
+              animation: 'slideDown 0.2s ease',
+            }}
+          >
+            <DayFlyout
+              flyout={dayFlyout}
+              period={activePeriodDesktop}
+              dailyHistory={dailyHistory}
+              showerHistory={showerHistory}
+              products={products}
+              allTypes={allTypes}
+              onClose={() => setDayFlyout(null)}
+              onTabChange={(t) => setDayFlyout(f => ({ ...f, tab: t }))}
+              onAddTreatment={() => { setSelector({ key: dayFlyout.key, date: dayFlyout.date }); setDayFlyout(null) }}
+              onEditDaily={() => openDailyEditor(getActiveDailyPeriod(dayFlyout.date, dailyHistory))}
+              onEditShower={() => openShowerEditor(getActiveShowerPeriod(dayFlyout.date, showerHistory))}
+              onUpdatePeriodProducts={updatePeriodProducts}
+              onUpdatePeriodSteps={updatePeriodStep}
+              onAddProduct={saveProduct}
+              recoveryRoutines={recoveryRoutines}
+              onUpdateRecoveryProducts={updateRecoveryProducts}
+              onUpdateRecoverySteps={updateRecoverySteps}
+            />
+          </div>
+        )
+      })()}
 
       {/* Side menu */}
       {showMenu && (
