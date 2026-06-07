@@ -3690,32 +3690,21 @@ function FeedbackPanel({ onClose }) {
 }
 
 // ─── SIDE MENU ────────────────────────────────────────────────
-function SideMenu({ session, onClose, onHistory, onLibrary, onExport, onSignOut, onFeedback }) {
+function SideMenu({ session, menuProfile, onClose, onHistory, onLibrary, onExport, onSignOut, onFeedback }) {
   const email = session?.user?.email || ''
-  const [profile, setProfile] = useState(null)
-  const [imageReady, setImageReady] = useState(false)
-
+  // Use pre-loaded profile from parent — no fetch, no flash
+  const displayName = menuProfile?.display_name || email.split('@')[0]
+  const avatarUrl   = menuProfile?.avatar_url || null
+  // Preload avatar image so Avatar never flashes initials before image
+  const [imageReady, setImageReady] = useState(!avatarUrl)
   useEffect(() => {
-    if (!session?.user?.id) return
-    supabase.from('profiles').select('display_name, avatar_url').eq('id', session.user.id).single()
-      .then(({ data }) => { if (data) setProfile(data) })
-  }, [session?.user?.id])
-
-  // Preload avatar image so we never flash letter → image
-  useEffect(() => {
-    const url = profile?.avatar_url
-    if (!url) { setImageReady(false); return }
+    if (!avatarUrl) { setImageReady(true); return }
     const img = new Image()
     img.onload = () => setImageReady(true)
-    img.onerror = () => setImageReady(true) // show fallback on error too
-    img.src = url
-  }, [profile?.avatar_url])
-
-  // Prioritize display_name; only fall back to email prefix if truly absent
-  const displayName = profile?.display_name || email.split('@')[0]
-  const avatarUrl   = profile?.avatar_url || null
-  // Show placeholder until profile is loaded AND (no image OR image preloaded)
-  const avatarReady = profile !== null && (!avatarUrl || imageReady)
+    img.onerror = () => setImageReady(true)
+    img.src = avatarUrl
+  }, [avatarUrl])
+  const avatarReady = menuProfile !== null && imageReady
   const menuItems = [
     { label: 'Routine history',  icon: '📋', action: onHistory },
     { label: 'Product library',  icon: '🧴', action: onLibrary },
@@ -3750,10 +3739,10 @@ function SideMenu({ session, onClose, onHistory, onLibrary, onExport, onSignOut,
                   size={44}
                 />
               )}
-              {/* Name — only show once profile is loaded */}
+              {/* Name — only show once ready */}
               <div style={{ minWidth: 0 }}>
                 <div style={{ fontSize: 13, fontWeight: 600, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {profile !== null ? displayName : ''}
+                  {avatarReady ? displayName : ''}
                 </div>
               </div>
             </div>
@@ -3869,7 +3858,7 @@ export default function GlowUpCalendar({ session }) {
         { data: ct },
       ] = await Promise.all([
         supabase.from('routine_periods').select('*').eq('user_id', userId).order('start_date'),
-        supabase.from('profiles').select('recovery_routines').eq('id', userId).single(),
+        supabase.from('profiles').select('recovery_routines, display_name, avatar_url').eq('id', userId).single(),
         supabase.from('products').select('*').or(`is_catalog.eq.true,user_id.eq.${userId}`),
         supabase.from('extras_periods').select('*').eq('user_id', userId).order('start_date'),
         supabase.from('shower_periods').select('*').eq('user_id', userId).order('start_date'),
@@ -3897,6 +3886,7 @@ export default function GlowUpCalendar({ session }) {
       const prodMap = {}
       // Load recovery routines from profiles
       if (profileRR?.recovery_routines) setRecoveryRoutines(profileRR.recovery_routines)
+      if (profileRR) setMenuProfile({ display_name: profileRR.display_name, avatar_url: profileRR.avatar_url })
       catalogIds.current = new Set()
       ;(pr || []).forEach(p => {
         if (p.is_catalog) catalogIds.current.add(p.id)
@@ -3966,6 +3956,7 @@ export default function GlowUpCalendar({ session }) {
   const [showMenu,      setShowMenu]      = useState(false)
   const [showFeedback,  setShowFeedback]  = useState(false)
   const [recoveryRoutines, setRecoveryRoutines] = useState({})
+  const [menuProfile, setMenuProfile] = useState(null)
   const [loadError, setLoadError] = useState(null)
   const [editFromHistory, setEditFromHistory] = useState(false)
   const [dailyFromHistory, setDailyFromHistory] = useState(false)
@@ -4765,6 +4756,7 @@ export default function GlowUpCalendar({ session }) {
       {showMenu && (
         <SideMenu
           session={session}
+          menuProfile={menuProfile}
           onClose={() => setShowMenu(false)}
           onHistory={() => { setPanel(p => p === 'history' ? null : 'history'); setEditingPeriod(null); setDayFlyout(null) }}
           onLibrary={() => { window.location.href = '/routine/products' }}
@@ -4822,20 +4814,24 @@ export default function GlowUpCalendar({ session }) {
               zIndex: 40,
             }}
           />
-          {/* Panel container — fixed so it's never clipped by overflow:hidden and always scrollable */}
+          {/* Panel container — fixed to escape overflow:hidden, pointer-events none so backdrop clicks through */}
           <div
             style={{
               position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
               zIndex: 50,
-              overflowY: 'auto',
-              WebkitOverflowScrolling: 'touch',
-              animation: 'panelIn 0.2s ease',
               pointerEvents: 'none',
+              animation: 'panelIn 0.2s ease',
             }}>
-            {/* Inner wrapper restores pointer events and stops propagation to backdrop */}
+            {/* Inner wrapper — scrollable, restores pointer events, stops propagation */}
             <div
               onClick={e => e.stopPropagation()}
-              style={{ pointerEvents: 'auto', maxWidth: 900, margin: '0 auto', padding: '12px 12px 40px' }}>
+              style={{
+                pointerEvents: 'auto',
+                height: '100%',
+                overflowY: 'auto',
+                WebkitOverflowScrolling: 'touch',
+                maxWidth: 900, margin: '0 auto', padding: '12px 12px 60px',
+              }}>
 
             {/* First launch */}
             {!hasRoutine && panel === 'setup' && !editingPeriod && (
