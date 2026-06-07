@@ -4499,27 +4499,10 @@ export default function GlowUpCalendar({ session }) {
           <div style={{ fontSize: 9, fontWeight: 600, color: isOpen && dayFlyout?.tab === 'pm' ? T.pinkDeep : dateColor, opacity: 0.8, letterSpacing: '0.04em' }}>PM</div>
           {pmBadges}
         </div>
-        {/* Inline flyout — slides out from under the cell */}
-        {isOpen && (
-          <div
-            data-day-flyout="true"
-            onClick={e => e.stopPropagation()}
-            style={{
-              position: 'absolute',
-              maxHeight: '80vh',
-              overflowY: 'auto',
-              WebkitOverflowScrolling: 'touch',
-              top: '100%',
-              left: 0,
-              width: 'min(280px, 90vw)',
-              zIndex: 30,
-              marginTop: 2,
-              borderRadius: '0 8px 8px 8px',
-              border: `0.5px solid ${T.pinkDeep}`,
-              background: T.white,
-              boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-              animation: 'slideDown 0.2s ease',
-            }}>
+        {/* Inline flyout — bottom sheet on mobile, absolute drop-down on desktop */}
+        {isOpen && (() => {
+          const mobile = window.innerWidth < 640
+          const flyoutContent = (
             <DayFlyout
               flyout={dayFlyout}
               period={activePeriod}
@@ -4542,8 +4525,72 @@ export default function GlowUpCalendar({ session }) {
               onUpdateRecoveryProducts={updateRecoveryProducts}
               onUpdateRecoverySteps={updateRecoverySteps}
             />
-          </div>
-        )}
+          )
+          if (mobile) {
+            return (
+              <>
+                {/* Backdrop */}
+                <div
+                  onClick={() => setDayFlyout(null)}
+                  style={{
+                    position: 'fixed', inset: 0,
+                    background: 'rgba(0,0,0,0.3)',
+                    zIndex: 200,
+                  }}
+                />
+                {/* Bottom sheet */}
+                <div
+                  data-day-flyout="true"
+                  onClick={e => e.stopPropagation()}
+                  style={{
+                    position: 'fixed',
+                    bottom: 0, left: 0, right: 0,
+                    height: '85vh',
+                    overflowY: 'auto',
+                    WebkitOverflowScrolling: 'touch',
+                    zIndex: 201,
+                    borderRadius: '16px 16px 0 0',
+                    border: `0.5px solid ${T.pinkDeep}`,
+                    borderBottom: 'none',
+                    background: T.white,
+                    boxShadow: '0 -4px 24px rgba(0,0,0,0.12)',
+                    animation: 'slideUp 0.25s ease',
+                  }}
+                >
+                  {/* Drag handle */}
+                  <div style={{ display: 'flex', justifyContent: 'center', padding: '10px 0 4px' }}>
+                    <div style={{ width: 36, height: 4, borderRadius: 2, background: T.border }} />
+                  </div>
+                  {flyoutContent}
+                </div>
+              </>
+            )
+          }
+          return (
+            <div
+              data-day-flyout="true"
+              onClick={e => e.stopPropagation()}
+              style={{
+                position: 'absolute',
+                maxHeight: '80vh',
+                overflowY: 'auto',
+                WebkitOverflowScrolling: 'touch',
+                top: '100%',
+                left: 0,
+                width: 'min(280px, 90vw)',
+                zIndex: 30,
+                marginTop: 2,
+                borderRadius: '0 8px 8px 8px',
+                border: `0.5px solid ${T.pinkDeep}`,
+                background: T.white,
+                boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
+                animation: 'slideDown 0.2s ease',
+              }}
+            >
+              {flyoutContent}
+            </div>
+          )
+        })()}
       </div>
     )
   }
@@ -4616,7 +4663,7 @@ export default function GlowUpCalendar({ session }) {
 
   return (
     <div onClick={() => { if (dayFlyout) setDayFlyout(null) }} style={{ fontFamily: 'inherit', padding: '1rem 0.75rem', maxWidth: 900, position: 'relative', margin: '0 auto', overflowX: 'hidden' }}>
-      <style>{`@keyframes slideDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } } @keyframes panelIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }`}</style>
+      <style>{`@keyframes slideDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } } @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } } @keyframes panelIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }`}</style>
 
       {/* Toast — always in flow at top, small so it doesn't displace much */}
       {toast && (
