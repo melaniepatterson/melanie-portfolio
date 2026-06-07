@@ -1789,18 +1789,19 @@ function DailySection({ dt, dailyHistory, onEditDaily, tab, products }) {
       {activeItems.map(item => {
         const prod = item.productId ? products?.[item.productId] : null
         return (
-          <div key={item.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 7, padding: '5px 0', borderBottom: `0.5px solid #FEF3C7` }}>
+          <div key={item.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, padding: '6px 0', borderBottom: `0.5px solid #FEF3C7` }}>
             {prod?.imageUrl ? (
-              <img src={prod.imageUrl} alt="" style={{ width: 24, height: 24, borderRadius: 4, objectFit: 'cover', flexShrink: 0, marginTop: 1 }} onError={e => e.target.style.display='none'} />
+              <img src={prod.imageUrl} alt="" style={{ width: 44, height: 44, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />
             ) : (
-              <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#EF9F27', flexShrink: 0, marginTop: 4 }} />
+              <div style={{ width: 44, height: 44, borderRadius: 8, background: '#FEF3C7', border: '0.5px solid #FCD34D', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>🌿</div>
             )}
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: 12, fontWeight: 500, color: '#633806' }}>{item.label}</div>
               {item.note && <div style={{ fontSize: 11, color: '#854F0B' }}>{item.note}</div>}
               {prod ? (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>
-                  <span style={{ fontSize: 10, color: '#92400E' }}>{prod.name}</span>
+                <div style={{ marginTop: 2 }}>
+                  <div style={{ fontSize: 10, color: '#92400E', fontWeight: 500 }}>{prod.name}</div>
+                  {prod.brand && <div style={{ fontSize: 10, color: '#A16207' }}>{prod.brand}</div>}
                   {prod.effectiveness > 0 && <StarRating value={prod.effectiveness} size={9} />}
                 </div>
               ) : item.productName ? (
@@ -2719,18 +2720,19 @@ function ShowerSection({ dt, showerHistory, onEditShower, products }) {
           const freq = SHOWER_FREQUENCIES.find(f => f.key === item.frequency)
           const prod = item.productId ? products?.[item.productId] : null
           return (
-            <div key={item.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 7, padding: '5px 0', borderBottom: `0.5px solid #E0F2FE` }}>
+            <div key={item.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, padding: '6px 0', borderBottom: `0.5px solid #E0F2FE` }}>
               {prod?.imageUrl ? (
-                <img src={prod.imageUrl} alt="" style={{ width: 24, height: 24, borderRadius: 4, objectFit: 'cover', flexShrink: 0, marginTop: 1 }} onError={e => e.target.style.display='none'} />
+                <img src={prod.imageUrl} alt="" style={{ width: 44, height: 44, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />
               ) : (
-                <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#38BDF8', flexShrink: 0, marginTop: 4 }} />
+                <div style={{ width: 44, height: 44, borderRadius: 8, background: '#E0F2FE', border: '0.5px solid #38BDF8', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>🚿</div>
               )}
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: 12, fontWeight: 500, color: '#0C4A6E' }}>{item.label}</div>
                 {item.note && <div style={{ fontSize: 11, color: '#0C447C' }}>{item.note}</div>}
                 {prod ? (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>
-                    <span style={{ fontSize: 10, color: '#0C4A6E' }}>{prod.name}</span>
+                  <div style={{ marginTop: 2 }}>
+                    <div style={{ fontSize: 10, color: '#0C4A6E', fontWeight: 500 }}>{prod.name}</div>
+                    {prod.brand && <div style={{ fontSize: 10, color: '#0369A1' }}>{prod.brand}</div>}
                     {prod.effectiveness > 0 && <StarRating value={prod.effectiveness} size={9} />}
                   </div>
                 ) : item.productName ? (
@@ -4035,19 +4037,33 @@ export default function GlowUpCalendar({ session }) {
     sync()
   }, [showerHistory, userId, loading])
 
-  // Treatments
+  // Treatments — upsert changed rows, delete removed rows by tracking a ref
+  const prevTreatmentsRef = useRef(null)
   useEffect(() => {
     if (!userId || loading) return
+    // Never wipe all treatments — only delete keys that were removed since last sync
     async function sync() {
-      // Delete all and re-insert (treatments keyed by date, simplest approach)
-      await supabase.from('treatments').delete().eq('user_id', userId)
-      const rows = Object.entries(treatments).map(([date, t]) => ({
+      const prev = prevTreatmentsRef.current
+      const current = treatments
+
+      // Upsert all current treatments
+      const rows = Object.entries(current).map(([date, t]) => ({
         id: t._dbId,
         user_id: userId, date,
         type: t.type, time_of_day: t.timeOfDay || 'am',
         area: t.area || 'face', pre_days: t.pre, post_days: t.post,
       }))
       if (rows.length > 0) await supabase.from('treatments').upsert(rows)
+
+      // Delete only keys that existed before but are gone now
+      if (prev) {
+        const removed = Object.keys(prev).filter(k => !current[k])
+        for (const date of removed) {
+          const dbId = prev[date]?._dbId
+          if (dbId) await supabase.from('treatments').delete().eq('id', dbId)
+        }
+      }
+      prevTreatmentsRef.current = current
     }
     sync()
   }, [treatments, userId, loading])
@@ -4675,27 +4691,25 @@ export default function GlowUpCalendar({ session }) {
         </div>
       )}
 
-      {/* Month/year with flanking nav arrows */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, marginBottom: 6 }}>
-        <button onClick={prevMonth} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 8, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.text, flexShrink: 0 }}>←</button>
-        <div style={{ textAlign: 'center' }}>
+      {/* Month/year with flanking nav arrows — fixed-width center keeps arrows static */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 6 }}>
+        <button onClick={prevMonth} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 8, padding: '5px 14px', cursor: 'pointer', fontSize: 15, color: T.text, flexShrink: 0 }}>←</button>
+        <div style={{ width: 200, textAlign: 'center' }}>
           <div style={{ fontSize: 'clamp(28px, 6vw, 42px)', fontWeight: 700, color: T.text, lineHeight: 1.1, letterSpacing: '-0.02em' }}>{MONTHS[month]}</div>
           <div style={{ fontSize: 'clamp(13px, 2.5vw, 18px)', color: T.textMuted, fontWeight: 400, marginTop: 2 }}>{year}</div>
         </div>
-        <button onClick={nextMonth} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 8, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.text, flexShrink: 0 }}>→</button>
+        <button onClick={nextMonth} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 8, padding: '5px 14px', cursor: 'pointer', fontSize: 15, color: T.text, flexShrink: 0 }}>→</button>
       </div>
-      {(month !== now.getMonth() || year !== now.getFullYear()) && (
-        <div style={{ textAlign: 'center', marginBottom: 8 }}>
-          <button onClick={() => { setMonth(now.getMonth()); setYear(now.getFullYear()) }} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 8, padding: '3px 12px', cursor: 'pointer', fontSize: 11, color: T.textMuted, fontFamily: 'inherit' }}>Today</button>
-        </div>
-      )}
 
       {/* Header — always visible, never moves */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, gap: 8 }}>
         {/* Left — primary actions */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           <Btn variant={['update','setup'].includes(panel) ? 'active' : 'primary'} style={{ fontSize: 11, padding: '5px 10px' }} onClick={() => { setPanel(p => ['update','setup'].includes(p) ? null : (hasRoutine ? 'update' : 'setup')); setEditingPeriod(null); setDayFlyout(null) }}>+ Start new routine</Btn>
           <Btn variant={showTreatments ? 'active' : 'default'} style={{ fontSize: 11, padding: '5px 10px' }} onClick={() => { setShowTreatments(s => !s); setDayFlyout(null) }}>My treatments</Btn>
+          {(month !== now.getMonth() || year !== now.getFullYear()) && (
+            <button onClick={() => { setMonth(now.getMonth()); setYear(now.getFullYear()) }} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 8, padding: '5px 10px', cursor: 'pointer', fontSize: 11, color: T.textMuted, fontFamily: 'inherit' }}>Today</button>
+          )}
         </div>
         {/* Right — hamburger */}
         <button
