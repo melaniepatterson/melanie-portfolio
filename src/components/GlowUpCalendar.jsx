@@ -3693,6 +3693,7 @@ function FeedbackPanel({ onClose }) {
 function SideMenu({ session, onClose, onHistory, onLibrary, onExport, onSignOut, onFeedback }) {
   const email = session?.user?.email || ''
   const [profile, setProfile] = useState(null)
+  const [imageReady, setImageReady] = useState(false)
 
   useEffect(() => {
     if (!session?.user?.id) return
@@ -3700,8 +3701,21 @@ function SideMenu({ session, onClose, onHistory, onLibrary, onExport, onSignOut,
       .then(({ data }) => { if (data) setProfile(data) })
   }, [session?.user?.id])
 
+  // Preload avatar image so we never flash letter → image
+  useEffect(() => {
+    const url = profile?.avatar_url
+    if (!url) { setImageReady(false); return }
+    const img = new Image()
+    img.onload = () => setImageReady(true)
+    img.onerror = () => setImageReady(true) // show fallback on error too
+    img.src = url
+  }, [profile?.avatar_url])
+
+  // Prioritize display_name; only fall back to email prefix if truly absent
   const displayName = profile?.display_name || email.split('@')[0]
   const avatarUrl   = profile?.avatar_url || null
+  // Show placeholder until profile is loaded AND (no image OR image preloaded)
+  const avatarReady = profile !== null && (!avatarUrl || imageReady)
   const menuItems = [
     { label: 'Routine history',  icon: '📋', action: onHistory },
     { label: 'Product library',  icon: '🧴', action: onLibrary },
@@ -3725,8 +3739,8 @@ function SideMenu({ session, onClose, onHistory, onLibrary, onExport, onSignOut,
         <div style={{ padding: '20px 20px 16px', borderBottom: `0.5px solid ${T.border}` }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              {/* Avatar — show placeholder until profile loads to avoid letter→image flash */}
-              {profile === null ? (
+              {/* Avatar — blank circle until image is preloaded to avoid any flash */}
+              {!avatarReady ? (
                 <div style={{ width: 44, height: 44, borderRadius: '50%', background: T.creamDark, flexShrink: 0 }} />
               ) : (
                 <Avatar
@@ -3736,9 +3750,11 @@ function SideMenu({ session, onClose, onHistory, onLibrary, onExport, onSignOut,
                   size={44}
                 />
               )}
-              {/* Name + email */}
+              {/* Name — only show once profile is loaded */}
               <div style={{ minWidth: 0 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{displayName}</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {profile !== null ? displayName : ''}
+                </div>
               </div>
             </div>
             <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 20, color: T.textMuted, padding: '0 2px', lineHeight: 1, flexShrink: 0 }}>×</button>
@@ -4621,6 +4637,24 @@ export default function GlowUpCalendar({ session }) {
   // ── Render ────────────────────────────────────────────────
   // Determine if any overlay panel is open
   const hasOverlay = !!(panel || editingPeriod || editingDaily || editingShower || editingProduct || selector || showExport || showTreatments || showFeedback)
+
+  // Lock body scroll when any overlay panel is open — prevents background scrolling on mobile
+  useEffect(() => {
+    if (hasOverlay) {
+      const y = window.scrollY
+      document.body.style.overflow = 'hidden'
+      document.body.style.position = 'fixed'
+      document.body.style.top = `-${y}px`
+      document.body.style.width = '100%'
+      return () => {
+        document.body.style.overflow = ''
+        document.body.style.position = ''
+        document.body.style.top = ''
+        document.body.style.width = ''
+        window.scrollTo(0, y)
+      }
+    }
+  }, [hasOverlay])
 
   function closeAllPanels() {
     setPanel(null); setEditingPeriod(null); setEditingDaily(null); setEditingShower(null)
