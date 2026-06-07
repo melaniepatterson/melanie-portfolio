@@ -3725,13 +3725,17 @@ function SideMenu({ session, onClose, onHistory, onLibrary, onExport, onSignOut,
         <div style={{ padding: '20px 20px 16px', borderBottom: `0.5px solid ${T.border}` }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              {/* Avatar */}
-              <Avatar
-                avatarUrl={avatarUrl}
-                displayName={displayName}
-                email={email}
-                size={44}
-              />
+              {/* Avatar — show placeholder until profile loads to avoid letter→image flash */}
+              {profile === null ? (
+                <div style={{ width: 44, height: 44, borderRadius: '50%', background: T.creamDark, flexShrink: 0 }} />
+              ) : (
+                <Avatar
+                  avatarUrl={avatarUrl}
+                  displayName={displayName}
+                  email={email}
+                  size={44}
+                />
+              )}
               {/* Name + email */}
               <div style={{ minWidth: 0 }}>
                 <div style={{ fontSize: 13, fontWeight: 600, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{displayName}</div>
@@ -4774,33 +4778,30 @@ export default function GlowUpCalendar({ session }) {
       {/* Overlay — floats over the calendar */}
       {hasOverlay && (
         <>
-          {/* Clickable backdrop — sits behind panel container */}
+          {/* Clickable backdrop */}
           <div
             onClick={closeAllPanels}
             style={{
-              position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+              position: 'fixed', inset: 0,
               background: 'rgba(250,247,242,0.7)',
               backdropFilter: 'blur(2px)',
               zIndex: 40,
-              borderRadius: 12,
             }}
           />
-          {/* Panel container — higher z-index, clicks do NOT reach backdrop */}
+          {/* Panel container — fixed so it's never clipped by overflow:hidden and always scrollable */}
           <div
             style={{
-              position: 'absolute', top: 0, left: 0, right: 0,
+              position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
               zIndex: 50,
-              maxHeight: '90vh',
               overflowY: 'auto',
-              borderRadius: 12,
+              WebkitOverflowScrolling: 'touch',
               animation: 'panelIn 0.2s ease',
-              padding: '12px 4px 0',
               pointerEvents: 'none',
             }}>
             {/* Inner wrapper restores pointer events and stops propagation to backdrop */}
             <div
               onClick={e => e.stopPropagation()}
-              style={{ pointerEvents: 'auto' }}>
+              style={{ pointerEvents: 'auto', maxWidth: 900, margin: '0 auto', padding: '12px 12px 40px' }}>
 
             {/* First launch */}
             {!hasRoutine && panel === 'setup' && !editingPeriod && (
