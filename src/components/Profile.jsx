@@ -194,12 +194,21 @@ export default function Profile({ session }) {
       )}
 
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '20px 20px 16px', borderBottom: `0.5px solid ${T.border}`, background: T.white, position: 'sticky', top: 0, zIndex: 10 }}>
-        <button onClick={() => window.location.href = '/routine'}
-          style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 8, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.text }}>
-          ←
-        </button>
-        <div style={{ fontSize: 15, fontWeight: 600, color: T.text }}>Profile</div>
+      <div style={{ background: T.white, borderBottom: `0.5px solid ${T.border}`, position: 'sticky', top: 0, zIndex: 10 }}>
+        <style>{`.glowup-profile-logo { display: flex } @media (max-width: 639px) { .glowup-profile-logo { display: none } }`}</style>
+        {/* Logo row — desktop only */}
+        <div className="glowup-profile-logo" style={{ alignItems: 'baseline', gap: 6, padding: '12px 20px 8px' }}>
+          <span style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-0.04em', color: T.text, lineHeight: 1 }}>glow up</span>
+          <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#C93500', display: 'inline-block', marginBottom: 2 }} />
+        </div>
+        {/* Nav row */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 20px 14px' }}>
+          <button onClick={() => window.location.href = '/routine'}
+            style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 8, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.text }}>
+            ←
+          </button>
+          <div style={{ fontSize: 15, fontWeight: 600, color: T.text }}>Profile</div>
+        </div>
       </div>
 
       <div style={{ maxWidth: 480, margin: '0 auto', padding: '24px 20px' }}>

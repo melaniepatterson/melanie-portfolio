@@ -4662,7 +4662,13 @@ export default function GlowUpCalendar({ session }) {
 
   return (
     <div onClick={() => { if (dayFlyout) setDayFlyout(null) }} style={{ fontFamily: 'inherit', padding: '1rem 0.75rem', maxWidth: 900, position: 'relative', margin: '0 auto' }}>
-      <style>{`@keyframes slideDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } } @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } } @keyframes panelIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } } @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }`}</style>
+      <style>{`@keyframes slideDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } } @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } } @keyframes panelIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } } @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } } .glowup-cal-logo { display: flex } @media (max-width: 639px) { .glowup-cal-logo { display: none } }`}</style>
+
+      {/* Glow Up logo — desktop only */}
+      <div className="glowup-cal-logo" style={{ alignItems: 'center', justifyContent: 'center', gap: 6, marginBottom: 12 }}>
+        <span style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.04em', color: T.text, lineHeight: 1 }}>glow up</span>
+        <span style={{ width: 6, height: 6, borderRadius: '50%', background: T.pinkDeep, display: 'inline-block', flexShrink: 0 }} />
+      </div>
 
       {/* Toast — always in flow at top, small so it doesn't displace much */}
       {toast && (

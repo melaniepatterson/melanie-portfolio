@@ -835,150 +835,141 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
   const storeName = p.store_name || cat?.store_name
   const directUrl = p.direct_url || cat?.direct_url
   const directStoreName = p.direct_store_name || cat?.direct_store_name
+  const img = p.imageUrl || p.image_url
+  const wwu = isWhatWeUsing && isWhatWeUsing(p)
+  const userUsing = (userRoutineNames || new Set()).has(((p.name||'')+'|'+(p.brand||'')).toLowerCase())
 
   return (
-    <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-      <div onClick={e => e.stopPropagation()} style={{ background: T.white, borderRadius: 16, width: '100%', maxWidth: 520, maxHeight: '85vh', overflowY: 'auto', overflowX: 'hidden', padding: '24px 20px 32px', position: 'relative' }}>
-        {/* × close — absolute top-right overlapping image */}
-        <button onClick={onClose} style={{ position: 'absolute', top: 12, right: 12, zIndex: 10, width: 32, height: 32, borderRadius: '50%', border: 'none', background: 'rgba(0,0,0,0.45)', color: '#fff', cursor: 'pointer', fontSize: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1, backdropFilter: 'blur(4px)' }}>×</button>
+    <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
+      <div onClick={e => e.stopPropagation()} style={{
+        background: T.white, borderRadius: 16, width: '100%', maxWidth: 640, maxHeight: '85vh',
+        display: 'flex', overflow: 'hidden', position: 'relative',
+      }}>
 
-        {/* Product image */}
-        {(p.imageUrl || p.image_url) && (
-          <div style={{ margin: '-24px -20px 16px', height: 220, overflow: 'hidden', borderRadius: '16px 16px 0 0', background: T.white }}>
-            <img src={p.imageUrl || p.image_url} alt={p.name}
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        {/* ── Left: portrait image ─────────────────────────── */}
+        {img && (
+          <div style={{ width: '38%', flexShrink: 0, overflow: 'hidden', background: T.white, borderRadius: '16px 0 0 16px' }}>
+            <img src={img} alt={p.name}
+              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+              onError={e => { e.currentTarget.parentElement.style.display = 'none' }} />
           </div>
         )}
 
-        {/* Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
-          <div style={{ flex: 1, paddingRight: 12 }}>
-            <div style={{ fontSize: 18, fontWeight: 600, color: T.text, marginBottom: 4 }}>{p.name}</div>
-            {p.brand && <div style={{ fontSize: 13, color: T.textMuted }}>{p.brand}</div>}
+        {/* ── Right: scrollable content ────────────────────── */}
+        <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', WebkitOverflowScrolling: 'touch', padding: '20px 16px 28px', position: 'relative' }}>
+
+          {/* × — top right */}
+          <button onClick={onClose} style={{ position: 'absolute', top: 12, right: 12, zIndex: 10, width: 28, height: 28, borderRadius: '50%', border: 'none', background: T.creamDark, color: T.text, cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>×</button>
+
+          {/* Name + brand */}
+          <div style={{ paddingRight: 38, marginBottom: 8 }}>
+            <div style={{ fontSize: 16, fontWeight: 600, color: T.text, lineHeight: 1.3 }}>{p.name}</div>
+            {p.brand && <div style={{ fontSize: 12, color: T.textMuted, marginTop: 3 }}>{p.brand}</div>}
           </div>
-        </div>
 
-        {/* Recommended badge */}
-        {(isCatalog || p._isLinked) && isWhatWeUsing && isWhatWeUsing(p) && (
-          <div style={{ display: 'inline-block', fontSize: 11, background: T.pink, color: T.pinkDeep, borderRadius: 20, padding: '3px 10px', fontWeight: 600, marginBottom: 12 }}>What we're using!</div>
-        )}
-
-        {/* Currently using */}
-        {p.currentlyUsing && (
-          <div style={{ fontSize: 11, color: T.pinkDeep, fontWeight: 600, marginBottom: 12 }}>Currently using</div>
-        )}
-
-        {/* Category + ingredient */}
-        {(p.category || p.ingredient_category) && (
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
-            {p.category && <span style={{ fontSize: 12, background: T.creamDark, color: T.textMuted, borderRadius: 20, padding: '3px 10px' }}>{p.category.charAt(0).toUpperCase() + p.category.slice(1)}</span>}
-            {p.ingredient_category && <span style={{ fontSize: 12, background: T.creamDark, color: T.textMuted, borderRadius: 20, padding: '3px 10px' }}>{p.ingredient_category.replace(/_/g, ' ')}</span>}
-            {p.ingredient_form && <span style={{ fontSize: 12, background: T.creamDark, color: T.textMuted, borderRadius: 20, padding: '3px 10px' }}>{p.ingredient_form}</span>}
-          </div>
-        )}
-
-        {/* Effectiveness */}
-        {p.effectiveness > 0 && (
-          <div style={{ marginBottom: 12 }}>
-            <StarRating value={p.effectiveness} size={14} />
-          </div>
-        )}
-
-        {/* Flags */}
-        <ProductFlagBadges product={p} />
-
-        {/* Description */}
-        {p.description && (
-          <div style={{ fontSize: 13, color: T.text, lineHeight: 1.7, marginTop: 14, marginBottom: 14 }}>{p.description}</div>
-        )}
-
-        {/* Ingredients */}
-        {p.ingredients && (
-          <div style={{ marginTop: 14, marginBottom: 14 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Ingredients</div>
-            <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.8, padding: '10px 12px', background: T.cream, borderRadius: 8 }}>{p.ingredients}</div>
-          </div>
-        )}
-
-        {/* Notes */}
-        {p.notes && (
-          <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.7, marginTop: 14, marginBottom: 14, padding: '10px 12px', background: T.cream, borderRadius: 8, fontStyle: 'italic' }}>{p.notes}</div>
-        )}
-
-        {/* PAO + dates */}
-        {(p.pao_months || p.opened_at || p.expires_at || p.purchased_at) && (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 14 }}>
-            {p.pao_months && <div style={{ fontSize: 12 }}><span style={{ color: T.textLight }}>PAO: </span><span style={{ color: T.text, display: 'inline-flex', alignItems: 'center', gap: 4 }}><PaoIcon months={p.pao_months} size={13} /> {p.pao_months} months</span></div>}
-            {p.purchased_at && <div style={{ fontSize: 12 }}><span style={{ color: T.textLight }}>Purchased: </span><span style={{ color: T.text }}>{p.purchased_at}</span></div>}
-            {p.opened_at && <div style={{ fontSize: 12 }}><span style={{ color: T.textLight }}>Opened: </span><span style={{ color: T.text }}>{p.opened_at}</span></div>}
-            {p.expires_at && <div style={{ fontSize: 12 }}><span style={{ color: T.textLight }}>Expires: </span><span style={{ color: T.text }}>{p.expires_at}</span></div>}
-          </div>
-        )}
-
-        {/* Buy buttons */}
-        {(purchaseUrl || directUrl) && (
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
-            {purchaseUrl && (
-              <a href={purchaseUrl} target="_blank" rel="noopener noreferrer"
-                style={{ fontSize: 13, padding: '8px 18px', borderRadius: 20, background: T.pinkDeep, color: '#fff', textDecoration: 'none', fontWeight: 500 }}>
-                Buy at {storeName || getStoreName(purchaseUrl) || 'store'} →
-              </a>
-            )}
-            {directUrl && (
-              <a href={directUrl} target="_blank" rel="noopener noreferrer"
-                style={{ fontSize: 13, padding: '8px 18px', borderRadius: 20, background: 'transparent', color: T.pinkDeep, textDecoration: 'none', fontWeight: 500, border: '0.5px solid ' + T.pinkDeep }}>
-                {directStoreName || getStoreName(directUrl) || 'View direct'} →
-              </a>
-            )}
-          </div>
-        )}
-
-        {/* ── Personal data section (catalog products with upd, or own products) ── */}
-        {(isCatalog ? upd?.in_library : true) && (
-          <PersonalDataForm
-            productId={p.id}
-            isCatalog={isCatalog}
-            upd={upd}
-            product={p}
-            onSaveUpd={onSaveUserProductData}
-            onEdit={onEdit}
-            onDelete={onDelete}
-            onClose={onClose}
-          />
-        )}
-
-        {/* Community effectiveness */}
-        {p.effectivenessAvg > 0 && (
-          <div style={{ fontSize: 11, color: T.textMuted, marginTop: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span>Community rating:</span>
-            <StarRating value={Math.round(p.effectivenessAvg)} size={11} />
-          </div>
-        )}
-
-        {/* Action buttons */}
-        <div style={{ display: 'flex', gap: 8, marginTop: 16, flexWrap: 'wrap' }}>
-          {isCatalog ? (
-            upd?.in_library
-              ? <button onClick={() => { onRemoveFromLibrary(p.id); onClose() }}
-                  style={{ flex: 1, padding: '10px', borderRadius: 10, border: '0.5px solid ' + T.border, background: 'transparent', color: T.textMuted, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit' }}>
-                  Remove from my products
-                </button>
-              : <button onClick={() => { onAddToLibrary(p); onClose() }}
-                  style={{ flex: 1, padding: '10px', borderRadius: 10, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 500 }}>
-                  + Add to my products
-                </button>
-          ) : (
-            <>
-              <button onClick={() => { onClose(); onEdit(p) }}
-                style={{ flex: 1, padding: '10px', borderRadius: 10, border: '0.5px solid ' + T.border, background: T.creamDark, color: T.text, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 500 }}>
-                Edit this product
-              </button>
-              <button onClick={() => { if (window.confirm('Delete ' + p.name + '? This cannot be undone.')) { onDelete(p); onClose() } }}
-                style={{ padding: '10px 16px', borderRadius: 10, border: '0.5px solid ' + T.border, background: 'transparent', color: T.textLight, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit' }}>
-                Delete
-              </button>
-            </>
+          {/* Discrete URL pills — right under name */}
+          {(purchaseUrl || directUrl) && (
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 12 }}>
+              {purchaseUrl && (
+                <a href={purchaseUrl} target="_blank" rel="noopener noreferrer"
+                  style={{ fontSize: 11, padding: '4px 12px', borderRadius: 20, background: T.white, color: T.text, textDecoration: 'none', border: `0.5px solid ${T.textMuted}`, whiteSpace: 'nowrap', fontFamily: 'inherit' }}>
+                  {storeName || getStoreName(purchaseUrl) || 'Affiliate'} ↗
+                </a>
+              )}
+              {directUrl && (
+                <a href={directUrl} target="_blank" rel="noopener noreferrer"
+                  style={{ fontSize: 11, padding: '4px 12px', borderRadius: 20, background: T.white, color: T.text, textDecoration: 'none', border: `0.5px solid ${T.textMuted}`, whiteSpace: 'nowrap', fontFamily: 'inherit' }}>
+                  {directStoreName || getStoreName(directUrl) || 'Direct'} ↗
+                </a>
+              )}
+            </div>
           )}
+
+          {/* Routine badges */}
+          {(isCatalog || p._isLinked) && wwu && (
+            <div style={{ display: 'inline-block', fontSize: 11, background: T.pink, color: T.pinkDeep, borderRadius: 20, padding: '3px 10px', fontWeight: 600, marginBottom: 8, marginRight: 6 }}>What we're using!</div>
+          )}
+          {userUsing && (
+            <div style={{ display: 'inline-block', fontSize: 11, background: T.creamDark, color: T.textMuted, borderRadius: 20, padding: '3px 10px', fontWeight: 600, marginBottom: 8, border: `0.5px solid ${T.border}` }}>Current routine</div>
+          )}
+
+          {/* Category + ingredient */}
+          {(p.category || p.ingredient_category) && (
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
+              {p.category && <span style={{ fontSize: 11, background: T.creamDark, color: T.textMuted, borderRadius: 20, padding: '3px 10px' }}>{p.category.charAt(0).toUpperCase() + p.category.slice(1)}</span>}
+              {p.ingredient_category && <span style={{ fontSize: 11, background: T.creamDark, color: T.textMuted, borderRadius: 20, padding: '3px 10px' }}>{p.ingredient_category.replace(/_/g, ' ')}</span>}
+              {p.ingredient_form && <span style={{ fontSize: 11, background: T.creamDark, color: T.textMuted, borderRadius: 20, padding: '3px 10px' }}>{p.ingredient_form}</span>}
+            </div>
+          )}
+
+          {/* Effectiveness */}
+          {p.effectiveness > 0 && <div style={{ marginBottom: 10 }}><StarRating value={p.effectiveness} size={13} /></div>}
+
+          {/* Flags */}
+          <ProductFlagBadges product={p} />
+
+          {/* Description */}
+          {p.description && <div style={{ fontSize: 12, color: T.text, lineHeight: 1.7, marginTop: 12, marginBottom: 12 }}>{p.description}</div>}
+
+          {/* Ingredients */}
+          {p.ingredients && (
+            <div style={{ marginTop: 12, marginBottom: 12 }}>
+              <div style={{ fontSize: 10, fontWeight: 600, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 5 }}>Ingredients</div>
+              <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.8, padding: '8px 10px', background: T.cream, borderRadius: 8 }}>{p.ingredients}</div>
+            </div>
+          )}
+
+          {/* Notes */}
+          {p.notes && <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.7, margin: '10px 0', padding: '8px 10px', background: T.cream, borderRadius: 8, fontStyle: 'italic' }}>{p.notes}</div>}
+
+          {/* PAO + dates */}
+          {(p.pao_months || p.opened_at || p.expires_at || p.purchased_at) && (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 6, marginBottom: 12 }}>
+              {p.pao_months && <div style={{ fontSize: 11 }}><span style={{ color: T.textLight }}>PAO: </span><span style={{ color: T.text }}>{p.pao_months}mo</span></div>}
+              {p.purchased_at && <div style={{ fontSize: 11 }}><span style={{ color: T.textLight }}>Purchased: </span><span style={{ color: T.text }}>{p.purchased_at}</span></div>}
+              {p.opened_at && <div style={{ fontSize: 11 }}><span style={{ color: T.textLight }}>Opened: </span><span style={{ color: T.text }}>{p.opened_at}</span></div>}
+              {p.expires_at && <div style={{ fontSize: 11 }}><span style={{ color: T.textLight }}>Expires: </span><span style={{ color: T.text }}>{p.expires_at}</span></div>}
+            </div>
+          )}
+
+          {/* Personal data form */}
+          {(isCatalog ? upd?.in_library : true) && (
+            <PersonalDataForm productId={p.id} isCatalog={isCatalog} upd={upd} product={p}
+              onSaveUpd={onSaveUserProductData} onEdit={onEdit} onDelete={onDelete} onClose={onClose} />
+          )}
+
+          {/* Community rating */}
+          {p.effectivenessAvg > 0 && (
+            <div style={{ fontSize: 11, color: T.textMuted, marginTop: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span>Community rating:</span><StarRating value={Math.round(p.effectivenessAvg)} size={11} />
+            </div>
+          )}
+
+          {/* Action buttons */}
+          <div style={{ display: 'flex', gap: 8, marginTop: 16, flexWrap: 'wrap' }}>
+            {isCatalog ? (
+              upd?.in_library
+                ? <button onClick={() => { onRemoveFromLibrary(p.id); onClose() }}
+                    style={{ flex: 1, padding: '9px', borderRadius: 10, border: '0.5px solid ' + T.border, background: 'transparent', color: T.textMuted, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
+                    Remove from my products
+                  </button>
+                : <button onClick={() => { onAddToLibrary(p); onClose() }}
+                    style={{ flex: 1, padding: '9px', borderRadius: 10, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 500 }}>
+                    + Add to my products
+                  </button>
+            ) : (
+              <>
+                <button onClick={() => { onClose(); onEdit(p) }}
+                  style={{ flex: 1, padding: '9px', borderRadius: 10, border: '0.5px solid ' + T.border, background: T.creamDark, color: T.text, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 500 }}>
+                  Edit
+                </button>
+                <button onClick={() => { if (window.confirm('Delete ' + p.name + '?')) { onDelete(p); onClose() } }}
+                  style={{ padding: '9px 14px', borderRadius: 10, border: '0.5px solid ' + T.border, background: 'transparent', color: T.textLight, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
+                  Delete
+                </button>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </div>
@@ -1306,7 +1297,7 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
                     {(wwu || userUsing) && (
                       <div style={{ position: 'absolute', top: 6, right: 6, display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'flex-end' }}>
                         {wwu && <span style={{ fontSize: 8, background: T.pinkDeep, color: '#fff', borderRadius: 8, padding: '2px 6px', fontWeight: 700, whiteSpace: 'nowrap', boxShadow: '0 1px 4px rgba(0,0,0,0.15)' }}>What we're using</span>}
-                        {userUsing && <span style={{ fontSize: 8, background: 'rgba(255,255,255,0.93)', color: T.text, borderRadius: 8, padding: '2px 6px', fontWeight: 600, whiteSpace: 'nowrap', border: '0.5px solid ' + T.border }}>Currently using</span>}
+                        {userUsing && <span style={{ fontSize: 8, background: 'rgba(255,255,255,0.93)', color: T.text, borderRadius: 8, padding: '2px 6px', fontWeight: 600, whiteSpace: 'nowrap', border: '0.5px solid ' + T.border }}>Current routine</span>}
                       </div>
                     )}
                     {/* Prescription — top left */}
@@ -1629,13 +1620,15 @@ export default function ProductsPage({ session }) {
       <div style={{ background: T.white, borderBottom: '0.5px solid ' + T.border }}>
         {/* Logo row */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px 10px' }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+          <style>{`.glowup-prodlogo { display: flex } @media (max-width: 639px) { .glowup-prodlogo { display: none } }`}</style>
+          <div className="glowup-prodlogo" style={{ alignItems: 'baseline', gap: 6 }}>
             <span style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-0.04em', color: T.text, lineHeight: 1 }}>glow up</span>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: T.pinkDeep, display: 'inline-block', marginBottom: 2 }} />
           </div>
+          <div className="glowup-prodlogo" style={{ flex: 1 }} /> {/* spacer on desktop */}
           <button onClick={() => setEditingProduct('new')}
-            style={{ border: 'none', background: T.pinkDeep, color: '#fff', borderRadius: '50%', width: 34, height: 34, cursor: 'pointer', fontSize: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1, fontFamily: 'inherit' }}>
-            +
+            style={{ border: 'none', background: T.pinkDeep, color: '#fff', borderRadius: 20, padding: '7px 16px', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 500, whiteSpace: 'nowrap' }}>
+            + Add new product
           </button>
         </div>
         {/* Page nav row */}
