@@ -1646,38 +1646,53 @@ function DailyEditor({ initial, onSave, onCancel, lockStartDate = false, allPeri
               onNoteChange={handleNoteChange}
               freqOptions={EXTRAS_FREQUENCIES}
             />
-            {/* Inline product picker per daily item */}
-            <div style={{ marginLeft: 24, marginBottom: 4 }}>
-              {item.productId && products[item.productId] ? (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: T.textMuted }}>
-                  {products[item.productId].imageUrl && <img src={products[item.productId].imageUrl} alt="" style={{ width: 14, height: 14, borderRadius: 3, objectFit: 'cover' }} onError={e => e.target.style.display='none'} />}
-                  <span>{products[item.productId].name}</span>
-                  <StarRating value={products[item.productId].effectiveness || 0} size={9} />
-                  <button onClick={() => setItems(it => it.map((x,idx) => idx===i ? {...x,productId:null} : x))} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 11 }}>×</button>
+            {/* Product slot — tappable row matching skincare pattern */}
+            {(() => {
+              const prod = item.productId ? products[item.productId] : null
+              const isOpen = !!item._pickingProduct
+              return (
+                <div style={{ marginLeft: 8, marginBottom: 4 }}>
+                  <div
+                    onClick={() => setItems(it => it.map((x,idx) => idx===i ? {...x,_pickingProduct:!x._pickingProduct} : x))}
+                    style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 6, cursor: 'pointer', background: isOpen ? T.pink : T.creamDark, border: `0.5px solid ${isOpen ? T.pinkDeep : T.border}`, marginBottom: isOpen ? 4 : 0 }}
+                  >
+                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: T.pinkDeep, flexShrink: 0 }} />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      {prod ? (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          {prod.imageUrl && <img src={prod.imageUrl} alt="" style={{ width: 28, height: 28, borderRadius: 5, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />}
+                          <div style={{ minWidth: 0 }}>
+                            <div style={{ fontSize: 11, fontWeight: 500, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{prod.name}</div>
+                            {prod.brand && <div style={{ fontSize: 10, color: T.textMuted }}>{prod.brand}</div>}
+                            {prod.effectiveness > 0 && <StarRating value={prod.effectiveness} size={9} />}
+                          </div>
+                        </div>
+                      ) : (
+                        <span style={{ fontSize: 11, color: T.textLight, fontStyle: 'italic' }}>Tap to assign product</span>
+                      )}
+                    </div>
+                    {prod && <button onClick={e => { e.stopPropagation(); setItems(it => it.map((x,idx) => idx===i ? {...x,productId:null} : x)) }} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 13, padding: '0 2px', lineHeight: 1 }}>×</button>}
+                    <span style={{ fontSize: 10, color: T.textLight, flexShrink: 0 }}>{isOpen ? '▲' : '▼'}</span>
+                  </div>
+                  {isOpen && (
+                    <ProductPicker
+                      stepKey="other"
+                      currentProductId={item.productId}
+                      products={products}
+                      onSelect={(pid) => setItems(it => it.map((x,idx) => idx===i ? {...x,productId:pid,_pickingProduct:false} : x))}
+                      onAddNew={() => setItems(it => it.map((x,idx) => idx===i ? {...x,_addingProduct:true,_pickingProduct:false} : x))}
+                      onClose={() => setItems(it => it.map((x,idx) => idx===i ? {...x,_pickingProduct:false} : x))}
+                    />
+                  )}
+                  {item._addingProduct && (
+                    <ProductForm
+                      onSave={(p) => { onSaveProduct?.(p); setItems(it => it.map((x,idx) => idx===i ? {...x,productId:p.id,_addingProduct:false} : x)) }}
+                      onCancel={() => setItems(it => it.map((x,idx) => idx===i ? {...x,_addingProduct:false} : x))}
+                    />
+                  )}
                 </div>
-              ) : (
-                <button
-                  onClick={() => setItems(it => it.map((x,idx) => idx===i ? {...x,_pickingProduct:!x._pickingProduct} : x))}
-                  style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 10, color: T.pinkDeep, padding: 0 }}
-                >+ Link product from library</button>
-              )}
-              {item._pickingProduct && (
-                <ProductPicker
-                  stepKey="other"
-                  currentProductId={item.productId}
-                  products={products}
-                  onSelect={(pid) => setItems(it => it.map((x,idx) => idx===i ? {...x,productId:pid,_pickingProduct:false} : x))}
-                  onAddNew={() => setItems(it => it.map((x,idx) => idx===i ? {...x,_addingProduct:true,_pickingProduct:false} : x))}
-                  onClose={() => setItems(it => it.map((x,idx) => idx===i ? {...x,_pickingProduct:false} : x))}
-                />
-              )}
-              {item._addingProduct && (
-                <ProductForm
-                  onSave={(p) => { onSaveProduct?.(p); setItems(it => it.map((x,idx) => idx===i ? {...x,productId:p.id,_addingProduct:false} : x)) }}
-                  onCancel={() => setItems(it => it.map((x,idx) => idx===i ? {...x,_addingProduct:false} : x))}
-                />
-              )}
-            </div>
+              )
+            })()}
           </div>
         ))}
       </div>
@@ -1778,7 +1793,7 @@ function DailySection({ dt, dailyHistory, onEditDaily, tab, products }) {
   return (
     <div style={{ marginBottom: 10 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-        <div style={{ fontSize: 10, fontWeight: 600, color: '#92400E', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Extras</div>
+        <div style={{ fontSize: 10, fontWeight: 600, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Extras</div>
         <button onClick={onEditDaily} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 11, color: T.textLight, padding: '0 2px' }} aria-label="Edit extras">Edit</button>
       </div>
       {activeItems.length === 0 && (
@@ -1811,7 +1826,6 @@ function DailySection({ dt, dailyHistory, onEditDaily, tab, products }) {
           </div>
         )
       })}
-      <div style={{ borderTop: `0.5px solid ${T.border}`, marginTop: 8 }} />
     </div>
   )
 }
@@ -2587,47 +2601,53 @@ function ShowerEditor({ initial, onSave, onCancel, allPeriods = [], onEditConfli
               onDragStart={handleDragStart} onDragEnter={handleDragEnter}
               onDragEnd={handleDragEnd} onLongPress={handleLongPress}
             />
-            {/* Inline product picker */}
-            <div style={{ marginLeft: 24, marginBottom: 4 }}>
-              {item.productId && products[item.productId] ? (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: T.textMuted }}>
-                  {products[item.productId].imageUrl && <img src={products[item.productId].imageUrl} alt="" style={{ width: 14, height: 14, borderRadius: 3, objectFit: 'cover' }} onError={e => e.target.style.display='none'} />}
-                  <span>{products[item.productId].name}</span>
-                  {products[item.productId].applicationArea && Object.entries(products[item.productId].applicationArea).filter(([,v])=>v).map(([k]) => (
-                    <span key={k} style={{ fontSize: 9, padding: '1px 4px', borderRadius: 3, background: T.creamDark, color: T.textMuted, border: `0.5px solid ${T.border}` }}>{k}</span>
-                  ))}
-                  <StarRating value={products[item.productId].effectiveness || 0} size={9} />
-                  <button onClick={() => setItems(it => it.map((x,idx) => idx===i ? {...x,productId:null} : x))} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 11 }}>×</button>
+            {/* Product slot — tappable row matching skincare pattern */}
+            {(() => {
+              const prod = item.productId ? products[item.productId] : null
+              const isOpen = !!item._pickingProduct
+              return (
+                <div style={{ marginLeft: 8, marginBottom: 4 }}>
+                  <div
+                    onClick={() => setItems(it => it.map((x,idx) => idx===i ? {...x,_pickingProduct:!x._pickingProduct} : x))}
+                    style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 6, cursor: 'pointer', background: isOpen ? T.pink : T.creamDark, border: `0.5px solid ${isOpen ? T.pinkDeep : T.border}`, marginBottom: isOpen ? 4 : 0 }}
+                  >
+                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: T.pinkDeep, flexShrink: 0 }} />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      {prod ? (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          {prod.imageUrl && <img src={prod.imageUrl} alt="" style={{ width: 28, height: 28, borderRadius: 5, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />}
+                          <div style={{ minWidth: 0 }}>
+                            <div style={{ fontSize: 11, fontWeight: 500, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{prod.name}</div>
+                            {prod.brand && <div style={{ fontSize: 10, color: T.textMuted }}>{prod.brand}</div>}
+                            {prod.effectiveness > 0 && <StarRating value={prod.effectiveness} size={9} />}
+                          </div>
+                        </div>
+                      ) : (
+                        <span style={{ fontSize: 11, color: T.textLight, fontStyle: 'italic' }}>Tap to assign product</span>
+                      )}
+                    </div>
+                    {prod && <button onClick={e => { e.stopPropagation(); setItems(it => it.map((x,idx) => idx===i ? {...x,productId:null} : x)) }} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 13, padding: '0 2px', lineHeight: 1 }}>×</button>}
+                    <span style={{ fontSize: 10, color: T.textLight, flexShrink: 0 }}>{isOpen ? '▲' : '▼'}</span>
+                  </div>
+                  {isOpen && (
+                    <ProductPicker
+                      stepKey="other"
+                      currentProductId={item.productId}
+                      products={products}
+                      onSelect={(pid) => setItems(it => it.map((x,idx) => idx===i ? {...x,productId:pid,_pickingProduct:false,_linkedProduct: pid && products[pid]?.name} : x))}
+                      onAddNew={() => setItems(it => it.map((x,idx) => idx===i ? {...x,_addingProduct:true,_pickingProduct:false} : x))}
+                      onClose={() => setItems(it => it.map((x,idx) => idx===i ? {...x,_pickingProduct:false} : x))}
+                    />
+                  )}
+                  {item._addingProduct && (
+                    <ProductForm
+                      onSave={(p) => { onSaveProduct?.(p); setItems(it => it.map((x,idx) => idx===i ? {...x,productId:p.id,_linkedProduct:p.name,_addingProduct:false} : x)) }}
+                      onCancel={() => setItems(it => it.map((x,idx) => idx===i ? {...x,_addingProduct:false} : x))}
+                    />
+                  )}
                 </div>
-              ) : (
-                <button
-                  onClick={() => setItems(it => it.map((x,idx) => idx===i ? {...x,_pickingProduct:!x._pickingProduct} : x))}
-                  style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 10, color: T.pinkDeep, padding: 0 }}
-                >+ Link product from library</button>
-              )}
-              {item._pickingProduct && (
-                <ProductPicker
-                  stepKey="other"
-                  currentProductId={item.productId}
-                  products={products}
-                  onSelect={(pid) => setItems(it => it.map((x,idx) => idx===i ? {...x,productId:pid,_pickingProduct:false,_linkedProduct: pid && products[pid]?.name} : x))}
-                  onAddNew={() => setItems(it => it.map((x,idx) => idx===i ? {...x,_addingProduct:true,_pickingProduct:false} : x))}
-                  onClose={() => setItems(it => it.map((x,idx) => idx===i ? {...x,_pickingProduct:false} : x))}
-                />
-              )}
-              {item._addingProduct && (
-                <ProductForm
-                  onSave={(p) => { onSaveProduct?.(p); setItems(it => it.map((x,idx) => idx===i ? {...x,productId:p.id,_linkedProduct:p.name,_addingProduct:false} : x)) }}
-                  onCancel={() => setItems(it => it.map((x,idx) => idx===i ? {...x,_addingProduct:false} : x))}
-                />
-              )}
-              {/* Area hint — shown when a product is linked */}
-              {item.productId && products[item.productId] && !Object.values(products[item.productId].applicationArea || {}).some(v => v) && (
-                <div style={{ fontSize: 10, color: T.textLight, fontStyle: 'italic', marginTop: 2 }}>
-                  Tip: open the product to set where it's applied (face, body, hair).
-                </div>
-              )}
-            </div>
+              )
+            })()}
           </div>
         ))}
       </div>
@@ -2708,7 +2728,7 @@ function ShowerSection({ dt, showerHistory, onEditShower, products }) {
   return (
     <div style={{ marginBottom: 10 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-        <div style={{ fontSize: 10, fontWeight: 600, color: '#0C447C', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Shower</div>
+        <div style={{ fontSize: 10, fontWeight: 600, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Shower</div>
         <button onClick={onEditShower} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 11, color: T.textLight, padding: '0 2px' }}>Edit</button>
       </div>
       {activeItems.length === 0 ? (
@@ -2744,7 +2764,6 @@ function ShowerSection({ dt, showerHistory, onEditShower, products }) {
           )
         })
       )}
-      <div style={{ borderTop: `0.5px solid ${T.border}`, marginTop: 8 }} />
     </div>
   )
 }
@@ -2999,7 +3018,7 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
       <ShowerSection dt={date} showerHistory={showerHistory} onEditShower={onEditShower} products={products} />
 
       {/* 2. Morning / Night tabs */}
-      <div style={{ display: 'flex', gap: 6, marginBottom: 8, borderTop: `0.5px solid ${T.border}`, paddingTop: 8 }}>
+      <div style={{ display: 'flex', gap: 6, marginBottom: 8, marginTop: 10 }}>
         <button onClick={() => switchTab('am')} style={{ padding: '4px 14px', borderRadius: 8, border: `0.5px solid ${tab === 'am' ? T.pinkDeep : T.border}`, background: tab === 'am' ? T.pink : 'transparent', fontSize: 12, fontWeight: tab === 'am' ? 500 : 400, cursor: 'pointer', color: T.text }}>Morning</button>
         <button onClick={() => switchTab('pm')} style={{ padding: '4px 14px', borderRadius: 8, border: `0.5px solid ${tab === 'pm' ? T.pinkDeep : T.border}`, background: tab === 'pm' ? T.pink : 'transparent', fontSize: 12, fontWeight: tab === 'pm' ? 500 : 400, cursor: 'pointer', color: T.text }}>Night</button>
       </div>
@@ -3008,15 +3027,13 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
       <DailySection dt={date} dailyHistory={dailyHistory} onEditDaily={onEditDaily} tab={tab} products={products} />
 
       {/* 4. Skincare steps — tab-specific */}
-      <div style={{ borderTop: `0.5px solid ${T.border}`, marginBottom: 8 }} />
       {!period ? (
         <div style={{ fontSize: 11, color: T.textMuted, fontStyle: 'italic', padding: '6px 0 10px', lineHeight: 1.6 }}>
           No skincare routine active for this date. Routine settings and product assignments begin on your routine start date.
         </div>
       ) : (
         <>
-          {/* Skincare section header — always show when period exists */}
-          {period && <div style={{ fontSize: 10, fontWeight: 700, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8, paddingBottom: 4, borderBottom: `0.5px solid ${T.border}` }}>Skincare</div>}
+          {period && <div style={{ fontSize: 10, fontWeight: 600, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8, paddingTop: 10, borderTop: `0.5px solid ${T.border}` }}>Skincare</div>}
           {/* AM: normal routine unless it's an AM treatment */}
           {tab === 'am' && dayType === 'pause' && (
             <div style={{ fontSize: 11, color: '#92400E', background: '#FFFBEB', border: '0.5px solid #FCD34D', borderRadius: 6, padding: '5px 10px', marginBottom: 8 }}>
@@ -4702,20 +4719,16 @@ export default function GlowUpCalendar({ session }) {
         const MARGIN = 8
         const maxH = Math.min(window.innerHeight * 0.8, 640)
         // Horizontal: align to cell left, clamp to viewport
-        let left = rect.left
-        if (left + FW > window.innerWidth - MARGIN) left = window.innerWidth - FW - MARGIN
-        if (left < MARGIN) left = MARGIN
-        // Vertical: prefer below, fall back to above, clamp if neither fits fully
-        const spaceBelow = window.innerHeight - rect.bottom - MARGIN
-        const spaceAbove = rect.top - MARGIN
-        let top, borderRadius
-        if (spaceBelow >= 200 || spaceBelow >= spaceAbove) {
-          top = Math.min(rect.bottom + 2, window.innerHeight - MARGIN - Math.min(maxH, 200))
-          borderRadius = '0 10px 10px 10px'
-        } else {
-          top = Math.max(MARGIN, rect.top - Math.min(maxH, spaceAbove) - 2)
-          borderRadius = '10px 10px 10px 0'
+        let left = Math.max(MARGIN, Math.min(rect.left, window.innerWidth - FW - MARGIN))
+        // Vertical: prefer opening below cell, but clamp so bottom never exits viewport
+        let top = rect.bottom + 2
+        if (top + maxH > window.innerHeight - MARGIN) {
+          // Slide it up until it fits
+          top = window.innerHeight - MARGIN - maxH
+          // If that puts it above the viewport, just pin to top
+          if (top < MARGIN) top = MARGIN
         }
+        const borderRadius = top < rect.top ? '10px 10px 10px 0' : '0 10px 10px 10px'
         const activePeriodDesktop = getActivePeriod(dayFlyout.date, routineHistory)
         return (
           <div
