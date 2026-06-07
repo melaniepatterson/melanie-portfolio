@@ -1660,7 +1660,7 @@ function DailyEditor({ initial, onSave, onCancel, lockStartDate = false, allPeri
                     <div style={{ flex: 1, minWidth: 0 }}>
                       {prod ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          {prod.imageUrl && <img src={prod.imageUrl} alt="" style={{ width: 36, height: 36, borderRadius: 6, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />}
+                          {prod.imageUrl && <img src={prod.imageUrl} alt="" style={{ width: 44, height: 44, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />}
                           <div style={{ minWidth: 0 }}>
                             <div style={{ fontSize: 11, fontWeight: 500, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{prod.name}</div>
                             {prod.brand && <div style={{ fontSize: 10, color: T.textMuted }}>{prod.brand}</div>}
@@ -1821,7 +1821,7 @@ function DailySection({ dt, dailyHistory, onEditDaily, tab, products, onUpdateDa
               <div style={{ flex: 1, minWidth: 0 }}>
                 {prod ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    {prod.imageUrl && <img src={prod.imageUrl} alt="" style={{ width: 36, height: 36, borderRadius: 6, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />}
+                    {prod.imageUrl && <img src={prod.imageUrl} alt="" style={{ width: 44, height: 44, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />}
                     <div style={{ minWidth: 0 }}>
                       <div style={{ fontSize: 11, fontWeight: 500, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{prod.name}</div>
                       {prod.brand && <div style={{ fontSize: 10, color: T.textMuted }}>{prod.brand}</div>}
@@ -2239,7 +2239,7 @@ function ProductPicker({ stepKey, currentProductId, products, onSelect, onAddNew
   })
 
   return (
-    <div style={{ background: T.white, border: `0.5px solid ${T.pinkDeep}`, borderRadius: 8, padding: '12px 14px', marginTop: 4 }}>
+    <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 8, padding: '12px 14px', marginTop: 4 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
         <div style={{ fontSize: 11, fontWeight: 500, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Select product</div>
         <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 14, color: T.textLight }}>×</button>
@@ -2636,7 +2636,7 @@ function ShowerEditor({ initial, onSave, onCancel, allPeriods = [], onEditConfli
                     <div style={{ flex: 1, minWidth: 0 }}>
                       {prod ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          {prod.imageUrl && <img src={prod.imageUrl} alt="" style={{ width: 36, height: 36, borderRadius: 6, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />}
+                          {prod.imageUrl && <img src={prod.imageUrl} alt="" style={{ width: 44, height: 44, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />}
                           <div style={{ minWidth: 0 }}>
                             <div style={{ fontSize: 11, fontWeight: 500, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{prod.name}</div>
                             {prod.brand && <div style={{ fontSize: 10, color: T.textMuted }}>{prod.brand}</div>}
@@ -2779,7 +2779,7 @@ function ShowerSection({ dt, showerHistory, onEditShower, products, onUpdateShow
                 <div style={{ flex: 1, minWidth: 0 }}>
                   {prod ? (
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      {prod.imageUrl && <img src={prod.imageUrl} alt="" style={{ width: 36, height: 36, borderRadius: 6, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />}
+                      {prod.imageUrl && <img src={prod.imageUrl} alt="" style={{ width: 44, height: 44, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />}
                       <div style={{ minWidth: 0 }}>
                         <div style={{ fontSize: 11, fontWeight: 500, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{prod.name}</div>
                         {prod.brand && <div style={{ fontSize: 10, color: T.textMuted }}>{prod.brand}</div>}
@@ -3907,15 +3907,7 @@ export default function GlowUpCalendar({ session }) {
     async function loadAll() {
       try {
       setLoading(true)
-      const [
-        { data: rp },
-        { data: profileRR },
-        { data: pr },
-        { data: ep },
-        { data: sp },
-        { data: tr },
-        { data: ct },
-      ] = await Promise.all([
+      const results = await Promise.allSettled([
         supabase.from('routine_periods').select('*').eq('user_id', userId).order('start_date'),
         supabase.from('profiles').select('recovery_routines, display_name, avatar_url').eq('id', userId).single(),
         supabase.from('products').select('*').or(`is_catalog.eq.true,user_id.eq.${userId}`),
@@ -3924,6 +3916,8 @@ export default function GlowUpCalendar({ session }) {
         supabase.from('treatments').select('*').eq('user_id', userId),
         supabase.from('custom_treatment_types').select('*').eq('user_id', userId),
       ])
+      const getValue = (r) => r.status === 'fulfilled' ? (r.value?.data ?? null) : null
+      const [rp, profileRR, pr, ep, sp, tr, ct] = results.map(getValue)
 
       // Routine periods — convert snake_case from DB to camelCase
       setRoutineHistory((rp || []).map(p => ({
@@ -4744,7 +4738,7 @@ export default function GlowUpCalendar({ session }) {
 
   return (
     <div onClick={() => { if (dayFlyout) setDayFlyout(null) }} style={{ fontFamily: 'inherit', padding: '1rem 0.75rem', maxWidth: 900, position: 'relative', margin: '0 auto' }}>
-      <style>{`@keyframes slideDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } } @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } } @keyframes panelIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }`}</style>
+      <style>{`@keyframes slideDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } } @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } } @keyframes panelIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } } @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }`}</style>
 
       {/* Toast — always in flow at top, small so it doesn't displace much */}
       {toast && (
@@ -4809,7 +4803,7 @@ export default function GlowUpCalendar({ session }) {
                 background: T.white,
                 border: `0.5px solid ${T.pinkDeep}`,
                 boxShadow: '0 8px 40px rgba(0,0,0,0.18)',
-                animation: 'slideDown 0.2s ease',
+                animation: 'fadeIn 0.15s ease',
                 overflow: 'hidden',
               }}
             >
