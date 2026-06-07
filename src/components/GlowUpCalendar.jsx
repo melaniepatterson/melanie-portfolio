@@ -4664,12 +4664,6 @@ export default function GlowUpCalendar({ session }) {
     <div onClick={() => { if (dayFlyout) setDayFlyout(null) }} style={{ fontFamily: 'inherit', padding: '1rem 0.75rem', maxWidth: 900, position: 'relative', margin: '0 auto' }}>
       <style>{`@keyframes slideDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } } @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } } @keyframes panelIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } } @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }`}</style>
 
-      {/* ── Glow Up logo ───────────────────────────────────────── */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, marginBottom: 12 }}>
-        <span style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.04em', color: T.text, lineHeight: 1 }}>glow up</span>
-        <span style={{ width: 6, height: 6, borderRadius: '50%', background: T.pinkDeep, display: 'inline-block', flexShrink: 0 }} />
-      </div>
-
       {/* Toast — always in flow at top, small so it doesn't displace much */}
       {toast && (
         <div style={{ marginBottom: 8, padding: '7px 14px', background: T.creamDark, borderRadius: 8, fontSize: 12, color: T.textMuted, border: `0.5px solid ${T.border}` }}>

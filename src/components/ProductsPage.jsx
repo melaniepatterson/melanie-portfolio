@@ -516,21 +516,21 @@ function ProductForm({ initial, onSave, onCancel, catalogProducts, session }) {
       <div style={{ borderTop: `0.5px solid ${T.border}`, paddingTop: 12, marginBottom: 10 }}>
         <FieldLabel>Purchase & expiry <span style={{ fontWeight: 400, color: T.textLight }}>(optional)</span></FieldLabel>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 10 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 6, marginBottom: 10 }}>
         <div>
           <FieldLabel>Purchased</FieldLabel>
           <input type="date" value={form.purchased_at || ''} onChange={e => set('purchased_at', e.target.value)}
-            style={{ width: '100%', fontSize: 12, padding: '7px 10px', border: `0.5px solid ${T.border}`, borderRadius: 8, background: T.cream, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
+            style={{ width: '100%', fontSize: 10, padding: '6px 6px', border: `0.5px solid ${T.border}`, borderRadius: 8, background: T.cream, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box', minWidth: 0 }} />
         </div>
         <div>
           <FieldLabel>Opened</FieldLabel>
           <input type="date" value={form.opened_at || ''} onChange={e => set('opened_at', e.target.value)}
-            style={{ width: '100%', fontSize: 12, padding: '7px 10px', border: `0.5px solid ${T.border}`, borderRadius: 8, background: T.cream, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
+            style={{ width: '100%', fontSize: 10, padding: '6px 6px', border: `0.5px solid ${T.border}`, borderRadius: 8, background: T.cream, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box', minWidth: 0 }} />
         </div>
         <div>
           <FieldLabel>Expires</FieldLabel>
           <input type="date" value={form.expires_at || ''} onChange={e => set('expires_at', e.target.value)}
-            style={{ width: '100%', fontSize: 12, padding: '7px 10px', border: `0.5px solid ${T.border}`, borderRadius: 8, background: T.cream, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
+            style={{ width: '100%', fontSize: 10, padding: '6px 6px', border: `0.5px solid ${T.border}`, borderRadius: 8, background: T.cream, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box', minWidth: 0 }} />
         </div>
         <div>
           <FieldLabel>
@@ -788,26 +788,27 @@ function PersonalDataForm({ productId, isCatalog, upd, product, onSaveUpd, onClo
         </div>
       </div>
 
-      {/* Dates row */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
+      {/* Dates row — 3 col so fields are narrower */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 6, marginBottom: 12 }}>
         <div>
           <label style={labelStyle}>Purchased</label>
-          <input type="date" value={purchasedAt} onChange={e => setPurchased(e.target.value)} style={{ ...inputStyle, resize: 'none' }} />
+          <input type="date" value={purchasedAt} onChange={e => setPurchased(e.target.value)} style={{ ...inputStyle, resize: 'none', fontSize: 11 }} />
         </div>
         <div>
           <label style={labelStyle}>Opened</label>
-          <input type="date" value={openedAt} onChange={e => setOpened(e.target.value)} style={{ ...inputStyle, resize: 'none' }} />
+          <input type="date" value={openedAt} onChange={e => setOpened(e.target.value)} style={{ ...inputStyle, resize: 'none', fontSize: 11 }} />
         </div>
         <div>
           <label style={labelStyle}>Expires</label>
-          <input type="date" value={expiresAt} onChange={e => setExpires(e.target.value)} style={{ ...inputStyle, resize: 'none' }} />
+          <input type="date" value={expiresAt} onChange={e => setExpires(e.target.value)} style={{ ...inputStyle, resize: 'none', fontSize: 11 }} />
         </div>
-        <div>
-          <label style={labelStyle}>PAO (months)</label>
-          <input type="number" min="1" max="60" value={paoMonths}
-            onChange={e => setPao(e.target.value)}
-            placeholder="e.g. 12" style={{ ...inputStyle, resize: 'none' }} />
-        </div>
+      </div>
+      {/* PAO separate row */}
+      <div style={{ marginBottom: 12, maxWidth: 120 }}>
+        <label style={labelStyle}>PAO (months)</label>
+        <input type="number" min="1" max="60" value={paoMonths}
+          onChange={e => setPao(e.target.value)}
+          placeholder="e.g. 12" style={{ ...inputStyle, resize: 'none' }} />
       </div>
 
       {/* Save */}
@@ -837,10 +838,13 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
 
   return (
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-      <div onClick={e => e.stopPropagation()} style={{ background: T.white, borderRadius: 16, width: '100%', maxWidth: 520, maxHeight: '85vh', overflowY: 'auto', padding: '24px 20px 32px' }}>
+      <div onClick={e => e.stopPropagation()} style={{ background: T.white, borderRadius: 16, width: '100%', maxWidth: 520, maxHeight: '85vh', overflowY: 'auto', overflowX: 'hidden', padding: '24px 20px 32px', position: 'relative' }}>
+        {/* × close — absolute top-right overlapping image */}
+        <button onClick={onClose} style={{ position: 'absolute', top: 12, right: 12, zIndex: 10, width: 32, height: 32, borderRadius: '50%', border: 'none', background: 'rgba(0,0,0,0.45)', color: '#fff', cursor: 'pointer', fontSize: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1, backdropFilter: 'blur(4px)' }}>×</button>
+
         {/* Product image */}
         {(p.imageUrl || p.image_url) && (
-          <div style={{ margin: '-24px -20px 16px', height: 220, overflow: 'hidden', borderRadius: '16px 16px 0 0' }}>
+          <div style={{ margin: '-24px -20px 16px', height: 220, overflow: 'hidden', borderRadius: '16px 16px 0 0', background: T.white }}>
             <img src={p.imageUrl || p.image_url} alt={p.name}
               style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           </div>
@@ -852,7 +856,6 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
             <div style={{ fontSize: 18, fontWeight: 600, color: T.text, marginBottom: 4 }}>{p.name}</div>
             {p.brand && <div style={{ fontSize: 13, color: T.textMuted }}>{p.brand}</div>}
           </div>
-          <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 22, color: T.textLight, padding: 0, lineHeight: 1 }}>×</button>
         </div>
 
         {/* Recommended badge */}
@@ -1184,7 +1187,7 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
 
       {/* ── Desktop left sidebar ─────────────────────────────── */}
       {!isMobile && (
-        <div style={{ width: 200, flexShrink: 0, borderRight: '0.5px solid ' + T.border, padding: '16px 16px 16px 20px', overflowY: 'auto', position: 'sticky', top: 64, height: 'calc(100vh - 64px)', alignSelf: 'flex-start' }}>
+        <div style={{ width: 200, flexShrink: 0, borderRight: '0.5px solid ' + T.border, padding: '16px 16px 16px 20px', overflowY: 'auto', position: 'sticky', top: 'env(safe-area-inset-top, 0px)', height: 'calc(100vh - env(safe-area-inset-top, 0px))', alignSelf: 'flex-start' }}>
           <FilterContent />
         </div>
       )}
@@ -1240,7 +1243,7 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
       <div style={{ flex: 1, minWidth: 0 }}>
 
         {/* Sort + Search + Tabs */}
-        <div style={{ padding: '12px 16px 10px', borderBottom: '0.5px solid ' + T.border, position: 'sticky', top: 64, background: T.white, zIndex: 30 }}>
+        <div style={{ padding: '12px 16px 10px', paddingTop: 'calc(12px + env(safe-area-inset-top, 0px))', borderBottom: '0.5px solid ' + T.border, position: 'sticky', top: 0, background: T.white, zIndex: 30 }}>
           <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
             <select value={sortBy} onChange={e => setSortBy(e.target.value)}
               style={{ padding: '7px 10px', borderRadius: 8, border: '0.5px solid ' + T.border, background: T.cream, color: T.text, fontSize: 12, fontFamily: 'inherit', cursor: 'pointer', flexShrink: 0 }}>
@@ -1289,9 +1292,9 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
               const upd = (userProductData || {})[p.id]
               return (
                 <div key={p.id} onClick={() => setSelectedProduct(p)}
-                  style={{ cursor: 'pointer', position: 'relative', background: T.creamDark }}>
+                  style={{ cursor: 'pointer', position: 'relative', background: T.white }}>
                   {/* Portrait image 3:4 */}
-                  <div style={{ aspectRatio: '3/4', overflow: 'hidden', background: T.creamDark, position: 'relative' }}>
+                  <div style={{ aspectRatio: '3/4', overflow: 'hidden', background: T.white, position: 'relative' }}>
                     {img ? (
                       <img src={img} alt={p.name}
                         style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
@@ -1299,20 +1302,20 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
                     ) : (
                       <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: T.border, fontSize: 28 }}>◻</div>
                     )}
-                    {/* Overlay — routine badges top-left */}
+                    {/* Overlay — routine badges top-right */}
                     {(wwu || userUsing) && (
-                      <div style={{ position: 'absolute', top: 6, left: 6, display: 'flex', flexDirection: 'column', gap: 3 }}>
+                      <div style={{ position: 'absolute', top: 6, right: 6, display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'flex-end' }}>
                         {wwu && <span style={{ fontSize: 8, background: T.pinkDeep, color: '#fff', borderRadius: 8, padding: '2px 6px', fontWeight: 700, whiteSpace: 'nowrap', boxShadow: '0 1px 4px rgba(0,0,0,0.15)' }}>What we're using</span>}
                         {userUsing && <span style={{ fontSize: 8, background: 'rgba(255,255,255,0.93)', color: T.text, borderRadius: 8, padding: '2px 6px', fontWeight: 600, whiteSpace: 'nowrap', border: '0.5px solid ' + T.border }}>Currently using</span>}
                       </div>
                     )}
-                    {/* Prescription — top right */}
+                    {/* Prescription — top left */}
                     {p.is_prescription && (
-                      <span style={{ position: 'absolute', top: 6, right: 6, fontSize: 8, background: 'rgba(255,255,255,0.9)', color: T.textMuted, borderRadius: 8, padding: '2px 6px', fontWeight: 600, border: '0.5px solid ' + T.border }}>℞</span>
+                      <span style={{ position: 'absolute', top: 6, left: 6, fontSize: 8, background: 'rgba(255,255,255,0.9)', color: T.textMuted, borderRadius: 8, padding: '2px 6px', fontWeight: 600, border: '0.5px solid ' + T.border }}>℞</span>
                     )}
-                    {/* Star rating — bottom right if rated */}
+                    {/* Star rating — bottom left if rated */}
                     {upd?.effectiveness > 0 && (
-                      <span style={{ position: 'absolute', bottom: 6, right: 6, fontSize: 9, background: 'rgba(255,255,255,0.9)', color: T.pinkDeep, borderRadius: 8, padding: '2px 6px', fontWeight: 700 }}>★ {upd.effectiveness}</span>
+                      <span style={{ position: 'absolute', bottom: 6, left: 6, fontSize: 9, background: 'rgba(255,255,255,0.9)', color: T.pinkDeep, borderRadius: 8, padding: '2px 6px', fontWeight: 700 }}>★ {upd.effectiveness}</span>
                     )}
                   </div>
                   {/* Text below */}
