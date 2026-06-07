@@ -2858,10 +2858,13 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
                 )}
               </div>
               {product ? (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
-                  {product.imageUrl && <img src={product.imageUrl} alt="" style={{ width: 16, height: 16, borderRadius: 3, objectFit: 'cover' }} onError={e => e.target.style.display='none'} />}
-                  <span style={{ fontSize: 11, color: T.textMuted }}>{product.name}</span>
-                  {product.effectiveness > 0 && <StarRating value={product.effectiveness} size={9} />}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
+                  {product.imageUrl && <img src={product.imageUrl} alt="" style={{ width: 44, height: 44, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />}
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontSize: 11, color: T.textMuted, fontWeight: 500 }}>{product.name}</div>
+                    {product.brand && <div style={{ fontSize: 10, color: T.textLight }}>{product.brand}</div>}
+                    {product.effectiveness > 0 && <StarRating value={product.effectiveness} size={9} />}
+                  </div>
                 </div>
               ) : productId ? (
                 <div style={{ fontSize: 11, color: T.textLight, fontStyle: 'italic' }}>Assigned product not found — tap to reassign</div>
@@ -4672,21 +4675,25 @@ export default function GlowUpCalendar({ session }) {
         </div>
       )}
 
-      {/* Month/year — large, centered, above nav */}
-      <div style={{ textAlign: 'center', marginBottom: 10 }}>
-        <div style={{ fontSize: 'clamp(28px, 6vw, 42px)', fontWeight: 700, color: T.text, lineHeight: 1.1, letterSpacing: '-0.02em' }}>{MONTHS[month]}</div>
-        <div style={{ fontSize: 'clamp(13px, 2.5vw, 18px)', color: T.textMuted, fontWeight: 400, marginTop: 2 }}>{year}</div>
+      {/* Month/year with flanking nav arrows */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, marginBottom: 6 }}>
+        <button onClick={prevMonth} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 8, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.text, flexShrink: 0 }}>←</button>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: 'clamp(28px, 6vw, 42px)', fontWeight: 700, color: T.text, lineHeight: 1.1, letterSpacing: '-0.02em' }}>{MONTHS[month]}</div>
+          <div style={{ fontSize: 'clamp(13px, 2.5vw, 18px)', color: T.textMuted, fontWeight: 400, marginTop: 2 }}>{year}</div>
+        </div>
+        <button onClick={nextMonth} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 8, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.text, flexShrink: 0 }}>→</button>
       </div>
+      {(month !== now.getMonth() || year !== now.getFullYear()) && (
+        <div style={{ textAlign: 'center', marginBottom: 8 }}>
+          <button onClick={() => { setMonth(now.getMonth()); setYear(now.getFullYear()) }} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 8, padding: '3px 12px', cursor: 'pointer', fontSize: 11, color: T.textMuted, fontFamily: 'inherit' }}>Today</button>
+        </div>
+      )}
 
       {/* Header — always visible, never moves */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, gap: 8 }}>
-        {/* Left — nav + primary actions */}
+        {/* Left — primary actions */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <button onClick={prevMonth} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 8, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.text }}>←</button>
-          <button onClick={nextMonth} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 8, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.text }}>→</button>
-          {(month !== now.getMonth() || year !== now.getFullYear()) && (
-            <button onClick={() => { setMonth(now.getMonth()); setYear(now.getFullYear()) }} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 8, padding: '5px 10px', cursor: 'pointer', fontSize: 11, color: T.textMuted, fontFamily: 'inherit' }}>Today</button>
-          )}
           <Btn variant={['update','setup'].includes(panel) ? 'active' : 'primary'} style={{ fontSize: 11, padding: '5px 10px' }} onClick={() => { setPanel(p => ['update','setup'].includes(p) ? null : (hasRoutine ? 'update' : 'setup')); setEditingPeriod(null); setDayFlyout(null) }}>+ Start new routine</Btn>
           <Btn variant={showTreatments ? 'active' : 'default'} style={{ fontSize: 11, padding: '5px 10px' }} onClick={() => { setShowTreatments(s => !s); setDayFlyout(null) }}>My treatments</Btn>
         </div>
