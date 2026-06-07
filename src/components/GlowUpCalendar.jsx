@@ -4615,7 +4615,7 @@ export default function GlowUpCalendar({ session }) {
   if (loading) return <GlowUpLoader message="Loading your routine..." />
 
   return (
-    <div onClick={() => { if (dayFlyout) setDayFlyout(null) }} style={{ fontFamily: 'inherit', padding: '1rem 0.75rem', maxWidth: 900, position: 'relative', margin: '0 auto' }}>
+    <div onClick={() => { if (dayFlyout) setDayFlyout(null) }} style={{ fontFamily: 'inherit', padding: '1rem 0.75rem', maxWidth: 900, position: 'relative', margin: '0 auto', overflowX: 'hidden' }}>
       <style>{`@keyframes slideDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } } @keyframes panelIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }`}</style>
 
       {/* Toast — always in flow at top, small so it doesn't displace much */}
@@ -4696,12 +4696,12 @@ export default function GlowUpCalendar({ session }) {
       </p>
 
       {/* Day headers — always visible */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 3, marginBottom: 3 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: 3, marginBottom: 3 }}>
         {DAYS.map(d => <div key={d} style={{ textAlign: 'center', fontSize: 11, fontWeight: 600, color: T.textLight, padding: '3px 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{d}</div>)}
       </div>
 
       {/* Grid — always visible, never moves */}
-      <div onClick={() => { if (dayFlyout) setDayFlyout(null) }} style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 'clamp(2px, 0.5vw, 4px)', gridAutoRows: '88px' }}>{cells}</div>
+      <div onClick={() => { if (dayFlyout) setDayFlyout(null) }} style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: 'clamp(2px, 0.5vw, 4px)', gridAutoRows: '88px' }}>{cells}</div>
 
       {/* Overlay — floats over the calendar */}
       {hasOverlay && (
