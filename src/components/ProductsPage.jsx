@@ -1180,134 +1180,328 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
   }
 
   return (
-    <div style={{ display: 'flex', gap: 0, height: 'calc(100vh - 120px)', overflow: 'hidden', position: 'relative' }}>
+    <div style={{ display: 'flex', gap: 0, minHeight: 'calc(100vh - 64px)', position: 'relative' }}>
 
-      {/* ── Mobile bottom sheet overlay ─────────────────────── */}
+      {/* ── Desktop left sidebar ─────────────────────────────── */}
+      {!isMobile && (
+        <div style={{ width: 200, flexShrink: 0, borderRight: '0.5px solid ' + T.border, padding: '16px 16px 16px 20px', overflowY: 'auto', position: 'sticky', top: 64, height: 'calc(100vh - 64px)', alignSelf: 'flex-start' }}>
+          <FilterContent />
+        </div>
+      )}
+
+      {/* ── Mobile bottom sheet ──────────────────────────────── */}
       {isMobile && filterSheetOpen && (
         <>
-          {/* Backdrop */}
           <div onClick={() => setFilterSheetOpen(false)}
             style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 100 }} />
-          {/* Sheet */}
           <div style={{
             position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 101,
             background: T.white, borderRadius: '16px 16px 0 0',
-            padding: '0 20px 32px', maxHeight: '75vh', overflowY: 'auto',
+            padding: '0 20px 40px', maxHeight: '80vh', overflowY: 'auto',
             boxShadow: '0 -4px 24px rgba(0,0,0,0.12)',
             animation: 'slideUp 0.22s ease',
           }}>
-            {/* Handle */}
             <div style={{ display: 'flex', justifyContent: 'center', padding: '12px 0 16px' }}>
               <div style={{ width: 36, height: 4, borderRadius: 2, background: T.border }} />
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-              <div style={{ fontSize: 14, fontWeight: 600, color: T.text }}>Filters</div>
-              <button onClick={() => setFilterSheetOpen(false)}
-                style={{ border: 'none', background: 'transparent', fontSize: 20, color: T.textMuted, cursor: 'pointer', padding: '0 2px', lineHeight: 1 }}>×</button>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+              <div style={{ fontSize: 15, fontWeight: 600, color: T.text }}>Filters</div>
+              <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                {hasFilters && <button onClick={clearAll} style={{ fontSize: 12, color: T.pinkDeep, background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit' }}>Clear all</button>}
+                <button onClick={() => setFilterSheetOpen(false)} style={{ border: 'none', background: 'transparent', fontSize: 20, color: T.textMuted, cursor: 'pointer', padding: '0 2px', lineHeight: 1 }}>×</button>
+              </div>
             </div>
             <FilterContent />
           </div>
         </>
       )}
 
-      {/* ── Mobile filter pill button ────────────────────────── */}
+      {/* ── Mobile floating filter pill ──────────────────────── */}
       {isMobile && (
-        <button onClick={() => setFilterSheetOpen(true)}
-          style={{
-            position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
-            zIndex: 99, padding: '10px 20px', borderRadius: 24,
-            background: hasFilters ? T.pinkDeep : T.text,
-            color: '#fff', border: 'none', cursor: 'pointer',
-            fontSize: 13, fontWeight: 600, fontFamily: 'inherit',
-            boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
-            display: 'flex', alignItems: 'center', gap: 6,
-          }}>
+        <button onClick={() => setFilterSheetOpen(true)} style={{
+          position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
+          zIndex: 99, padding: '10px 22px', borderRadius: 24,
+          background: hasFilters ? T.pinkDeep : T.text,
+          color: '#fff', border: 'none', cursor: 'pointer',
+          fontSize: 13, fontWeight: 600, fontFamily: 'inherit',
+          boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
+          display: 'flex', alignItems: 'center', gap: 8,
+        }}>
           <span>⚙︎ Filters</span>
-          {hasFilters && <span style={{ background: 'rgba(255,255,255,0.3)', borderRadius: 10, padding: '1px 7px', fontSize: 11 }}>
-            {filterBrands.length + filterCats.length + filterFlags.length + (filterUsing ? 1 : 0) + (filterBuyAgain ? 1 : 0)}
-          </span>}
+          {hasFilters && (
+            <span style={{ background: 'rgba(255,255,255,0.25)', borderRadius: 10, padding: '1px 7px', fontSize: 11 }}>
+              {filterBrands.length + filterCats.length + filterFlags.length + (filterUsing ? 1 : 0) + (filterBuyAgain ? 1 : 0)}
+            </span>
+          )}
         </button>
       )}
 
-      {/* ── Left Sidebar — desktop only ──────────────────────── */}
-      {!isMobile && <div style={{ width: 200, flexShrink: 0, borderRight: '0.5px solid ' + T.border, padding: '16px 16px 16px 20px', overflowY: 'auto', position: 'sticky', top: 0, height: '100%' }}>
+      {/* ── Main content area ────────────────────────────────── */}
+      <div style={{ flex: 1, minWidth: 0 }}>
 
-        <FilterContent />
-
-      </div>}
-
-      {/* ── Main Content ──────────────────────────────────────── */}
-      <div style={{ flex: 1, padding: '16px 20px', minWidth: 0, overflowY: 'auto', height: '100%' }}>
-
-        {/* Tabs */}
-        <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
-          {[
-            { key: 'all',         label: 'All products',         count: getMergedProducts().length },
-            { key: 'mine',        label: 'My products',        count: Object.keys(products).length + Object.values(catalogProducts || {}).filter(p => (userProductData || {})[p.id]?.in_library).length },
-            { key: 'recommended', label: 'Recommended products', count: Object.keys(catalogProducts || {}).length },
-          ].map(t => (
-            <button key={t.key} onClick={() => { setLibTab(t.key) }} style={{
-              padding: '5px 12px', borderRadius: 20, fontSize: 12, cursor: 'pointer',
-              border: '0.5px solid ' + (libTab === t.key ? T.pinkDeep : T.border),
-              background: libTab === t.key ? T.pink : 'transparent', color: T.text, fontFamily: 'inherit',
-            }}>{t.label} <span style={{ fontSize: 10, color: T.textMuted }}>({t.count})</span></button>
-          ))}
+        {/* Sort + Search + Tabs */}
+        <div style={{ padding: '12px 16px 10px', borderBottom: '0.5px solid ' + T.border, position: 'sticky', top: 64, background: T.white, zIndex: 30 }}>
+          <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
+            <select value={sortBy} onChange={e => setSortBy(e.target.value)}
+              style={{ padding: '7px 10px', borderRadius: 8, border: '0.5px solid ' + T.border, background: T.cream, color: T.text, fontSize: 12, fontFamily: 'inherit', cursor: 'pointer', flexShrink: 0 }}>
+              <option value="routine">Routine first</option>
+              <option value="name">A–Z Name</option>
+              <option value="brand">A–Z Brand</option>
+            </select>
+            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search products…"
+              style={{ flex: 1, fontSize: 12, padding: '7px 10px', border: '0.5px solid ' + T.border, borderRadius: 8, background: T.white, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
+          </div>
+          <div style={{ display: 'flex', gap: 6 }}>
+            {[
+              { key: 'all',         label: 'All',         count: getMergedProducts().length },
+              { key: 'mine',        label: 'Mine',        count: Object.keys(products).length + Object.values(catalogProducts || {}).filter(p => (userProductData || {})[p.id]?.in_library).length },
+              { key: 'recommended', label: 'Recommended', count: Object.keys(catalogProducts || {}).length },
+            ].map(t => (
+              <button key={t.key} onClick={() => setLibTab(t.key)} style={{
+                padding: '5px 12px', borderRadius: 20, fontSize: 12, cursor: 'pointer',
+                border: '0.5px solid ' + (libTab === t.key ? T.pinkDeep : T.border),
+                background: libTab === t.key ? T.pink : 'transparent', color: T.text, fontFamily: 'inherit',
+              }}>{t.label} <span style={{ fontSize: 10, color: T.textMuted }}>({t.count})</span></button>
+            ))}
+          </div>
         </div>
 
-        {/* Sort + Search */}
-        <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
-          <select value={sortBy} onChange={e => setSortBy(e.target.value)}
-            style={{ padding: '7px 10px', borderRadius: 8, border: '0.5px solid ' + T.border, background: T.cream, color: T.text, fontSize: 12, fontFamily: 'inherit', cursor: 'pointer', flexShrink: 0 }}>
-            <option value="routine">My routine first</option>
-            <option value="name">A–Z Product name</option>
-            <option value="brand">A–Z Brand name</option>
-          </select>
-          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search products..."
-            style={{ flex: 1, fontSize: 12, padding: '7px 10px', border: '0.5px solid ' + T.border, borderRadius: 8, background: T.white, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
+        {/* Product count */}
+        <div style={{ padding: '8px 16px 4px', fontSize: 11, color: T.textMuted }}>
+          {list.length} product{list.length !== 1 ? 's' : ''}
+          {hasFilters && <button onClick={clearAll} style={{ marginLeft: 10, fontSize: 11, color: T.pinkDeep, background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit' }}>Clear filters ×</button>}
         </div>
 
         {/* Empty state */}
         {list.length === 0 && (
-          <div style={{ fontSize: 13, color: T.textMuted, fontStyle: 'italic', padding: '40px 0', textAlign: 'center' }}>
-            {pool.length === 0 ? 'No products yet.' : 'No products match your filters.'}
+          <div style={{ padding: '60px 16px', textAlign: 'center', fontSize: 13, color: T.textMuted, fontStyle: 'italic' }}>
+            {pool.length === 0 ? 'No products yet — add your first one.' : 'No products match your filters.'}
           </div>
         )}
 
-        {/* Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 10 }}>
-          {list.map(p => (
-            <div key={p.id} onClick={() => setSelectedProduct(p)} style={{ background: T.white, border: '0.5px solid ' + T.border, borderRadius: 10, padding: '12px 12px', display: 'flex', flexDirection: 'column', gap: 3, position: 'relative', cursor: 'pointer' }}
-              onMouseEnter={e => e.currentTarget.style.borderColor = T.pinkDeep}
-              onMouseLeave={e => e.currentTarget.style.borderColor = T.border}>
-              {isWhatWeUsing(p) && (
-                <div style={{ position: 'absolute', top: 8, right: 8, fontSize: 9, background: T.pink, color: T.pinkDeep, borderRadius: 10, padding: '2px 6px', fontWeight: 600 }}>What we're using!</div>
-              )}
-              {!isWhatWeUsing(p) && (userRoutineNames || new Set()).has(((p.name||'')+'|'+(p.brand||'')).toLowerCase()) && (
-                <div style={{ position: 'absolute', top: 8, right: 8, fontSize: 9, background: T.creamDark, color: T.text, borderRadius: 10, padding: '2px 6px', fontWeight: 600, border: '0.5px solid ' + T.border }}>Currently using</div>
-              )}
-
-              {(p.imageUrl || p.image_url) && (
-                <div style={{ margin: '-12px -12px 10px', height: 120, overflow: 'hidden', borderRadius: '10px 10px 0 0' }}>
-                  <img src={p.imageUrl || p.image_url} alt={p.name}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        {/* Portrait grid — 2 col mobile, 5 col desktop */}
+        {list.length > 0 && (
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(5, 1fr)', gap: 2, paddingBottom: isMobile ? 80 : 24 }}>
+            {list.map(p => {
+              const wwu = isWhatWeUsing(p)
+              const userUsing = !wwu && (userRoutineNames || new Set()).has(((p.name||'')+'|'+(p.brand||'')).toLowerCase())
+              const img = p.imageUrl || p.image_url
+              const upd = (userProductData || {})[p.id]
+              return (
+                <div key={p.id} onClick={() => setSelectedProduct(p)}
+                  style={{ cursor: 'pointer', position: 'relative', background: T.creamDark }}>
+                  {/* Portrait image 3:4 */}
+                  <div style={{ aspectRatio: '3/4', overflow: 'hidden', background: T.creamDark, position: 'relative' }}>
+                    {img ? (
+                      <img src={img} alt={p.name}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                        onError={e => { e.currentTarget.style.display = 'none' }} />
+                    ) : (
+                      <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: T.border, fontSize: 28 }}>◻</div>
+                    )}
+                    {/* Overlay — routine badges top-left */}
+                    {(wwu || userUsing) && (
+                      <div style={{ position: 'absolute', top: 6, left: 6, display: 'flex', flexDirection: 'column', gap: 3 }}>
+                        {wwu && <span style={{ fontSize: 8, background: T.pinkDeep, color: '#fff', borderRadius: 8, padding: '2px 6px', fontWeight: 700, whiteSpace: 'nowrap', boxShadow: '0 1px 4px rgba(0,0,0,0.15)' }}>What we're using</span>}
+                        {userUsing && <span style={{ fontSize: 8, background: 'rgba(255,255,255,0.93)', color: T.text, borderRadius: 8, padding: '2px 6px', fontWeight: 600, whiteSpace: 'nowrap', border: '0.5px solid ' + T.border }}>Currently using</span>}
+                      </div>
+                    )}
+                    {/* Prescription — top right */}
+                    {p.is_prescription && (
+                      <span style={{ position: 'absolute', top: 6, right: 6, fontSize: 8, background: 'rgba(255,255,255,0.9)', color: T.textMuted, borderRadius: 8, padding: '2px 6px', fontWeight: 600, border: '0.5px solid ' + T.border }}>℞</span>
+                    )}
+                    {/* Star rating — bottom right if rated */}
+                    {upd?.effectiveness > 0 && (
+                      <span style={{ position: 'absolute', bottom: 6, right: 6, fontSize: 9, background: 'rgba(255,255,255,0.9)', color: T.pinkDeep, borderRadius: 8, padding: '2px 6px', fontWeight: 700 }}>★ {upd.effectiveness}</span>
+                    )}
+                  </div>
+                  {/* Text below */}
+                  <div style={{ padding: '7px 8px 12px', background: T.white }}>
+                    <div style={{ fontSize: 11, fontWeight: 500, color: T.text, lineHeight: 1.4, marginBottom: 1 }}>{p.name}</div>
+                    {p.brand && <div style={{ fontSize: 10, color: T.textMuted }}>{p.brand}</div>}
+                  </div>
                 </div>
-              )}
-              <div style={{ paddingRight: (isCatalogCard(p) || p._isLinked) ? 72 : 0 }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: T.text, marginBottom: 2, lineHeight: 1.3 }}>{p.name}</div>
-                {p.brand && <div style={{ fontSize: 11, color: T.textMuted }}>{p.brand}</div>}
-              </div>
-              {p.currentlyUsing && <div style={{ fontSize: 10, color: T.pinkDeep, fontWeight: 600 }}>Currently using</div>}
-              {p.effectivenessAvg > 0 && <StarRating value={Math.round(p.effectivenessAvg)} size={10} />}
-              <ProductFlagBadges product={p} max={3} />
-              {(p.purchaseUrl || p.direct_url) && (
-                <div style={{ fontSize: 10, color: T.textLight, marginTop: 4 }}>Tap to shop →</div>
-              )}
-            </div>
+              )
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* ── Product modal ──────────────────────────────────────── */}
+      {selectedProduct && (
+        <ProductModal
+          product={selectedProduct}
+          onClose={() => setSelectedProduct(null)}
+          onEdit={p => { setSelectedProduct(null); onEdit(p) }}
+          onDelete={onDelete}
+          catalogProducts={catalogProducts}
+          isWhatWeUsing={isWhatWeUsing}
+          userRoutineNames={userRoutineNames}
+          upd={(userProductData || {})[selectedProduct?.id]}
+          onAddToLibrary={onAddToLibrary}
+          onRemoveFromLibrary={onRemoveFromLibrary}
+          onSaveUserProductData={onSaveUserProductData}
+        />
+      )}
+    </div>
+  )
+}
+
+        {/* Search row */}
+        <div style={{ padding: '12px 16px 0', display: 'flex', gap: 8, alignItems: 'center' }}>
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 8, background: T.cream, border: '0.5px solid ' + T.border, borderRadius: 24, padding: '8px 14px' }}>
+            <svg width={14} height={14} viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, color: T.textLight }}>
+              <circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.3"/>
+              <line x1="11" y1="11" x2="15" y2="15" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+            </svg>
+            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search"
+              style={{ flex: 1, border: 'none', background: 'transparent', fontSize: 13, outline: 'none', fontFamily: 'inherit', color: T.text, minWidth: 0 }} />
+            {search && <button onClick={() => setSearch('')} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 16, color: T.textLight, lineHeight: 1, padding: 0 }}>×</button>}
+          </div>
+          <button onClick={onAdd} style={{ flexShrink: 0, border: 'none', background: T.pinkDeep, color: '#fff', borderRadius: '50%', width: 36, height: 36, cursor: 'pointer', fontSize: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1, fontFamily: 'inherit' }}>+</button>
+        </div>
+
+        {/* Filter pill bar — horizontal scroll, Reformation-style */}
+        <div style={{ display: 'flex', overflowX: 'auto', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none', padding: '10px 16px 0' }}>
+          <style>{`.rf-bar::-webkit-scrollbar{display:none}`}</style>
+          <div className="rf-bar" style={{ display: 'flex', gap: 0, flexShrink: 0, alignItems: 'center' }}>
+            {/* Sort cycles through options */}
+            <button onClick={() => setSortBy(s => s === 'routine' ? 'name' : s === 'name' ? 'brand' : 'routine')}
+              style={{ border: 'none', background: 'transparent', fontSize: 13, padding: '0 14px 10px 0', cursor: 'pointer', color: T.text, fontFamily: 'inherit', whiteSpace: 'nowrap', letterSpacing: '-0.01em' }}>
+              sort {sortBy !== 'routine' && <span style={{ fontSize: 10, color: T.pinkDeep }}>({sortBy === 'name' ? 'A–Z name' : 'A–Z brand'})</span>}
+            </button>
+            <span style={{ color: T.border, paddingBottom: 10, paddingRight: 14, fontSize: 16, lineHeight: 1 }}>|</span>
+            {/* All filters */}
+            <button onClick={() => setFilterSheetOpen(true)}
+              style={{ border: 'none', background: 'transparent', fontSize: 13, padding: '0 14px 10px 0', cursor: 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap', letterSpacing: '-0.01em',
+                color: hasFilters ? T.pinkDeep : T.text, fontWeight: hasFilters ? 600 : 400 }}>
+              all filters{hasFilters ? ` (${filterBrands.length + filterCats.length + filterFlags.length + (filterUsing ? 1 : 0) + (filterBuyAgain ? 1 : 0)})` : ''}
+            </button>
+            {/* Quick-access toggles */}
+            <button onClick={() => setFilterUsing(s => !s)}
+              style={{ border: 'none', background: 'transparent', fontSize: 13, padding: '0 14px 10px 0', cursor: 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap', letterSpacing: '-0.01em',
+                color: filterUsing ? T.pinkDeep : T.text, fontWeight: filterUsing ? 600 : 400 }}>
+              currently using
+            </button>
+            {['cleanser', 'serum', 'moisturizer', 'spf'].map(cat => (
+              <button key={cat} onClick={() => toggleCat(cat)}
+                style={{ border: 'none', background: 'transparent', fontSize: 13, padding: '0 14px 10px 0', cursor: 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap', letterSpacing: '-0.01em',
+                  color: filterCats.includes(cat) ? T.pinkDeep : T.text, fontWeight: filterCats.includes(cat) ? 600 : 400 }}>
+                {cat}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Tab row */}
+        <div style={{ display: 'flex', gap: 0, borderTop: '0.5px solid ' + T.border }}>
+          {[
+            { key: 'all',         label: 'All',         count: getMergedProducts().length },
+            { key: 'mine',        label: 'Mine',        count: Object.keys(products).length + Object.values(catalogProducts || {}).filter(p => (userProductData || {})[p.id]?.in_library).length },
+            { key: 'recommended', label: 'Recommended', count: Object.keys(catalogProducts || {}).length },
+          ].map(t => (
+            <button key={t.key} onClick={() => setLibTab(t.key)} style={{
+              flex: 1, padding: '11px 4px', fontSize: 12, cursor: 'pointer',
+              border: 'none', borderBottom: libTab === t.key ? `2px solid ${T.text}` : '2px solid transparent',
+              background: 'transparent', color: libTab === t.key ? T.text : T.textMuted,
+              fontWeight: libTab === t.key ? 600 : 400, fontFamily: 'inherit',
+              letterSpacing: '-0.01em', transition: 'border-color 0.15s',
+            }}>{t.label} <span style={{ fontSize: 10, color: T.textLight }}>({t.count})</span></button>
           ))}
         </div>
       </div>
 
-      {/* Modal */}
+      {/* Product count */}
+      <div style={{ padding: '10px 16px 6px', fontSize: 11, color: T.textMuted }}>{list.length} product{list.length !== 1 ? 's' : ''}</div>
+
+      {/* ── Edge-to-edge portrait grid ─────────────────────────── */}
+      {list.length === 0 ? (
+        <div style={{ padding: '60px 16px', textAlign: 'center', fontSize: 13, color: T.textMuted, fontStyle: 'italic' }}>
+          {pool.length === 0 ? 'No products yet — add your first one.' : 'No products match your filters.'}
+        </div>
+      ) : (
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+          {list.map(p => {
+            const wwu = isWhatWeUsing(p)
+            const userUsing = !wwu && (userRoutineNames || new Set()).has(((p.name||'')+'|'+(p.brand||'')).toLowerCase())
+            const img = p.imageUrl || p.image_url
+            const upd = (userProductData || {})[p.id]
+            return (
+              <div key={p.id} onClick={() => setSelectedProduct(p)}
+                style={{ cursor: 'pointer', position: 'relative', background: T.cream }}>
+                {/* Portrait image — 3:4 ratio */}
+                <div style={{ aspectRatio: '3/4', overflow: 'hidden', background: T.creamDark, position: 'relative' }}>
+                  {img ? (
+                    <img src={img} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} onError={e => e.currentTarget.style.display = 'none'} />
+                  ) : (
+                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: T.border, fontSize: 40 }}>◻</div>
+                  )}
+                  {/* Overlay badges — image top-left only */}
+                  {(wwu || userUsing) && (
+                    <div style={{ position: 'absolute', top: 8, left: 8, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                      {wwu && (
+                        <span style={{ fontSize: 9, background: T.pinkDeep, color: '#fff', borderRadius: 10, padding: '3px 8px', fontWeight: 600, whiteSpace: 'nowrap', boxShadow: '0 1px 4px rgba(0,0,0,0.12)' }}>
+                          What we're using
+                        </span>
+                      )}
+                      {userUsing && (
+                        <span style={{ fontSize: 9, background: 'rgba(255,255,255,0.92)', color: T.text, borderRadius: 10, padding: '3px 8px', fontWeight: 600, whiteSpace: 'nowrap', border: '0.5px solid ' + T.border, boxShadow: '0 1px 4px rgba(0,0,0,0.08)' }}>
+                          Currently using
+                        </span>
+                      )}
+                    </div>
+                  )}
+                  {/* Prescription indicator — top right */}
+                  {p.is_prescription && (
+                    <span style={{ position: 'absolute', top: 8, right: 8, fontSize: 9, background: 'rgba(255,255,255,0.9)', color: T.textMuted, borderRadius: 10, padding: '3px 8px', fontWeight: 600, border: '0.5px solid ' + T.border }}>℞</span>
+                  )}
+                  {/* Star rating — bottom right if rated */}
+                  {upd?.effectiveness > 0 && (
+                    <div style={{ position: 'absolute', bottom: 8, right: 8, background: 'rgba(255,255,255,0.9)', borderRadius: 10, padding: '2px 6px', display: 'flex', alignItems: 'center', gap: 2 }}>
+                      <span style={{ color: T.pinkDeep, fontSize: 10 }}>★</span>
+                      <span style={{ fontSize: 10, color: T.text, fontWeight: 600 }}>{upd.effectiveness}</span>
+                    </div>
+                  )}
+                </div>
+                {/* Text below */}
+                <div style={{ padding: '8px 10px 16px', background: T.white }}>
+                  <div style={{ fontSize: 12, fontWeight: 500, color: T.text, lineHeight: 1.4, marginBottom: 2 }}>{p.name}</div>
+                  {p.brand && <div style={{ fontSize: 11, color: T.textMuted }}>{p.brand}</div>}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      )}
+
+      {/* ── Filter bottom sheet ────────────────────────────────── */}
+      {filterSheetOpen && (
+        <>
+          <div onClick={() => setFilterSheetOpen(false)}
+            style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 100 }} />
+          <div style={{
+            position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 101,
+            background: T.white, borderRadius: '16px 16px 0 0',
+            padding: '0 20px 40px', maxHeight: '80vh', overflowY: 'auto',
+            boxShadow: '0 -4px 24px rgba(0,0,0,0.12)',
+            animation: 'slideUp 0.22s ease',
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'center', padding: '12px 0 16px' }}>
+              <div style={{ width: 36, height: 4, borderRadius: 2, background: T.border }} />
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+              <div style={{ fontSize: 15, fontWeight: 600, color: T.text }}>Filters</div>
+              <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                {hasFilters && <button onClick={clearAll} style={{ fontSize: 12, color: T.pinkDeep, background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit' }}>Clear all</button>}
+                <button onClick={() => setFilterSheetOpen(false)} style={{ border: 'none', background: 'transparent', fontSize: 20, color: T.textMuted, cursor: 'pointer', padding: '0 2px', lineHeight: 1 }}>×</button>
+              </div>
+            </div>
+            <FilterContent />
+          </div>
+        </>
+      )}
+
+      {/* ── Product modal ──────────────────────────────────────── */}
       {selectedProduct && (
         <ProductModal
           product={selectedProduct}
@@ -1601,16 +1795,25 @@ export default function ProductsPage({ session }) {
 
   return (
     <div style={{ fontFamily: 'inherit', minHeight: '100vh', background: T.cream, paddingBottom: 40 }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 20px 16px', borderBottom: '0.5px solid ' + T.border, background: T.white }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <button onClick={() => window.history.back()} style={{ border: '0.5px solid ' + T.border, background: 'transparent', borderRadius: 8, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.text }}>←</button>
-          <div style={{ fontSize: 15, fontWeight: 600, color: T.text }}>Product library</div>
-          <div style={{ fontSize: 12, color: T.textMuted }}>({Object.keys(products).length + Object.keys(catalogProducts).length})</div>
+      {/* ── App header ──────────────────────────────────────────── */}
+      <div style={{ background: T.white, borderBottom: '0.5px solid ' + T.border }}>
+        {/* Logo row */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px 10px' }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+            <span style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-0.04em', color: T.text, lineHeight: 1 }}>glow up</span>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: T.pinkDeep, display: 'inline-block', marginBottom: 2 }} />
+          </div>
+          <button onClick={() => setEditingProduct('new')}
+            style={{ border: 'none', background: T.pinkDeep, color: '#fff', borderRadius: '50%', width: 34, height: 34, cursor: 'pointer', fontSize: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1, fontFamily: 'inherit' }}>
+            +
+          </button>
         </div>
-        <button onClick={() => setEditingProduct('new')}
-          style={{ border: 'none', background: T.pinkDeep, color: '#fff', borderRadius: 8, padding: '6px 14px', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 500 }}>
-          + Add product
-        </button>
+        {/* Page nav row */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '0 20px 12px' }}>
+          <button onClick={() => window.history.back()} style={{ border: '0.5px solid ' + T.border, background: 'transparent', borderRadius: 8, padding: '5px 10px', cursor: 'pointer', fontSize: 14, color: T.text, lineHeight: 1 }}>←</button>
+          <span style={{ fontSize: 13, fontWeight: 600, color: T.text }}>Product library</span>
+          <span style={{ fontSize: 12, color: T.textMuted }}>({Object.keys(products).length + Object.keys(catalogProducts).length})</span>
+        </div>
       </div>
 
       {editingProduct && (
