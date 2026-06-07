@@ -1557,7 +1557,6 @@ function DailyEditor({ initial, onSave, onCancel, lockStartDate = false, allPeri
   const [items, setItems] = useState(initial?.items || [])
   const [newLabel,       setNewLabel]       = useState('')
   const [newNote,        setNewNote]        = useState('')
-  const [newProductName, setNewProductName] = useState('')
   const [newFreq,        setNewFreq]        = useState('daily')
   const [newTimeOfDay,   setNewTimeOfDay]   = useState('both')
   const [presetSearch,   setPresetSearch]   = useState('')
@@ -1569,8 +1568,8 @@ function DailyEditor({ initial, onSave, onCancel, lockStartDate = false, allPeri
 
   function addItem() {
     if (!newLabel.trim()) return
-    setItems(it => [...it, { id: uid(), label: newLabel.trim(), note: newNote.trim(), productName: newProductName.trim(), frequency: newFreq, weekStartDay: 1, timeOfDay: newTimeOfDay }])
-    setNewLabel(''); setNewNote(''); setNewProductName('')
+    setItems(it => [...it, { id: uid(), label: newLabel.trim(), note: newNote.trim(), frequency: newFreq, weekStartDay: 1, timeOfDay: newTimeOfDay }])
+    setNewLabel(''); setNewNote('')
   }
 
   function removeItem(i) { setItems(it => it.filter((_, idx) => idx !== i)) }
@@ -2308,77 +2307,7 @@ function ProductPicker({ stepKey, currentProductId, products, onSelect, onAddNew
 }
 
 // ProductLibrary — browse all products
-function ProductLibrary({ products, onEdit, onAdd, onDelete, onClose }) {
-  const [filterCat, setFilterCat] = useState('all')
-  const [filterArea, setFilterArea] = useState('all')
-  const [search, setSearch] = useState('')
 
-  const filtered = Object.values(products).filter(p => {
-    const matchCat = filterCat === 'all' || p.category === filterCat
-    const matchArea = filterArea === 'all' || !!(p.applicationArea?.[filterArea])
-    const matchSearch = !search || p.name.toLowerCase().includes(search.toLowerCase()) || (p.brand || '').toLowerCase().includes(search.toLowerCase())
-    return matchCat && matchArea && matchSearch
-  })
-
-  return (
-    <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 12, padding: '16px 18px', marginBottom: 14 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-        <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>Product library</div>
-        <div style={{ display: 'flex', gap: 6 }}>
-          <Btn variant="primary" onClick={onAdd} style={{ fontSize: 11, padding: '4px 10px' }}>+ Add product</Btn>
-          <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 16, color: T.textMuted, padding: '0 4px', lineHeight: 1 }}>×</button>
-        </div>
-      </div>
-
-      <div style={{ display: 'flex', gap: 8, marginBottom: 10, flexWrap: 'wrap', alignItems: 'center' }}>
-        <TextInput value={search} onChange={e => setSearch(e.target.value)} placeholder="Search products..." width={150} />
-        <select value={filterCat} onChange={e => setFilterCat(e.target.value)} style={{ fontSize: 12, padding: '5px 8px', border: `0.5px solid ${T.border}`, borderRadius: 6, background: T.cream, color: T.text }}>
-          <option value="all">All categories</option>
-          {PRODUCT_CATEGORIES.map(c => <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>)}
-        </select>
-        <select value={filterArea} onChange={e => setFilterArea(e.target.value)} style={{ fontSize: 12, padding: '5px 8px', border: `0.5px solid ${T.border}`, borderRadius: 6, background: T.cream, color: T.text }}>
-          <option value="all">All uses</option>
-          <option value="face">Face</option>
-          <option value="body">Body</option>
-          <option value="hair">Hair</option>
-        </select>
-      </div>
-
-      {filtered.length === 0 && (
-        <div style={{ fontSize: 12, color: T.textLight, fontStyle: 'italic' }}>No products yet — add your first one above.</div>
-      )}
-
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 8 }}>
-        {filtered.map(p => (
-          <div key={p.id} style={{ border: `0.5px solid ${T.border}`, borderRadius: 8, padding: '10px 12px', background: T.cream }}>
-            {p.imageUrl && (
-              <img src={p.imageUrl} alt={p.name} style={{ width: '100%', height: 80, objectFit: 'cover', borderRadius: 6, marginBottom: 8 }} onError={e => e.target.style.display='none'} />
-            )}
-            <div style={{ fontSize: 12, fontWeight: 500, color: T.text, marginBottom: 2 }}>{p.name}</div>
-            {p.brand && <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 4 }}>{p.brand}</div>}
-            <div style={{ fontSize: 11, color: T.textLight, marginBottom: 4 }}>{p.category ? p.category.charAt(0).toUpperCase() + p.category.slice(1) : ''}</div>
-            <ProductFlagBadges product={p} max={3} />
-            {p.pao_months && <span style={{ display: 'inline-flex', alignItems: 'center', gap: 2, fontSize: 10, color: T.textMuted, marginTop: 2 }}><PaoIcon months={p.pao_months} size={13} /></span>}
-            {p.effectiveness > 0 && <StarRating value={p.effectiveness} size={11} />}
-            <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 6 }}>
-
-              {Object.entries(p.applicationArea || {}).filter(([,v])=>v).map(([k]) => (
-                <span key={k} style={{ fontSize: 9, padding: '1px 5px', borderRadius: 3, background: T.creamDark, color: T.textMuted, border: `0.5px solid ${T.border}` }}>
-                  {k.charAt(0).toUpperCase() + k.slice(1)}
-                </span>
-              ))}
-              {(p.tags || []).slice(0,2).map(t => <span key={t} style={{ fontSize: 9, padding: '1px 5px', borderRadius: 3, background: T.creamDark, color: T.textMuted, border: `0.5px solid ${T.border}` }}>{t}</span>)}
-            </div>
-            <div style={{ marginTop: 8, display: 'flex', gap: 4 }}>
-              <Btn onClick={() => onEdit(p)} style={{ fontSize: 11, padding: '3px 8px', flex: 1, textAlign: 'center' }}>Edit</Btn>
-              {onDelete && <button onClick={() => { if (window.confirm('Remove this product from your library?')) onDelete(p.id) }} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 16, padding: '0 4px', lineHeight: 1 }}>×</button>}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
 
 
 
@@ -2563,7 +2492,6 @@ function ShowerEditor({ initial, onSave, onCancel, allPeriods = [], onEditConfli
   const [newLabel,       setNewLabel]       = useState('')
   const [newNote,        setNewNote]        = useState('')
   const [newFreq,        setNewFreq]        = useState('daily')
-  const [newProductName, setNewProductName]  = useState('')
   const [showerPresetSearch, setShowerPresetSearch] = useState('')
   const [showShowerPresets,  setShowShowerPresets]  = useState(false)
   const [dragFrom,  setDragFrom]  = useState(null)
@@ -3864,7 +3792,6 @@ export default function GlowUpCalendar({ session }) {
   const [editingDaily,  setEditingDaily]  = useState(null) // null | 'new' | period object
   const [editingShower, setEditingShower] = useState(null) // null | 'new' | period object
   const [editingProduct, setEditingProduct] = useState(null) // null | 'new' | product object
-  const [showLibrary,    setShowLibrary]    = useState(false)
   const [selector,      setSelector]      = useState(null)
   const [dayFlyout,     setDayFlyout]     = useState(null) // { key, date, tab: 'am'|'pm', dayType }
   const [toast,         setToast]         = useState(false)
@@ -3949,7 +3876,7 @@ export default function GlowUpCalendar({ session }) {
           imageUrl:            p.image_url,
           purchaseUrl:         p.purchase_url,
           bdsCompliant:        p.bds_compliant,
-          effectivenessAvg:    p.effectiveness_avg || 0,
+          effectivenessAvg:    p.effectiveness_avg || 0,  // future: aggregate rating tool
           tags:                (p.tags || []).map(t => t ? t.charAt(0).toUpperCase() + t.slice(1) : t),
           notes:               p.notes || '',
           ingredient_category: p.ingredient_category || '',
@@ -4398,10 +4325,10 @@ export default function GlowUpCalendar({ session }) {
   }
 
   // ── Treatment handlers ────────────────────────────────────
-  function openDayFlyout(key, dt, tab, cellRect = null) {
+  function openDayFlyout(key, dt, tab) {
     const info = getDayInfo(dt, treatments, allTypes, routineHistory)
     const treatTod = info.isTreatment ? (treatments[key]?.timeOfDay || 'am') : null
-    setDayFlyout({ key, date: dt, tab, dayType: info.status, isTreatment: info.isTreatment, treatmentTimeOfDay: treatTod, activeTreatmentType: info.activeTreatmentType || null, cellRect })
+    setDayFlyout({ key, date: dt, tab, dayType: info.status, isTreatment: info.isTreatment, treatmentTimeOfDay: treatTod, activeTreatmentType: info.activeTreatmentType || null })
     setPanel(null)
     setEditingPeriod(null)
     setEditingDaily(null)
@@ -4542,7 +4469,6 @@ export default function GlowUpCalendar({ session }) {
         }
       }
       // Tier 4 — shower badges deactivated (shower time varies)
-      // const spAM = getActiveShowerPeriod(dt, showerHistory)
       // if (spAM && ...) return <Badge ... label="Shower" />
       return null
     })()
@@ -4593,7 +4519,7 @@ export default function GlowUpCalendar({ session }) {
         </div>
         {/* AM half */}
         <div
-          onClick={e => { e.stopPropagation(); const r = e.currentTarget.parentElement?.getBoundingClientRect(); isOpen && dayFlyout?.tab === 'am' ? setDayFlyout(null) : openDayFlyout(key, dt, 'am', r) }}
+          onClick={e => { e.stopPropagation(); isOpen && dayFlyout?.tab === 'am' ? setDayFlyout(null) : openDayFlyout(key, dt, 'am') }}
           style={{ flex: 1, background: isOpen && dayFlyout?.tab === 'am' ? T.pink : cellBg, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '3px 4px', cursor: 'pointer', borderBottom: `0.5px solid ${isOpen ? T.pinkDeep : cellBorder}`, gap: 2, overflow: 'hidden', transition: 'background 0.15s' }}
         >
           <div style={{ fontSize: 9, fontWeight: 600, color: isOpen && dayFlyout?.tab === 'am' ? T.pinkDeep : dateColor, opacity: 0.8, letterSpacing: '0.04em' }}>AM</div>
@@ -4601,7 +4527,7 @@ export default function GlowUpCalendar({ session }) {
         </div>
         {/* PM half */}
         <div
-          onClick={e => { e.stopPropagation(); const r = e.currentTarget.parentElement?.getBoundingClientRect(); isOpen && dayFlyout?.tab === 'pm' ? setDayFlyout(null) : openDayFlyout(key, dt, 'pm', r) }}
+          onClick={e => { e.stopPropagation(); isOpen && dayFlyout?.tab === 'pm' ? setDayFlyout(null) : openDayFlyout(key, dt, 'pm') }}
           style={{ flex: 1, background: isOpen && dayFlyout?.tab === 'pm' ? T.pink : cellBg, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '3px 4px', cursor: 'pointer', gap: 2, overflow: 'hidden', borderRadius: isOpen ? '0' : '0 0 8px 8px', transition: 'background 0.15s' }}
         >
           <div style={{ fontSize: 9, fontWeight: 600, color: isOpen && dayFlyout?.tab === 'pm' ? T.pinkDeep : dateColor, opacity: 0.8, letterSpacing: '0.04em' }}>PM</div>
@@ -4674,7 +4600,7 @@ export default function GlowUpCalendar({ session }) {
 
   function closeAllPanels() {
     setPanel(null); setEditingPeriod(null); setEditingDaily(null); setEditingShower(null)
-    setShowLibrary(false); setEditingProduct(null); setSelector(null); setShowExport(false); setShowTreatments(false); setShowFeedback(false)
+    setEditingProduct(null); setSelector(null); setShowExport(false); setShowTreatments(false); setShowFeedback(false)
   }
 
 
@@ -5008,17 +4934,6 @@ export default function GlowUpCalendar({ session }) {
                 showerHistory={showerHistory}
                 onEditShower={(p) => { openShowerEditor(p); setPanel(null); setShowerFromHistory(true) }}
                 onDeleteShower={deleteShower}
-              />
-            )}
-
-            {/* Product library */}
-            {showLibrary && !editingProduct && (
-              <ProductLibrary
-                products={products}
-                onEdit={(p) => setEditingProduct(p)}
-                onAdd={() => setEditingProduct('new')}
-                onDelete={deleteProduct}
-                onClose={() => setShowLibrary(false)}
               />
             )}
 
