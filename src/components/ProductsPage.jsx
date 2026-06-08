@@ -830,6 +830,19 @@ function PersonalDataForm({ productId, isCatalog, upd, product, onSaveUpd, onClo
 }
 
 // ─── PRODUCT DETAIL MODAL ────────────────────────────────────
+// Brand color palette — consistent color per brand, fun background for transparent images
+const BRAND_COLORS = [
+  '#FFE4E6', '#FDE8D8', '#FFF3CD', '#E8F5E9', '#E3F2FD',
+  '#F3E5F5', '#E0F7FA', '#FFF8E1', '#FCE4EC', '#E8EAF6',
+  '#E0F4FF', '#F1F8E9', '#FFF0F3', '#EDE7F6', '#E8F8F5',
+  '#FEF9E7', '#FDEDEC', '#EAF2FF', '#F0FFF4', '#FFF5F5',
+]
+function getBrandColor(brand) {
+  const str = brand || 'unknown'
+  const hash = str.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0)
+  return BRAND_COLORS[hash % BRAND_COLORS.length]
+}
+
 function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, isWhatWeUsing, userRoutineNames, upd, onAddToLibrary, onRemoveFromLibrary, onSaveUserProductData }) {
   if (!p) return null
   const isCatalog = p._isCatalog && !p._isLinked
@@ -851,9 +864,9 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
 
         {/* ── Left: portrait image ─────────────────────────── */}
         {img && (
-          <div style={{ width: '45%', flexShrink: 0, overflow: 'hidden', background: T.white, borderRadius: '16px 0 0 16px' }}>
+          <div style={{ width: '55%', flexShrink: 0, overflow: 'hidden', background: getBrandColor(p.brand), borderRadius: '16px 0 0 16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <img src={img} alt={p.name}
-              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+              style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
               onError={e => { e.currentTarget.parentElement.style.display = 'none' }} />
           </div>
         )}
@@ -994,6 +1007,9 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
   const [filterSheetOpen, setFilterSheetOpen] = useState(false)
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 640
 
+  // Stable random order — generated once per session, routine products always float first
+  const shuffleKeys = useRef(new Map())
+
   function toggleCat(cat)   { setFilterCats(prev   => prev.includes(cat)   ? prev.filter(c => c !== cat)   : [...prev, cat]) }
   function toggleFlag(key)  { setFilterFlags(prev  => prev.includes(key)   ? prev.filter(k => k !== key)   : [...prev, key]) }
   function toggleBrand(b)   { setFilterBrands(prev => prev.includes(b)     ? prev.filter(x => x !== b)     : [...prev, b])   }
@@ -1041,6 +1057,8 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
         const aU = (userRoutineNames||new Set()).has(((a.name||'')+'|'+(a.brand||'')).toLowerCase())
         const bU = (userRoutineNames||new Set()).has(((b.name||'')+'|'+(b.brand||'')).toLowerCase())
         if (aU && !bU) return -1; if (!aU && bU) return 1
+        // Non-routine products: stable random order (generated once per session)
+        return getShuffleKey(a.id) - getShuffleKey(b.id)
       }
       if (sortBy === 'brand') return (a.brand||'').localeCompare(b.brand||'')
       return (a.name||'').localeCompare(b.name||'')
@@ -1204,7 +1222,7 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
               <div key={p.id} onClick={() => setSelectedProduct(p)}
                 style={{ cursor: 'pointer', position: 'relative', background: T.white, display: 'flex', flexDirection: 'column' }}>
                 {/* Portrait image — paddingBottom keeps 3:4 ratio consistent across all cards */}
-                <div style={{ position: 'relative', paddingBottom: '133.33%', overflow: 'hidden', background: T.creamDark, flexShrink: 0 }}>
+                <div style={{ position: 'relative', paddingBottom: '133.33%', overflow: 'hidden', background: getBrandColor(p.brand), flexShrink: 0 }}>
                   {img && (
                     <img src={img} alt={p.name}
                       style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
