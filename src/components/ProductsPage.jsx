@@ -1053,13 +1053,14 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
     return [...userWithCatalogData, ...unlinkedCatalog]
   }
 
+  const userProductIds = new Set(Object.keys(products))
+
   const pool = libTab === 'all' ? getMergedProducts()
     : libTab === 'mine' ? getMergedProducts().filter(p =>
-        // Mine = user-owned products + catalog products in their library + What we're using
-        !p._isCatalog || !p.is_catalog ||
-        (userProductData||{})[p.id]?.in_library ||
-        isWhatWeUsing(p) ||
-        (userRoutineNames||new Set()).has(((p.name||'')+'|'+(p.brand||'')).toLowerCase())
+        userProductIds.has(p.id) ||                            // user-owned product
+        (userProductData||{})[p.id]?.in_library ||             // catalog product added to library
+        isWhatWeUsing(p) ||                                    // what we're using (catalog routine)
+        (userRoutineNames||new Set()).has(((p.name||'')+'|'+(p.brand||'')).toLowerCase()) // current routine
       )
     : Object.values(catalogProducts || {})
 
