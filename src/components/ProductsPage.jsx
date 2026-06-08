@@ -1201,9 +1201,10 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
             const userUsing = !wwu && (userRoutineNames||new Set()).has(((p.name||'')+'|'+(p.brand||'')).toLowerCase())
             const img = p.imageUrl || p.image_url
             return (
-              <div key={p.id} onClick={() => setSelectedProduct(p)} style={{ cursor: 'pointer', position: 'relative', background: T.white }}>
-                {/* Portrait image — paddingBottom % of width = consistent height across all cards */}
-                <div style={{ position: 'relative', paddingBottom: '133.33%', overflow: 'hidden', background: T.creamDark }}>
+              <div key={p.id} onClick={() => setSelectedProduct(p)}
+                style={{ cursor: 'pointer', position: 'relative', background: T.white, display: 'flex', flexDirection: 'column' }}>
+                {/* Portrait image — paddingBottom keeps 3:4 ratio consistent across all cards */}
+                <div style={{ position: 'relative', paddingBottom: '133.33%', overflow: 'hidden', background: T.creamDark, flexShrink: 0 }}>
                   {img && (
                     <img src={img} alt={p.name}
                       style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
@@ -1217,15 +1218,27 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
                     </div>
                   )}
                 </div>
-                {/* Text below */}
-                <div style={{ padding: '7px 8px 12px', background: T.white }}>
-                  <div style={{ fontSize: 11, fontWeight: 500, color: T.text, lineHeight: 1.4, marginBottom: 1 }}>{p.name}</div>
-                  {p.brand && <div style={{ fontSize: 10, color: T.textMuted, marginBottom: p.purchaseUrl || p.direct_url ? 5 : 0 }}>{p.brand}</div>}
-                  {/* URL pills — stacked full width, "Buy from [store]" */}
+                {/* Text — flex column so pills pin to bottom regardless of count */}
+                <div style={{ padding: '7px 8px 10px', background: T.white, flex: 1, display: 'flex', flexDirection: 'column' }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 11, fontWeight: 500, color: T.text, lineHeight: 1.4, marginBottom: 1 }}>{p.name}</div>
+                    {p.brand && <div style={{ fontSize: 10, color: T.textMuted }}>{p.brand}</div>}
+                  </div>
+                  {/* URL pills — always at bottom, stacked full width */}
                   {(p.purchaseUrl || p.direct_url) && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }} onClick={e => e.stopPropagation()}>
-                      {p.purchaseUrl && <a href={p.purchaseUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'block', fontSize: 9, padding: '4px 8px', borderRadius: 20, background: 'transparent', color: T.text, textDecoration: 'none', border: '0.5px solid ' + T.textMuted, textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'inherit', boxSizing: 'border-box' }}>Buy from {p.store_name || 'affiliate'} ↗</a>}
-                      {p.direct_url && <a href={p.direct_url} target="_blank" rel="noopener noreferrer" style={{ display: 'block', fontSize: 9, padding: '4px 8px', borderRadius: 20, background: 'transparent', color: T.text, textDecoration: 'none', border: '0.5px solid ' + T.textMuted, textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'inherit', boxSizing: 'border-box' }}>Buy from {p.direct_store_name || 'brand site'} ↗</a>}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginTop: 8 }} onClick={e => e.stopPropagation()}>
+                      {p.purchaseUrl && (
+                        <a href={p.purchaseUrl} target="_blank" rel="noopener noreferrer"
+                          style={{ display: 'block', fontSize: 9, padding: '4px 8px', borderRadius: 20, background: 'transparent', color: T.text, textDecoration: 'none', border: '0.5px solid ' + T.textMuted, textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'inherit', boxSizing: 'border-box' }}>
+                          Buy from {p.store_name || 'affiliate'} ↗
+                        </a>
+                      )}
+                      {p.direct_url && (
+                        <a href={p.direct_url} target="_blank" rel="noopener noreferrer"
+                          style={{ display: 'block', fontSize: 9, padding: '4px 8px', borderRadius: 20, background: 'transparent', color: T.text, textDecoration: 'none', border: '0.5px solid ' + T.textMuted, textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'inherit', boxSizing: 'border-box' }}>
+                          Buy from {p.direct_store_name || 'brand site'} ↗
+                        </a>
+                      )}
                     </div>
                   )}
                 </div>
