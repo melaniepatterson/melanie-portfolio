@@ -789,19 +789,19 @@ function PersonalDataForm({ productId, isCatalog, upd, product, onSaveUpd, onClo
         </div>
       </div>
 
-      {/* Dates row — 3 col so fields are narrower */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 6, marginBottom: 12 }}>
+      {/* Dates row — stacked on mobile, 3-col on wider screens */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(100px, 1fr))', gap: 8, marginBottom: 12 }}>
         <div>
           <label style={labelStyle}>Purchased</label>
-          <input type="date" value={purchasedAt} onChange={e => setPurchased(e.target.value)} style={{ ...inputStyle, resize: 'none', fontSize: 11 }} />
+          <input type="date" value={purchasedAt} onChange={e => setPurchased(e.target.value)} style={{ ...inputStyle, resize: 'none', fontSize: 11, minWidth: 0, width: '100%', boxSizing: 'border-box' }} />
         </div>
         <div>
           <label style={labelStyle}>Opened</label>
-          <input type="date" value={openedAt} onChange={e => setOpened(e.target.value)} style={{ ...inputStyle, resize: 'none', fontSize: 11 }} />
+          <input type="date" value={openedAt} onChange={e => setOpened(e.target.value)} style={{ ...inputStyle, resize: 'none', fontSize: 11, minWidth: 0, width: '100%', boxSizing: 'border-box' }} />
         </div>
         <div>
           <label style={labelStyle}>Expires</label>
-          <input type="date" value={expiresAt} onChange={e => setExpires(e.target.value)} style={{ ...inputStyle, resize: 'none', fontSize: 11 }} />
+          <input type="date" value={expiresAt} onChange={e => setExpires(e.target.value)} style={{ ...inputStyle, resize: 'none', fontSize: 11, minWidth: 0, width: '100%', boxSizing: 'border-box' }} />
         </div>
       </div>
       {/* PAO separate row */}
@@ -870,13 +870,14 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
   return (
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
       <div onClick={e => e.stopPropagation()} style={{
-        background: T.white, borderRadius: 16, width: '100%', maxWidth: 640, maxHeight: '85vh',
+        background: T.white, borderRadius: 16, width: '100%', maxWidth: 760,
+        minHeight: 'min(520px, 80vh)', maxHeight: '85vh',
         display: 'flex', overflow: 'hidden', position: 'relative',
       }}>
 
         {/* ── Left: portrait image ─────────────────────────── */}
         {img && (
-          <div style={{ width: '55%', flexShrink: 0, overflow: 'hidden', background: getBrandColor(p.brand, p.id), borderRadius: '16px 0 0 16px' }}>
+          <div style={{ width: '40%', flexShrink: 0, overflow: 'hidden', background: getBrandColor(p.brand, p.id), borderRadius: '16px 0 0 16px' }}>
             <img src={img} alt={p.name}
               style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
               onError={e => { e.currentTarget.parentElement.style.display = 'none' }} />
@@ -1053,7 +1054,13 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
   }
 
   const pool = libTab === 'all' ? getMergedProducts()
-    : libTab === 'mine' ? Object.values(products)
+    : libTab === 'mine' ? getMergedProducts().filter(p =>
+        // Mine = user-owned products + catalog products in their library + What we're using
+        !p._isCatalog || !p.is_catalog ||
+        (userProductData||{})[p.id]?.in_library ||
+        isWhatWeUsing(p) ||
+        (userRoutineNames||new Set()).has(((p.name||'')+'|'+(p.brand||'')).toLowerCase())
+      )
     : Object.values(catalogProducts || {})
 
   const list = pool
