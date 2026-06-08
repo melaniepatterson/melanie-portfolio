@@ -1130,15 +1130,19 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
     document.head.appendChild(s)
   }, [])
 
-  // Shared filter content used in both sidebar and bottom sheet
+  function CheckItem({ label, checked, onChange }) {
+    return (
+      <label onClick={onChange} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: T.text, cursor: 'pointer', padding: '3px 0', userSelect: 'none' }}>
+        <div style={{ width: 14, height: 14, borderRadius: 3, border: '1.5px solid ' + (checked ? T.text : T.border), background: checked ? T.text : 'transparent', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          {checked && <span style={{ color: '#fff', fontSize: 9, lineHeight: 1 }}>✓</span>}
+        </div>
+        {label}
+      </label>
+    )
+  }
+
+  // Shared filter content — order: Product type → Brand → Ethics & values → Status
   function FilterContent() {
-    const pillStyle = (active) => ({
-      padding: '4px 10px', borderRadius: 20, fontSize: 11, cursor: 'pointer', fontFamily: 'inherit',
-      border: `1px solid ${active ? T.text : T.textMuted}`,
-      background: active ? T.text : 'transparent',
-      color: active ? '#fff' : T.text,
-      fontWeight: active ? 600 : 400,
-    })
     return (
       <>
         {hasFilters && (
@@ -1148,40 +1152,26 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
         )}
 
         <FilterSection title="Product type">
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
-            {PRODUCT_CATEGORIES.map(cat => (
-              <button key={cat} onClick={() => toggleCat(cat)} style={pillStyle(filterCats.includes(cat))}>
-                {cat.charAt(0).toUpperCase() + cat.slice(1)}
-              </button>
-            ))}
-          </div>
+          {PRODUCT_CATEGORIES.map(cat => (
+            <CheckItem key={cat} label={cat.charAt(0).toUpperCase() + cat.slice(1)} checked={filterCats.includes(cat)} onChange={() => toggleCat(cat)} />
+          ))}
         </FilterSection>
 
         <FilterSection title="Brand">
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
-            {[...new Set(pool.map(p => p.brand || '').filter(Boolean))].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase())).map(brand => (
-              <button key={brand} onClick={() => toggleBrand(brand)} style={pillStyle(filterBrands.includes(brand))}>
-                {brand}
-              </button>
-            ))}
-          </div>
+          {[...new Set(pool.map(p => p.brand || '').filter(Boolean))].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase())).map(brand => (
+            <CheckItem key={brand} label={brand} checked={filterBrands.includes(brand)} onChange={() => toggleBrand(brand)} />
+          ))}
         </FilterSection>
 
         <FilterSection title="Ethics & values">
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
-            {ETHICS_FILTERS.map(({ key, label }) => (
-              <button key={key} onClick={() => toggleFlag(key)} style={pillStyle(filterFlags.includes(key))}>
-                {label}
-              </button>
-            ))}
-          </div>
+          {ETHICS_FILTERS.map(({ key, label }) => (
+            <CheckItem key={key} label={label} checked={filterFlags.includes(key)} onChange={() => toggleFlag(key)} />
+          ))}
         </FilterSection>
 
         <FilterSection title="Status">
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
-            <button onClick={() => setFilterUsing(s => !s)} style={pillStyle(filterUsing)}>Currently using</button>
-            <button onClick={() => setFilterBuyAgain(s => !s)} style={pillStyle(filterBuyAgain)}>Would buy again</button>
-          </div>
+          <CheckItem label="Currently using" checked={filterUsing} onChange={() => setFilterUsing(s => !s)} />
+          <CheckItem label="Would buy again" checked={filterBuyAgain} onChange={() => setFilterBuyAgain(s => !s)} />
         </FilterSection>
       </>
     )
@@ -1298,14 +1288,14 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
               return (
                 <div key={p.id} onClick={() => setSelectedProduct(p)}
                   style={{ cursor: 'pointer', position: 'relative', background: T.white }}>
-                  {/* Portrait image 3:4 */}
-                  <div style={{ aspectRatio: '3/4', overflow: 'hidden', background: T.white, position: 'relative' }}>
+                  {/* Portrait image — paddingBottom forces consistent 3:4 across all cards */}
+                  <div style={{ position: 'relative', paddingBottom: '133.33%', background: T.creamDark, overflow: 'hidden' }}>
                     {img ? (
                       <img src={img} alt={p.name}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                         onError={e => { e.currentTarget.style.display = 'none' }} />
                     ) : (
-                      <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: T.border, fontSize: 28 }}>◻</div>
+                      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: T.border, fontSize: 28 }}>◻</div>
                     )}
                     {/* Overlay — routine badges top-right */}
                     {(wwu || userUsing) && (
@@ -1327,18 +1317,18 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
                   <div style={{ padding: '7px 8px 10px', background: T.white }}>
                     <div style={{ fontSize: 11, fontWeight: 500, color: T.text, lineHeight: 1.4, marginBottom: 1 }}>{p.name}</div>
                     {p.brand && <div style={{ fontSize: 10, color: T.textMuted, marginBottom: 6 }}>{p.brand}</div>}
-                    {/* URL pills — 50/50 if both, 50% if one */}
+                    {/* URL pills — 50/50, won't cause horizontal scroll */}
                     {(p.purchaseUrl || p.direct_url) && (
-                      <div style={{ display: 'flex', gap: 4 }} onClick={e => e.stopPropagation()}>
+                      <div style={{ display: 'flex', gap: 4, overflow: 'hidden' }} onClick={e => e.stopPropagation()}>
                         {p.purchaseUrl && (
                           <a href={p.purchaseUrl} target="_blank" rel="noopener noreferrer"
-                            style={{ flex: 1, fontSize: 9, padding: '3px 0', borderRadius: 20, background: 'transparent', color: T.text, textDecoration: 'none', border: `0.5px solid ${T.textMuted}`, textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontFamily: 'inherit', display: 'block' }}>
+                            style={{ flex: '1 1 0', minWidth: 0, fontSize: 9, padding: '3px 6px', borderRadius: 20, background: 'transparent', color: T.text, textDecoration: 'none', border: `0.5px solid ${T.textMuted}`, textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontFamily: 'inherit', display: 'block' }}>
                             {p.store_name || 'Affiliate'} ↗
                           </a>
                         )}
                         {p.direct_url && (
                           <a href={p.direct_url} target="_blank" rel="noopener noreferrer"
-                            style={{ flex: 1, fontSize: 9, padding: '3px 0', borderRadius: 20, background: 'transparent', color: T.text, textDecoration: 'none', border: `0.5px solid ${T.textMuted}`, textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontFamily: 'inherit', display: 'block' }}>
+                            style={{ flex: '1 1 0', minWidth: 0, fontSize: 9, padding: '3px 6px', borderRadius: 20, background: 'transparent', color: T.text, textDecoration: 'none', border: `0.5px solid ${T.textMuted}`, textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontFamily: 'inherit', display: 'block' }}>
                             {p.direct_store_name || 'Direct'} ↗
                           </a>
                         )}
