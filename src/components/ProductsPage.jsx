@@ -1221,11 +1221,11 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
                 <div style={{ padding: '7px 8px 12px', background: T.white }}>
                   <div style={{ fontSize: 11, fontWeight: 500, color: T.text, lineHeight: 1.4, marginBottom: 1 }}>{p.name}</div>
                   {p.brand && <div style={{ fontSize: 10, color: T.textMuted, marginBottom: p.purchaseUrl || p.direct_url ? 5 : 0 }}>{p.brand}</div>}
-                  {/* Discrete URL pills */}
+                  {/* URL pills — stacked full width, "buy at [store]" */}
                   {(p.purchaseUrl || p.direct_url) && (
-                    <div style={{ display: 'flex', gap: 4, overflow: 'hidden' }} onClick={e => e.stopPropagation()}>
-                      {p.purchaseUrl && <a href={p.purchaseUrl} target="_blank" rel="noopener noreferrer" style={{ flex: '1 1 0', minWidth: 0, fontSize: 9, padding: '3px 6px', borderRadius: 20, background: 'transparent', color: T.text, textDecoration: 'none', border: '0.5px solid ' + T.textMuted, textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'inherit', display: 'block' }}>{p.store_name || 'Affiliate'} ↗</a>}
-                      {p.direct_url && <a href={p.direct_url} target="_blank" rel="noopener noreferrer" style={{ flex: '1 1 0', minWidth: 0, fontSize: 9, padding: '3px 6px', borderRadius: 20, background: 'transparent', color: T.text, textDecoration: 'none', border: '0.5px solid ' + T.textMuted, textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'inherit', display: 'block' }}>{p.direct_store_name || 'Direct'} ↗</a>}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }} onClick={e => e.stopPropagation()}>
+                      {p.purchaseUrl && <a href={p.purchaseUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'block', fontSize: 9, padding: '4px 8px', borderRadius: 20, background: 'transparent', color: T.text, textDecoration: 'none', border: '0.5px solid ' + T.textMuted, textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'inherit', boxSizing: 'border-box' }}>buy at {p.store_name || 'affiliate'} ↗</a>}
+                      {p.direct_url && <a href={p.direct_url} target="_blank" rel="noopener noreferrer" style={{ display: 'block', fontSize: 9, padding: '4px 8px', borderRadius: 20, background: 'transparent', color: T.text, textDecoration: 'none', border: '0.5px solid ' + T.textMuted, textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'inherit', boxSizing: 'border-box' }}>buy at {p.direct_store_name || 'brand site'} ↗</a>}
                     </div>
                   )}
                 </div>
