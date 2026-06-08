@@ -804,11 +804,13 @@ function PersonalDataForm({ productId, isCatalog, upd, product, onSaveUpd, onClo
         </div>
       </div>
       {/* PAO separate row */}
-      <div style={{ marginBottom: 12, maxWidth: 120 }}>
+      <div style={{ marginBottom: 12, maxWidth: 160 }}>
         <label style={labelStyle}>PAO (months)</label>
-        <input type="number" min="1" max="60" value={paoMonths}
-          onChange={e => setPao(e.target.value)}
-          placeholder="e.g. 12" style={{ ...inputStyle, resize: 'none' }} />
+        <select value={paoMonths} onChange={e => setPao(e.target.value)}
+          style={{ width: '100%', fontSize: 12, padding: '7px 10px', border: `0.5px solid ${T.border}`, borderRadius: 8, background: T.cream, color: paoMonths ? T.text : T.textMuted, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }}>
+          <option value="">— Select PAO —</option>
+          {PAO_OPTIONS.map(m => <option key={m} value={m}>{m} months</option>)}
+        </select>
       </div>
 
       {/* Save */}
@@ -848,7 +850,7 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
 
         {/* ── Left: portrait image ─────────────────────────── */}
         {img && (
-          <div style={{ width: '38%', flexShrink: 0, overflow: 'hidden', background: T.white, borderRadius: '16px 0 0 16px' }}>
+          <div style={{ width: '45%', flexShrink: 0, overflow: 'hidden', background: T.white, borderRadius: '16px 0 0 16px' }}>
             <img src={img} alt={p.name}
               style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
               onError={e => { e.currentTarget.parentElement.style.display = 'none' }} />
@@ -1130,6 +1132,13 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
 
   // Shared filter content used in both sidebar and bottom sheet
   function FilterContent() {
+    const pillStyle = (active) => ({
+      padding: '4px 10px', borderRadius: 20, fontSize: 11, cursor: 'pointer', fontFamily: 'inherit',
+      border: `1px solid ${active ? T.text : T.textMuted}`,
+      background: active ? T.text : 'transparent',
+      color: active ? '#fff' : T.text,
+      fontWeight: active ? 600 : 400,
+    })
     return (
       <>
         {hasFilters && (
@@ -1137,37 +1146,42 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
             Clear all filters ×
           </button>
         )}
-        <FilterSection title="Brand">
-          {[...new Set(pool.map(p => p.brand || '').filter(Boolean))].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase())).map(brand => (
-            <label key={brand} style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', padding: '2px 0' }}>
-              <input type="checkbox" checked={filterBrands.includes(brand)} onChange={() => toggleBrand(brand)}
-                style={{ accentColor: T.pinkDeep, cursor: 'pointer' }} />
-              <span style={{ fontSize: 12, color: T.text }}>{brand}</span>
-            </label>
-          ))}
-        </FilterSection>
 
         <FilterSection title="Product type">
-          {PRODUCT_CATEGORIES.map(cat => (
-            <CheckItem key={cat}
-              label={cat.charAt(0).toUpperCase() + cat.slice(1)}
-              checked={filterCats.includes(cat)}
-              onChange={() => toggleCat(cat)} />
-          ))}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+            {PRODUCT_CATEGORIES.map(cat => (
+              <button key={cat} onClick={() => toggleCat(cat)} style={pillStyle(filterCats.includes(cat))}>
+                {cat.charAt(0).toUpperCase() + cat.slice(1)}
+              </button>
+            ))}
+          </div>
         </FilterSection>
 
-        <FilterSection title="Status">
-          <CheckItem label="Currently using" checked={filterUsing} onChange={() => setFilterUsing(s => !s)} />
-          <CheckItem label="Would buy again" checked={filterBuyAgain} onChange={() => setFilterBuyAgain(s => !s)} />
+        <FilterSection title="Brand">
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+            {[...new Set(pool.map(p => p.brand || '').filter(Boolean))].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase())).map(brand => (
+              <button key={brand} onClick={() => toggleBrand(brand)} style={pillStyle(filterBrands.includes(brand))}>
+                {brand}
+              </button>
+            ))}
+          </div>
         </FilterSection>
 
         <FilterSection title="Ethics & values">
-          {ETHICS_FILTERS.map(({ key, label }) => (
-            <CheckItem key={key}
-              label={label}
-              checked={filterFlags.includes(key)}
-              onChange={() => toggleFlag(key)} />
-          ))}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+            {ETHICS_FILTERS.map(({ key, label }) => (
+              <button key={key} onClick={() => toggleFlag(key)} style={pillStyle(filterFlags.includes(key))}>
+                {label}
+              </button>
+            ))}
+          </div>
+        </FilterSection>
+
+        <FilterSection title="Status">
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+            <button onClick={() => setFilterUsing(s => !s)} style={pillStyle(filterUsing)}>Currently using</button>
+            <button onClick={() => setFilterBuyAgain(s => !s)} style={pillStyle(filterBuyAgain)}>Would buy again</button>
+          </div>
         </FilterSection>
       </>
     )
@@ -1296,7 +1310,7 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
                     {/* Overlay — routine badges top-right */}
                     {(wwu || userUsing) && (
                       <div style={{ position: 'absolute', top: 6, right: 6, display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'flex-end' }}>
-                        {wwu && <span style={{ fontSize: 8, background: T.pinkDeep, color: '#fff', borderRadius: 8, padding: '2px 6px', fontWeight: 700, whiteSpace: 'nowrap', boxShadow: '0 1px 4px rgba(0,0,0,0.15)' }}>What we're using</span>}
+                        {wwu && <span style={{ fontSize: 8, background: T.pinkDeep, color: '#fff', borderRadius: 8, padding: '2px 6px', fontWeight: 700, whiteSpace: 'nowrap', boxShadow: '0 1px 4px rgba(0,0,0,0.15)' }}>What we're using!</span>}
                         {userUsing && <span style={{ fontSize: 8, background: 'rgba(255,255,255,0.93)', color: T.text, borderRadius: 8, padding: '2px 6px', fontWeight: 600, whiteSpace: 'nowrap', border: '0.5px solid ' + T.border }}>Current routine</span>}
                       </div>
                     )}
@@ -1310,9 +1324,26 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
                     )}
                   </div>
                   {/* Text below */}
-                  <div style={{ padding: '7px 8px 12px', background: T.white }}>
+                  <div style={{ padding: '7px 8px 10px', background: T.white }}>
                     <div style={{ fontSize: 11, fontWeight: 500, color: T.text, lineHeight: 1.4, marginBottom: 1 }}>{p.name}</div>
-                    {p.brand && <div style={{ fontSize: 10, color: T.textMuted }}>{p.brand}</div>}
+                    {p.brand && <div style={{ fontSize: 10, color: T.textMuted, marginBottom: 6 }}>{p.brand}</div>}
+                    {/* URL pills — 50/50 if both, 50% if one */}
+                    {(p.purchaseUrl || p.direct_url) && (
+                      <div style={{ display: 'flex', gap: 4 }} onClick={e => e.stopPropagation()}>
+                        {p.purchaseUrl && (
+                          <a href={p.purchaseUrl} target="_blank" rel="noopener noreferrer"
+                            style={{ flex: 1, fontSize: 9, padding: '3px 0', borderRadius: 20, background: 'transparent', color: T.text, textDecoration: 'none', border: `0.5px solid ${T.textMuted}`, textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontFamily: 'inherit', display: 'block' }}>
+                            {p.store_name || 'Affiliate'} ↗
+                          </a>
+                        )}
+                        {p.direct_url && (
+                          <a href={p.direct_url} target="_blank" rel="noopener noreferrer"
+                            style={{ flex: 1, fontSize: 9, padding: '3px 0', borderRadius: 20, background: 'transparent', color: T.text, textDecoration: 'none', border: `0.5px solid ${T.textMuted}`, textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontFamily: 'inherit', display: 'block' }}>
+                            {p.direct_store_name || 'Direct'} ↗
+                          </a>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               )
