@@ -1009,6 +1009,10 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
 
   // Stable random order — generated once per session, routine products always float first
   const shuffleKeys = useRef(new Map())
+  function getShuffleKey(id) {
+    if (!shuffleKeys.current.has(id)) shuffleKeys.current.set(id, Math.random())
+    return shuffleKeys.current.get(id)
+  }
 
   function toggleCat(cat)   { setFilterCats(prev   => prev.includes(cat)   ? prev.filter(c => c !== cat)   : [...prev, cat]) }
   function toggleFlag(key)  { setFilterFlags(prev  => prev.includes(key)   ? prev.filter(k => k !== key)   : [...prev, key]) }
