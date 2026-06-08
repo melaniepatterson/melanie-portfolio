@@ -1194,35 +1194,36 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
           </div>
         )}
 
-        {/* Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 10 }}>
+        {/* Grid — 2 col mobile, 5 col desktop, portrait images */}
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(5, 1fr)', gap: 2, paddingBottom: isMobile ? 80 : 24 }}>
           {list.map(p => {
             const wwu = isWhatWeUsing(p)
             const userUsing = !wwu && (userRoutineNames||new Set()).has(((p.name||'')+'|'+(p.brand||'')).toLowerCase())
             const img = p.imageUrl || p.image_url
             return (
-              <div key={p.id} onClick={() => setSelectedProduct(p)} style={{ background: T.white, border: '0.5px solid ' + T.border, borderRadius: 10, display: 'flex', flexDirection: 'column', gap: 0, position: 'relative', cursor: 'pointer', overflow: 'hidden' }}
-                onMouseEnter={e => e.currentTarget.style.borderColor = T.pinkDeep}
-                onMouseLeave={e => e.currentTarget.style.borderColor = T.border}>
-                {/* Image */}
-                {img && (
-                  <div style={{ height: 140, overflow: 'hidden', background: T.white, position: 'relative', flexShrink: 0 }}>
-                    <img src={img} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} onError={e => { e.currentTarget.parentElement.style.display = 'none' }} />
-                    {wwu && <span style={{ position: 'absolute', top: 6, right: 6, fontSize: 8, background: T.pinkDeep, color: '#fff', borderRadius: 8, padding: '2px 6px', fontWeight: 700 }}>What we're using!</span>}
-                    {userUsing && <span style={{ position: 'absolute', top: 6, right: 6, fontSize: 8, background: 'rgba(255,255,255,0.93)', color: T.text, borderRadius: 8, padding: '2px 6px', fontWeight: 600, border: '0.5px solid ' + T.border }}>Current routine</span>}
-                  </div>
-                )}
-                {/* Text */}
-                <div style={{ padding: '10px 12px 12px', flex: 1 }}>
-                  {!img && wwu && <div style={{ fontSize: 9, background: T.pink, color: T.pinkDeep, borderRadius: 8, padding: '2px 7px', fontWeight: 700, display: 'inline-block', marginBottom: 4 }}>What we're using!</div>}
-                  {!img && userUsing && <div style={{ fontSize: 9, background: T.creamDark, color: T.text, borderRadius: 8, padding: '2px 7px', fontWeight: 600, display: 'inline-block', marginBottom: 4, border: '0.5px solid ' + T.border }}>Current routine</div>}
-                  <div style={{ fontSize: 12, fontWeight: 600, color: T.text, marginBottom: 2, lineHeight: 1.3 }}>{p.name}</div>
-                  {p.brand && <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 4 }}>{p.brand}</div>}
-                  {p.effectiveness > 0 && <StarRating value={p.effectiveness} size={10} />}
-                  <ProductFlagBadges product={p} max={3} />
+              <div key={p.id} onClick={() => setSelectedProduct(p)} style={{ cursor: 'pointer', position: 'relative', background: T.white }}>
+                {/* Portrait image — paddingBottom % of width = consistent height across all cards */}
+                <div style={{ position: 'relative', paddingBottom: '133.33%', overflow: 'hidden', background: T.creamDark }}>
+                  {img && (
+                    <img src={img} alt={p.name}
+                      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                      onError={e => { e.currentTarget.style.display = 'none' }} />
+                  )}
+                  {/* Routine badges — top right */}
+                  {(wwu || userUsing) && (
+                    <div style={{ position: 'absolute', top: 6, right: 6, display: 'flex', flexDirection: 'column', gap: 3 }}>
+                      {wwu && <span style={{ fontSize: 8, background: T.pinkDeep, color: '#fff', borderRadius: 8, padding: '2px 6px', fontWeight: 700, whiteSpace: 'nowrap' }}>What we're using!</span>}
+                      {userUsing && <span style={{ fontSize: 8, background: 'rgba(255,255,255,0.93)', color: T.text, borderRadius: 8, padding: '2px 6px', fontWeight: 600, whiteSpace: 'nowrap', border: '0.5px solid ' + T.border }}>Current routine</span>}
+                    </div>
+                  )}
+                </div>
+                {/* Text below */}
+                <div style={{ padding: '7px 8px 12px', background: T.white }}>
+                  <div style={{ fontSize: 11, fontWeight: 500, color: T.text, lineHeight: 1.4, marginBottom: 1 }}>{p.name}</div>
+                  {p.brand && <div style={{ fontSize: 10, color: T.textMuted, marginBottom: p.purchaseUrl || p.direct_url ? 5 : 0 }}>{p.brand}</div>}
                   {/* Discrete URL pills */}
                   {(p.purchaseUrl || p.direct_url) && (
-                    <div style={{ display: 'flex', gap: 4, marginTop: 6, overflow: 'hidden' }} onClick={e => e.stopPropagation()}>
+                    <div style={{ display: 'flex', gap: 4, overflow: 'hidden' }} onClick={e => e.stopPropagation()}>
                       {p.purchaseUrl && <a href={p.purchaseUrl} target="_blank" rel="noopener noreferrer" style={{ flex: '1 1 0', minWidth: 0, fontSize: 9, padding: '3px 6px', borderRadius: 20, background: 'transparent', color: T.text, textDecoration: 'none', border: '0.5px solid ' + T.textMuted, textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'inherit', display: 'block' }}>{p.store_name || 'Affiliate'} ↗</a>}
                       {p.direct_url && <a href={p.direct_url} target="_blank" rel="noopener noreferrer" style={{ flex: '1 1 0', minWidth: 0, fontSize: 9, padding: '3px 6px', borderRadius: 20, background: 'transparent', color: T.text, textDecoration: 'none', border: '0.5px solid ' + T.textMuted, textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'inherit', display: 'block' }}>{p.direct_store_name || 'Direct'} ↗</a>}
                     </div>
