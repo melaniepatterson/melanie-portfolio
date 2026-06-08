@@ -1082,6 +1082,21 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
   }, [])
 
   // Shared filter content used in both sidebar and bottom sheet
+  const ETHICS_FILTERS = [
+    { key: 'black_owned',       label: 'Black-owned'      },
+    { key: 'indigenous_owned',  label: 'Indigenous-owned' },
+    { key: 'poc_owned',         label: 'POC-owned'        },
+    { key: 'woman_owned',       label: 'Woman-owned'      },
+    { key: 'lgbtq_owned',       label: 'LGBTQ+-owned'     },
+    { key: 'cruelty_free',      label: 'Cruelty-free'     },
+    { key: 'vegan',             label: 'Vegan'            },
+    { key: 'certified_organic', label: 'Organic'          },
+    { key: 'fair_trade',        label: 'Fair trade'       },
+    { key: 'clean_formula',     label: 'Clean formula'    },
+    { key: 'science_backed',    label: 'Science-backed'   },
+    { key: 'is_prescription',   label: '℞ Prescription'   },
+  ]
+
   function FilterContent() {
     return (
       <>
