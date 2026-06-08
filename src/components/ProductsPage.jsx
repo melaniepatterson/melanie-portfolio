@@ -981,59 +981,28 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
 
 // ─── PRODUCT LIBRARY ─────────────────────────────────────────
 function ProductLibrary({ products, catalogProducts, userProductData, activeRoutineNames, userRoutineNames, onEdit, onAdd, onDelete, onAddToLibrary, onRemoveFromLibrary, onSaveUserProductData }) {
-  function isWhatWeUsing(p) {
-    if (p.bds_compliant === false) return false
-    if (!activeRoutineNames || activeRoutineNames.size === 0) return false
-    const key = ((p.name || '') + '|' + (p.brand || '')).toLowerCase()
-    return activeRoutineNames.has(key)
-  }
-  const [libTab, setLibTab] = useState('all')
-  const [filterCats, setFilterCats] = useState([])
-  const [filterFlags, setFilterFlags] = useState([])
-  const [filterUsing, setFilterUsing] = useState(false)
-  const [filterBuyAgain, setFilterBuyAgain] = useState(false)
-  const [filterBrands, setFilterBrands] = useState([])
-  const [search, setSearch] = useState('')
+  const [libTab,        setLibTab]        = useState('all')
+  const [filterCats,    setFilterCats]    = useState([])
+  const [filterFlags,   setFilterFlags]   = useState([])
+  const [filterBrands,  setFilterBrands]  = useState([])
+  const [filterUsing,   setFilterUsing]   = useState(false)
+  const [filterBuyAgain,setFilterBuyAgain]= useState(false)
+  const [search,        setSearch]        = useState('')
+  const [sortBy,        setSortBy]        = useState('routine')
   const [selectedProduct, setSelectedProduct] = useState(null)
-  const [sortBy, setSortBy] = useState('routine')
-  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 640)
   const [filterSheetOpen, setFilterSheetOpen] = useState(false)
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 640
 
-  useEffect(() => {
-    function onResize() { setIsMobile(window.innerWidth < 640) }
-    window.addEventListener('resize', onResize)
-    return () => window.removeEventListener('resize', onResize)
-  }, [])
+  function toggleCat(cat)   { setFilterCats(prev   => prev.includes(cat)   ? prev.filter(c => c !== cat)   : [...prev, cat]) }
+  function toggleFlag(key)  { setFilterFlags(prev  => prev.includes(key)   ? prev.filter(k => k !== key)   : [...prev, key]) }
+  function toggleBrand(b)   { setFilterBrands(prev => prev.includes(b)     ? prev.filter(x => x !== b)     : [...prev, b])   }
+  function clearAll()       { setFilterCats([]); setFilterFlags([]); setFilterBrands([]); setFilterUsing(false); setFilterBuyAgain(false) }
+  const hasFilters = filterCats.length > 0 || filterFlags.length > 0 || filterBrands.length > 0 || filterUsing || filterBuyAgain
 
-  const ETHICS_FILTERS = [
-    { key: 'black_owned',       label: 'Black-owned'      },
-    { key: 'indigenous_owned',  label: 'Indigenous-owned' },
-    { key: 'poc_owned',         label: 'POC-owned'        },
-    { key: 'woman_owned',       label: 'Woman-owned'      },
-    { key: 'lgbtq_owned',       label: 'LGBTQ+-owned'     },
-    { key: 'cruelty_free',      label: 'Cruelty-free'     },
-    { key: 'vegan',             label: 'Vegan'            },
-    { key: 'certified_organic', label: 'Organic'          },
-    { key: 'fair_trade',        label: 'Fair trade'       },
-    { key: 'clean_formula',     label: 'Clean formula'    },
-    { key: 'science_backed',    label: 'Science-backed'   },
-    { key: 'is_prescription',   label: '℞ Prescription'  },
-  ]
-
-  function toggleCat(cat) {
-    setFilterCats(prev => prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat])
+  function isWhatWeUsing(p) {
+    const key = ((p.name||'')+'|'+(p.brand||'')).toLowerCase()
+    return (activeRoutineNames || new Set()).has(key)
   }
-  function toggleBrand(brand) {
-    setFilterBrands(prev => prev.includes(brand) ? prev.filter(b => b !== brand) : [...prev, brand])
-  }
-  function toggleFlag(key) {
-    setFilterFlags(prev => prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key])
-  }
-  function clearAll() {
-    setFilterCats([]); setFilterFlags([]); setFilterUsing(false); setFilterBuyAgain(false); setFilterBrands([]); setSearch('')
-  }
-
-  const hasFilters = filterCats.length > 0 || filterFlags.length > 0 || filterUsing || filterBuyAgain || filterBrands.length > 0 || search.trim()
 
   function getMergedProducts() {
     const userArr = Object.values(products)
@@ -1043,60 +1012,41 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
     const userWithCatalogData = userArr.map(p => {
       if (p.catalog_product_id) {
         const cat = (catalogProducts || {})[p.catalog_product_id]
-        if (cat) return { ...cat, ...p, _isLinked: true, purchaseUrl: p.purchaseUrl || cat.purchaseUrl, store_name: p.store_name || cat.store_name }
+        if (cat) return { ...cat, ...p, _isLinked: true, purchaseUrl: p.purchaseUrl || cat.purchaseUrl, store_name: p.store_name || cat.store_name, direct_url: p.direct_url || cat.direct_url }
       }
       return p
     })
     return [...userWithCatalogData, ...unlinkedCatalog]
   }
 
-  function applyFilters(arr) {
-    return arr
-      .filter(p => {
-        const matchBrand = filterBrands.length === 0 || filterBrands.includes(p.brand || '')
-        const matchCat = filterCats.length === 0 || filterCats.includes(p.category)
-        const matchSearch = !search.trim() || p.name.toLowerCase().includes(search.toLowerCase()) || (p.brand || '').toLowerCase().includes(search.toLowerCase())
-        const matchFlags = filterFlags.length === 0 || filterFlags.every(f => p[f])
-        const matchUsing = !filterUsing || (() => {
-          const key = ((p.name || '') + '|' + (p.brand || '')).toLowerCase()
-          return (userRoutineNames || new Set()).has(key)
-        })()
-        const matchBuyAgain = !filterBuyAgain || (userProductData || {})[p.id]?.buy_again === true
-        return matchBrand && matchCat && matchSearch && matchFlags && matchUsing && matchBuyAgain
-      })
-      .sort((a, b) => {
-        const aKey = ((a.name || '') + '|' + (a.brand || '')).toLowerCase()
-        const bKey = ((b.name || '') + '|' + (b.brand || '')).toLowerCase()
-        const aWWU = isWhatWeUsing(a)
-        const bWWU = isWhatWeUsing(b)
-        const aUser = (userRoutineNames || new Set()).has(aKey)
-        const bUser = (userRoutineNames || new Set()).has(bKey)
-        if (sortBy === 'routine') {
-          // "What we're using!" first, then user's routine, then rest
-          const aPrio = aWWU ? 2 : aUser ? 1 : 0
-          const bPrio = bWWU ? 2 : bUser ? 1 : 0
-          if (aPrio !== bPrio) return bPrio - aPrio
-          return (a.name || '').localeCompare(b.name || '')
-        }
-        if (sortBy === 'brand') {
-          const brandCmp = (a.brand || '').toLowerCase().localeCompare((b.brand || '').toLowerCase())
-          return brandCmp !== 0 ? brandCmp : (a.name || '').localeCompare(b.name || '')
-        }
-        return (a.name || '').localeCompare(b.name || '')
-      })
-  }
-
   const pool = libTab === 'all' ? getMergedProducts()
-    : libTab === 'mine'
-      ? [
-          ...Object.values(products), // user's own additions
-          ...Object.values(catalogProducts || {}).filter(p => (userProductData || {})[p.id]?.in_library)
-        ]
+    : libTab === 'mine' ? Object.values(products)
     : Object.values(catalogProducts || {})
-  const list = applyFilters(pool)
-  const isCatalogCard = p => p._isCatalog && !p._isLinked
 
-  // Sidebar filter section component
+  const list = pool
+    .filter(p => {
+      const matchCat    = filterCats.length === 0    || filterCats.includes(p.category)
+      const matchSearch = !search.trim() || p.name.toLowerCase().includes(search.toLowerCase()) || (p.brand||'').toLowerCase().includes(search.toLowerCase())
+      const matchFlags  = filterFlags.length === 0   || filterFlags.every(f => p[f])
+      const matchBrand  = filterBrands.length === 0  || filterBrands.includes(p.brand || '')
+      const matchUsing  = !filterUsing    || isWhatWeUsing(p) || (userRoutineNames||new Set()).has(((p.name||'')+'|'+(p.brand||'')).toLowerCase())
+      const matchBuyAgain = !filterBuyAgain || (userProductData||{})[p.id]?.buy_again === true
+      return matchCat && matchSearch && matchFlags && matchBrand && matchUsing && matchBuyAgain
+    })
+    .sort((a, b) => {
+      if (sortBy === 'routine') {
+        const aW = isWhatWeUsing(a), bW = isWhatWeUsing(b)
+        if (aW && !bW) return -1; if (!aW && bW) return 1
+        const aU = (userRoutineNames||new Set()).has(((a.name||'')+'|'+(a.brand||'')).toLowerCase())
+        const bU = (userRoutineNames||new Set()).has(((b.name||'')+'|'+(b.brand||'')).toLowerCase())
+        if (aU && !bU) return -1; if (!aU && bU) return 1
+      }
+      if (sortBy === 'brand') return (a.brand||'').localeCompare(b.brand||'')
+      return (a.name||'').localeCompare(b.name||'')
+    })
+
+  const isCatalogCard = p => !!(p._isCatalog || p.is_catalog) && !(userProductData||{})[p.id]?.in_library
+
   function FilterSection({ title, children, defaultOpen = true }) {
     const [open, setOpen] = useState(defaultOpen)
     return (
@@ -1112,8 +1062,8 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
 
   function CheckItem({ label, checked, onChange }) {
     return (
-      <label onClick={onChange} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: checked ? T.text : T.textMuted, cursor: 'pointer', padding: '3px 0', userSelect: 'none' }}>
-        <div style={{ width: 14, height: 14, borderRadius: 3, border: '1.5px solid ' + (checked ? T.pinkDeep : T.border), background: checked ? T.pinkDeep : 'transparent', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+      <label onClick={onChange} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: T.text, cursor: 'pointer', padding: '3px 0', userSelect: 'none' }}>
+        <div style={{ width: 14, height: 14, borderRadius: 3, border: '1.5px solid ' + (checked ? T.text : T.border), background: checked ? T.text : 'transparent', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           {checked && <span style={{ color: '#fff', fontSize: 9, lineHeight: 1 }}>✓</span>}
         </div>
         {label}
@@ -1130,18 +1080,7 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
     document.head.appendChild(s)
   }, [])
 
-  function CheckItem({ label, checked, onChange }) {
-    return (
-      <label onClick={onChange} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: T.text, cursor: 'pointer', padding: '3px 0', userSelect: 'none' }}>
-        <div style={{ width: 14, height: 14, borderRadius: 3, border: '1.5px solid ' + (checked ? T.text : T.border), background: checked ? T.text : 'transparent', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          {checked && <span style={{ color: '#fff', fontSize: 9, lineHeight: 1 }}>✓</span>}
-        </div>
-        {label}
-      </label>
-    )
-  }
-
-  // Shared filter content — order: Product type → Brand → Ethics & values → Status
+  // Shared filter content used in both sidebar and bottom sheet
   function FilterContent() {
     return (
       <>
@@ -1150,25 +1089,21 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
             Clear all filters ×
           </button>
         )}
-
         <FilterSection title="Product type">
           {PRODUCT_CATEGORIES.map(cat => (
             <CheckItem key={cat} label={cat.charAt(0).toUpperCase() + cat.slice(1)} checked={filterCats.includes(cat)} onChange={() => toggleCat(cat)} />
           ))}
         </FilterSection>
-
         <FilterSection title="Brand">
           {[...new Set(pool.map(p => p.brand || '').filter(Boolean))].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase())).map(brand => (
             <CheckItem key={brand} label={brand} checked={filterBrands.includes(brand)} onChange={() => toggleBrand(brand)} />
           ))}
         </FilterSection>
-
         <FilterSection title="Ethics & values">
           {ETHICS_FILTERS.map(({ key, label }) => (
             <CheckItem key={key} label={label} checked={filterFlags.includes(key)} onChange={() => toggleFlag(key)} />
           ))}
         </FilterSection>
-
         <FilterSection title="Status">
           <CheckItem label="Currently using" checked={filterUsing} onChange={() => setFilterUsing(s => !s)} />
           <CheckItem label="Would buy again" checked={filterBuyAgain} onChange={() => setFilterBuyAgain(s => !s)} />
@@ -1178,171 +1113,112 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
   }
 
   return (
-    <div style={{ display: 'flex', gap: 0, minHeight: 'calc(100vh - 64px)', position: 'relative' }}>
+    <div style={{ display: 'flex', gap: 0, height: 'calc(100vh - 120px)', overflow: 'hidden', position: 'relative' }}>
 
-      {/* ── Desktop left sidebar ─────────────────────────────── */}
-      {!isMobile && (
-        <div style={{ width: 200, flexShrink: 0, borderRight: '0.5px solid ' + T.border, padding: '16px 16px 16px 20px', overflowY: 'auto', position: 'sticky', top: 'env(safe-area-inset-top, 0px)', height: 'calc(100vh - env(safe-area-inset-top, 0px))', alignSelf: 'flex-start' }}>
-          <FilterContent />
-        </div>
-      )}
-
-      {/* ── Mobile bottom sheet ──────────────────────────────── */}
+      {/* ── Mobile bottom sheet overlay ─────────────────────── */}
       {isMobile && filterSheetOpen && (
         <>
-          <div onClick={() => setFilterSheetOpen(false)}
-            style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 100 }} />
-          <div style={{
-            position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 101,
-            background: T.white, borderRadius: '16px 16px 0 0',
-            padding: '0 20px 40px', maxHeight: '80vh', overflowY: 'auto',
-            boxShadow: '0 -4px 24px rgba(0,0,0,0.12)',
-            animation: 'slideUp 0.22s ease',
-          }}>
+          <div onClick={() => setFilterSheetOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 100 }} />
+          <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 101, background: T.white, borderRadius: '16px 16px 0 0', padding: '0 20px 32px', maxHeight: '75vh', overflowY: 'auto', boxShadow: '0 -4px 24px rgba(0,0,0,0.12)', animation: 'slideUp 0.22s ease' }}>
             <div style={{ display: 'flex', justifyContent: 'center', padding: '12px 0 16px' }}>
               <div style={{ width: 36, height: 4, borderRadius: 2, background: T.border }} />
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-              <div style={{ fontSize: 15, fontWeight: 600, color: T.text }}>Filters</div>
-              <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-                {hasFilters && <button onClick={clearAll} style={{ fontSize: 12, color: T.pinkDeep, background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit' }}>Clear all</button>}
-                <button onClick={() => setFilterSheetOpen(false)} style={{ border: 'none', background: 'transparent', fontSize: 20, color: T.textMuted, cursor: 'pointer', padding: '0 2px', lineHeight: 1 }}>×</button>
-              </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <div style={{ fontSize: 14, fontWeight: 600, color: T.text }}>Filters</div>
+              <button onClick={() => setFilterSheetOpen(false)} style={{ border: 'none', background: 'transparent', fontSize: 20, color: T.textMuted, cursor: 'pointer', padding: '0 2px', lineHeight: 1 }}>×</button>
             </div>
             <FilterContent />
           </div>
         </>
       )}
 
-      {/* ── Mobile floating filter pill ──────────────────────── */}
+      {/* ── Mobile filter pill button ────────────────────────── */}
       {isMobile && (
-        <button onClick={() => setFilterSheetOpen(true)} style={{
-          position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
-          zIndex: 99, padding: '10px 22px', borderRadius: 24,
-          background: hasFilters ? T.pinkDeep : T.text,
-          color: '#fff', border: 'none', cursor: 'pointer',
-          fontSize: 13, fontWeight: 600, fontFamily: 'inherit',
-          boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
-          display: 'flex', alignItems: 'center', gap: 8,
-        }}>
+        <button onClick={() => setFilterSheetOpen(true)} style={{ position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)', zIndex: 99, padding: '10px 20px', borderRadius: 24, background: hasFilters ? T.pinkDeep : T.text, color: '#fff', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 600, fontFamily: 'inherit', boxShadow: '0 4px 16px rgba(0,0,0,0.2)', display: 'flex', alignItems: 'center', gap: 6 }}>
           <span>⚙︎ Filters</span>
-          {hasFilters && (
-            <span style={{ background: 'rgba(255,255,255,0.25)', borderRadius: 10, padding: '1px 7px', fontSize: 11 }}>
-              {filterBrands.length + filterCats.length + filterFlags.length + (filterUsing ? 1 : 0) + (filterBuyAgain ? 1 : 0)}
-            </span>
-          )}
+          {hasFilters && <span style={{ background: 'rgba(255,255,255,0.3)', borderRadius: 10, padding: '1px 7px', fontSize: 11 }}>{filterBrands.length + filterCats.length + filterFlags.length + (filterUsing ? 1 : 0) + (filterBuyAgain ? 1 : 0)}</span>}
         </button>
       )}
 
-      {/* ── Main content area ────────────────────────────────── */}
-      <div style={{ flex: 1, minWidth: 0 }}>
+      {/* ── Left Sidebar — desktop only ──────────────────────── */}
+      {!isMobile && <div style={{ width: 200, flexShrink: 0, borderRight: '0.5px solid ' + T.border, padding: '16px 16px 16px 20px', overflowY: 'auto', position: 'sticky', top: 0, height: '100%' }}>
+        <FilterContent />
+      </div>}
 
-        {/* Sort + Search + Tabs */}
-        <div style={{ padding: '12px 16px 10px', paddingTop: 'calc(12px + env(safe-area-inset-top, 0px))', borderBottom: '0.5px solid ' + T.border, position: 'sticky', top: 0, background: T.white, zIndex: 30 }}>
-          <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
-            <select value={sortBy} onChange={e => setSortBy(e.target.value)}
-              style={{ padding: '7px 10px', borderRadius: 8, border: '0.5px solid ' + T.border, background: T.cream, color: T.text, fontSize: 12, fontFamily: 'inherit', cursor: 'pointer', flexShrink: 0 }}>
-              <option value="routine">Routine first</option>
-              <option value="name">A–Z Name</option>
-              <option value="brand">A–Z Brand</option>
-            </select>
-            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search products…"
-              style={{ flex: 1, fontSize: 12, padding: '7px 10px', border: '0.5px solid ' + T.border, borderRadius: 8, background: T.white, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
-          </div>
-          <div style={{ display: 'flex', gap: 6 }}>
-            {[
-              { key: 'all',         label: 'All',         count: getMergedProducts().length },
-              { key: 'mine',        label: 'Mine',        count: Object.keys(products).length + Object.values(catalogProducts || {}).filter(p => (userProductData || {})[p.id]?.in_library).length },
-              { key: 'recommended', label: 'Recommended', count: Object.keys(catalogProducts || {}).length },
-            ].map(t => (
-              <button key={t.key} onClick={() => setLibTab(t.key)} style={{
-                padding: '5px 12px', borderRadius: 20, fontSize: 12, cursor: 'pointer',
-                border: '0.5px solid ' + (libTab === t.key ? T.pinkDeep : T.border),
-                background: libTab === t.key ? T.pink : 'transparent', color: T.text, fontFamily: 'inherit',
-              }}>{t.label} <span style={{ fontSize: 10, color: T.textMuted }}>({t.count})</span></button>
-            ))}
-          </div>
+      {/* ── Main Content ──────────────────────────────────────── */}
+      <div style={{ flex: 1, padding: '16px 20px', minWidth: 0, overflowY: 'auto', height: '100%' }}>
+
+        {/* Tabs */}
+        <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
+          {[
+            { key: 'all',         label: 'All products',  count: getMergedProducts().length },
+            { key: 'mine',        label: 'My products',   count: Object.keys(products).length + Object.values(catalogProducts || {}).filter(p => (userProductData || {})[p.id]?.in_library).length },
+            { key: 'recommended', label: 'Recommended',   count: Object.keys(catalogProducts || {}).length },
+          ].map(t => (
+            <button key={t.key} onClick={() => setLibTab(t.key)} style={{ padding: '5px 12px', borderRadius: 20, fontSize: 12, cursor: 'pointer', border: '0.5px solid ' + (libTab === t.key ? T.pinkDeep : T.border), background: libTab === t.key ? T.pink : 'transparent', color: T.text, fontFamily: 'inherit' }}>
+              {t.label} <span style={{ fontSize: 10, color: T.textMuted }}>({t.count})</span>
+            </button>
+          ))}
         </div>
 
-        {/* Product count */}
-        <div style={{ padding: '8px 16px 4px', fontSize: 11, color: T.textMuted }}>
-          {list.length} product{list.length !== 1 ? 's' : ''}
-          {hasFilters && <button onClick={clearAll} style={{ marginLeft: 10, fontSize: 11, color: T.pinkDeep, background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit' }}>Clear filters ×</button>}
+        {/* Sort + Search */}
+        <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+          <select value={sortBy} onChange={e => setSortBy(e.target.value)} style={{ padding: '7px 10px', borderRadius: 8, border: '0.5px solid ' + T.border, background: T.cream, color: T.text, fontSize: 12, fontFamily: 'inherit', cursor: 'pointer', flexShrink: 0 }}>
+            <option value="routine">My routine first</option>
+            <option value="name">A–Z Product name</option>
+            <option value="brand">A–Z Brand name</option>
+          </select>
+          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search products..." style={{ flex: 1, fontSize: 12, padding: '7px 10px', border: '0.5px solid ' + T.border, borderRadius: 8, background: T.white, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
         </div>
 
         {/* Empty state */}
         {list.length === 0 && (
-          <div style={{ padding: '60px 16px', textAlign: 'center', fontSize: 13, color: T.textMuted, fontStyle: 'italic' }}>
-            {pool.length === 0 ? 'No products yet — add your first one.' : 'No products match your filters.'}
+          <div style={{ fontSize: 13, color: T.textMuted, fontStyle: 'italic', padding: '40px 0', textAlign: 'center' }}>
+            {pool.length === 0 ? 'No products yet.' : 'No products match your filters.'}
           </div>
         )}
 
-        {/* Portrait grid — 2 col mobile, 5 col desktop */}
-        {list.length > 0 && (
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(5, 1fr)', gap: 2, paddingBottom: isMobile ? 80 : 24 }}>
-            {list.map(p => {
-              const wwu = isWhatWeUsing(p)
-              const userUsing = !wwu && (userRoutineNames || new Set()).has(((p.name||'')+'|'+(p.brand||'')).toLowerCase())
-              const img = p.imageUrl || p.image_url
-              const upd = (userProductData || {})[p.id]
-              return (
-                <div key={p.id} onClick={() => setSelectedProduct(p)}
-                  style={{ cursor: 'pointer', position: 'relative', background: T.white }}>
-                  {/* Portrait image — paddingBottom forces consistent 3:4 across all cards */}
-                  <div style={{ position: 'relative', paddingBottom: '133.33%', background: T.creamDark, overflow: 'hidden' }}>
-                    {img ? (
-                      <img src={img} alt={p.name}
-                        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                        onError={e => { e.currentTarget.style.display = 'none' }} />
-                    ) : (
-                      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: T.border, fontSize: 28 }}>◻</div>
-                    )}
-                    {/* Overlay — routine badges top-right */}
-                    {(wwu || userUsing) && (
-                      <div style={{ position: 'absolute', top: 6, right: 6, display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'flex-end' }}>
-                        {wwu && <span style={{ fontSize: 8, background: T.pinkDeep, color: '#fff', borderRadius: 8, padding: '2px 6px', fontWeight: 700, whiteSpace: 'nowrap', boxShadow: '0 1px 4px rgba(0,0,0,0.15)' }}>What we're using!</span>}
-                        {userUsing && <span style={{ fontSize: 8, background: 'rgba(255,255,255,0.93)', color: T.text, borderRadius: 8, padding: '2px 6px', fontWeight: 600, whiteSpace: 'nowrap', border: '0.5px solid ' + T.border }}>Current routine</span>}
-                      </div>
-                    )}
-                    {/* Prescription — top left */}
-                    {p.is_prescription && (
-                      <span style={{ position: 'absolute', top: 6, left: 6, fontSize: 8, background: 'rgba(255,255,255,0.9)', color: T.textMuted, borderRadius: 8, padding: '2px 6px', fontWeight: 600, border: '0.5px solid ' + T.border }}>℞</span>
-                    )}
-                    {/* Star rating — bottom left if rated */}
-                    {upd?.effectiveness > 0 && (
-                      <span style={{ position: 'absolute', bottom: 6, left: 6, fontSize: 9, background: 'rgba(255,255,255,0.9)', color: T.pinkDeep, borderRadius: 8, padding: '2px 6px', fontWeight: 700 }}>★ {upd.effectiveness}</span>
-                    )}
+        {/* Grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 10 }}>
+          {list.map(p => {
+            const wwu = isWhatWeUsing(p)
+            const userUsing = !wwu && (userRoutineNames||new Set()).has(((p.name||'')+'|'+(p.brand||'')).toLowerCase())
+            const img = p.imageUrl || p.image_url
+            return (
+              <div key={p.id} onClick={() => setSelectedProduct(p)} style={{ background: T.white, border: '0.5px solid ' + T.border, borderRadius: 10, display: 'flex', flexDirection: 'column', gap: 0, position: 'relative', cursor: 'pointer', overflow: 'hidden' }}
+                onMouseEnter={e => e.currentTarget.style.borderColor = T.pinkDeep}
+                onMouseLeave={e => e.currentTarget.style.borderColor = T.border}>
+                {/* Image */}
+                {img && (
+                  <div style={{ height: 140, overflow: 'hidden', background: T.white, position: 'relative', flexShrink: 0 }}>
+                    <img src={img} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} onError={e => { e.currentTarget.parentElement.style.display = 'none' }} />
+                    {wwu && <span style={{ position: 'absolute', top: 6, right: 6, fontSize: 8, background: T.pinkDeep, color: '#fff', borderRadius: 8, padding: '2px 6px', fontWeight: 700 }}>What we're using!</span>}
+                    {userUsing && <span style={{ position: 'absolute', top: 6, right: 6, fontSize: 8, background: 'rgba(255,255,255,0.93)', color: T.text, borderRadius: 8, padding: '2px 6px', fontWeight: 600, border: '0.5px solid ' + T.border }}>Current routine</span>}
                   </div>
-                  {/* Text below */}
-                  <div style={{ padding: '7px 8px 10px', background: T.white }}>
-                    <div style={{ fontSize: 11, fontWeight: 500, color: T.text, lineHeight: 1.4, marginBottom: 1 }}>{p.name}</div>
-                    {p.brand && <div style={{ fontSize: 10, color: T.textMuted, marginBottom: 6 }}>{p.brand}</div>}
-                    {/* URL pills — 50/50, won't cause horizontal scroll */}
-                    {(p.purchaseUrl || p.direct_url) && (
-                      <div style={{ display: 'flex', gap: 4, overflow: 'hidden' }} onClick={e => e.stopPropagation()}>
-                        {p.purchaseUrl && (
-                          <a href={p.purchaseUrl} target="_blank" rel="noopener noreferrer"
-                            style={{ flex: '1 1 0', minWidth: 0, fontSize: 9, padding: '3px 6px', borderRadius: 20, background: 'transparent', color: T.text, textDecoration: 'none', border: `0.5px solid ${T.textMuted}`, textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontFamily: 'inherit', display: 'block' }}>
-                            {p.store_name || 'Affiliate'} ↗
-                          </a>
-                        )}
-                        {p.direct_url && (
-                          <a href={p.direct_url} target="_blank" rel="noopener noreferrer"
-                            style={{ flex: '1 1 0', minWidth: 0, fontSize: 9, padding: '3px 6px', borderRadius: 20, background: 'transparent', color: T.text, textDecoration: 'none', border: `0.5px solid ${T.textMuted}`, textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontFamily: 'inherit', display: 'block' }}>
-                            {p.direct_store_name || 'Direct'} ↗
-                          </a>
-                        )}
-                      </div>
-                    )}
-                  </div>
+                )}
+                {/* Text */}
+                <div style={{ padding: '10px 12px 12px', flex: 1 }}>
+                  {!img && wwu && <div style={{ fontSize: 9, background: T.pink, color: T.pinkDeep, borderRadius: 8, padding: '2px 7px', fontWeight: 700, display: 'inline-block', marginBottom: 4 }}>What we're using!</div>}
+                  {!img && userUsing && <div style={{ fontSize: 9, background: T.creamDark, color: T.text, borderRadius: 8, padding: '2px 7px', fontWeight: 600, display: 'inline-block', marginBottom: 4, border: '0.5px solid ' + T.border }}>Current routine</div>}
+                  <div style={{ fontSize: 12, fontWeight: 600, color: T.text, marginBottom: 2, lineHeight: 1.3 }}>{p.name}</div>
+                  {p.brand && <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 4 }}>{p.brand}</div>}
+                  {p.effectiveness > 0 && <StarRating value={p.effectiveness} size={10} />}
+                  <ProductFlagBadges product={p} max={3} />
+                  {/* Discrete URL pills */}
+                  {(p.purchaseUrl || p.direct_url) && (
+                    <div style={{ display: 'flex', gap: 4, marginTop: 6, overflow: 'hidden' }} onClick={e => e.stopPropagation()}>
+                      {p.purchaseUrl && <a href={p.purchaseUrl} target="_blank" rel="noopener noreferrer" style={{ flex: '1 1 0', minWidth: 0, fontSize: 9, padding: '3px 6px', borderRadius: 20, background: 'transparent', color: T.text, textDecoration: 'none', border: '0.5px solid ' + T.textMuted, textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'inherit', display: 'block' }}>{p.store_name || 'Affiliate'} ↗</a>}
+                      {p.direct_url && <a href={p.direct_url} target="_blank" rel="noopener noreferrer" style={{ flex: '1 1 0', minWidth: 0, fontSize: 9, padding: '3px 6px', borderRadius: 20, background: 'transparent', color: T.text, textDecoration: 'none', border: '0.5px solid ' + T.textMuted, textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'inherit', display: 'block' }}>{p.direct_store_name || 'Direct'} ↗</a>}
+                    </div>
+                  )}
                 </div>
-              )
-            })}
-          </div>
-        )}
+              </div>
+            )
+          })}
+        </div>
       </div>
 
-      {/* ── Product modal ──────────────────────────────────────── */}
+      {/* Modal */}
       {selectedProduct && (
         <ProductModal
           product={selectedProduct}
