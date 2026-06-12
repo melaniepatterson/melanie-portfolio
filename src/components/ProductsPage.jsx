@@ -919,15 +919,15 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
             <div style={{ display: 'inline-block', fontSize: 11, background: T.pink, color: T.pinkDeep, borderRadius: 20, padding: '3px 10px', fontWeight: 600, marginBottom: 8, marginRight: 6 }}>What we're using!</div>
           )}
           {userUsing && (
-            <div style={{ display: 'inline-block', fontSize: 11, background: T.creamDark, color: T.textMuted, borderRadius: 20, padding: '3px 10px', fontWeight: 600, marginBottom: 8, border: `0.5px solid ${T.border}` }}>Current routine</div>
+            <div style={{ display: 'inline-block', fontSize: 11, background: T.creamDark, color: T.textMuted, borderRadius: 20, padding: '3px 10px', fontWeight: 600, marginBottom: 8, border: `0.5px solid ${T.border}` }}>In my routine</div>
           )}
 
-          {/* Category + ingredient */}
-          {(p.category || p.ingredient_category) && (
+          {/* Category — most specific only: ingredient_form > ingredient_category > category */}
+          {(p.ingredient_form || p.ingredient_category || p.category) && (
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
-              {p.category && <span style={{ fontSize: 11, background: T.creamDark, color: T.textMuted, borderRadius: 20, padding: '3px 10px' }}>{p.category.charAt(0).toUpperCase() + p.category.slice(1)}</span>}
-              {p.ingredient_category && <span style={{ fontSize: 11, background: T.creamDark, color: T.textMuted, borderRadius: 20, padding: '3px 10px' }}>{p.ingredient_category.replace(/_/g, ' ')}</span>}
-              {p.ingredient_form && <span style={{ fontSize: 11, background: T.creamDark, color: T.textMuted, borderRadius: 20, padding: '3px 10px' }}>{p.ingredient_form}</span>}
+              <span style={{ fontSize: 11, background: T.creamDark, color: T.textMuted, borderRadius: 20, padding: '3px 10px' }}>
+                {(p.ingredient_form || p.ingredient_category?.replace(/_/g, ' ') || p.category)?.charAt(0).toUpperCase() + (p.ingredient_form || p.ingredient_category?.replace(/_/g, ' ') || p.category)?.slice(1)}
+              </span>
             </div>
           )}
 
@@ -948,8 +948,13 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
             </div>
           )}
 
-          {/* Notes */}
-          {p.notes && <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.7, margin: '10px 0', padding: '8px 10px', background: T.cream, borderRadius: 8, fontStyle: 'italic' }}>{p.notes}</div>}
+          {/* Our note — curator note, shown to all users, hidden if empty */}
+          {p.notes && (
+            <div style={{ margin: '10px 0 12px', padding: '10px 12px', background: T.pink, borderRadius: 10, borderLeft: `3px solid ${T.pinkDeep}` }}>
+              <div style={{ fontSize: 9, fontWeight: 700, color: T.pinkDeep, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Our note</div>
+              <div style={{ fontSize: 12, color: T.text, lineHeight: 1.7 }}>{p.notes}</div>
+            </div>
+          )}
 
           {/* PAO + dates */}
           {(p.pao_months || p.opened_at || p.expires_at || p.purchased_at) && (
@@ -1256,7 +1261,7 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
                   {(wwu || userUsing) && (
                     <div style={{ position: 'absolute', top: 6, right: 6, display: 'flex', flexDirection: 'column', gap: 3 }}>
                       {wwu && <span style={{ fontSize: 8, background: T.pinkDeep, color: '#fff', borderRadius: 8, padding: '2px 6px', fontWeight: 700, whiteSpace: 'nowrap' }}>What we're using!</span>}
-                      {userUsing && <span style={{ fontSize: 8, background: 'rgba(255,255,255,0.93)', color: T.text, borderRadius: 8, padding: '2px 6px', fontWeight: 600, whiteSpace: 'nowrap', border: '0.5px solid ' + T.border }}>Current routine</span>}
+                      {userUsing && <span style={{ fontSize: 8, background: 'rgba(255,255,255,0.93)', color: T.text, borderRadius: 8, padding: '2px 6px', fontWeight: 600, whiteSpace: 'nowrap', border: '0.5px solid ' + T.border }}>In my routine</span>}
                     </div>
                   )}
                 </div>
