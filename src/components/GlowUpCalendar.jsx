@@ -3521,26 +3521,27 @@ function UpcomingTreatmentsPanel({ treatments, allTypes, routineHistory, onClose
               <button onClick={() => onRemove(key)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 16, padding: '0 4px', lineHeight: 1 }}>×</button>
             </div>
           )}
-          {editingRecovery === tv.type && (
-            <div style={{ marginTop: 8 }}>
-              <RecoveryRoutineEditor
-                typeKey={tv.type}
-                typeLabel={allTypes[tv.type]?.label || tv.type}
-                steps={getRecoveryStepsForType(tv.type)}
-                products={recoveryRoutines?.[tv.type]?.products || {}}
-                allProducts={products}
-                onStepToggle={(stepId, enabled) => {
-                  const steps = getRecoveryStepsForType(tv.type).map(s =>
-                    s.id === stepId ? { ...s, enabled } : s
-                  )
-                  onUpdateRecoverySteps(tv.type, steps)
-                }}
-                onProductSelect={(stepKey, productId) => onUpdateRecoveryProducts(tv.type, stepKey, productId)}
-                onClose={() => setEditingRecovery(null)}
-              />
-            </div>
-          )}
         </div>
+        {/* Recovery routine editor — full width BELOW the flex row */}
+        {editingRecovery === tv.type && (
+          <div style={{ marginTop: 8 }}>
+            <RecoveryRoutineEditor
+              typeKey={tv.type}
+              typeLabel={allTypes[tv.type]?.label || tv.type}
+              steps={getRecoveryStepsForType(tv.type)}
+              products={recoveryRoutines?.[tv.type]?.products || {}}
+              allProducts={products}
+              onStepToggle={(stepId, enabled) => {
+                const steps = getRecoveryStepsForType(tv.type).map(s =>
+                  s.id === stepId ? { ...s, enabled } : s
+                )
+                onUpdateRecoverySteps(tv.type, steps)
+              }}
+              onProductSelect={(stepKey, productId) => onUpdateRecoveryProducts(tv.type, stepKey, productId)}
+              onClose={() => setEditingRecovery(null)}
+            />
+          </div>
+        )}
       </div>
     )
   }
