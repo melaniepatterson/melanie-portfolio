@@ -216,14 +216,19 @@ function InfoTooltip({ text }) {
 }
 
 function StarRating({ value, onChange, size = 12 }) {
+  const path = 'M12 2l2.39 6.26L21 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.61-1.01z'
   return (
-    <div style={{ display: 'flex', gap: 2 }}>
+    <div style={{ display: 'flex', gap: 3, alignItems: 'center' }}>
       {[1,2,3,4,5].map(n => (
-        <span
-          key={n}
+        <svg key={n} width={size} height={size} viewBox="0 0 23 23"
           onClick={onChange ? () => onChange(n) : undefined}
-          style={{ fontSize: size, cursor: onChange ? 'pointer' : 'default', color: '#000000', lineHeight: 1 }}
-        >{n <= value ? '★' : '☆'}</span>
+          style={{ cursor: onChange ? 'pointer' : 'default', display: 'block', flexShrink: 0 }}>
+          <path d={path}
+            fill={n <= value ? '#000000' : 'none'}
+            stroke="#000000"
+            strokeWidth={n <= value ? 0 : 1.5}
+            strokeLinejoin="round" />
+        </svg>
       ))}
     </div>
   )
@@ -730,7 +735,7 @@ function PersonalDataForm({ productId, isCatalog, upd, product, onSaveUpd, onClo
   const inputStyle = {
     width: '100%', boxSizing: 'border-box', padding: '6px 2px',
     borderRadius: 0, border: 'none',
-    borderBottom: '2px solid #000000',
+    borderBottom: '1px solid #000000',
     background: 'transparent', color: T.text, fontSize: 12,
     fontFamily: 'inherit', outline: 'none', resize: 'vertical',
   }
@@ -806,7 +811,7 @@ function PersonalDataForm({ productId, isCatalog, upd, product, onSaveUpd, onClo
       <div style={{ marginBottom: 12, maxWidth: 160 }}>
         <label style={labelStyle}>PAO (months)</label>
         <select value={paoMonths} onChange={e => setPao(e.target.value)}
-          style={{ width: '100%', fontSize: 12, padding: '6px 2px', border: 'none', borderBottom: '2px solid #000000', borderRadius: 0, background: 'transparent', color: paoMonths ? T.text : T.textMuted, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }}>
+          style={{ width: '100%', fontSize: 12, padding: '6px 2px', border: 'none', borderBottom: '1px solid #000000', borderRadius: 0, background: 'transparent', color: paoMonths ? T.text : T.textMuted, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }}>
           <option value="">— Select PAO —</option>
           {PAO_OPTIONS.map(m => <option key={m} value={m}>{m} months</option>)}
         </select>
@@ -831,7 +836,7 @@ function IngredientsAccordion({ ingredients }) {
   const [open, setOpen] = useState(false)
   return (
     <div style={{ marginTop: 12, marginBottom: 12 }}>
-      <button onClick={() => setOpen(o => !o)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', background: 'none', border: 'none', borderBottom: `1px solid ${T.border}`, padding: '6px 0', cursor: 'pointer', fontFamily: 'inherit' }}>
+      <button onClick={() => setOpen(o => !o)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', background: 'none', border: 'none', borderBottom: '1px solid #000000', padding: '6px 0', cursor: 'pointer', fontFamily: 'inherit' }}>
         <span style={{ fontSize: 10, fontWeight: 600, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Ingredients</span>
         <span style={{ fontSize: 12, color: T.textMuted }}>{open ? '−' : '+'}</span>
       </button>
@@ -898,8 +903,8 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
         )}
 
         {/* ── Right: scrollable content — overflow hidden at flex level so accordion never resizes modal */}
-        <div style={{ flex: 1, minWidth: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', WebkitOverflowScrolling: 'touch', padding: '20px 16px 28px', position: 'relative' }}>
+        <div style={{ flex: 1, minWidth: 0, minHeight: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', overflowX: 'hidden', WebkitOverflowScrolling: 'touch', padding: '20px 16px 28px', position: 'relative' }}>
 
           {/* × — top right */}
           <button onClick={onClose} style={{ position: 'absolute', top: 12, right: 12, zIndex: 10, width: 28, height: 28, borderRadius: 0, border: 'none', background: T.creamDark, color: T.text, cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>×</button>
