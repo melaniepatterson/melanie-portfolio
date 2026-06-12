@@ -224,7 +224,10 @@ function StarRating({ value, onChange, size = 12 }) {
           onClick={onChange ? () => onChange(n) : undefined}
           style={{
             fontSize: size, cursor: onChange ? 'pointer' : 'default',
-            color: n <= value ? '#FB923C' : T.textLight,
+            color: n <= value ? '#000000' : 'transparent',
+            WebkitTextStroke: n <= value ? 'none' : '0.75px #000000',
+            textStroke: n <= value ? 'none' : '0.75px #000000',
+            lineHeight: 1,
           }}
         >★</span>
       ))}
@@ -818,7 +821,7 @@ function PersonalDataForm({ productId, isCatalog, upd, product, onSaveUpd, onClo
       {/* Save */}
       <button onClick={handleSave} disabled={saving}
         style={{
-          width: '100%', padding: '10px', borderRadius: 10, border: 'none',
+          width: '100%', padding: '10px', borderRadius: 0, border: 'none',
           background: saved ? '#4caf50' : T.pinkDeep,
           color: '#fff', cursor: saving ? 'default' : 'pointer',
           fontSize: 13, fontFamily: 'inherit', fontWeight: 500,
@@ -923,13 +926,21 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
           {/* Description */}
           {p.description && <div style={{ fontSize: 12, color: T.text, lineHeight: 1.7, marginTop: 12, marginBottom: 12 }}>{p.description}</div>}
 
-          {/* Ingredients */}
-          {p.ingredients && (
-            <div style={{ marginTop: 12, marginBottom: 12 }}>
-              <div style={{ fontSize: 10, fontWeight: 600, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 5 }}>Ingredients</div>
-              <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.8, padding: '8px 10px', background: T.cream, borderRadius: 8 }}>{p.ingredients}</div>
-            </div>
-          )}
+          {/* Ingredients — collapsible accordion */}
+          {p.ingredients && (() => {
+            const [open, setOpen] = React.useState(false)
+            return (
+              <div style={{ marginTop: 12, marginBottom: 12 }}>
+                <button onClick={() => setOpen(o => !o)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', background: 'none', border: 'none', borderBottom: `1px solid ${T.border}`, padding: '6px 0', cursor: 'pointer', fontFamily: 'inherit' }}>
+                  <span style={{ fontSize: 10, fontWeight: 600, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Ingredients</span>
+                  <span style={{ fontSize: 12, color: T.textMuted }}>{open ? '−' : '+'}</span>
+                </button>
+                {open && (
+                  <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.8, padding: '10px 0 4px' }}>{p.ingredients}</div>
+                )}
+              </div>
+            )
+          })()}
 
           {/* Our note — curator note, shown to all users, hidden if empty */}
           {p.notes && (
