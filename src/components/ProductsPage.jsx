@@ -833,6 +833,21 @@ function PersonalDataForm({ productId, isCatalog, upd, product, onSaveUpd, onClo
   )
 }
 
+function IngredientsAccordion({ ingredients }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <div style={{ marginTop: 12, marginBottom: 12 }}>
+      <button onClick={() => setOpen(o => !o)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', background: 'none', border: 'none', borderBottom: `1px solid ${T.border}`, padding: '6px 0', cursor: 'pointer', fontFamily: 'inherit' }}>
+        <span style={{ fontSize: 10, fontWeight: 600, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Ingredients</span>
+        <span style={{ fontSize: 12, color: T.textMuted }}>{open ? '−' : '+'}</span>
+      </button>
+      {open && (
+        <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.8, padding: '10px 0 4px' }}>{ingredients}</div>
+      )}
+    </div>
+  )
+}
+
 // ─── PRODUCT DETAIL MODAL ────────────────────────────────────
 // Brand color palette — harmonious Glow Up pinks, blushes, peaches, and warm oranges
 const BRAND_COLORS = [
@@ -927,20 +942,7 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
           {p.description && <div style={{ fontSize: 12, color: T.text, lineHeight: 1.7, marginTop: 12, marginBottom: 12 }}>{p.description}</div>}
 
           {/* Ingredients — collapsible accordion */}
-          {p.ingredients && (() => {
-            const [open, setOpen] = React.useState(false)
-            return (
-              <div style={{ marginTop: 12, marginBottom: 12 }}>
-                <button onClick={() => setOpen(o => !o)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', background: 'none', border: 'none', borderBottom: `1px solid ${T.border}`, padding: '6px 0', cursor: 'pointer', fontFamily: 'inherit' }}>
-                  <span style={{ fontSize: 10, fontWeight: 600, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Ingredients</span>
-                  <span style={{ fontSize: 12, color: T.textMuted }}>{open ? '−' : '+'}</span>
-                </button>
-                {open && (
-                  <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.8, padding: '10px 0 4px' }}>{p.ingredients}</div>
-                )}
-              </div>
-            )
-          })()}
+          {p.ingredients && <IngredientsAccordion ingredients={p.ingredients} />}
 
           {/* Our note — curator note, shown to all users, hidden if empty */}
           {p.notes && (
