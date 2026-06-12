@@ -576,7 +576,7 @@ function ProductForm({ initial, onSave, onCancel, catalogProducts, session }) {
           { key: 'science_backed',    label: 'Science-backed'    },
         ].map(({ key, label }) => (
           <button key={key} type="button" onClick={() => set(key, !form[key])} style={{
-            padding: '5px 12px', borderRadius: 20, fontSize: 11, cursor: 'pointer',
+            padding: '5px 12px', borderRadius: 0, fontSize: 11, cursor: 'pointer',
             border: `0.5px solid ${form[key] ? T.pinkDeep : T.border}`,
             background: form[key] ? T.pink : 'transparent',
             color: T.text, fontFamily: 'inherit',
@@ -593,7 +593,7 @@ function ProductForm({ initial, onSave, onCancel, catalogProducts, session }) {
             {[['Yes', true], ['No', false], ['—', null]].map(([label, val]) => (
               <button key={label} type="button"
                 onClick={() => set('buyAgain', form.buyAgain === val ? null : val)}
-                style={{ padding: '4px 10px', borderRadius: 20, fontSize: 11, cursor: 'pointer', fontFamily: 'inherit', border: `0.5px solid ${T.border}`, background: form.buyAgain === val ? T.pinkDeep : T.cream, color: form.buyAgain === val ? '#fff' : T.textMuted }}>
+                style={{ padding: '4px 10px', borderRadius: 0, fontSize: 11, cursor: 'pointer', fontFamily: 'inherit', border: `0.5px solid ${T.border}`, background: form.buyAgain === val ? T.pinkDeep : T.cream, color: form.buyAgain === val ? '#fff' : T.textMuted }}>
                 {label}
               </button>
             ))}
@@ -605,7 +605,7 @@ function ProductForm({ initial, onSave, onCancel, catalogProducts, session }) {
         <FieldLabel>Tags (fragrance free, silicone free, etc.)</FieldLabel>
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 6 }}>
           {(form.tags || []).map(t => (
-            <span key={t} style={{ fontSize: 11, padding: '2px 8px', borderRadius: 20, background: T.pink, color: T.text, border: `0.5px solid ${T.pinkDeep}`, cursor: 'pointer' }} onClick={() => removeTag(t)}>
+            <span key={t} style={{ fontSize: 11, padding: '2px 8px', borderRadius: 0, background: T.pink, color: T.text, border: `0.5px solid ${T.pinkDeep}`, cursor: 'pointer' }} onClick={() => removeTag(t)}>
               {t} ×
             </span>
           ))}
@@ -774,7 +774,7 @@ function PersonalDataForm({ productId, isCatalog, upd, product, onSaveUpd, onClo
             {[['Yes', true], ['No', false], ['—', null]].map(([label, val]) => (
               <button key={label} onClick={() => setBuyAgain(buyAgain === val ? null : val)}
                 style={{
-                  padding: '4px 10px', borderRadius: 20, fontSize: 11,
+                  padding: '4px 10px', borderRadius: 0, fontSize: 11,
                   cursor: 'pointer', fontFamily: 'inherit',
                   border: `0.5px solid ${T.border}`,
                   background: buyAgain === val ? T.pinkDeep : T.cream,
@@ -1286,13 +1286,13 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginTop: 8 }} onClick={e => e.stopPropagation()}>
                       {p.purchaseUrl && (
                         <a href={p.purchaseUrl} target="_blank" rel="noopener noreferrer"
-                          style={{ display: 'block', fontSize: 9, padding: '4px 8px', borderRadius: 20, background: 'transparent', color: T.text, textDecoration: 'none', border: '0.5px solid ' + T.textMuted, textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'inherit', boxSizing: 'border-box' }}>
+                          style={{ display: 'block', fontSize: 9, padding: '4px 8px', borderRadius: 0, background: 'transparent', color: T.text, textDecoration: 'none', border: '0.5px solid ' + T.textMuted, textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'inherit', boxSizing: 'border-box' }}>
                           Buy from {p.store_name || 'affiliate'} ↗
                         </a>
                       )}
                       {p.direct_url && (
                         <a href={p.direct_url} target="_blank" rel="noopener noreferrer"
-                          style={{ display: 'block', fontSize: 9, padding: '4px 8px', borderRadius: 20, background: 'transparent', color: T.text, textDecoration: 'none', border: '0.5px solid ' + T.textMuted, textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'inherit', boxSizing: 'border-box' }}>
+                          style={{ display: 'block', fontSize: 9, padding: '4px 8px', borderRadius: 0, background: 'transparent', color: T.text, textDecoration: 'none', border: '0.5px solid ' + T.textMuted, textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'inherit', boxSizing: 'border-box' }}>
                           Buy from {p.direct_store_name || 'brand site'} ↗
                         </a>
                       )}
