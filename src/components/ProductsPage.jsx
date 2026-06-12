@@ -186,6 +186,14 @@ const PRODUCT_CATEGORIES = [
   'body wash', 'body treatment', 'haircare', 'hair growth', 'boosts', 'other'
 ]
 
+// Acronyms that should be fully uppercase in labels
+const UPPERCASE_WORDS = new Set(['spf', 'bha', 'aha', 'pha', 'bha/aha', 'aha/bha'])
+function formatCatLabel(cat) {
+  return cat.split(' ').map(w =>
+    UPPERCASE_WORDS.has(w.toLowerCase()) ? w.toUpperCase() : w.charAt(0).toUpperCase() + w.slice(1)
+  ).join(' ')
+}
+
 function FieldLabel({ children }) {
   return <div style={{ fontSize: 11, color: T.textLight, marginBottom: 3 }}>{children}</div>
 }
@@ -485,7 +493,7 @@ function ProductForm({ initial, onSave, onCancel, catalogProducts, session }) {
       <div style={{ marginBottom: 8 }}>
         <FieldLabel>Category</FieldLabel>
         <select value={form.category} onChange={e => set('category', e.target.value)} style={{ fontSize: 12, padding: '5px 8px', border: `0.5px solid ${T.border}`, borderRadius: 6, background: T.cream, color: T.text, width: '100%' }}>
-          {PRODUCT_CATEGORIES.map(c => <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>)}
+          {PRODUCT_CATEGORIES.map(c => <option key={c} value={c}>{formatCatLabel(c)}</option>)}
         </select>
       </div>
 
@@ -1163,7 +1171,7 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
       <>
         <FilterSection title="Product type">
           {PRODUCT_CATEGORIES.map(cat => (
-            <CheckItem key={cat} label={cat.charAt(0).toUpperCase() + cat.slice(1)} checked={filterCats.includes(cat)} onChange={() => toggleCat(cat)} />
+            <CheckItem key={cat} label={formatCatLabel(cat)} checked={filterCats.includes(cat)} onChange={() => toggleCat(cat)} />
           ))}
         </FilterSection>
         <FilterSection title="Brand">
@@ -1240,12 +1248,12 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
 
         {/* Sort + Search */}
         <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
-          <select value={sortBy} onChange={e => setSortBy(e.target.value)} style={{ padding: '7px 10px', borderRadius: 8, border: '0.5px solid ' + T.border, background: T.cream, color: T.text, fontSize: 12, fontFamily: 'inherit', cursor: 'pointer', flexShrink: 0 }}>
+          <select value={sortBy} onChange={e => setSortBy(e.target.value)} style={{ padding: '7px 2px', borderRadius: 0, border: 'none', borderBottom: '1px solid #000000', background: 'transparent', color: T.text, fontSize: 12, fontFamily: 'inherit', cursor: 'pointer', flexShrink: 0, outline: 'none' }}>
             <option value="routine">My routine first</option>
             <option value="name">A–Z Product name</option>
             <option value="brand">A–Z Brand name</option>
           </select>
-          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search products..." style={{ flex: 1, fontSize: 12, padding: '7px 10px', border: '0.5px solid ' + T.border, borderRadius: 8, background: T.white, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
+          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search products..." style={{ flex: 1, fontSize: 12, padding: '7px 2px', border: 'none', borderBottom: '1px solid #000000', borderRadius: 0, background: 'transparent', color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
         </div>
 
         {/* Empty state */}
