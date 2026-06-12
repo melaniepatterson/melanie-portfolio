@@ -222,14 +222,8 @@ function StarRating({ value, onChange, size = 12 }) {
         <span
           key={n}
           onClick={onChange ? () => onChange(n) : undefined}
-          style={{
-            fontSize: size, cursor: onChange ? 'pointer' : 'default',
-            color: n <= value ? '#000000' : 'transparent',
-            WebkitTextStroke: n <= value ? 'none' : '0.75px #000000',
-            textStroke: n <= value ? 'none' : '0.75px #000000',
-            lineHeight: 1,
-          }}
-        >★</span>
+          style={{ fontSize: size, cursor: onChange ? 'pointer' : 'default', color: '#000000', lineHeight: 1 }}
+        >{n <= value ? '★' : '☆'}</span>
       ))}
     </div>
   )
@@ -903,8 +897,9 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
           </div>
         )}
 
-        {/* ── Right: scrollable content ────────────────────── */}
-        <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', WebkitOverflowScrolling: 'touch', padding: '20px 16px 28px', position: 'relative' }}>
+        {/* ── Right: scrollable content — overflow hidden at flex level so accordion never resizes modal */}
+        <div style={{ flex: 1, minWidth: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', WebkitOverflowScrolling: 'touch', padding: '20px 16px 28px', position: 'relative' }}>
 
           {/* × — top right */}
           <button onClick={onClose} style={{ position: 'absolute', top: 12, right: 12, zIndex: 10, width: 28, height: 28, borderRadius: 0, border: 'none', background: T.creamDark, color: T.text, cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>×</button>
@@ -1018,6 +1013,7 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
               </>
             )}
           </div>
+        </div>
         </div>
       </div>
     </div>
