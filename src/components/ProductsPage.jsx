@@ -764,13 +764,8 @@ function PersonalDataForm({ productId, isCatalog, upd, product, onSaveUpd, onClo
       <div style={{ display: 'flex', gap: 12, marginBottom: 12, alignItems: 'flex-start' }}>
         <div style={{ flex: 1 }}>
           <label style={labelStyle}>My rating</label>
-          <div style={{ display: 'flex', gap: 4, paddingTop: 2 }}>
-            {[1,2,3,4,5].map(n => (
-              <button key={n} onClick={() => setEff(effectiveness === n ? 0 : n)}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 18, padding: 0, color: n <= effectiveness ? T.pinkDeep : T.border, lineHeight: 1 }}>
-                ★
-              </button>
-            ))}
+          <div style={{ paddingTop: 4 }}>
+            <StarRating value={effectiveness} onChange={v => setEff(effectiveness === v ? 0 : v)} size={20} />
           </div>
         </div>
         <div>
