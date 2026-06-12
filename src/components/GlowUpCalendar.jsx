@@ -522,7 +522,7 @@ function isMassageDay(dt, info, period) {
 function Badge({ colorKey, label }) {
   const c = T[colorKey] || T.custom
   return (
-    <span style={{ fontSize: 9, fontWeight: 600, padding: '2px 5px', borderRadius: 3, background: c.bg, color: c.text, border: `0.5px solid ${c.border}`, display: 'inline-block', lineHeight: 1.5, whiteSpace: 'nowrap', overflow: 'hidden', maxWidth: '100%', textOverflow: 'ellipsis', letterSpacing: '0.02em' }}>
+    <span style={{ fontSize: 9, fontWeight: 600, padding: '2px 5px', borderRadius: 0, background: c.bg, color: c.text, border: `0.5px solid ${c.border}`, display: 'inline-block', lineHeight: 1.5, whiteSpace: 'nowrap', overflow: 'hidden', maxWidth: '100%', textOverflow: 'ellipsis', letterSpacing: '0.02em' }}>
       {label}
     </span>
   )
@@ -530,7 +530,7 @@ function Badge({ colorKey, label }) {
 
 
 function Btn({ onClick, children, variant = 'default', style: sx = {}, disabled = false }) {
-  const base = { padding: '6px 14px', borderRadius: 8, fontSize: 12, cursor: disabled ? 'default' : 'pointer', opacity: disabled ? 0.5 : 1 }
+  const base = { padding: '6px 14px', borderRadius: 0, fontSize: 12, cursor: disabled ? 'default' : 'pointer', opacity: disabled ? 0.5 : 1 }
   const variants = {
     default:   { border: `0.5px solid ${T.border}`,   background: 'transparent', color: T.textMuted },
     primary:   { border: `0.5px solid ${T.pinkDeep}`, background: T.pink,        color: T.text, fontWeight: 600 },
@@ -550,20 +550,20 @@ function FieldLabel({ children }) {
 }
 
 function TextInput({ value, onChange, placeholder, width = 140 }) {
-  return <input type="text" value={value} onChange={onChange} placeholder={placeholder} style={{ width, fontSize: 12, padding: '5px 8px', border: `0.5px solid ${T.border}`, borderRadius: 6, background: T.cream, color: T.text }} />
+  return <input type="text" value={value} onChange={onChange} placeholder={placeholder} style={{ width, fontSize: 12, padding: '5px 2px', border: 'none', borderBottom: '1px solid #000000', borderRadius: 0, background: 'transparent', color: T.text, outline: 'none' }} />
 }
 
 function NumberInput({ value, onChange, min = 0, max = 14, width = 60 }) {
-  return <input type="number" value={value} onChange={onChange} min={min} max={max} style={{ width, fontSize: 12, padding: '5px 8px', border: `0.5px solid ${T.border}`, borderRadius: 6, background: T.cream, color: T.text }} />
+  return <input type="number" value={value} onChange={onChange} min={min} max={max} style={{ width, fontSize: 12, padding: '5px 2px', border: 'none', borderBottom: '1px solid #000000', borderRadius: 0, background: 'transparent', color: T.text, outline: 'none' }} />
 }
 
 function DateInput({ value, onChange, disabled = false }) {
-  return <input type="date" value={value} onChange={onChange} disabled={disabled} style={{ fontSize: 12, padding: '5px 8px', border: `0.5px solid ${T.border}`, borderRadius: 6, background: disabled ? T.creamDark : T.cream, color: disabled ? T.textMuted : T.text, cursor: disabled ? 'not-allowed' : 'auto' }} />
+  return <input type="date" value={value} onChange={onChange} disabled={disabled} style={{ fontSize: 12, padding: '5px 2px', border: 'none', borderBottom: '1px solid #000000', borderRadius: 0, background: 'transparent', color: disabled ? T.textMuted : T.text, outline: 'none', cursor: disabled ? 'not-allowed' : 'auto' }} />
 }
 
 function Toggle({ checked, onChange, label }) {
   return (
-    <label style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', borderRadius: 8, cursor: 'pointer', background: T.creamDark, border: `0.5px solid ${T.border}`, fontSize: 12, color: T.text, marginBottom: 6 }}>
+    <label style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', borderRadius: 0, cursor: 'pointer', background: T.creamDark, border: `0.5px solid ${T.border}`, fontSize: 12, color: T.text, marginBottom: 6 }}>
       <input type="checkbox" checked={checked} onChange={onChange} style={{ width: 14, height: 14, cursor: 'pointer', accentColor: T.pinkDeep }} />
       {label}
     </label>
@@ -579,7 +579,7 @@ function ConflictMessage({ conflict, onEditConflict }) {
   return (
     <div style={{
       background: '#FCEBEB', border: '0.5px solid #E24B4A',
-      borderRadius: 8, padding: '10px 14px', marginBottom: 10,
+      borderRadius: 0, padding: '10px 14px', marginBottom: 10,
     }}>
       <div style={{ fontSize: 12, fontWeight: 500, color: '#791F1F', marginBottom: 6 }}>
         Date conflict — overlaps with another period
@@ -591,7 +591,7 @@ function ConflictMessage({ conflict, onEditConflict }) {
       <button
         onClick={() => onEditConflict(conflict)}
         style={{
-          fontSize: 11, padding: '4px 12px', borderRadius: 6,
+          fontSize: 11, padding: '4px 12px', borderRadius: 0,
           border: '0.5px solid #E24B4A', background: 'transparent',
           color: '#791F1F', cursor: 'pointer', fontWeight: 500,
         }}
@@ -684,7 +684,7 @@ function TreatmentConflictBlock({ conflicts, ingredientConflicts, safeDate, trea
   const blocked = hasScheduling
 
   return (
-    <div style={{ background: blocked ? '#FCEBEB' : '#FFFBEB', border: `0.5px solid ${blocked ? '#E24B4A' : '#FCD34D'}`, borderRadius: 8, padding: '12px 14px', marginBottom: 12 }}>
+    <div style={{ background: blocked ? '#FCEBEB' : '#FFFBEB', border: `0.5px solid ${blocked ? '#E24B4A' : '#FCD34D'}`, borderRadius: 0, padding: '12px 14px', marginBottom: 12 }}>
 
       {/* Scheduling conflicts — block save */}
       {hasScheduling && (
@@ -699,7 +699,7 @@ function TreatmentConflictBlock({ conflicts, ingredientConflicts, safeDate, trea
             </div>
           ))}
           {safeDate && (
-            <div style={{ fontSize: 11, fontWeight: 600, color: '#166534', marginTop: 10, padding: '6px 10px', background: '#DCFCE7', borderRadius: 6, border: '0.5px solid #4ADE80' }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: '#166534', marginTop: 10, padding: '6px 10px', background: '#DCFCE7', borderRadius: 0, border: '0.5px solid #4ADE80' }}>
               ✓ Earliest safe date: {safeDate}
             </div>
           )}
@@ -884,7 +884,7 @@ function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = false, lo
   const canSave = form.startDate.length > 0 && !conflict
 
   return (
-    <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 12, padding: '16px 18px', marginBottom: 14 }}>
+    <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 0, padding: '16px 18px', marginBottom: 14 }}>
       <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 4 }}>
         {isFirst ? 'Skincare routine' : lockStartDate ? `Skincare routine — editing from ${fmtDate(initial.startDate)}` : 'Skincare routine'}
       </div>
@@ -903,12 +903,12 @@ function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = false, lo
       {conflict && <ConflictMessage conflict={conflict} onEditConflict={onEditConflict} />}
 
       <SectionLabel>What does your skincare routine consist of?</SectionLabel>
-      <div style={{ fontSize: 12, color: T.textMuted, marginBottom: 12, lineHeight: 1.6, background: T.creamDark, borderRadius: 8, padding: '10px 12px' }}>
+      <div style={{ fontSize: 12, color: T.textMuted, marginBottom: 12, lineHeight: 1.6, background: T.creamDark, borderRadius: 0, padding: '10px 12px' }}>
         Your morning and evening steps — from cleanse to SPF, actives, and treatments. Toggle on what you use and we'll build your calendar around it.
       </div>
 
       {/* Retinoid toggle */}
-      <div style={{ marginBottom: 4, padding: '10px 12px', borderRadius: 8, border: `0.5px solid ${form.tretEnabled ? T.pinkDeep : T.border}`, background: form.tretEnabled ? T.pink : T.white }}>
+      <div style={{ marginBottom: 4, padding: '10px 12px', borderRadius: 0, border: `0.5px solid ${form.tretEnabled ? T.pinkDeep : T.border}`, background: form.tretEnabled ? T.pink : T.white }}>
         <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer' }}>
           <input type="checkbox" checked={form.tretEnabled} onChange={e => set('tretEnabled', e.target.checked)} style={{ width: 14, height: 14, marginTop: 2, cursor: 'pointer', accentColor: T.pinkDeep }} />
           <div>
@@ -924,7 +924,7 @@ function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = false, lo
             <select
               value={MAIN_ACTIVE_OPTIONS.find(o => o.value === form.activeName) ? form.activeName : 'tretinoin'}
               onChange={e => set('activeName', e.target.value)}
-              style={{ fontSize: 12, padding: '5px 8px', border: `0.5px solid ${T.border}`, borderRadius: 6, background: T.cream, color: T.text }}
+              style={{ fontSize: 12, padding: '5px 8px', border: `0.5px solid ${T.border}`, borderRadius: 0, background: T.cream, color: T.text }}
             >
               {MAIN_ACTIVE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
             </select>
@@ -942,7 +942,7 @@ function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = false, lo
           <FieldLabel>How often?</FieldLabel>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 6, marginBottom: 6 }}>
             {TRET_FREQUENCIES.map(f => (
-              <button key={f.key} onClick={() => set('tretFrequency', f.key)} style={{ border: `0.5px solid ${form.tretFrequency === f.key ? T.pinkDeep : T.border}`, borderRadius: 8, padding: '8px 10px', cursor: 'pointer', background: form.tretFrequency === f.key ? T.pink : T.white, textAlign: 'left' }}>
+              <button key={f.key} onClick={() => set('tretFrequency', f.key)} style={{ border: `0.5px solid ${form.tretFrequency === f.key ? T.pinkDeep : T.border}`, borderRadius: 0, padding: '8px 10px', cursor: 'pointer', background: form.tretFrequency === f.key ? T.pink : T.white, textAlign: 'left' }}>
                 <div style={{ fontSize: 12, fontWeight: 600, color: T.text }}>{f.label}</div>
                 <div style={{ fontSize: 10, color: T.textLight }}>{f.description}</div>
               </button>
@@ -963,7 +963,7 @@ function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = false, lo
         const showNightsOptions = form.tretEnabled
         const incompatWarning = enabled && showNightsOptions ? SECONDARY_INCOMPATIBILITIES[def.key]?.[sa.nights] : null
         return (
-          <div key={def.key} style={{ marginBottom: 4, padding: '10px 12px', borderRadius: 8, border: `0.5px solid ${enabled ? T.pinkDeep : T.border}`, background: enabled ? T.pink : T.white }}>
+          <div key={def.key} style={{ marginBottom: 4, padding: '10px 12px', borderRadius: 0, border: `0.5px solid ${enabled ? T.pinkDeep : T.border}`, background: enabled ? T.pink : T.white }}>
             <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer' }}>
               <input type="checkbox" checked={enabled} onChange={e => {
                 const base = form.secondaryActives || AVAILABLE_SECONDARY_ACTIVES.map(a => ({ key: a.key, enabled: false, nights: a.defaultNights }))
@@ -981,14 +981,14 @@ function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = false, lo
                             e.preventDefault()
                             const base = form.secondaryActives || []
                             set('secondaryActives', base.map(a => a.key === def.key ? { ...a, nights: n.key } : a))
-                          }} style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, cursor: 'pointer', border: `0.5px solid ${sa.nights === n.key ? T.pinkDeep : T.border}`, background: sa.nights === n.key ? T.white : 'transparent', fontWeight: sa.nights === n.key ? 600 : 400, color: isIncompat ? '#92400E' : (sa.nights === n.key ? T.text : T.textLight), whiteSpace: 'nowrap' }}>
+                          }} style={{ fontSize: 10, padding: '2px 8px', borderRadius: 0, cursor: 'pointer', border: `0.5px solid ${sa.nights === n.key ? T.pinkDeep : T.border}`, background: sa.nights === n.key ? T.white : 'transparent', fontWeight: sa.nights === n.key ? 600 : 400, color: isIncompat ? '#92400E' : (sa.nights === n.key ? T.text : T.textLight), whiteSpace: 'nowrap' }}>
                             {n.label}{isIncompat ? ' ⚠' : ''}
                           </button>
                         )
                       })}
                     </div>
                     {incompatWarning && (
-                      <div style={{ fontSize: 10, color: '#92400E', background: '#FFFBEB', border: '0.5px solid #FCD34D', borderRadius: 5, padding: '5px 8px', marginTop: 5, lineHeight: 1.5 }}>
+                      <div style={{ fontSize: 10, color: '#92400E', background: '#FFFBEB', border: '0.5px solid #FCD34D', borderRadius: 0, padding: '5px 8px', marginTop: 5, lineHeight: 1.5 }}>
                         ⚠ {incompatWarning}
                       </div>
                     )}
@@ -1001,7 +1001,7 @@ function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = false, lo
                         e.preventDefault()
                         const base = form.secondaryActives || []
                         set('secondaryActives', base.map(a => a.key === def.key ? { ...a, nights: n.key } : a))
-                      }} style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, cursor: 'pointer', border: `0.5px solid ${sa.nights === n.key ? T.pinkDeep : T.border}`, background: sa.nights === n.key ? T.white : 'transparent', fontWeight: sa.nights === n.key ? 600 : 400, color: sa.nights === n.key ? T.text : T.textLight, whiteSpace: 'nowrap' }}>
+                      }} style={{ fontSize: 10, padding: '2px 8px', borderRadius: 0, cursor: 'pointer', border: `0.5px solid ${sa.nights === n.key ? T.pinkDeep : T.border}`, background: sa.nights === n.key ? T.white : 'transparent', fontWeight: sa.nights === n.key ? 600 : 400, color: sa.nights === n.key ? T.text : T.textLight, whiteSpace: 'nowrap' }}>
                         {n.label}
                       </button>
                     ))}
@@ -1044,7 +1044,7 @@ function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = false, lo
               const isOpen = openStep === sid
               return (
                 <div key={sid} style={{ marginBottom: 6 }}>
-                  <div onClick={() => setOpenStep(isOpen ? null : sid)} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 6, border: `0.5px solid ${isOpen ? T.pinkDeep : T.border}`, cursor: 'pointer', background: isOpen ? T.pink : T.white }}>
+                  <div onClick={() => setOpenStep(isOpen ? null : sid)} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 0, border: `0.5px solid ${isOpen ? T.pinkDeep : T.border}`, cursor: 'pointer', background: isOpen ? T.pink : T.white }}>
                     <div style={{ fontSize: 11, fontWeight: 500, color: T.text, flex: 1 }}>{step.label}</div>
                     {prod ? (
                       <span style={{ fontSize: 11, color: T.textMuted }}>{prod.name}</span>
@@ -1110,7 +1110,7 @@ function InfoTooltip({ text }) {
         style={{ width: 14, height: 14, borderRadius: '50%', background: T.border, color: T.textMuted, fontSize: 9, fontWeight: 700, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'default', userSelect: 'none', flexShrink: 0 }}
       >i</span>
       {pos && (
-        <span style={{ position: 'fixed', top: pos.top, left: Math.min(pos.left, window.innerWidth - 240), transform: 'translate(-50%, -100%)', background: T.text, color: T.white, fontSize: 11, lineHeight: 1.5, padding: '8px 10px', borderRadius: 8, width: 220, zIndex: 9999, boxShadow: '0 4px 16px rgba(0,0,0,0.15)', pointerEvents: 'none' }}>
+        <span style={{ position: 'fixed', top: pos.top, left: Math.min(pos.left, window.innerWidth - 240), transform: 'translate(-50%, -100%)', background: T.text, color: T.white, fontSize: 11, lineHeight: 1.5, padding: '8px 10px', borderRadius: 0, width: 220, zIndex: 9999, boxShadow: '0 4px 16px rgba(0,0,0,0.15)', pointerEvents: 'none' }}>
           {text}
           <span style={{ position: 'absolute', top: '100%', left: '50%', transform: 'translateX(-50%)', borderWidth: 4, borderStyle: 'solid', borderColor: `${T.text} transparent transparent transparent` }} />
         </span>
@@ -1122,7 +1122,7 @@ function InfoTooltip({ text }) {
 function RoutineHistoryPanel({ history, onClose, onEdit, onDelete, onAddNew, getActivePeriod, dailyHistory, onEditDaily, onDeleteDaily, showerHistory, onEditShower, onDeleteShower }) {
   const sorted = [...history].sort((a, b) => b.startDate.localeCompare(a.startDate)).slice(0, 3)
   return (
-    <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 12, padding: '16px 18px', marginBottom: 14 }}>
+    <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 0, padding: '16px 18px', marginBottom: 14 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
         <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>Routine history</div>
         <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 18, color: T.textMuted, padding: '0 2px', lineHeight: 1 }}>×</button>
@@ -1136,7 +1136,7 @@ function RoutineHistoryPanel({ history, onClose, onEdit, onDelete, onAddNew, get
       </div>
 
       {sorted.length === 0 && (
-        <div style={{ fontSize: 12, color: T.textMuted, background: T.creamDark, borderRadius: 8, padding: '12px 14px', lineHeight: 1.6 }}>
+        <div style={{ fontSize: 12, color: T.textMuted, background: T.creamDark, borderRadius: 0, padding: '12px 14px', lineHeight: 1.6 }}>
           No skincare routine saved yet. Hit <strong>+ Start new routine</strong> to set up your first one.
         </div>
       )}
@@ -1278,7 +1278,7 @@ function RoutineHistoryPanel({ history, onClose, onEdit, onDelete, onAddNew, get
       <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16 }}>
         <button
           onClick={() => window.location.href = '/routine/history'}
-          style={{ fontSize: 11, padding: '6px 16px', borderRadius: 20, border: `0.5px solid ${T.border}`, background: 'transparent', cursor: 'pointer', color: T.textMuted, fontFamily: 'inherit' }}
+          style={{ fontSize: 11, padding: '6px 16px', borderRadius: 0, border: `0.5px solid ${T.border}`, background: 'transparent', cursor: 'pointer', color: T.textMuted, fontFamily: 'inherit' }}
         >See full history →</button>
       </div>
     </div>
@@ -1336,13 +1336,13 @@ function TreatmentSelectorPanel({ selector, treatments, allTypes, customTypes, s
   const hasAnyConflict = conflicts.length > 0 || !!ingredientConflicts
 
   return (
-    <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 12, padding: '16px 18px', marginBottom: 14 }}>
+    <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 0, padding: '16px 18px', marginBottom: 14 }}>
       <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 12 }}>
         {MONTHS[selector.date.getMonth()]} {selector.date.getDate()}, {selector.date.getFullYear()} — {existing ? 'Edit treatment' : 'Add treatment'}
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 6, marginBottom: 12 }}>
         {Object.entries(allTypes).map(([k, v]) => (
-          <button key={k} onClick={() => { setSelType(k); setTreatArea(v.area || 'face'); setCustomPre(v.pre ?? 0); setCustomPost(v.post ?? 0) }} style={{ border: `0.5px solid ${selType === k ? T.pinkDeep : T.border}`, borderRadius: 8, padding: '8px 10px', cursor: 'pointer', background: selType === k ? T.pink : T.white, textAlign: 'left' }}>
+          <button key={k} onClick={() => { setSelType(k); setTreatArea(v.area || 'face'); setCustomPre(v.pre ?? 0); setCustomPost(v.post ?? 0) }} style={{ border: `0.5px solid ${selType === k ? T.pinkDeep : T.border}`, borderRadius: 0, padding: '8px 10px', cursor: 'pointer', background: selType === k ? T.pink : T.white, textAlign: 'left' }}>
             <div style={{ fontSize: 12, fontWeight: 600, color: T.text }}>{v.label}</div>
             <div style={{ fontSize: 10, color: T.textLight }}>{v.pre}d before / {v.post}d after</div>
           </button>
@@ -1362,15 +1362,15 @@ function TreatmentSelectorPanel({ selector, treatments, allTypes, customTypes, s
       <div style={{ marginBottom: 10 }}>
         <FieldLabel>Time of day</FieldLabel>
         <div style={{ display: 'flex', gap: 6 }}>
-          <button onClick={() => setTimeOfDay('am')} style={{ padding: '5px 16px', borderRadius: 8, border: `0.5px solid ${timeOfDay === 'am' ? T.pinkDeep : T.border}`, background: timeOfDay === 'am' ? T.pink : 'transparent', fontSize: 12, fontWeight: timeOfDay === 'am' ? 500 : 400, cursor: 'pointer', color: T.text }}>Morning (AM)</button>
-          <button onClick={() => setTimeOfDay('pm')} style={{ padding: '5px 16px', borderRadius: 8, border: `0.5px solid ${timeOfDay === 'pm' ? T.pinkDeep : T.border}`, background: timeOfDay === 'pm' ? T.pink : 'transparent', fontSize: 12, fontWeight: timeOfDay === 'pm' ? 500 : 400, cursor: 'pointer', color: T.text }}>Evening (PM)</button>
+          <button onClick={() => setTimeOfDay('am')} style={{ padding: '5px 16px', borderRadius: 0, border: `0.5px solid ${timeOfDay === 'am' ? T.pinkDeep : T.border}`, background: timeOfDay === 'am' ? T.pink : 'transparent', fontSize: 12, fontWeight: timeOfDay === 'am' ? 500 : 400, cursor: 'pointer', color: T.text }}>Morning (AM)</button>
+          <button onClick={() => setTimeOfDay('pm')} style={{ padding: '5px 16px', borderRadius: 0, border: `0.5px solid ${timeOfDay === 'pm' ? T.pinkDeep : T.border}`, background: timeOfDay === 'pm' ? T.pink : 'transparent', fontSize: 12, fontWeight: timeOfDay === 'pm' ? 500 : 400, cursor: 'pointer', color: T.text }}>Evening (PM)</button>
         </div>
       </div>
       <div style={{ marginBottom: 10 }}>
         <FieldLabel>Treatment area</FieldLabel>
         <div style={{ display: 'flex', gap: 6 }}>
           {[{key:'face',label:'Face'},{key:'body',label:'Body'},{key:'both',label:'Both'}].map(a => (
-            <button key={a.key} onClick={() => setTreatArea(a.key)} style={{ padding: '5px 14px', borderRadius: 8, border: `0.5px solid ${treatArea === a.key ? T.pinkDeep : T.border}`, background: treatArea === a.key ? T.pink : 'transparent', fontSize: 12, fontWeight: treatArea === a.key ? 500 : 400, cursor: 'pointer', color: T.text }}>{a.label}</button>
+            <button key={a.key} onClick={() => setTreatArea(a.key)} style={{ padding: '5px 14px', borderRadius: 0, border: `0.5px solid ${treatArea === a.key ? T.pinkDeep : T.border}`, background: treatArea === a.key ? T.pink : 'transparent', fontSize: 12, fontWeight: treatArea === a.key ? 500 : 400, cursor: 'pointer', color: T.text }}>{a.label}</button>
           ))}
         </div>
         <div style={{ fontSize: 10, color: T.textLight, marginTop: 4 }}>
@@ -1378,7 +1378,7 @@ function TreatmentSelectorPanel({ selector, treatments, allTypes, customTypes, s
         </div>
       </div>
       {selType && (
-        <div style={{ marginBottom: 10, padding: '10px 12px', background: T.creamDark, borderRadius: 8, border: `0.5px solid ${T.border}` }}>
+        <div style={{ marginBottom: 10, padding: '10px 12px', background: T.creamDark, borderRadius: 0, border: `0.5px solid ${T.border}` }}>
           <div style={{ fontSize: 12, fontWeight: 500, color: T.text, marginBottom: 8 }}>Pause and recovery window</div>
           <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
             <div>
@@ -1484,7 +1484,7 @@ function DraggableItem({ item, index, total, onRemove, isDragging, onDragStart, 
       onTouchCancel={handleTouchEnd}
       style={{
         display: 'flex', alignItems: 'flex-start', gap: 8,
-        padding: '7px 8px', marginBottom: 3, borderRadius: 6,
+        padding: '7px 8px', marginBottom: 3, borderRadius: 0,
         border: `0.5px solid ${isDragging ? T.pinkDeep : T.border}`,
         background: isDragging ? T.pink : pressing ? T.creamDark : T.white,
         cursor: isDragging ? 'grabbing' : 'grab',
@@ -1513,7 +1513,7 @@ function DraggableItem({ item, index, total, onRemove, isDragging, onDragStart, 
           <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap', marginBottom: 2 }}>
             {(freqOptions || SHOWER_FREQUENCIES).map(f => (
               <button key={f.key} onClick={e => { e.stopPropagation(); onFreqChange(index, f.key) }}
-                style={{ fontSize: 9, padding: '1px 5px', borderRadius: 3, cursor: 'pointer', border: `0.5px solid ${(item.frequency||'daily') === f.key ? T.pinkDeep : T.border}`, background: (item.frequency||'daily') === f.key ? T.pink : 'transparent', color: (item.frequency||'daily') === f.key ? T.text : T.textLight, whiteSpace: 'nowrap' }}>
+                style={{ fontSize: 9, padding: '1px 5px', borderRadius: 0, cursor: 'pointer', border: `0.5px solid ${(item.frequency||'daily') === f.key ? T.pinkDeep : T.border}`, background: (item.frequency||'daily') === f.key ? T.pink : 'transparent', color: (item.frequency||'daily') === f.key ? T.text : T.textLight, whiteSpace: 'nowrap' }}>
                 {f.label}
               </button>
             ))}
@@ -1525,7 +1525,7 @@ function DraggableItem({ item, index, total, onRemove, isDragging, onDragStart, 
             <span style={{ fontSize: 9, color: T.textLight }}>cycle starts:</span>
             {DAYS.map((d, i) => (
               <button key={i} onClick={e => { e.stopPropagation(); onWeekStartChange(index, i) }}
-                style={{ fontSize: 9, padding: '1px 4px', borderRadius: 3, cursor: 'pointer', border: `0.5px solid ${(item.weekStartDay ?? 1) === i ? T.orange : T.border}`, background: (item.weekStartDay ?? 1) === i ? T.orangeLight : 'transparent', color: (item.weekStartDay ?? 1) === i ? '#9A3412' : T.textLight }}>
+                style={{ fontSize: 9, padding: '1px 4px', borderRadius: 0, cursor: 'pointer', border: `0.5px solid ${(item.weekStartDay ?? 1) === i ? T.orange : T.border}`, background: (item.weekStartDay ?? 1) === i ? T.orangeLight : 'transparent', color: (item.weekStartDay ?? 1) === i ? '#9A3412' : T.textLight }}>
                 {d}
               </button>
             ))}
@@ -1536,7 +1536,7 @@ function DraggableItem({ item, index, total, onRemove, isDragging, onDragStart, 
           <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
             {TIME_OF_DAY_OPTIONS.map(t => (
               <button key={t.key} onClick={e => { e.stopPropagation(); onTimeChange(index, t.key) }}
-                style={{ fontSize: 9, padding: '1px 5px', borderRadius: 3, cursor: 'pointer', border: `0.5px solid ${(item.timeOfDay||'both') === t.key ? T.pinkDeep : T.border}`, background: (item.timeOfDay||'both') === t.key ? T.pink : 'transparent', color: (item.timeOfDay||'both') === t.key ? T.text : T.textLight }}>
+                style={{ fontSize: 9, padding: '1px 5px', borderRadius: 0, cursor: 'pointer', border: `0.5px solid ${(item.timeOfDay||'both') === t.key ? T.pinkDeep : T.border}`, background: (item.timeOfDay||'both') === t.key ? T.pink : 'transparent', color: (item.timeOfDay||'both') === t.key ? T.text : T.textLight }}>
                 {t.label}
               </button>
             ))}
@@ -1600,11 +1600,11 @@ function DailyEditor({ initial, onSave, onCancel, lockStartDate = false, allPeri
   }
 
   return (
-    <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 12, padding: '14px 16px', marginBottom: 10 }}>
+    <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 0, padding: '14px 16px', marginBottom: 10 }}>
       <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 4 }}>
         {initial?.id ? `Extras — editing from ${fmtDate(initial?.startDate)}` : 'Extras'}
       </div>
-      <div style={{ fontSize: 12, color: T.textMuted, marginBottom: 10, lineHeight: 1.6, background: T.creamDark, borderRadius: 8, padding: '8px 12px' }}>
+      <div style={{ fontSize: 12, color: T.textMuted, marginBottom: 10, lineHeight: 1.6, background: T.creamDark, borderRadius: 0, padding: '8px 12px' }}>
         The little things that make a big difference — growth serums, eye patches, leave-on body treatments, tools, supplements, and more.
       </div>
 
@@ -1653,13 +1653,13 @@ function DailyEditor({ initial, onSave, onCancel, lockStartDate = false, allPeri
                 <div style={{ marginLeft: 8, marginBottom: 4 }}>
                   <div
                     onClick={() => setItems(it => it.map((x,idx) => idx===i ? {...x,_pickingProduct:!x._pickingProduct} : x))}
-                    style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 6, cursor: 'pointer', background: isOpen ? T.pink : 'transparent', border: `0.5px solid ${isOpen ? T.pinkDeep : T.border}`, marginBottom: isOpen ? 4 : 0 }}
+                    style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 0, cursor: 'pointer', background: isOpen ? T.pink : 'transparent', border: `0.5px solid ${isOpen ? T.pinkDeep : T.border}`, marginBottom: isOpen ? 4 : 0 }}
                   >
                     <div style={{ width: 6, height: 6, borderRadius: '50%', background: T.pinkDeep, flexShrink: 0 }} />
                     <div style={{ flex: 1, minWidth: 0 }}>
                       {prod ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          {prod.imageUrl && <img src={prod.imageUrl} alt="" style={{ width: 44, height: 44, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />}
+                          {prod.imageUrl && <img src={prod.imageUrl} alt="" style={{ width: 44, height: 44, borderRadius: 0, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />}
                           <div style={{ minWidth: 0 }}>
                             <div style={{ fontSize: 11, fontWeight: 500, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{prod.name}</div>
                             {prod.brand && <div style={{ fontSize: 10, color: T.textMuted }}>{prod.brand}</div>}
@@ -1707,7 +1707,7 @@ function DailyEditor({ initial, onSave, onCancel, lockStartDate = false, allPeri
             {showPresets ? '▲ Hide suggestions' : '▼ Browse suggestions'}
           </button>
           {showPresets && (
-            <div style={{ border: `0.5px solid ${T.border}`, borderRadius: 8, overflow: 'hidden', marginBottom: 8 }}>
+            <div style={{ border: `0.5px solid ${T.border}`, borderRadius: 0, overflow: 'hidden', marginBottom: 8 }}>
               <input
                 type="text"
                 value={presetSearch}
@@ -1748,7 +1748,7 @@ function DailyEditor({ initial, onSave, onCancel, lockStartDate = false, allPeri
         <div><FieldLabel>Note</FieldLabel><TextInput value={newNote} onChange={e => setNewNote(e.target.value)} placeholder="optional" width={90} /></div>
         <div>
           <FieldLabel>How often</FieldLabel>
-          <select value={newFreq} onChange={e => setNewFreq(e.target.value)} style={{ fontSize: 12, padding: '5px 8px', border: `0.5px solid ${T.border}`, borderRadius: 6, background: T.cream, color: T.text }}>
+          <select value={newFreq} onChange={e => setNewFreq(e.target.value)} style={{ fontSize: 12, padding: '5px 8px', border: `0.5px solid ${T.border}`, borderRadius: 0, background: T.cream, color: T.text }}>
             {EXTRAS_FREQUENCIES.map(f => <option key={f.key} value={f.key}>{f.label}</option>)}
           </select>
         </div>
@@ -1756,7 +1756,7 @@ function DailyEditor({ initial, onSave, onCancel, lockStartDate = false, allPeri
           <FieldLabel>When</FieldLabel>
           <div style={{ display: 'flex', gap: 4 }}>
             {TIME_OF_DAY_OPTIONS.map(t => (
-              <button key={t.key} onClick={() => setNewTimeOfDay(t.key)} style={{ fontSize: 10, padding: '5px 8px', borderRadius: 6, cursor: 'pointer', border: `0.5px solid ${newTimeOfDay === t.key ? T.pinkDeep : T.border}`, background: newTimeOfDay === t.key ? T.pink : 'transparent', color: newTimeOfDay === t.key ? T.text : T.textLight }}>
+              <button key={t.key} onClick={() => setNewTimeOfDay(t.key)} style={{ fontSize: 10, padding: '5px 8px', borderRadius: 0, cursor: 'pointer', border: `0.5px solid ${newTimeOfDay === t.key ? T.pinkDeep : T.border}`, background: newTimeOfDay === t.key ? T.pink : 'transparent', color: newTimeOfDay === t.key ? T.text : T.textLight }}>
                 {t.label}
               </button>
             ))}
@@ -1820,7 +1820,7 @@ function DailySection({ dt, dailyHistory, onEditDaily, tab, products, onUpdateDa
               <div style={{ flex: 1, minWidth: 0 }}>
                 {prod ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
-                    {prod.imageUrl && <img src={prod.imageUrl} alt="" style={{ width: 44, height: 44, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />}
+                    {prod.imageUrl && <img src={prod.imageUrl} alt="" style={{ width: 44, height: 44, borderRadius: 0, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />}
                     <div style={{ minWidth: 0 }}>
                       <div style={{ fontSize: 11, fontWeight: 500, color: T.textMuted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{prod.name}</div>
                       {prod.brand && <div style={{ fontSize: 10, color: T.textLight }}>{prod.brand}</div>}
@@ -1927,7 +1927,7 @@ function ProductFlagBadges({ product, max }) {
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 3, marginTop: 4 }}>
       {shown.map(f => (
         <span key={f.key} style={{
-          fontSize: 9, padding: '2px 6px', borderRadius: 10,
+          fontSize: 9, padding: '2px 6px', borderRadius: 0,
           background: f.bg, color: f.color,
           border: '0.5px solid rgba(0,0,0,0.08)', fontWeight: 500,
           whiteSpace: 'nowrap',
@@ -1996,14 +1996,14 @@ function CalProductImageUpload({ value, onChange, userId, productName }) {
   return (
     <div>
       {preview && (
-        <div style={{ position: 'relative', marginBottom: 6, height: 100, borderRadius: 8, overflow: 'hidden', border: `0.5px solid ${T.border}` }}>
+        <div style={{ position: 'relative', marginBottom: 6, height: 100, borderRadius: 0, overflow: 'hidden', border: `0.5px solid ${T.border}` }}>
           <img src={preview} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           <button onClick={() => { setPreview(null); onChange('') }}
             style={{ position: 'absolute', top: 4, right: 4, background: 'rgba(0,0,0,0.5)', border: 'none', borderRadius: '50%', width: 20, height: 20, color: '#fff', cursor: 'pointer', fontSize: 12, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
         </div>
       )}
       <button onClick={() => ref.current?.click()} disabled={uploading}
-        style={{ width: '100%', padding: '6px 10px', borderRadius: 8, border: `0.5px solid ${T.border}`, background: T.creamDark, color: T.textMuted, fontSize: 11, cursor: uploading ? 'default' : 'pointer', fontFamily: 'inherit' }}>
+        style={{ width: '100%', padding: '6px 10px', borderRadius: 0, border: `0.5px solid ${T.border}`, background: T.creamDark, color: T.textMuted, fontSize: 11, cursor: uploading ? 'default' : 'pointer', fontFamily: 'inherit' }}>
         {uploading ? 'Uploading...' : preview ? '↑ Replace image' : '↑ Upload image'}
       </button>
       <input ref={ref} type="file" accept="image/*" onChange={handleFile} style={{ display: 'none' }} />
@@ -2039,7 +2039,7 @@ function ProductForm({ initial, onSave, onCancel, userId }) {
   function removeTag(t) { set('tags', form.tags.filter(x => x !== t)) }
 
   return (
-    <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 12, padding: '14px 16px', marginBottom: 10 }}>
+    <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 0, padding: '14px 16px', marginBottom: 10 }}>
       <div style={{ fontSize: 13, fontWeight: 500, color: T.text, marginBottom: 12 }}>
         {initial?.id ? 'Edit product' : 'Add product'}
       </div>
@@ -2051,7 +2051,7 @@ function ProductForm({ initial, onSave, onCancel, userId }) {
 
       <div style={{ marginBottom: 8 }}>
         <FieldLabel>Category</FieldLabel>
-        <select value={form.category} onChange={e => set('category', e.target.value)} style={{ fontSize: 12, padding: '5px 8px', border: `0.5px solid ${T.border}`, borderRadius: 6, background: T.cream, color: T.text, width: '100%' }}>
+        <select value={form.category} onChange={e => set('category', e.target.value)} style={{ fontSize: 12, padding: '5px 8px', border: `0.5px solid ${T.border}`, borderRadius: 0, background: T.cream, color: T.text, width: '100%' }}>
           {PRODUCT_CATEGORIES.map(c => <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>)}
         </select>
       </div>
@@ -2077,7 +2077,7 @@ function ProductForm({ initial, onSave, onCancel, userId }) {
             const active = !!(form.applicationArea?.[key])
             return (
               <button key={key} onClick={() => set('applicationArea', { ...(form.applicationArea || {}), [key]: !active })}
-                style={{ fontSize: 11, padding: '4px 12px', borderRadius: 6, cursor: 'pointer', border: `0.5px solid ${active ? T.pinkDeep : T.border}`, background: active ? T.pink : 'transparent', color: active ? T.text : T.textMuted, fontWeight: active ? 600 : 400 }}>
+                style={{ fontSize: 11, padding: '4px 12px', borderRadius: 0, cursor: 'pointer', border: `0.5px solid ${active ? T.pinkDeep : T.border}`, background: active ? T.pink : 'transparent', color: active ? T.text : T.textMuted, fontWeight: active ? 600 : 400 }}>
                 {area}
               </button>
             )
@@ -2095,17 +2095,17 @@ function ProductForm({ initial, onSave, onCancel, userId }) {
         <div>
           <FieldLabel>Purchased</FieldLabel>
           <input type="date" value={form.purchased_at || ''} onChange={e => set('purchased_at', e.target.value)}
-            style={{ width: '100%', fontSize: 12, padding: '7px 10px', border: `0.5px solid ${T.border}`, borderRadius: 8, background: T.cream, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
+            style={{ width: '100%', fontSize: 12, padding: '7px 10px', border: `0.5px solid ${T.border}`, borderRadius: 0, background: T.cream, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
         </div>
         <div>
           <FieldLabel>Opened</FieldLabel>
           <input type="date" value={form.opened_at || ''} onChange={e => set('opened_at', e.target.value)}
-            style={{ width: '100%', fontSize: 12, padding: '7px 10px', border: `0.5px solid ${T.border}`, borderRadius: 8, background: T.cream, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
+            style={{ width: '100%', fontSize: 12, padding: '7px 10px', border: `0.5px solid ${T.border}`, borderRadius: 0, background: T.cream, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
         </div>
         <div>
           <FieldLabel>Expires</FieldLabel>
           <input type="date" value={form.expires_at || ''} onChange={e => set('expires_at', e.target.value)}
-            style={{ width: '100%', fontSize: 12, padding: '7px 10px', border: `0.5px solid ${T.border}`, borderRadius: 8, background: T.cream, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
+            style={{ width: '100%', fontSize: 12, padding: '7px 10px', border: `0.5px solid ${T.border}`, borderRadius: 0, background: T.cream, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
         </div>
         <div>
           <FieldLabel>
@@ -2116,7 +2116,7 @@ function ProductForm({ initial, onSave, onCancel, userId }) {
             </span>
           </FieldLabel>
           <select value={form.pao_months || ''} onChange={e => set('pao_months', e.target.value ? Number(e.target.value) : null)}
-            style={{ width: '100%', fontSize: 12, padding: '7px 10px', border: `0.5px solid ${T.border}`, borderRadius: 8, background: T.cream, color: form.pao_months ? T.text : T.textMuted, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }}>
+            style={{ width: '100%', fontSize: 12, padding: '7px 10px', border: `0.5px solid ${T.border}`, borderRadius: 0, background: T.cream, color: form.pao_months ? T.text : T.textMuted, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }}>
             <option value="">— Select PAO —</option>
             {PAO_OPTIONS.map(m => <option key={m} value={m}>{m} months</option>)}
           </select>
@@ -2148,7 +2148,7 @@ function ProductForm({ initial, onSave, onCancel, userId }) {
           { key: 'science_backed',    label: 'Science-backed'    },
         ].map(({ key, label }) => (
           <button key={key} type="button" onClick={() => set(key, !form[key])} style={{
-            padding: '5px 12px', borderRadius: 20, fontSize: 11, cursor: 'pointer',
+            padding: '5px 12px', borderRadius: 0, fontSize: 11, cursor: 'pointer',
             border: `0.5px solid ${form[key] ? T.pinkDeep : T.border}`,
             background: form[key] ? T.pink : 'transparent',
             color: T.text, fontFamily: 'inherit',
@@ -2165,7 +2165,7 @@ function ProductForm({ initial, onSave, onCancel, userId }) {
         <FieldLabel>Tags (fragrance free, silicone free, etc.)</FieldLabel>
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 6 }}>
           {form.tags.map(t => (
-            <span key={t} style={{ fontSize: 11, padding: '2px 8px', borderRadius: 20, background: T.pink, color: T.text, border: `0.5px solid ${T.pinkDeep}`, cursor: 'pointer' }} onClick={() => removeTag(t)}>
+            <span key={t} style={{ fontSize: 11, padding: '2px 8px', borderRadius: 0, background: T.pink, color: T.text, border: `0.5px solid ${T.pinkDeep}`, cursor: 'pointer' }} onClick={() => removeTag(t)}>
               {t} ×
             </span>
           ))}
@@ -2181,7 +2181,7 @@ function ProductForm({ initial, onSave, onCancel, userId }) {
         <select
           value={form.ingredient_category || ''}
           onChange={e => set('ingredient_category', e.target.value)}
-          style={{ width: '100%', fontSize: 12, padding: '8px 10px', border: `0.5px solid ${T.border}`, borderRadius: 8, background: T.cream, color: form.ingredient_category ? T.text : T.textMuted, fontFamily: 'inherit', marginBottom: 8, outline: 'none', boxSizing: 'border-box' }}
+          style={{ width: '100%', fontSize: 12, padding: '8px 10px', border: `0.5px solid ${T.border}`, borderRadius: 0, background: T.cream, color: form.ingredient_category ? T.text : T.textMuted, fontFamily: 'inherit', marginBottom: 8, outline: 'none', boxSizing: 'border-box' }}
         >
           <option value="">— Select ingredient category —</option>
           {Object.entries(PRODUCT_INGREDIENT_CATEGORIES).map(([key, cat]) => (
@@ -2193,7 +2193,7 @@ function ProductForm({ initial, onSave, onCancel, userId }) {
           <select
             value={form.ingredient_form || ''}
             onChange={e => set('ingredient_form', e.target.value)}
-            style={{ width: '100%', fontSize: 12, padding: '8px 10px', border: `0.5px solid ${T.border}`, borderRadius: 8, background: T.cream, color: form.ingredient_form ? T.text : T.textMuted, fontFamily: 'inherit', marginBottom: 8, outline: 'none', boxSizing: 'border-box' }}
+            style={{ width: '100%', fontSize: 12, padding: '8px 10px', border: `0.5px solid ${T.border}`, borderRadius: 0, background: T.cream, color: form.ingredient_form ? T.text : T.textMuted, fontFamily: 'inherit', marginBottom: 8, outline: 'none', boxSizing: 'border-box' }}
           >
             <option value="">— Select form —</option>
             {PRODUCT_INGREDIENT_CATEGORIES[form.ingredient_category].forms.map(f => (
@@ -2204,7 +2204,7 @@ function ProductForm({ initial, onSave, onCancel, userId }) {
       </div>
       <div style={{ marginBottom: 10 }}>
         <FieldLabel>Notes</FieldLabel>
-        <textarea value={form.notes} onChange={e => set('notes', e.target.value)} placeholder="Any notes..." style={{ width: '100%', fontSize: 12, padding: '5px 8px', border: `0.5px solid ${T.border}`, borderRadius: 6, background: T.cream, color: T.text, resize: 'vertical', minHeight: 60, fontFamily: 'inherit' }} />
+        <textarea value={form.notes} onChange={e => set('notes', e.target.value)} placeholder="Any notes..." style={{ width: '100%', fontSize: 12, padding: '5px 8px', border: `0.5px solid ${T.border}`, borderRadius: 0, background: T.cream, color: T.text, resize: 'vertical', minHeight: 60, fontFamily: 'inherit' }} />
       </div>
 
       <div style={{ display: 'flex', gap: 8, borderTop: `0.5px solid ${T.border}`, paddingTop: 10 }}>
@@ -2239,7 +2239,7 @@ function ProductPicker({ stepKey, currentProductId, products, onSelect, onAddNew
   })
 
   return (
-    <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 8, padding: '12px 14px', marginTop: 4 }}>
+    <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 0, padding: '12px 14px', marginTop: 4 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
         <div style={{ fontSize: 11, fontWeight: 500, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Select product</div>
         <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 14, color: T.textLight }}>×</button>
@@ -2265,7 +2265,7 @@ function ProductPicker({ stepKey, currentProductId, products, onSelect, onAddNew
         {currentProductId && (
           <div
             onClick={() => onSelect(null)}
-            style={{ padding: '6px 8px', borderRadius: 6, fontSize: 12, cursor: 'pointer', color: '#9F1239', marginBottom: 3, background: '#FFF0F0' }}
+            style={{ padding: '6px 8px', borderRadius: 0, fontSize: 12, cursor: 'pointer', color: '#9F1239', marginBottom: 3, background: '#FFF0F0' }}
           >
             Remove assignment
           </div>
@@ -2276,16 +2276,16 @@ function ProductPicker({ stepKey, currentProductId, products, onSelect, onAddNew
             onClick={() => onSelect(p.id)}
             style={{
               display: 'flex', alignItems: 'center', gap: 8,
-              padding: '6px 8px', borderRadius: 6, fontSize: 12, cursor: 'pointer', marginBottom: 2,
+              padding: '6px 8px', borderRadius: 0, fontSize: 12, cursor: 'pointer', marginBottom: 2,
               background: p.id === currentProductId ? T.pink : 'transparent',
               border: `0.5px solid ${p.id === currentProductId ? T.pinkDeep : 'transparent'}`,
             }}
           >
             {/* Thumbnail */}
             {p.imageUrl ? (
-              <img src={p.imageUrl} alt="" style={{ width: 32, height: 32, borderRadius: 5, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />
+              <img src={p.imageUrl} alt="" style={{ width: 32, height: 32, borderRadius: 0, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />
             ) : (
-              <div style={{ width: 32, height: 32, borderRadius: 5, background: T.creamDark, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, color: T.textLight }}>◻</div>
+              <div style={{ width: 32, height: 32, borderRadius: 0, background: T.creamDark, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, color: T.textLight }}>◻</div>
             )}
             {/* Info */}
             <div style={{ flex: 1, minWidth: 0 }}>
@@ -2453,7 +2453,7 @@ function DraggableShowerItem({ item, index, onRemove, onFreqChange, onWeekStartC
       onTouchCancel={handleTouchEnd}
       style={{
         display: 'flex', alignItems: 'center', gap: 8, padding: '7px 8px', marginBottom: 3,
-        borderRadius: 6, border: `0.5px solid ${isDragging ? T.pinkDeep : T.border}`,
+        borderRadius: 0, border: `0.5px solid ${isDragging ? T.pinkDeep : T.border}`,
         background: isDragging ? T.pink : pressing ? T.creamDark : T.white,
         cursor: isDragging ? 'grabbing' : 'grab', opacity: isDragging ? 0.6 : 1, userSelect: 'none',
       }}
@@ -2466,7 +2466,7 @@ function DraggableShowerItem({ item, index, onRemove, onFreqChange, onWeekStartC
         <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 3 }}>
           {SHOWER_FREQUENCIES.map(f => (
             <button key={f.key} onClick={e => { e.stopPropagation(); onFreqChange(index, f.key) }}
-              style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, cursor: 'pointer', border: `0.5px solid ${item.frequency === f.key ? T.pinkDeep : T.border}`, background: item.frequency === f.key ? T.pink : 'transparent', color: item.frequency === f.key ? T.text : T.textLight, fontWeight: item.frequency === f.key ? 500 : 400 }}
+              style={{ fontSize: 9, padding: '1px 6px', borderRadius: 0, cursor: 'pointer', border: `0.5px solid ${item.frequency === f.key ? T.pinkDeep : T.border}`, background: item.frequency === f.key ? T.pink : 'transparent', color: item.frequency === f.key ? T.text : T.textLight, fontWeight: item.frequency === f.key ? 500 : 400 }}
             >{f.label}</button>
           ))}
         </div>
@@ -2475,7 +2475,7 @@ function DraggableShowerItem({ item, index, onRemove, onFreqChange, onWeekStartC
             <span style={{ fontSize: 9, color: T.textLight }}>{item.frequency === 'alternate' ? 'starts on:' : 'cycle starts:'}</span>
             {DAYS.map((d, i) => (
               <button key={i} onClick={e => { e.stopPropagation(); onWeekStartChange(index, i) }}
-                style={{ fontSize: 9, padding: '1px 5px', borderRadius: 3, cursor: 'pointer', border: `0.5px solid ${(item.weekStartDay ?? 1) === i ? T.orange : T.border}`, background: (item.weekStartDay ?? 1) === i ? T.orangeLight : 'transparent', color: (item.weekStartDay ?? 1) === i ? '#9A3412' : T.textLight }}
+                style={{ fontSize: 9, padding: '1px 5px', borderRadius: 0, cursor: 'pointer', border: `0.5px solid ${(item.weekStartDay ?? 1) === i ? T.orange : T.border}`, background: (item.weekStartDay ?? 1) === i ? T.orangeLight : 'transparent', color: (item.weekStartDay ?? 1) === i ? '#9A3412' : T.textLight }}
               >{d}</button>
             ))}
           </div>
@@ -2525,11 +2525,11 @@ function ShowerEditor({ initial, onSave, onCancel, allPeriods = [], onEditConfli
   }
 
   return (
-    <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 12, padding: '14px 16px', marginBottom: 10 }}>
+    <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 0, padding: '14px 16px', marginBottom: 10 }}>
       <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 4 }}>
         {initial?.id ? `Shower routine — editing from ${fmtDate(initial?.startDate)}` : 'Shower routine'}
       </div>
-      <div style={{ fontSize: 12, color: T.textMuted, marginBottom: 10, lineHeight: 1.6, background: T.creamDark, borderRadius: 8, padding: '8px 12px' }}>
+      <div style={{ fontSize: 12, color: T.textMuted, marginBottom: 10, lineHeight: 1.6, background: T.creamDark, borderRadius: 0, padding: '8px 12px' }}>
         Body washes, hair treatments, and anything else that happens in the shower. Set how often each one runs.
       </div>
       <div style={{ display: 'flex', gap: 10, marginBottom: 10, flexWrap: 'wrap' }}>
@@ -2559,13 +2559,13 @@ function ShowerEditor({ initial, onSave, onCancel, allPeriods = [], onEditConfli
                 <div style={{ marginLeft: 8, marginBottom: 4 }}>
                   <div
                     onClick={() => setItems(it => it.map((x,idx) => idx===i ? {...x,_pickingProduct:!x._pickingProduct} : x))}
-                    style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 6, cursor: 'pointer', background: isOpen ? T.pink : 'transparent', border: `0.5px solid ${isOpen ? T.pinkDeep : T.border}`, marginBottom: isOpen ? 4 : 0 }}
+                    style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 0, cursor: 'pointer', background: isOpen ? T.pink : 'transparent', border: `0.5px solid ${isOpen ? T.pinkDeep : T.border}`, marginBottom: isOpen ? 4 : 0 }}
                   >
                     <div style={{ width: 6, height: 6, borderRadius: '50%', background: T.pinkDeep, flexShrink: 0 }} />
                     <div style={{ flex: 1, minWidth: 0 }}>
                       {prod ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          {prod.imageUrl && <img src={prod.imageUrl} alt="" style={{ width: 44, height: 44, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />}
+                          {prod.imageUrl && <img src={prod.imageUrl} alt="" style={{ width: 44, height: 44, borderRadius: 0, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />}
                           <div style={{ minWidth: 0 }}>
                             <div style={{ fontSize: 11, fontWeight: 500, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{prod.name}</div>
                             {prod.brand && <div style={{ fontSize: 10, color: T.textMuted }}>{prod.brand}</div>}
@@ -2612,7 +2612,7 @@ function ShowerEditor({ initial, onSave, onCancel, allPeriods = [], onEditConfli
             {showShowerPresets ? '▲ Hide suggestions' : '▼ Browse suggestions'}
           </button>
           {showShowerPresets && (
-            <div style={{ border: `0.5px solid ${T.border}`, borderRadius: 8, overflow: 'hidden', marginBottom: 8 }}>
+            <div style={{ border: `0.5px solid ${T.border}`, borderRadius: 0, overflow: 'hidden', marginBottom: 8 }}>
               <input
                 type="text"
                 value={showerPresetSearch}
@@ -2653,7 +2653,7 @@ function ShowerEditor({ initial, onSave, onCancel, allPeriods = [], onEditConfli
           <div><FieldLabel>Note</FieldLabel><TextInput value={newNote} onChange={e => setNewNote(e.target.value)} placeholder="optional" width={80} /></div>
           <div>
             <FieldLabel>Frequency</FieldLabel>
-            <select value={newFreq} onChange={e => setNewFreq(e.target.value)} style={{ fontSize: 12, padding: '5px 8px', border: `0.5px solid ${T.border}`, borderRadius: 6, background: T.cream, color: T.text }}>
+            <select value={newFreq} onChange={e => setNewFreq(e.target.value)} style={{ fontSize: 12, padding: '5px 8px', border: `0.5px solid ${T.border}`, borderRadius: 0, background: T.cream, color: T.text }}>
               {SHOWER_FREQUENCIES.map(f => <option key={f.key} value={f.key}>{f.label}</option>)}
             </select>
           </div>
@@ -2708,7 +2708,7 @@ function ShowerSection({ dt, showerHistory, onEditShower, products, onUpdateShow
                 <div style={{ flex: 1, minWidth: 0 }}>
                   {prod ? (
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
-                      {prod.imageUrl && <img src={prod.imageUrl} alt="" style={{ width: 44, height: 44, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />}
+                      {prod.imageUrl && <img src={prod.imageUrl} alt="" style={{ width: 44, height: 44, borderRadius: 0, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />}
                       <div style={{ minWidth: 0 }}>
                         <div style={{ fontSize: 11, fontWeight: 500, color: T.textMuted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{prod.name}</div>
                         {prod.brand && <div style={{ fontSize: 10, color: T.textLight }}>{prod.brand}</div>}
@@ -2850,7 +2850,7 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
               </div>
               {product ? (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
-                  {product.imageUrl && <img src={product.imageUrl} alt="" style={{ width: 44, height: 44, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />}
+                  {product.imageUrl && <img src={product.imageUrl} alt="" style={{ width: 44, height: 44, borderRadius: 0, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />}
                   <div style={{ minWidth: 0 }}>
                     <div style={{ fontSize: 11, color: T.textMuted, fontWeight: 500 }}>{product.name}</div>
                     {product.brand && <div style={{ fontSize: 10, color: T.textLight }}>{product.brand}</div>}
@@ -2891,7 +2891,7 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
           <div key="massage-banner">
             <div
               onClick={() => setMassageOpen(o => !o)}
-              style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px', borderRadius: 8, background: '#E0F2FE', border: '0.5px solid #38BDF8', cursor: 'pointer', margin: '4px 0' }}
+              style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px', borderRadius: 0, background: '#E0F2FE', border: '0.5px solid #38BDF8', cursor: 'pointer', margin: '4px 0' }}
             >
               <span style={{ fontSize: 13 }}>🧖</span>
               <div style={{ flex: 1 }}>
@@ -2909,8 +2909,8 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
               })
               const videoUrl = massageItem?.note?.startsWith('http') ? massageItem.note : (period?.massageVideoUrl || null)
               return videoUrl ? (
-                <div style={{ marginTop: 4, borderRadius: 8, overflow: 'hidden', background: T.creamDark, padding: 8 }}>
-                  <iframe src={videoUrl} style={{ width: '100%', height: 360, border: 'none', borderRadius: 6 }} allowFullScreen title="Face massage" loading="lazy" />
+                <div style={{ marginTop: 4, borderRadius: 0, overflow: 'hidden', background: T.creamDark, padding: 8 }}>
+                  <iframe src={videoUrl} style={{ width: '100%', height: 360, border: 'none', borderRadius: 0 }} allowFullScreen title="Face massage" loading="lazy" />
                 </div>
               ) : (
                 <div style={{ fontSize: 10, color: '#0369A1', padding: '4px 10px', fontStyle: 'italic' }}>
@@ -2955,7 +2955,7 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
   }
 
   return (
-    <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 12, padding: '12px 14px', marginBottom: 14 }}>
+    <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 0, padding: '12px 14px', marginBottom: 14 }}>
       {/* Date + actions */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
         <div style={{ fontSize: 13, fontWeight: 500, color: T.text }}>
@@ -2981,7 +2981,7 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
         const label = isTreatment ? (allTypes?.[dayType]?.label || dayType) : b.label
         const bg    = isTreatment ? '#E0F2FE' : b.bg
         const color = isTreatment ? '#0C4A6E' : b.color
-        return <div style={{ fontSize: 11, fontWeight: 500, padding: '4px 10px', borderRadius: 6, background: bg, color, marginBottom: 10, display: 'inline-block' }}>{label}</div>
+        return <div style={{ fontSize: 11, fontWeight: 500, padding: '4px 10px', borderRadius: 0, background: bg, color, marginBottom: 10, display: 'inline-block' }}>{label}</div>
       })()}
 
       {/* 1. Shower routine — always at top */}
@@ -2989,8 +2989,8 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
 
       {/* 2. Morning / Night tabs */}
       <div style={{ display: 'flex', gap: 6, marginBottom: 8, marginTop: 10 }}>
-        <button onClick={() => switchTab('am')} style={{ padding: '4px 14px', borderRadius: 8, border: `0.5px solid ${tab === 'am' ? T.pinkDeep : T.border}`, background: tab === 'am' ? T.pink : 'transparent', fontSize: 12, fontWeight: tab === 'am' ? 500 : 400, cursor: 'pointer', color: T.text }}>Morning</button>
-        <button onClick={() => switchTab('pm')} style={{ padding: '4px 14px', borderRadius: 8, border: `0.5px solid ${tab === 'pm' ? T.pinkDeep : T.border}`, background: tab === 'pm' ? T.pink : 'transparent', fontSize: 12, fontWeight: tab === 'pm' ? 500 : 400, cursor: 'pointer', color: T.text }}>Night</button>
+        <button onClick={() => switchTab('am')} style={{ padding: '4px 14px', borderRadius: 0, border: `0.5px solid ${tab === 'am' ? T.pinkDeep : T.border}`, background: tab === 'am' ? T.pink : 'transparent', fontSize: 12, fontWeight: tab === 'am' ? 500 : 400, cursor: 'pointer', color: T.text }}>Morning</button>
+        <button onClick={() => switchTab('pm')} style={{ padding: '4px 14px', borderRadius: 0, border: `0.5px solid ${tab === 'pm' ? T.pinkDeep : T.border}`, background: tab === 'pm' ? T.pink : 'transparent', fontSize: 12, fontWeight: tab === 'pm' ? 500 : 400, cursor: 'pointer', color: T.text }}>Night</button>
       </div>
 
       {/* 3. Extras — filtered by frequency + current tab, hidden when nothing matches */}
@@ -3006,7 +3006,7 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
           {period && <div style={{ fontSize: 10, fontWeight: 600, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8, paddingTop: 10, borderTop: `0.5px solid ${T.border}` }}>Skincare</div>}
           {/* AM: normal routine unless it's an AM treatment */}
           {tab === 'am' && dayType === 'pause' && (
-            <div style={{ fontSize: 11, color: '#92400E', background: '#FFFBEB', border: '0.5px solid #FCD34D', borderRadius: 6, padding: '5px 10px', marginBottom: 8 }}>
+            <div style={{ fontSize: 11, color: '#92400E', background: '#FFFBEB', border: '0.5px solid #FCD34D', borderRadius: 0, padding: '5px 10px', marginBottom: 8 }}>
               Pre-treatment pause — your morning SPF and moisturizer are fine. Skip any acids or actives.
             </div>
           )}
@@ -3024,14 +3024,14 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
           {tab === 'am' && isRecovery && renderSteps(getStepsForDayType(period, 'recovery'), T.pinkDeep, 'recovery')}
           {/* PM: treatment banner + recovery steps */}
           {tab === 'pm' && isTreatment && (
-            <div style={{ fontSize: 11, padding: '6px 10px', borderRadius: 6, background: '#E0F2FE', color: '#0C4A6E', marginBottom: 8, lineHeight: 1.5 }}>
+            <div style={{ fontSize: 11, padding: '6px 10px', borderRadius: 0, background: '#E0F2FE', color: '#0C4A6E', marginBottom: 8, lineHeight: 1.5 }}>
               {treatTod === 'pm'
                 ? 'Treatment tonight — use recovery products after your appointment.'
                 : 'Treatment this morning — recovery begins tonight.'}
             </div>
           )}
           {tab === 'pm' && dayType === 'pause' && (
-            <div style={{ fontSize: 11, color: '#92400E', background: '#FFFBEB', border: '0.5px solid #FCD34D', borderRadius: 6, padding: '5px 10px', marginBottom: 8 }}>
+            <div style={{ fontSize: 11, color: '#92400E', background: '#FFFBEB', border: '0.5px solid #FCD34D', borderRadius: 0, padding: '5px 10px', marginBottom: 8 }}>
               Pre-treatment pause — skip actives tonight. Regular cleanse and moisturizer only.
             </div>
           )}
@@ -3055,13 +3055,13 @@ function NewRoutinePeriodPicker({ routineHistory, dailyHistory, showerHistory, p
   ]
 
   if (!chosen) return (
-    <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 12, padding: '18px 18px', marginBottom: 14 }}>
+    <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 0, padding: '18px 18px', marginBottom: 14 }}>
       <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 4 }}>What kind of routine would you like to add?</div>
       <div style={{ fontSize: 12, color: T.textMuted, marginBottom: 14 }}>Each type is tracked separately with its own history.</div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 14 }}>
         {options.map(o => (
           <button key={o.key} onClick={() => setChosen(o.key)} style={{
-            padding: '12px 14px', borderRadius: 10,
+            padding: '12px 14px', borderRadius: 0,
             border: `0.5px solid ${T.border}`, background: T.cream,
             textAlign: 'left', cursor: 'pointer',
             transition: 'border-color 0.15s, background 0.15s',
@@ -3081,7 +3081,7 @@ function NewRoutinePeriodPicker({ routineHistory, dailyHistory, showerHistory, p
   return (
     <div>
       {/* Back link lives inside a wrapper card so it feels contained */}
-      <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 12, marginBottom: 14, overflow: 'hidden' }}>
+      <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 0, marginBottom: 14, overflow: 'hidden' }}>
         <button onClick={() => setChosen(null)} style={{ border: 'none', borderBottom: `0.5px solid ${T.border}`, background: T.creamDark, fontSize: 12, color: T.pinkDeep, cursor: 'pointer', padding: '10px 16px', display: 'block', width: '100%', textAlign: 'left' }}>
           ← Back to routine type
         </button>
@@ -3239,20 +3239,20 @@ function TimeGrid({ label, mode, setMode, times, setTimes, singleTime, setSingle
         <FieldLabel>{label}</FieldLabel>
         <div style={{ display: 'flex', gap: 4 }}>
           {[['same','Same every day'],['custom','Per day of week']].map(([k,l]) => (
-            <button key={k} onClick={() => setMode(k)} style={{ fontSize: 9, padding: '2px 7px', borderRadius: 4, cursor: 'pointer', border: `0.5px solid ${mode===k ? T.pinkDeep : T.border}`, background: mode===k ? T.pink : 'transparent', color: mode===k ? T.text : T.textLight }}>{l}</button>
+            <button key={k} onClick={() => setMode(k)} style={{ fontSize: 9, padding: '2px 7px', borderRadius: 0, cursor: 'pointer', border: `0.5px solid ${mode===k ? T.pinkDeep : T.border}`, background: mode===k ? T.pink : 'transparent', color: mode===k ? T.text : T.textLight }}>{l}</button>
           ))}
         </div>
       </div>
       {mode === 'same' ? (
         <input type="time" value={singleTime} onChange={e => setSingleTime(e.target.value)}
-          style={{ fontSize: 12, padding: '5px 8px', border: `0.5px solid ${T.border}`, borderRadius: 6, background: T.cream, color: T.text }} />
+          style={{ fontSize: 12, padding: '5px 8px', border: `0.5px solid ${T.border}`, borderRadius: 0, background: T.cream, color: T.text }} />
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 3 }}>
           {[0,1,2,3,4,5,6].map(d => (
             <div key={d} style={{ textAlign: 'center' }}>
               <div style={{ fontSize: 9, fontWeight: 600, color: T.textMuted, marginBottom: 2 }}>{DOW_LABELS[d]}</div>
               <input type="time" value={times[d]} onChange={e => setTimes(t => ({ ...t, [d]: e.target.value }))}
-                style={{ width: '100%', fontSize: 9, padding: '2px 1px', border: `0.5px solid ${T.border}`, borderRadius: 4, background: T.cream, color: T.text }} />
+                style={{ width: '100%', fontSize: 9, padding: '2px 1px', border: `0.5px solid ${T.border}`, borderRadius: 0, background: T.cream, color: T.text }} />
             </div>
           ))}
         </div>
@@ -3287,7 +3287,7 @@ function ExportPanel({ routineHistory, treatments, allTypes, products, dailyHist
   }
 
   return (
-    <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 12, padding: '16px 18px', marginBottom: 14 }}>
+    <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 0, padding: '16px 18px', marginBottom: 14 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
         <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>Export</div>
         <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 18, color: T.textMuted, padding: '0 2px', lineHeight: 1 }}>×</button>
@@ -3309,7 +3309,7 @@ function ExportPanel({ routineHistory, treatments, allTypes, products, dailyHist
         <FieldLabel>Event format</FieldLabel>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 12 }}>
           {formats.map(f => (
-            <button key={f.key} onClick={() => setFormat(f.key)} style={{ padding: '8px 12px', borderRadius: 8, border: `0.5px solid ${format===f.key ? T.pinkDeep : T.border}`, background: format===f.key ? T.pink : 'transparent', fontSize: 11, cursor: 'pointer', color: T.text, textAlign: 'left' }}>
+            <button key={f.key} onClick={() => setFormat(f.key)} style={{ padding: '8px 12px', borderRadius: 0, border: `0.5px solid ${format===f.key ? T.pinkDeep : T.border}`, background: format===f.key ? T.pink : 'transparent', fontSize: 11, cursor: 'pointer', color: T.text, textAlign: 'left' }}>
               <span style={{ fontWeight: 500 }}>{f.label}</span>
               <span style={{ color: T.textMuted }}> — {f.desc}</span>
             </button>
@@ -3320,7 +3320,7 @@ function ExportPanel({ routineHistory, treatments, allTypes, products, dailyHist
         <FieldLabel>How far ahead</FieldLabel>
         <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
           {[30,60,90].map(d => (
-            <button key={d} onClick={() => setDaysAhead(d)} style={{ padding: '5px 14px', borderRadius: 8, border: `0.5px solid ${daysAhead===d ? T.pinkDeep : T.border}`, background: daysAhead===d ? T.pink : 'transparent', fontSize: 11, cursor: 'pointer', color: T.text }}>{d} days</button>
+            <button key={d} onClick={() => setDaysAhead(d)} style={{ padding: '5px 14px', borderRadius: 0, border: `0.5px solid ${daysAhead===d ? T.pinkDeep : T.border}`, background: daysAhead===d ? T.pink : 'transparent', fontSize: 11, cursor: 'pointer', color: T.text }}>{d} days</button>
           ))}
         </div>
 
@@ -3354,7 +3354,7 @@ function RecoveryRoutineEditor({ typeKey, typeLabel, steps, products, allProduct
   const hiddenSteps = steps.filter(s => !s.enabled && s.optional)
 
   return (
-    <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 12, padding: '16px 18px', marginBottom: 14 }}>
+    <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 0, padding: '16px 18px', marginBottom: 14 }}>
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
         <div>
@@ -3364,7 +3364,7 @@ function RecoveryRoutineEditor({ typeKey, typeLabel, steps, products, allProduct
         <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 18, color: T.textMuted, lineHeight: 1 }}>×</button>
       </div>
 
-      <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.6, padding: '8px 10px', background: T.creamDark, borderRadius: 8, marginBottom: 14, border: `0.5px solid ${T.border}` }}>
+      <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.6, padding: '8px 10px', background: T.creamDark, borderRadius: 0, marginBottom: 14, border: `0.5px solid ${T.border}` }}>
         Choose which steps and products you use during recovery from a {typeLabel.toLowerCase()}. These will show automatically on recovery days for this treatment.
       </div>
 
@@ -3380,7 +3380,7 @@ function RecoveryRoutineEditor({ typeKey, typeLabel, steps, products, allProduct
                 onClick={() => setOpenStepKey(isOpen ? null : step.id)}
                 style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  padding: '10px 12px', borderRadius: 8, cursor: 'pointer',
+                  padding: '10px 12px', borderRadius: 0, cursor: 'pointer',
                   background: isOpen ? T.pink : 'transparent',
                   border: `0.5px solid ${isOpen ? T.pinkDeep : T.border}`,
                   transition: 'all 0.15s',
@@ -3397,7 +3397,7 @@ function RecoveryRoutineEditor({ typeKey, typeLabel, steps, products, allProduct
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   {step.optional && (
                     <button onClick={e => { e.stopPropagation(); onStepToggle(step.id, false) }}
-                      style={{ fontSize: 10, padding: '2px 8px', borderRadius: 6, border: `0.5px solid ${T.border}`, background: 'transparent', color: T.textMuted, cursor: 'pointer', fontFamily: 'inherit' }}>
+                      style={{ fontSize: 10, padding: '2px 8px', borderRadius: 0, border: `0.5px solid ${T.border}`, background: 'transparent', color: T.textMuted, cursor: 'pointer', fontFamily: 'inherit' }}>
                       Remove
                     </button>
                   )}
@@ -3431,7 +3431,7 @@ function RecoveryRoutineEditor({ typeKey, typeLabel, steps, products, allProduct
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
             {hiddenSteps.map(step => (
               <button key={step.id} onClick={() => onStepToggle(step.id, true)}
-                style={{ fontSize: 11, padding: '4px 10px', borderRadius: 20, border: `0.5px solid ${T.border}`, background: T.white, color: T.textMuted, cursor: 'pointer', fontFamily: 'inherit' }}>
+                style={{ fontSize: 11, padding: '4px 10px', borderRadius: 0, border: `0.5px solid ${T.border}`, background: T.white, color: T.textMuted, cursor: 'pointer', fontFamily: 'inherit' }}>
                 + {step.label}
               </button>
             ))}
@@ -3462,7 +3462,7 @@ function UpcomingTreatmentsPanel({ treatments, allTypes, routineHistory, onClose
       <div key={key} style={{ padding: '10px 0', borderBottom: `0.5px solid ${T.border}`, opacity: isPast ? 0.55 : 1 }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
           {/* Date block */}
-          <div style={{ minWidth: 48, textAlign: 'center', padding: '4px 6px', borderRadius: 6, background: isToday ? T.pink : T.creamDark, border: `0.5px solid ${isToday ? T.pinkDeep : T.border}`, flexShrink: 0 }}>
+          <div style={{ minWidth: 48, textAlign: 'center', padding: '4px 6px', borderRadius: 0, background: isToday ? T.pink : T.creamDark, border: `0.5px solid ${isToday ? T.pinkDeep : T.border}`, flexShrink: 0 }}>
             <div style={{ fontSize: 9, fontWeight: 600, color: isToday ? T.pinkDeep : T.textMuted, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               {dt.toLocaleString('default',{month:'short'})}
             </div>
@@ -3474,7 +3474,7 @@ function UpcomingTreatmentsPanel({ treatments, allTypes, routineHistory, onClose
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
               <span style={{ fontSize: 13, fontWeight: 600, color: T.text }}>{typeLabel}</span>
-              {isToday && <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 10, background: T.pink, color: T.pinkDeep, fontWeight: 600 }}>Today</span>}
+              {isToday && <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 0, background: T.pink, color: T.pinkDeep, fontWeight: 600 }}>Today</span>}
             </div>
             <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 4 }}>
               {todLabel}{areaLabel}
@@ -3495,7 +3495,7 @@ function UpcomingTreatmentsPanel({ treatments, allTypes, routineHistory, onClose
               const daysUntilPause = Math.round((pauseStart - now) / 86400000)
               const daysUntil = Math.round((dt - now) / 86400000)
               return daysUntilPause <= 0 && daysUntil > 0 ? (
-                <div style={{ fontSize: 10, color: '#92400E', background: '#FFFBEB', border: '0.5px solid #FCD34D', borderRadius: 4, padding: '2px 6px', display: 'inline-block', marginTop: 2 }}>
+                <div style={{ fontSize: 10, color: '#92400E', background: '#FFFBEB', border: '0.5px solid #FCD34D', borderRadius: 0, padding: '2px 6px', display: 'inline-block', marginTop: 2 }}>
                   Pause window active — {daysUntil}d until treatment
                 </div>
               ) : daysUntilPause > 0 ? (
@@ -3546,7 +3546,7 @@ function UpcomingTreatmentsPanel({ treatments, allTypes, routineHistory, onClose
   }
 
   return (
-    <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 12, padding: '16px 18px', marginBottom: 14 }}>
+    <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 0, padding: '16px 18px', marginBottom: 14 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
         <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>Treatments</div>
         <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
@@ -3573,7 +3573,7 @@ function UpcomingTreatmentsPanel({ treatments, allTypes, routineHistory, onClose
       </div>
 
       {Object.keys(treatments).length === 0 ? (
-        <div style={{ fontSize: 12, color: T.textMuted, background: T.creamDark, borderRadius: 8, padding: '12px 14px', lineHeight: 1.6 }}>
+        <div style={{ fontSize: 12, color: T.textMuted, background: T.creamDark, borderRadius: 0, padding: '12px 14px', lineHeight: 1.6 }}>
           No treatments scheduled yet. Tap any date on the calendar to add a treatment.
         </div>
       ) : (
@@ -3625,14 +3625,14 @@ function FeedbackPanel({ onClose }) {
   }
 
   return (
-    <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 12, padding: '16px 18px', marginBottom: 14 }}>
+    <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 0, padding: '16px 18px', marginBottom: 14 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
         <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>Send feedback</div>
         <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 18, color: T.textMuted, lineHeight: 1 }}>×</button>
       </div>
 
       {/* Anonymity notice */}
-      <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.6, padding: '8px 10px', background: T.creamDark, borderRadius: 8, marginBottom: 12, border: `0.5px solid ${T.border}` }}>
+      <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.6, padding: '8px 10px', background: T.creamDark, borderRadius: 0, marginBottom: 12, border: `0.5px solid ${T.border}` }}>
         🔒 Feedback is completely anonymous. Your name, account, and identity are never attached to what you write here.
       </div>
 
@@ -3640,7 +3640,7 @@ function FeedbackPanel({ onClose }) {
       <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
         {types.map(t => (
           <button key={t.key} onClick={() => setType(t.key)} style={{
-            flex: 1, padding: '6px 8px', borderRadius: 8, fontSize: 11, cursor: 'pointer',
+            flex: 1, padding: '6px 8px', borderRadius: 0, fontSize: 11, cursor: 'pointer',
             border: `0.5px solid ${type === t.key ? T.pinkDeep : T.border}`,
             background: type === t.key ? T.pink : 'transparent', color: T.text, fontFamily: 'inherit',
           }}>{t.label}</button>
@@ -3655,7 +3655,7 @@ function FeedbackPanel({ onClose }) {
         rows={5}
         style={{
           width: '100%', fontSize: 12, padding: '10px 12px', border: `0.5px solid ${T.border}`,
-          borderRadius: 8, background: T.cream, color: T.text, resize: 'vertical',
+          borderRadius: 0, background: T.cream, color: T.text, resize: 'vertical',
           fontFamily: 'inherit', boxSizing: 'border-box', outline: 'none', lineHeight: 1.6,
           marginBottom: 10,
         }}
@@ -3665,7 +3665,7 @@ function FeedbackPanel({ onClose }) {
         onClick={handleSend}
         disabled={sending || !message.trim()}
         style={{
-          width: '100%', padding: '10px', borderRadius: 8, border: 'none',
+          width: '100%', padding: '10px', borderRadius: 0, border: 'none',
           background: sent ? '#4ADE80' : T.pinkDeep,
           color: sent ? '#14532D' : T.white,
           fontSize: 12, fontWeight: 600, cursor: sending || !message.trim() ? 'default' : 'pointer',
@@ -4414,7 +4414,7 @@ export default function GlowUpCalendar({ session }) {
   for (let i = 0; i < firstDow; i++) {
     const dayNum = prevMonthLastDay - firstDow + i + 1
     cells.push(
-      <div key={`prev${i}`} style={{ position: 'relative', borderRadius: 8, border: `0.5px solid ${T.border}`, display: 'flex', flexDirection: 'column', minHeight: '88px' }}>
+      <div key={`prev${i}`} style={{ position: 'relative', borderRadius: 0, border: `0.5px solid ${T.border}`, display: 'flex', flexDirection: 'column', minHeight: '88px' }}>
         <div style={{ fontSize: 10, color: T.textLight, padding: '3px 5px', fontWeight: 400, opacity: 0.5 }}>{dayNum}</div>
       </div>
     )
@@ -4514,9 +4514,9 @@ export default function GlowUpCalendar({ session }) {
     const activePeriod = getActivePeriod(dt, routineHistory)
 
     cells.push(
-      <div key={key} style={{ position: 'relative', borderRadius: 8, border: `0.5px solid ${isOpen ? T.pinkDeep : cellBorder}`, outline: isToday ? `2px solid ${T.pinkDeep}` : 'none', outlineOffset: -1, display: 'flex', flexDirection: 'column', zIndex: isOpen ? 100 : 1, minHeight: '88px' }}>
+      <div key={key} style={{ position: 'relative', borderRadius: 0, border: `0.5px solid ${isOpen ? T.pinkDeep : cellBorder}`, outline: isToday ? `2px solid ${T.pinkDeep}` : 'none', outlineOffset: -1, display: 'flex', flexDirection: 'column', zIndex: isOpen ? 100 : 1, minHeight: '88px' }}>
         {/* Date row */}
-        <div style={{ padding: '3px 6px', background: T.white, borderBottom: `0.5px solid ${isOpen ? T.pinkDeep : cellBorder}`, fontSize: 11, fontWeight: 600, color: isOpen ? T.pinkDeep : dateColor, textAlign: 'center', borderRadius: '8px 8px 0 0' }}>
+        <div style={{ padding: '3px 6px', background: T.white, borderBottom: `0.5px solid ${isOpen ? T.pinkDeep : cellBorder}`, fontSize: 11, fontWeight: 600, color: isOpen ? T.pinkDeep : dateColor, textAlign: 'center', borderRadius: 0 }}>
           {d}
         </div>
         {/* AM half */}
@@ -4530,7 +4530,7 @@ export default function GlowUpCalendar({ session }) {
         {/* PM half */}
         <div
           onClick={e => { e.stopPropagation(); isOpen && dayFlyout?.tab === 'pm' ? setDayFlyout(null) : openDayFlyout(key, dt, 'pm') }}
-          style={{ flex: 1, background: isOpen && dayFlyout?.tab === 'pm' ? T.pink : cellBg, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '3px 4px', cursor: 'pointer', gap: 2, overflow: 'hidden', borderRadius: isOpen ? '0' : '0 0 8px 8px', transition: 'background 0.15s' }}
+          style={{ flex: 1, background: isOpen && dayFlyout?.tab === 'pm' ? T.pink : cellBg, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '3px 4px', cursor: 'pointer', gap: 2, overflow: 'hidden', borderRadius: 0, transition: 'background 0.15s' }}
         >
           <div style={{ fontSize: 9, fontWeight: 600, color: isOpen && dayFlyout?.tab === 'pm' ? T.pinkDeep : dateColor, opacity: 0.8, letterSpacing: '0.04em' }}>PM</div>
           {pmBadges}
@@ -4544,7 +4544,7 @@ export default function GlowUpCalendar({ session }) {
   const trailingCount = totalCells - firstDow - daysInMonth
   for (let i = 1; i <= trailingCount; i++) {
     cells.push(
-      <div key={`next${i}`} style={{ position: 'relative', borderRadius: 8, border: `0.5px solid ${T.border}`, display: 'flex', flexDirection: 'column', minHeight: '88px' }}>
+      <div key={`next${i}`} style={{ position: 'relative', borderRadius: 0, border: `0.5px solid ${T.border}`, display: 'flex', flexDirection: 'column', minHeight: '88px' }}>
         <div style={{ fontSize: 10, color: T.textLight, padding: '3px 5px', fontWeight: 400, opacity: 0.5 }}>{i}</div>
       </div>
     )
@@ -4674,19 +4674,19 @@ export default function GlowUpCalendar({ session }) {
 
       {/* Toast — always in flow at top, small so it doesn't displace much */}
       {toast && (
-        <div style={{ marginBottom: 8, padding: '7px 14px', background: T.creamDark, borderRadius: 8, fontSize: 12, color: T.textMuted, border: `0.5px solid ${T.border}` }}>
+        <div style={{ marginBottom: 8, padding: '7px 14px', background: T.creamDark, borderRadius: 0, fontSize: 12, color: T.textMuted, border: `0.5px solid ${T.border}` }}>
           Copied — paste into any Notion page
         </div>
       )}
 
       {/* Month/year with flanking nav arrows — fixed-width center keeps arrows static */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 6 }}>
-        <button onClick={prevMonth} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 8, padding: '5px 20px', cursor: 'pointer', fontSize: 15, color: T.text, flexShrink: 0 }}>←</button>
+        <button onClick={prevMonth} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 0, padding: '5px 20px', cursor: 'pointer', fontSize: 15, color: T.text, flexShrink: 0 }}>←</button>
         <div style={{ width: 260, textAlign: 'center' }}>
           <div style={{ fontSize: 'clamp(28px, 6vw, 42px)', fontWeight: 700, color: T.text, lineHeight: 1.1, letterSpacing: '-0.02em' }}>{MONTHS[month]}</div>
           <div style={{ fontSize: 'clamp(13px, 2.5vw, 18px)', color: T.textMuted, fontWeight: 400, marginTop: 2 }}>{year}</div>
         </div>
-        <button onClick={nextMonth} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 8, padding: '5px 20px', cursor: 'pointer', fontSize: 15, color: T.text, flexShrink: 0 }}>→</button>
+        <button onClick={nextMonth} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 0, padding: '5px 20px', cursor: 'pointer', fontSize: 15, color: T.text, flexShrink: 0 }}>→</button>
       </div>
 
       {/* Header — always visible, never moves */}
@@ -4696,18 +4696,18 @@ export default function GlowUpCalendar({ session }) {
           <Btn variant={['update','setup'].includes(panel) ? 'active' : 'primary'} style={{ fontSize: 11, padding: '5px 10px' }} onClick={() => { setPanel(p => ['update','setup'].includes(p) ? null : (hasRoutine ? 'update' : 'setup')); setEditingPeriod(null); setDayFlyout(null) }}>+ Start new routine</Btn>
           <Btn variant={showTreatments ? 'active' : 'default'} style={{ fontSize: 11, padding: '5px 10px' }} onClick={() => { setShowTreatments(s => !s); setDayFlyout(null) }}>My treatments</Btn>
           {(month !== now.getMonth() || year !== now.getFullYear()) && (
-            <button onClick={() => { setMonth(now.getMonth()); setYear(now.getFullYear()) }} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 8, padding: '5px 10px', cursor: 'pointer', fontSize: 11, color: T.textMuted, fontFamily: 'inherit' }}>Today</button>
+            <button onClick={() => { setMonth(now.getMonth()); setYear(now.getFullYear()) }} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 0, padding: '5px 10px', cursor: 'pointer', fontSize: 11, color: T.textMuted, fontFamily: 'inherit' }}>Today</button>
           )}
         </div>
         {/* Right — hamburger */}
         <button
           onClick={() => setShowMenu(s => !s)}
-          style={{ border: `0.5px solid ${showMenu ? T.pinkDeep : T.border}`, background: showMenu ? T.pink : 'transparent', borderRadius: 8, padding: '5px 10px', cursor: 'pointer', color: T.text, fontSize: 16, lineHeight: 1, display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', justifyContent: 'center', width: 36, height: 32 }}
+          style={{ border: `0.5px solid ${showMenu ? T.pinkDeep : T.border}`, background: showMenu ? T.pink : 'transparent', borderRadius: 0, padding: '5px 10px', cursor: 'pointer', color: T.text, fontSize: 16, lineHeight: 1, display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', justifyContent: 'center', width: 36, height: 32 }}
           aria-label="Menu"
         >
-          <span style={{ display: 'block', width: 14, height: 1.5, background: T.text, borderRadius: 1 }} />
-          <span style={{ display: 'block', width: 14, height: 1.5, background: T.text, borderRadius: 1 }} />
-          <span style={{ display: 'block', width: 14, height: 1.5, background: T.text, borderRadius: 1 }} />
+          <span style={{ display: 'block', width: 14, height: 1.5, background: T.text, borderRadius: 0 }} />
+          <span style={{ display: 'block', width: 14, height: 1.5, background: T.text, borderRadius: 0 }} />
+          <span style={{ display: 'block', width: 14, height: 1.5, background: T.text, borderRadius: 0 }} />
         </button>
       </div>
 
@@ -4731,7 +4731,7 @@ export default function GlowUpCalendar({ session }) {
                 maxHeight: '85vh',
                 display: 'flex', flexDirection: 'column',
                 zIndex: 501,
-                borderRadius: 16,
+                borderRadius: 0,
                 background: T.white,
                 border: `0.5px solid ${T.pinkDeep}`,
                 boxShadow: '0 8px 40px rgba(0,0,0,0.18)',
@@ -4741,11 +4741,11 @@ export default function GlowUpCalendar({ session }) {
             >
               {/* Sticky header: prev/next day arrows + date + close */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 14px 10px', borderBottom: `0.5px solid ${T.border}`, flexShrink: 0, background: T.white }}>
-                <button onClick={goToPrevDay} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 8, padding: '5px 12px', cursor: 'pointer', fontSize: 14, color: T.text, flexShrink: 0 }}>←</button>
+                <button onClick={goToPrevDay} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 0, padding: '5px 12px', cursor: 'pointer', fontSize: 14, color: T.text, flexShrink: 0 }}>←</button>
                 <div style={{ flex: 1, textAlign: 'center' }}>
                   <div style={{ fontSize: 14, fontWeight: 600, color: T.text }}>{fmt.format(dayFlyout.date)}</div>
                 </div>
-                <button onClick={goToNextDay} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 8, padding: '5px 12px', cursor: 'pointer', fontSize: 14, color: T.text, flexShrink: 0 }}>→</button>
+                <button onClick={goToNextDay} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 0, padding: '5px 12px', cursor: 'pointer', fontSize: 14, color: T.text, flexShrink: 0 }}>→</button>
                 <button onClick={() => setDayFlyout(null)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 18, color: T.textLight, padding: '0 2px', lineHeight: 1, flexShrink: 0 }}>×</button>
               </div>
               {/* Scrollable content */}
@@ -4798,7 +4798,7 @@ export default function GlowUpCalendar({ session }) {
           <div
             onClick={() => setShowAllBadges(s => !s)}
             style={{
-              width: 36, height: 20, borderRadius: 10, cursor: 'pointer',
+              width: 36, height: 20, borderRadius: 0, cursor: 'pointer',
               background: showAllBadges ? T.pinkDeep : T.border,
               position: 'relative', transition: 'background 0.2s', flexShrink: 0,
             }}
@@ -4860,7 +4860,7 @@ export default function GlowUpCalendar({ session }) {
 
             {/* First launch */}
             {!hasRoutine && panel === 'setup' && !editingPeriod && (
-              <div style={{ background: T.pink, border: `0.5px solid ${T.pinkDeep}`, borderRadius: 12, padding: '14px 18px', marginBottom: 8 }}>
+              <div style={{ background: T.pink, border: `0.5px solid ${T.pinkDeep}`, borderRadius: 0, padding: '14px 18px', marginBottom: 8 }}>
                 <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 6 }}>Welcome! Set up your routine to get started.</div>
                 <div style={{ fontSize: 12, color: T.textMuted, marginBottom: 10 }}>Configure your evening actives, secondary treatments, and schedule — it all auto-populates on the calendar.</div>
               </div>
