@@ -1,4 +1,4 @@
-// ProductsPage — restored stable grid build
+// v2-stars-modal-fix
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 
@@ -889,7 +889,7 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
       <div onClick={e => e.stopPropagation()} style={{
         background: T.white, borderRadius: 0, width: '100%', maxWidth: 760,
-        minHeight: 'min(520px, 80vh)', maxHeight: '85vh',
+        height: 'min(85vh, 680px)',
         display: 'flex', overflow: 'hidden', position: 'relative',
       }}>
 
