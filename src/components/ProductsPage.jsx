@@ -1121,8 +1121,12 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
   function CheckItem({ label, checked, onChange }) {
     return (
       <label onClick={onChange} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: T.text, cursor: 'pointer', padding: '3px 0', userSelect: 'none' }}>
-        <div style={{ width: 14, height: 14, borderRadius: 0, border: '1.5px solid ' + (checked ? T.text : T.border), background: checked ? T.text : 'transparent', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          {checked && <span style={{ color: '#fff', fontSize: 9, lineHeight: 1 }}>✓</span>}
+        <div style={{ width: 18, height: 18, borderRadius: 0, border: '1.5px solid ' + (checked ? T.text : T.border), background: checked ? T.text : 'transparent', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          {checked && (
+            <svg width="11" height="9" viewBox="0 0 11 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M1 4L4 7.5L10 1" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          )}
         </div>
         {label}
       </label>
@@ -1157,11 +1161,6 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
   function FilterContent() {
     return (
       <>
-        {hasFilters && (
-          <button onClick={clearAll} style={{ fontSize: 11, color: T.pinkDeep, background: 'none', border: 'none', cursor: 'pointer', padding: '0 0 12px', fontFamily: 'inherit' }}>
-            Clear all filters ×
-          </button>
-        )}
         <FilterSection title="Product type">
           {PRODUCT_CATEGORIES.map(cat => (
             <CheckItem key={cat} label={cat.charAt(0).toUpperCase() + cat.slice(1)} checked={filterCats.includes(cat)} onChange={() => toggleCat(cat)} />
@@ -1181,6 +1180,11 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
           <CheckItem label="Currently using" checked={filterUsing} onChange={() => setFilterUsing(s => !s)} />
           <CheckItem label="Would buy again" checked={filterBuyAgain} onChange={() => setFilterBuyAgain(s => !s)} />
         </FilterSection>
+        {hasFilters && (
+          <button onClick={clearAll} style={{ width: '100%', marginTop: 8, padding: '10px', borderRadius: 0, border: 'none', background: '#000000', color: '#ffffff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
+            Clear filters
+          </button>
+        )}
       </>
     )
   }
