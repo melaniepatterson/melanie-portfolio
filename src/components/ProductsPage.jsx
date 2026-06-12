@@ -1121,7 +1121,7 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
   function CheckItem({ label, checked, onChange }) {
     return (
       <label onClick={onChange} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: T.text, cursor: 'pointer', padding: '3px 0', userSelect: 'none' }}>
-        <div style={{ width: 14, height: 14, borderRadius: 3, border: '1.5px solid ' + (checked ? T.text : T.border), background: checked ? T.text : 'transparent', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: 14, height: 14, borderRadius: 0, border: '1.5px solid ' + (checked ? T.text : T.border), background: checked ? T.text : 'transparent', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           {checked && <span style={{ color: '#fff', fontSize: 9, lineHeight: 1 }}>✓</span>}
         </div>
         {label}
@@ -1228,7 +1228,7 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
             { key: 'mine',        label: 'My products',   count: Object.keys(products).length + Object.values(catalogProducts || {}).filter(p => (userProductData || {})[p.id]?.in_library).length },
             { key: 'recommended', label: 'Recommended',   count: Object.keys(catalogProducts || {}).length },
           ].map(t => (
-            <button key={t.key} onClick={() => setLibTab(t.key)} style={{ padding: '5px 12px', borderRadius: 20, fontSize: 12, cursor: 'pointer', border: '0.5px solid ' + (libTab === t.key ? T.pinkDeep : T.border), background: libTab === t.key ? T.pink : 'transparent', color: T.text, fontFamily: 'inherit' }}>
+            <button key={t.key} onClick={() => setLibTab(t.key)} style={{ padding: '5px 12px', borderRadius: 0, fontSize: 12, cursor: 'pointer', border: '0.5px solid ' + (libTab === t.key ? T.pinkDeep : T.border), background: libTab === t.key ? T.pink : 'transparent', color: T.text, fontFamily: 'inherit' }}>
               {t.label} <span style={{ fontSize: 10, color: T.textMuted }}>({t.count})</span>
             </button>
           ))}
@@ -1270,7 +1270,7 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
                   {/* Routine badges — top right */}
                   {(wwu || userUsing) && (
                     <div style={{ position: 'absolute', top: 6, right: 6, display: 'flex', flexDirection: 'column', gap: 3 }}>
-                      {wwu && <span style={{ fontSize: 8, background: T.pinkDeep, color: '#fff', borderRadius: 8, padding: '2px 6px', fontWeight: 700, whiteSpace: 'nowrap' }}>What we're using!</span>}
+                      {wwu && <span style={{ fontSize: 8, background: T.pinkDeep, color: '#fff', borderRadius: 0, padding: '2px 6px', fontWeight: 700, whiteSpace: 'nowrap' }}>What we're using!</span>}
                       {userUsing && <span style={{ fontSize: 8, background: 'rgba(255,255,255,0.93)', color: T.text, borderRadius: 8, padding: '2px 6px', fontWeight: 600, whiteSpace: 'nowrap', border: '0.5px solid ' + T.border }}>In my routine</span>}
                     </div>
                   )}
@@ -1602,24 +1602,23 @@ export default function ProductsPage({ session }) {
     <div style={{ fontFamily: 'inherit', minHeight: '100vh', background: T.cream, paddingBottom: 40 }}>
       {/* ── App header ──────────────────────────────────────────── */}
       <div style={{ background: T.white, borderBottom: '0.5px solid ' + T.border }}>
-        {/* Logo row */}
+        {/* Logo row — logo links back to calendar */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px 10px' }}>
           <style>{`.glowup-prodlogo { display: flex } @media (max-width: 639px) { .glowup-prodlogo { display: none } }`}</style>
-          <div className="glowup-prodlogo" style={{ alignItems: 'baseline', gap: 6 }}>
+          <a href="/routine" className="glowup-prodlogo" style={{ alignItems: 'baseline', gap: 6, textDecoration: 'none' }}>
             <span style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-0.04em', color: T.text, lineHeight: 1 }}>glow up</span>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: T.pinkDeep, display: 'inline-block', marginBottom: 2 }} />
-          </div>
-          <div className="glowup-prodlogo" style={{ flex: 1 }} /> {/* spacer on desktop */}
+          </a>
+          <div className="glowup-prodlogo" style={{ flex: 1 }} />
           <button onClick={() => setEditingProduct('new')}
-            style={{ border: 'none', background: T.pinkDeep, color: '#fff', borderRadius: 20, padding: '7px 16px', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 500, whiteSpace: 'nowrap' }}>
+            style={{ border: 'none', background: T.pinkDeep, color: '#fff', borderRadius: 0, padding: '7px 16px', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 500, whiteSpace: 'nowrap' }}>
             + Add new product
           </button>
         </div>
-        {/* Page nav row */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '0 20px 12px' }}>
-          <button onClick={() => window.history.back()} style={{ border: '0.5px solid ' + T.border, background: 'transparent', borderRadius: 8, padding: '5px 10px', cursor: 'pointer', fontSize: 14, color: T.text, lineHeight: 1 }}>←</button>
+        {/* Page title row — no back arrow, logo is the nav */}
+        <div style={{ padding: '0 20px 12px' }}>
           <span style={{ fontSize: 13, fontWeight: 600, color: T.text }}>Product library</span>
-          <span style={{ fontSize: 12, color: T.textMuted }}>({Object.keys(products).length + Object.keys(catalogProducts).length})</span>
+          <span style={{ fontSize: 12, color: T.textMuted, marginLeft: 6 }}>({Object.keys(products).length + Object.keys(catalogProducts).length})</span>
         </div>
       </div>
 
