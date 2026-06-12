@@ -933,23 +933,9 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
           {/* Flags */}
           <ProductFlagBadges product={p} />
 
-          {/* Description */}
-          {p.description && <div style={{ fontSize: 12, color: T.text, lineHeight: 1.7, marginTop: 12, marginBottom: 12 }}>{p.description}</div>}
-
-          {/* Ingredients — collapsible accordion */}
-          {p.ingredients && <IngredientsAccordion ingredients={p.ingredients} />}
-
-          {/* Our note — curator note, shown to all users, hidden if empty */}
-          {p.notes && (
-            <div style={{ margin: '10px 0 12px', padding: '10px 12px', background: T.pink, borderRadius: 0, borderLeft: `3px solid ${T.pinkDeep}` }}>
-              <div style={{ fontSize: 9, fontWeight: 700, color: T.pinkDeep, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Our note</div>
-              <div style={{ fontSize: 12, color: T.text, lineHeight: 1.7 }}>{p.notes}</div>
-            </div>
-          )}
-
-          {/* Buy from pills — under badges/note, above description */}
+          {/* Buy from pills — directly under badges */}
           {(purchaseUrl || directUrl) && (
-            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 14 }}>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', margin: '12px 0' }}>
               {purchaseUrl && (
                 <a href={purchaseUrl} target="_blank" rel="noopener noreferrer"
                   style={{ fontSize: 11, padding: '5px 12px', borderRadius: 0, background: T.white, color: T.text, textDecoration: 'none', border: `1px solid ${T.text}`, whiteSpace: 'nowrap', fontFamily: 'inherit' }}>
@@ -964,6 +950,20 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
               )}
             </div>
           )}
+
+          {/* Our note — curator note, hidden if empty */}
+          {p.notes && (
+            <div style={{ margin: '10px 0 12px', padding: '10px 12px', background: T.pink, borderRadius: 0, borderLeft: `3px solid ${T.pinkDeep}` }}>
+              <div style={{ fontSize: 9, fontWeight: 700, color: T.pinkDeep, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Our note</div>
+              <div style={{ fontSize: 12, color: T.text, lineHeight: 1.7 }}>{p.notes}</div>
+            </div>
+          )}
+
+          {/* Description */}
+          {p.description && <div style={{ fontSize: 12, color: T.text, lineHeight: 1.7, marginTop: 12, marginBottom: 12 }}>{p.description}</div>}
+
+          {/* Ingredients — collapsible accordion */}
+          {p.ingredients && <IngredientsAccordion ingredients={p.ingredients} />}
 
           {/* PAO + dates */}
           {(p.pao_months || p.opened_at || p.expires_at || p.purchased_at) && (
@@ -1271,7 +1271,7 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
                   {(wwu || userUsing) && (
                     <div style={{ position: 'absolute', top: 6, right: 6, display: 'flex', flexDirection: 'column', gap: 3 }}>
                       {wwu && <span style={{ fontSize: 8, background: T.pinkDeep, color: '#fff', borderRadius: 0, padding: '2px 6px', fontWeight: 700, whiteSpace: 'nowrap' }}>What we're using!</span>}
-                      {userUsing && <span style={{ fontSize: 8, background: 'rgba(255,255,255,0.93)', color: T.text, borderRadius: 8, padding: '2px 6px', fontWeight: 600, whiteSpace: 'nowrap', border: '0.5px solid ' + T.border }}>In my routine</span>}
+                      {userUsing && <span style={{ fontSize: 8, background: 'rgba(255,255,255,0.93)', color: T.text, borderRadius: 0, padding: '2px 6px', fontWeight: 600, whiteSpace: 'nowrap', border: '0.5px solid ' + T.border }}>In my routine</span>}
                     </div>
                   )}
                 </div>
