@@ -281,7 +281,7 @@ function ProductFlagBadges({ product, max }) {
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 3, marginTop: 4 }}>
       {shown.map(f => (
         <span key={f.key} style={{
-          fontSize: 9, padding: '2px 6px', borderRadius: 10,
+          fontSize: 9, padding: '2px 6px', borderRadius: 0,
           background: f.bg, color: f.color,
           border: '0.5px solid rgba(0,0,0,0.08)', fontWeight: 500,
           whiteSpace: 'nowrap',
@@ -731,9 +731,10 @@ function PersonalDataForm({ productId, isCatalog, upd, product, onSaveUpd, onClo
   }
 
   const inputStyle = {
-    width: '100%', boxSizing: 'border-box', padding: '8px 10px',
-    borderRadius: 8, border: `0.5px solid ${T.border}`,
-    background: T.cream, color: T.text, fontSize: 12,
+    width: '100%', boxSizing: 'border-box', padding: '6px 2px',
+    borderRadius: 0, border: 'none',
+    borderBottom: '2px solid #000000',
+    background: 'transparent', color: T.text, fontSize: 12,
     fontFamily: 'inherit', outline: 'none', resize: 'vertical',
   }
   const labelStyle = {
@@ -808,7 +809,7 @@ function PersonalDataForm({ productId, isCatalog, upd, product, onSaveUpd, onClo
       <div style={{ marginBottom: 12, maxWidth: 160 }}>
         <label style={labelStyle}>PAO (months)</label>
         <select value={paoMonths} onChange={e => setPao(e.target.value)}
-          style={{ width: '100%', fontSize: 12, padding: '7px 10px', border: `0.5px solid ${T.border}`, borderRadius: 8, background: T.cream, color: paoMonths ? T.text : T.textMuted, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }}>
+          style={{ width: '100%', fontSize: 12, padding: '6px 2px', border: 'none', borderBottom: '2px solid #000000', borderRadius: 0, background: 'transparent', color: paoMonths ? T.text : T.textMuted, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }}>
           <option value="">— Select PAO —</option>
           {PAO_OPTIONS.map(m => <option key={m} value={m}>{m} months</option>)}
         </select>
@@ -870,14 +871,14 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
   return (
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
       <div onClick={e => e.stopPropagation()} style={{
-        background: T.white, borderRadius: 16, width: '100%', maxWidth: 760,
+        background: T.white, borderRadius: 0, width: '100%', maxWidth: 760,
         minHeight: 'min(520px, 80vh)', maxHeight: '85vh',
         display: 'flex', overflow: 'hidden', position: 'relative',
       }}>
 
         {/* ── Left: portrait image ─────────────────────────── */}
         {img && (
-          <div style={{ width: '40%', flexShrink: 0, overflow: 'hidden', background: getBrandColor(p.brand, p.id), borderRadius: '16px 0 0 16px' }}>
+          <div style={{ width: '40%', flexShrink: 0, overflow: 'hidden', background: getBrandColor(p.brand, p.id), borderRadius: 0 }}>
             <img src={img} alt={p.name}
               style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
               onError={e => { e.currentTarget.parentElement.style.display = 'none' }} />
@@ -888,7 +889,7 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
         <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', WebkitOverflowScrolling: 'touch', padding: '20px 16px 28px', position: 'relative' }}>
 
           {/* × — top right */}
-          <button onClick={onClose} style={{ position: 'absolute', top: 12, right: 12, zIndex: 10, width: 28, height: 28, borderRadius: '50%', border: 'none', background: T.creamDark, color: T.text, cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>×</button>
+          <button onClick={onClose} style={{ position: 'absolute', top: 12, right: 12, zIndex: 10, width: 28, height: 28, borderRadius: 0, border: 'none', background: T.creamDark, color: T.text, cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>×</button>
 
           {/* Name + brand */}
           <div style={{ paddingRight: 38, marginBottom: 8 }}>
@@ -896,36 +897,18 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
             {p.brand && <div style={{ fontSize: 12, color: T.textMuted, marginTop: 3 }}>{p.brand}</div>}
           </div>
 
-          {/* Discrete URL pills — right under name */}
-          {(purchaseUrl || directUrl) && (
-            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 12 }}>
-              {purchaseUrl && (
-                <a href={purchaseUrl} target="_blank" rel="noopener noreferrer"
-                  style={{ fontSize: 11, padding: '4px 12px', borderRadius: 20, background: T.white, color: T.text, textDecoration: 'none', border: `0.5px solid ${T.textMuted}`, whiteSpace: 'nowrap', fontFamily: 'inherit' }}>
-                  {storeName || getStoreName(purchaseUrl) || 'Affiliate'} ↗
-                </a>
-              )}
-              {directUrl && (
-                <a href={directUrl} target="_blank" rel="noopener noreferrer"
-                  style={{ fontSize: 11, padding: '4px 12px', borderRadius: 20, background: T.white, color: T.text, textDecoration: 'none', border: `0.5px solid ${T.textMuted}`, whiteSpace: 'nowrap', fontFamily: 'inherit' }}>
-                  {directStoreName || getStoreName(directUrl) || 'Direct'} ↗
-                </a>
-              )}
-            </div>
-          )}
-
           {/* Routine badges */}
           {(isCatalog || p._isLinked) && wwu && (
-            <div style={{ display: 'inline-block', fontSize: 11, background: T.pink, color: T.pinkDeep, borderRadius: 20, padding: '3px 10px', fontWeight: 600, marginBottom: 8, marginRight: 6 }}>What we're using!</div>
+            <div style={{ display: 'inline-block', fontSize: 11, background: T.pink, color: T.pinkDeep, borderRadius: 0, padding: '3px 10px', fontWeight: 600, marginBottom: 8, marginRight: 6 }}>What we're using!</div>
           )}
           {userUsing && (
-            <div style={{ display: 'inline-block', fontSize: 11, background: T.creamDark, color: T.textMuted, borderRadius: 20, padding: '3px 10px', fontWeight: 600, marginBottom: 8, border: `0.5px solid ${T.border}` }}>In my routine</div>
+            <div style={{ display: 'inline-block', fontSize: 11, background: T.creamDark, color: T.textMuted, borderRadius: 0, padding: '3px 10px', fontWeight: 600, marginBottom: 8, border: `0.5px solid ${T.border}` }}>In my routine</div>
           )}
 
-          {/* Category — most specific only: ingredient_form > ingredient_category > category */}
+          {/* Category — most specific only */}
           {(p.ingredient_form || p.ingredient_category || p.category) && (
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
-              <span style={{ fontSize: 11, background: T.creamDark, color: T.textMuted, borderRadius: 20, padding: '3px 10px' }}>
+              <span style={{ fontSize: 11, background: T.creamDark, color: T.textMuted, borderRadius: 0, padding: '3px 10px' }}>
                 {(p.ingredient_form || p.ingredient_category?.replace(/_/g, ' ') || p.category)?.charAt(0).toUpperCase() + (p.ingredient_form || p.ingredient_category?.replace(/_/g, ' ') || p.category)?.slice(1)}
               </span>
             </div>
@@ -950,9 +933,27 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
 
           {/* Our note — curator note, shown to all users, hidden if empty */}
           {p.notes && (
-            <div style={{ margin: '10px 0 12px', padding: '10px 12px', background: T.pink, borderRadius: 10, borderLeft: `3px solid ${T.pinkDeep}` }}>
+            <div style={{ margin: '10px 0 12px', padding: '10px 12px', background: T.pink, borderRadius: 0, borderLeft: `3px solid ${T.pinkDeep}` }}>
               <div style={{ fontSize: 9, fontWeight: 700, color: T.pinkDeep, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Our note</div>
               <div style={{ fontSize: 12, color: T.text, lineHeight: 1.7 }}>{p.notes}</div>
+            </div>
+          )}
+
+          {/* Buy from pills — under badges/note, above description */}
+          {(purchaseUrl || directUrl) && (
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 14 }}>
+              {purchaseUrl && (
+                <a href={purchaseUrl} target="_blank" rel="noopener noreferrer"
+                  style={{ fontSize: 11, padding: '5px 12px', borderRadius: 0, background: T.white, color: T.text, textDecoration: 'none', border: `1px solid ${T.text}`, whiteSpace: 'nowrap', fontFamily: 'inherit' }}>
+                  Buy from {storeName || getStoreName(purchaseUrl) || 'affiliate'} ↗
+                </a>
+              )}
+              {directUrl && (
+                <a href={directUrl} target="_blank" rel="noopener noreferrer"
+                  style={{ fontSize: 11, padding: '5px 12px', borderRadius: 0, background: T.white, color: T.text, textDecoration: 'none', border: `1px solid ${T.text}`, whiteSpace: 'nowrap', fontFamily: 'inherit' }}>
+                  Buy from {directStoreName || getStoreName(directUrl) || 'brand site'} ↗
+                </a>
+              )}
             </div>
           )}
 
@@ -984,21 +985,21 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
             {isCatalog ? (
               upd?.in_library
                 ? <button onClick={() => { onRemoveFromLibrary(p.id); onClose() }}
-                    style={{ flex: 1, padding: '9px', borderRadius: 10, border: '0.5px solid ' + T.border, background: 'transparent', color: T.textMuted, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
+                    style={{ flex: 1, padding: '9px', borderRadius: 0, border: '0.5px solid ' + T.border, background: 'transparent', color: T.textMuted, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
                     Remove from my products
                   </button>
                 : <button onClick={() => { onAddToLibrary(p); onClose() }}
-                    style={{ flex: 1, padding: '9px', borderRadius: 10, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 500 }}>
+                    style={{ flex: 1, padding: '9px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 500 }}>
                     + Add to my products
                   </button>
             ) : (
               <>
                 <button onClick={() => { onClose(); onEdit(p) }}
-                  style={{ flex: 1, padding: '9px', borderRadius: 10, border: '0.5px solid ' + T.border, background: T.creamDark, color: T.text, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 500 }}>
+                  style={{ flex: 1, padding: '9px', borderRadius: 0, border: '0.5px solid ' + T.border, background: T.creamDark, color: T.text, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 500 }}>
                   Edit
                 </button>
                 <button onClick={() => { if (window.confirm('Delete ' + p.name + '?')) { onDelete(p); onClose() } }}
-                  style={{ padding: '9px 14px', borderRadius: 10, border: '0.5px solid ' + T.border, background: 'transparent', color: T.textLight, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
+                  style={{ padding: '9px 14px', borderRadius: 0, border: '0.5px solid ' + T.border, background: 'transparent', color: T.textLight, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
                   Delete
                 </button>
               </>
