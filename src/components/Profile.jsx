@@ -103,6 +103,64 @@ export default function Profile({ session }) {
   const userId = session?.user?.id
   const email  = session?.user?.email || ''
 
+  const [resetConfirm, setResetConfirm] = useState(false)
+  const [resetting, setResetting] = useState(false)
+  const [deleteConfirm, setDeleteConfirm] = useState(false)
+  const [deleteText, setDeleteText] = useState('')
+  const [deleting, setDeleting] = useState(false)
+  const [actionError, setActionError] = useState(null)
+
+  async function resetRoutine() {
+    setResetting(true)
+    setActionError(null)
+    try {
+      const { data: ups } = await supabase.from('user_programs').select('id').eq('user_id', userId)
+      const ids = (ups || []).map(u => u.id)
+      if (ids.length) {
+        await supabase.from('user_program_phase_history').delete().in('user_program_id', ids)
+        await supabase.from('user_program_phase_selections').delete().in('user_program_id', ids)
+      }
+      await supabase.from('user_programs').delete().eq('user_id', userId)
+
+      await supabase.from('routine_periods').delete().eq('user_id', userId)
+      await supabase.from('extras_periods').delete().eq('user_id', userId)
+      await supabase.from('shower_periods').delete().eq('user_id', userId)
+      await supabase.from('treatments').delete().eq('user_id', userId)
+      await supabase.from('custom_treatment_types').delete().eq('user_id', userId)
+
+      await supabase.from('profiles').update({ recovery_routines: {} }).eq('id', userId)
+
+      setResetConfirm(false)
+      window.location.href = '/routine'
+    } catch (err) {
+      setActionError(err.message)
+    } finally {
+      setResetting(false)
+    }
+  }
+
+  async function deleteAccount() {
+    setDeleting(true)
+    setActionError(null)
+    try {
+      const { data: sessionData } = await supabase.auth.getSession()
+      const token = sessionData?.session?.access_token
+      const res = await fetch('https://brcjhshptisevcndqavz.supabase.co/functions/v1/delete-account', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+      })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'Failed to delete account')
+
+      await supabase.auth.signOut()
+      window.location.href = '/'
+    } catch (err) {
+      setActionError(err.message)
+      setDeleting(false)
+    }
+  }
+
+
   useEffect(() => {
     if (!userId) return
     supabase.from('profiles').select('*').eq('id', userId).single()
@@ -375,6 +433,80 @@ export default function Profile({ session }) {
           style={{ width: '100%', padding: '12px', borderRadius: 10, border: 'none', background: saved ? '#4ADE80' : T.pinkDeep, color: saved ? '#14532D' : T.white, fontSize: 13, fontWeight: 600, cursor: saving ? 'default' : 'pointer', opacity: saving ? 0.7 : 1, transition: 'background 0.2s', fontFamily: 'inherit', marginBottom: 16 }}>
           {saved ? '✓ Saved' : saving ? 'Saving...' : 'Save profile'}
         </button>
+
+        {/* Danger zone */}
+        <div style={{ borderTop: `0.5px solid ${T.border}`, paddingTop: 16, marginBottom: 16 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 10 }}>
+            Account
+          </div>
+
+          {actionError && (
+            <div style={{ fontSize: 12, color: T.pinkDeep, marginBottom: 10 }}>{actionError}</div>
+          )}
+
+          <button onClick={() => setResetConfirm(true)}
+            style={{ width: '100%', padding: '11px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', fontSize: 13, color: T.text, cursor: 'pointer', fontFamily: 'inherit', marginBottom: 8 }}>
+            Reset my routine
+          </button>
+          <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.6, marginBottom: 16 }}>
+            Clears your routine, treatments, and program enrollment so you can start onboarding fresh. Your products and profile info stay.
+          </div>
+
+          <button onClick={() => setDeleteConfirm(true)}
+            style={{ width: '100%', padding: '11px', borderRadius: 0, border: `1px solid ${T.pinkDeep}`, background: 'transparent', fontSize: 13, color: T.pinkDeep, cursor: 'pointer', fontFamily: 'inherit', marginBottom: 8 }}>
+            Delete my account
+          </button>
+          <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.6 }}>
+            Permanently deletes your account and all your data — routine, treatments, products, profile. This cannot be undone. We keep a record that an account existed and was deleted, with no personal information, for legal purposes only.
+          </div>
+        </div>
+
+        {/* Reset confirmation modal */}
+        {resetConfirm && (
+          <div onClick={() => !resetting && setResetConfirm(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+            <div onClick={e => e.stopPropagation()} style={{ background: T.white, border: `1px solid ${T.border}`, borderRadius: 0, width: '100%', maxWidth: 400, padding: '24px 20px' }}>
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: T.text, margin: '0 0 10px' }}>Reset your routine?</h3>
+              <p style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.7, margin: '0 0 20px' }}>
+                This deletes your routine, treatments, and program progress so you can go through onboarding again. Your products and profile info are kept. This can't be undone.
+              </p>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button onClick={() => setResetConfirm(false)} disabled={resetting}
+                  style={{ flex: 1, padding: '10px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit' }}>
+                  Cancel
+                </button>
+                <button onClick={resetRoutine} disabled={resetting}
+                  style={{ flex: 1, padding: '10px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 600 }}>
+                  {resetting ? 'Resetting…' : 'Reset routine'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Delete account confirmation modal */}
+        {deleteConfirm && (
+          <div onClick={() => !deleting && setDeleteConfirm(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+            <div onClick={e => e.stopPropagation()} style={{ background: T.white, border: `1px solid ${T.border}`, borderRadius: 0, width: '100%', maxWidth: 400, padding: '24px 20px' }}>
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: T.pinkDeep, margin: '0 0 10px' }}>Delete your account?</h3>
+              <p style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.7, margin: '0 0 16px' }}>
+                This permanently deletes your account and everything in it — routine, treatments, products, profile. This cannot be undone.
+              </p>
+              <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 6 }}>Type DELETE to confirm</div>
+              <input value={deleteText} onChange={e => setDeleteText(e.target.value)}
+                style={{ width: '100%', boxSizing: 'border-box', fontSize: 13, padding: '8px 2px', border: 'none', borderBottom: '1px solid #000000', borderRadius: 0, background: 'transparent', color: T.text, fontFamily: 'inherit', outline: 'none', marginBottom: 20 }} />
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button onClick={() => { setDeleteConfirm(false); setDeleteText('') }} disabled={deleting}
+                  style={{ flex: 1, padding: '10px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit' }}>
+                  Cancel
+                </button>
+                <button onClick={deleteAccount} disabled={deleting || deleteText !== 'DELETE'}
+                  style={{ flex: 1, padding: '10px', borderRadius: 0, border: 'none', background: deleteText === 'DELETE' ? T.pinkDeep : T.border, color: '#fff', cursor: deleteText === 'DELETE' ? 'pointer' : 'default', fontSize: 13, fontFamily: 'inherit', fontWeight: 600 }}>
+                  {deleting ? 'Deleting…' : 'Delete account'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Sign out */}
         <button onClick={async () => { await supabase.auth.signOut(); window.location.href = '/routine' }}
