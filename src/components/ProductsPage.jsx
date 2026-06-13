@@ -463,59 +463,84 @@ function ProductForm({ initial, onSave, onCancel, catalogProducts, session }) {
 
   function removeTag(t) { set('tags', (form.tags || []).filter(x => x !== t)) }
 
+  const inputStyle = { width: '100%', boxSizing: 'border-box', fontSize: 12, padding: '6px 2px', border: 'none', borderBottom: '1px solid #000000', borderRadius: 0, background: 'transparent', color: T.text, fontFamily: 'inherit', outline: 'none' }
+  const selectStyle = { ...inputStyle, cursor: 'pointer' }
+
   return (
-    <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 12, padding: '14px 16px', marginBottom: 10 }}>
-      <div style={{ fontSize: 13, fontWeight: 500, color: T.text, marginBottom: 12 }}>
+    <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 0, padding: '16px 18px', marginBottom: 10, maxWidth: 460 }}>
+      <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 14 }}>
         {initial?.id ? 'Edit product' : 'Add product'}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 8 }}>
-        <div style={{ position: 'relative' }}>
-          <FieldLabel>Product name</FieldLabel>
-          <TextInput value={form.name} onChange={e => set('name', e.target.value)} placeholder="e.g. Blueberry Cleanser" width="100%" />
-          {showSuggestions && suggestions.length > 0 && (
-            <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 100, background: '#fff', border: '0.5px solid ' + T.border, borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.08)', maxHeight: 200, overflowY: 'auto' }}>
-              {suggestions.map(p => (
-                <div key={p.id} onMouseDown={() => selectSuggestion(p)}
-                  style={{ padding: '8px 12px', cursor: 'pointer', fontSize: 12, borderBottom: '0.5px solid ' + T.border }}
-                  onMouseEnter={e => e.currentTarget.style.background = T.creamDark}
-                  onMouseLeave={e => e.currentTarget.style.background = '#fff'}>
-                  <div style={{ fontWeight: 500, color: T.text }}>{p.name}</div>
-                  {p.brand && <div style={{ fontSize: 11, color: T.textMuted }}>{p.brand}</div>}
-                </div>
-              ))}
-            </div>
-          )}
+      {/* Name — full width with autocomplete */}
+      <div style={{ position: 'relative', marginBottom: 10 }}>
+        <FieldLabel>Product name</FieldLabel>
+        <input value={form.name} onChange={e => set('name', e.target.value)} placeholder="e.g. Blueberry Cleanser" style={{ ...inputStyle }} />
+        {showSuggestions && suggestions.length > 0 && (
+          <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 100, background: '#fff', border: '0.5px solid ' + T.border, borderRadius: 0, boxShadow: '0 4px 12px rgba(0,0,0,0.08)', maxHeight: 200, overflowY: 'auto' }}>
+            {suggestions.map(p => (
+              <div key={p.id} onMouseDown={() => selectSuggestion(p)}
+                style={{ padding: '8px 12px', cursor: 'pointer', fontSize: 12, borderBottom: '0.5px solid ' + T.border }}
+                onMouseEnter={e => e.currentTarget.style.background = T.creamDark}
+                onMouseLeave={e => e.currentTarget.style.background = '#fff'}>
+                <div style={{ fontWeight: 500, color: T.text }}>{p.name}</div>
+                {p.brand && <div style={{ fontSize: 11, color: T.textMuted }}>{p.brand}</div>}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Brand + Category side by side */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 10 }}>
+        <div>
+          <FieldLabel>Brand</FieldLabel>
+          <input value={form.brand} onChange={e => set('brand', e.target.value)} placeholder="e.g. Glow Recipe" style={inputStyle} />
         </div>
-        <div><FieldLabel>Brand</FieldLabel><TextInput value={form.brand} onChange={e => set('brand', e.target.value)} placeholder="e.g. Glow Recipe" width="100%" /></div>
+        <div>
+          <FieldLabel>Category</FieldLabel>
+          <select value={form.category} onChange={e => set('category', e.target.value)} style={selectStyle}>
+            {PRODUCT_CATEGORIES.map(c => <option key={c} value={c}>{formatCatLabel(c)}</option>)}
+          </select>
+        </div>
       </div>
 
-      <div style={{ marginBottom: 8 }}>
-        <FieldLabel>Category</FieldLabel>
-        <select value={form.category} onChange={e => set('category', e.target.value)} style={{ fontSize: 12, padding: '5px 8px', border: `0.5px solid ${T.border}`, borderRadius: 6, background: T.cream, color: T.text, width: '100%' }}>
-          {PRODUCT_CATEGORIES.map(c => <option key={c} value={c}>{formatCatLabel(c)}</option>)}
-        </select>
+      {/* Image upload */}
+      <div style={{ marginBottom: 10 }}>
+        <FieldLabel>Product image</FieldLabel>
+        <ProductImageUpload value={form.imageUrl} onChange={url => set('imageUrl', url)} session={session} productName={form.name} />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 8 }}>
-        <div><FieldLabel>Product image</FieldLabel>
-          <ProductImageUpload
-            value={form.imageUrl}
-            onChange={url => set('imageUrl', url)}
-            session={session}
-            productName={form.name}
-          /></div>
+      {/* Purchase URLs side by side */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 10 }}>
+        <div>
+          <FieldLabel>Affiliate URL</FieldLabel>
+          <input value={form.purchaseUrl || ''} onChange={e => set('purchaseUrl', e.target.value)} placeholder="https://..." style={inputStyle} />
+        </div>
+        <div>
+          <FieldLabel>Affiliate store name</FieldLabel>
+          <input value={form.store_name || ''} onChange={e => set('store_name', e.target.value)} placeholder="e.g. Sephora" style={inputStyle} />
+        </div>
+        <div>
+          <FieldLabel>Direct URL</FieldLabel>
+          <input value={form.direct_url || ''} onChange={e => set('direct_url', e.target.value)} placeholder="https://..." style={inputStyle} />
+        </div>
+        <div>
+          <FieldLabel>Direct store name</FieldLabel>
+          <input value={form.direct_store_name || ''} onChange={e => set('direct_store_name', e.target.value)} placeholder="e.g. Brand site" style={inputStyle} />
+        </div>
       </div>
 
-      <div style={{ marginBottom: 8 }}>
-        <FieldLabel>Where do you use this? (select all that apply)</FieldLabel>
+      {/* Application area */}
+      <div style={{ marginBottom: 10 }}>
+        <FieldLabel>Where do you use this?</FieldLabel>
         <div style={{ display: 'flex', gap: 6 }}>
           {['Face', 'Body', 'Hair'].map(area => {
             const key = area.toLowerCase()
             const active = !!(form.applicationArea?.[key])
             return (
               <button key={key} onClick={() => set('applicationArea', { ...(form.applicationArea || {}), [key]: !active })}
-                style={{ fontSize: 11, padding: '4px 12px', borderRadius: 6, cursor: 'pointer', border: `0.5px solid ${active ? T.pinkDeep : T.border}`, background: active ? T.pink : 'transparent', color: active ? T.text : T.textMuted, fontWeight: active ? 600 : 400 }}>
+                style={{ fontSize: 11, padding: '4px 12px', borderRadius: 0, cursor: 'pointer', border: `1px solid ${active ? T.text : T.border}`, background: active ? T.text : 'transparent', color: active ? '#fff' : T.textMuted, fontFamily: 'inherit' }}>
                 {area}
               </button>
             )
@@ -523,36 +548,20 @@ function ProductForm({ initial, onSave, onCancel, catalogProducts, session }) {
         </div>
       </div>
 
-      {/* Purchase & expiry tracking */}
-      <div style={{ borderTop: `0.5px solid ${T.border}`, paddingTop: 12, marginBottom: 10 }}>
+      {/* PAO + dates */}
+      <div style={{ borderTop: `0.5px solid ${T.border}`, paddingTop: 10, marginBottom: 8 }}>
         <FieldLabel>Purchase & expiry <span style={{ fontWeight: 400, color: T.textLight }}>(optional)</span></FieldLabel>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 6, marginBottom: 10 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 10 }}>
+        <div><FieldLabel>Purchased</FieldLabel>
+          <input type="date" value={form.purchased_at || ''} onChange={e => set('purchased_at', e.target.value)} style={inputStyle} /></div>
+        <div><FieldLabel>Opened</FieldLabel>
+          <input type="date" value={form.opened_at || ''} onChange={e => set('opened_at', e.target.value)} style={inputStyle} /></div>
+        <div><FieldLabel>Expires</FieldLabel>
+          <input type="date" value={form.expires_at || ''} onChange={e => set('expires_at', e.target.value)} style={inputStyle} /></div>
         <div>
-          <FieldLabel>Purchased</FieldLabel>
-          <input type="date" value={form.purchased_at || ''} onChange={e => set('purchased_at', e.target.value)}
-            style={{ width: '100%', fontSize: 10, padding: '6px 6px', border: `0.5px solid ${T.border}`, borderRadius: 8, background: T.cream, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box', minWidth: 0 }} />
-        </div>
-        <div>
-          <FieldLabel>Opened</FieldLabel>
-          <input type="date" value={form.opened_at || ''} onChange={e => set('opened_at', e.target.value)}
-            style={{ width: '100%', fontSize: 10, padding: '6px 6px', border: `0.5px solid ${T.border}`, borderRadius: 8, background: T.cream, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box', minWidth: 0 }} />
-        </div>
-        <div>
-          <FieldLabel>Expires</FieldLabel>
-          <input type="date" value={form.expires_at || ''} onChange={e => set('expires_at', e.target.value)}
-            style={{ width: '100%', fontSize: 10, padding: '6px 6px', border: `0.5px solid ${T.border}`, borderRadius: 8, background: T.cream, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box', minWidth: 0 }} />
-        </div>
-        <div>
-          <FieldLabel>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-              <PaoIcon months={form.pao_months} size={14} />
-              PAO
-              <InfoTooltip text="Period After Opening — how long the product is good for once opened. Look for the open jar symbol on packaging." />
-            </span>
-          </FieldLabel>
-          <select value={form.pao_months || ''} onChange={e => set('pao_months', e.target.value ? Number(e.target.value) : null)}
-            style={{ width: '100%', fontSize: 12, padding: '7px 10px', border: `0.5px solid ${T.border}`, borderRadius: 8, background: T.cream, color: form.pao_months ? T.text : T.textMuted, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }}>
+          <FieldLabel><span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><PaoIcon months={form.pao_months} size={14} /> PAO <InfoTooltip text="Period After Opening" /></span></FieldLabel>
+          <select value={form.pao_months || ''} onChange={e => set('pao_months', e.target.value ? Number(e.target.value) : null)} style={selectStyle}>
             <option value="">— Select PAO —</option>
             {PAO_OPTIONS.map(m => <option key={m} value={m}>{m} months</option>)}
           </select>
@@ -565,7 +574,7 @@ function ProductForm({ initial, onSave, onCancel, catalogProducts, session }) {
       )}
 
       {/* Ownership & ethics */}
-      <div style={{ borderTop: `0.5px solid ${T.border}`, paddingTop: 12, marginBottom: 8 }}>
+      <div style={{ borderTop: `0.5px solid ${T.border}`, paddingTop: 10, marginBottom: 8 }}>
         <FieldLabel>Ownership & ethics</FieldLabel>
       </div>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 12 }}>
@@ -584,24 +593,24 @@ function ProductForm({ initial, onSave, onCancel, catalogProducts, session }) {
           { key: 'science_backed',    label: 'Science-backed'    },
         ].map(({ key, label }) => (
           <button key={key} type="button" onClick={() => set(key, !form[key])} style={{
-            padding: '5px 12px', borderRadius: 0, fontSize: 11, cursor: 'pointer',
-            border: `0.5px solid ${form[key] ? T.pinkDeep : T.border}`,
-            background: form[key] ? T.pink : 'transparent',
-            color: T.text, fontFamily: 'inherit',
+            padding: '4px 10px', borderRadius: 0, fontSize: 11, cursor: 'pointer',
+            border: `1px solid ${form[key] ? T.text : T.border}`,
+            background: form[key] ? T.text : 'transparent',
+            color: form[key] ? '#fff' : T.textMuted, fontFamily: 'inherit',
           }}>{label}</button>
         ))}
       </div>
 
-      <div style={{ marginBottom: 8 }}>
+      {/* Rating */}
+      <div style={{ marginBottom: 10 }}>
         <FieldLabel>My rating</FieldLabel>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
           <StarRating value={form.effectiveness} onChange={v => set('effectiveness', v)} size={18} />
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: 11, color: T.textMuted }}>Would buy again?</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ fontSize: 11, color: T.textMuted }}>Buy again?</span>
             {[['Yes', true], ['No', false], ['—', null]].map(([label, val]) => (
-              <button key={label} type="button"
-                onClick={() => set('buyAgain', form.buyAgain === val ? null : val)}
-                style={{ padding: '4px 10px', borderRadius: 0, fontSize: 11, cursor: 'pointer', fontFamily: 'inherit', border: `0.5px solid ${T.border}`, background: form.buyAgain === val ? T.pinkDeep : T.cream, color: form.buyAgain === val ? '#fff' : T.textMuted }}>
+              <button key={label} type="button" onClick={() => set('buyAgain', form.buyAgain === val ? null : val)}
+                style={{ padding: '3px 9px', borderRadius: 0, fontSize: 11, cursor: 'pointer', fontFamily: 'inherit', border: `1px solid ${form.buyAgain === val ? T.text : T.border}`, background: form.buyAgain === val ? T.text : 'transparent', color: form.buyAgain === val ? '#fff' : T.textMuted }}>
                 {label}
               </button>
             ))}
@@ -609,40 +618,32 @@ function ProductForm({ initial, onSave, onCancel, catalogProducts, session }) {
         </div>
       </div>
 
-      <div style={{ marginBottom: 8 }}>
-        <FieldLabel>Tags (fragrance free, silicone free, etc.)</FieldLabel>
-        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 6 }}>
+      {/* Tags */}
+      <div style={{ marginBottom: 10 }}>
+        <FieldLabel>Tags</FieldLabel>
+        <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', marginBottom: 6 }}>
           {(form.tags || []).map(t => (
-            <span key={t} style={{ fontSize: 11, padding: '2px 8px', borderRadius: 0, background: T.pink, color: T.text, border: `0.5px solid ${T.pinkDeep}`, cursor: 'pointer' }} onClick={() => removeTag(t)}>
-              {t} ×
-            </span>
+            <span key={t} style={{ fontSize: 11, padding: '2px 8px', borderRadius: 0, background: T.creamDark, color: T.text, border: `0.5px solid ${T.border}`, cursor: 'pointer' }} onClick={() => removeTag(t)}>{t} ×</span>
           ))}
         </div>
         <div style={{ display: 'flex', gap: 6 }}>
-          <TextInput value={tagInput} onChange={e => setTagInput(e.target.value)} placeholder="e.g. fragrance free" width={150} />
-          <Btn variant="secondary" onClick={addTag}>Add</Btn>
+          <input value={tagInput} onChange={e => setTagInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && addTag()} placeholder="e.g. fragrance free" style={{ ...inputStyle, flex: 1 }} />
+          <button type="button" onClick={addTag} style={{ fontSize: 11, padding: '4px 10px', borderRadius: 0, border: '1px solid ' + T.border, background: 'transparent', color: T.text, cursor: 'pointer', fontFamily: 'inherit', flexShrink: 0 }}>Add</button>
         </div>
       </div>
 
+      {/* Ingredient category */}
       <div style={{ marginBottom: 10 }}>
-        <FieldLabel>Ingredient category <span style={{ fontWeight: 400, color: T.textLight }}>(optional — enables conflict detection)</span></FieldLabel>
-        <select
-          value={form.ingredient_category || ''}
-          onChange={e => set('ingredient_category', e.target.value)}
-          style={{ width: '100%', fontSize: 12, padding: '8px 10px', border: `0.5px solid ${T.border}`, borderRadius: 8, background: T.cream, color: form.ingredient_category ? T.text : T.textMuted, fontFamily: 'inherit', marginBottom: 8, outline: 'none', boxSizing: 'border-box' }}
-        >
-          <option value="">— Select ingredient category —</option>
+        <FieldLabel>Ingredient category <span style={{ fontWeight: 400, color: T.textLight }}>(optional)</span></FieldLabel>
+        <select value={form.ingredient_category || ''} onChange={e => set('ingredient_category', e.target.value)} style={{ ...selectStyle, marginBottom: 8 }}>
+          <option value="">— Select category —</option>
           {Object.entries(PRODUCT_INGREDIENT_CATEGORIES).map(([key, cat]) => (
             <option key={key} value={key}>{cat.label}</option>
           ))}
         </select>
         {form.ingredient_category && PRODUCT_INGREDIENT_CATEGORIES[form.ingredient_category]?.forms?.length > 0 && (<>
           <FieldLabel>Ingredient form <span style={{ fontWeight: 400, color: T.textLight }}>(optional)</span></FieldLabel>
-          <select
-            value={form.ingredient_form || ''}
-            onChange={e => set('ingredient_form', e.target.value)}
-            style={{ width: '100%', fontSize: 12, padding: '8px 10px', border: `0.5px solid ${T.border}`, borderRadius: 8, background: T.cream, color: form.ingredient_form ? T.text : T.textMuted, fontFamily: 'inherit', marginBottom: 8, outline: 'none', boxSizing: 'border-box' }}
-          >
+          <select value={form.ingredient_form || ''} onChange={e => set('ingredient_form', e.target.value)} style={{ ...selectStyle, marginBottom: 8 }}>
             <option value="">— Select form —</option>
             {PRODUCT_INGREDIENT_CATEGORIES[form.ingredient_category].forms.map(f => (
               <option key={f} value={f}>{f}</option>
@@ -651,14 +652,22 @@ function ProductForm({ initial, onSave, onCancel, catalogProducts, session }) {
         </>)}
       </div>
 
-      <div style={{ marginBottom: 10 }}>
+      {/* Notes */}
+      <div style={{ marginBottom: 12 }}>
         <FieldLabel>Notes</FieldLabel>
-        <textarea value={form.notes} onChange={e => set('notes', e.target.value)} placeholder="Any notes..." style={{ width: '100%', fontSize: 12, padding: '5px 8px', border: `0.5px solid ${T.border}`, borderRadius: 6, background: T.cream, color: T.text, resize: 'vertical', minHeight: 60, fontFamily: 'inherit' }} />
+        <textarea value={form.notes} onChange={e => set('notes', e.target.value)} placeholder="Any notes..." rows={3}
+          style={{ width: '100%', boxSizing: 'border-box', fontSize: 12, padding: '6px 2px', border: 'none', borderBottom: '1px solid #000000', borderRadius: 0, background: 'transparent', color: T.text, resize: 'vertical', fontFamily: 'inherit', outline: 'none' }} />
       </div>
 
       <div style={{ display: 'flex', gap: 8, borderTop: `0.5px solid ${T.border}`, paddingTop: 10 }}>
-        <Btn variant="primary" onClick={() => form.name && onSave({ ...form, id: form.id || uid() })} disabled={!form.name}>Save product</Btn>
-        <Btn onClick={onCancel}>Cancel</Btn>
+        <button type="button" onClick={() => form.name && onSave({ ...form, id: form.id || uid() })} disabled={!form.name}
+          style={{ flex: 1, padding: '9px', borderRadius: 0, border: 'none', background: form.name ? T.text : T.border, color: '#fff', cursor: form.name ? 'pointer' : 'default', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
+          {initial?.id ? 'Save changes' : 'Save product'}
+        </button>
+        <button type="button" onClick={onCancel}
+          style={{ padding: '9px 16px', borderRadius: 0, border: '1px solid ' + T.border, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
+          Cancel
+        </button>
       </div>
     </div>
   )
@@ -1150,6 +1159,25 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
     document.head.appendChild(s)
   }, [])
 
+  // Faceted filtering — each section's options narrow based on other active filters
+  function filterExcluding(excludeKey) {
+    return getMergedProducts().filter(p => {
+      const q = search.trim().toLowerCase()
+      const matchSearch = !q || p.name.toLowerCase().includes(q) || (p.brand||'').toLowerCase().includes(q)
+      const matchCat    = excludeKey === 'cat'    || filterCats.length === 0   || filterCats.includes(p.category)
+      const matchBrand  = excludeKey === 'brand'  || filterBrands.length === 0 || filterBrands.includes(p.brand || '')
+      const matchFlags  = excludeKey === 'flags'  || filterFlags.length === 0  || filterFlags.every(f => p[f])
+      const matchStatus = excludeKey === 'status' || (
+        (!filterUsing    || isWhatWeUsing(p) || (userRoutineNames||new Set()).has(((p.name||'')+'|'+(p.brand||'')).toLowerCase())) &&
+        (!filterBuyAgain || (userProductData||{})[p.id]?.buy_again === true)
+      )
+      return matchSearch && matchCat && matchBrand && matchFlags && matchStatus
+    })
+  }
+  const availableBrands = [...new Set(filterExcluding('brand').map(p => p.brand||'').filter(Boolean))].sort((a,b) => a.toLowerCase().localeCompare(b.toLowerCase()))
+  const availableCats   = PRODUCT_CATEGORIES.filter(cat => filterExcluding('cat').some(p => p.category === cat))
+  const availableFlags  = ETHICS_FILTERS.filter(({key}) => filterExcluding('flags').some(p => p[key]))
+
   // Shared filter content used in both sidebar and bottom sheet
   const ETHICS_FILTERS = [
     { key: 'black_owned',       label: 'Black-owned'      },
@@ -1170,17 +1198,17 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
     return (
       <>
         <FilterSection title="Product type">
-          {PRODUCT_CATEGORIES.map(cat => (
+          {availableCats.map(cat => (
             <CheckItem key={cat} label={formatCatLabel(cat)} checked={filterCats.includes(cat)} onChange={() => toggleCat(cat)} />
           ))}
         </FilterSection>
         <FilterSection title="Brand">
-          {[...new Set(pool.map(p => p.brand || '').filter(Boolean))].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase())).map(brand => (
+          {availableBrands.map(brand => (
             <CheckItem key={brand} label={brand} checked={filterBrands.includes(brand)} onChange={() => toggleBrand(brand)} />
           ))}
         </FilterSection>
         <FilterSection title="Ethics & values">
-          {ETHICS_FILTERS.map(({ key, label }) => (
+          {availableFlags.map(({ key, label }) => (
             <CheckItem key={key} label={label} checked={filterFlags.includes(key)} onChange={() => toggleFlag(key)} />
           ))}
         </FilterSection>
@@ -1247,7 +1275,8 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
         </div>
 
         {/* Sort + Search */}
-        <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+        <div style={{ display: 'flex', gap: 8, marginBottom: 8, alignItems: 'baseline' }}>
+          <span style={{ fontSize: 11, color: T.textMuted, flexShrink: 0 }}>Sort</span>
           <select value={sortBy} onChange={e => setSortBy(e.target.value)} style={{ padding: '7px 2px', borderRadius: 0, border: 'none', borderBottom: '1px solid #000000', background: 'transparent', color: T.text, fontSize: 12, fontFamily: 'inherit', cursor: 'pointer', flexShrink: 0, outline: 'none' }}>
             <option value="routine">My routine first</option>
             <option value="name">A–Z Product name</option>
