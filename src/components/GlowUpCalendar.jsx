@@ -3790,6 +3790,7 @@ export default function GlowUpCalendar({ session }) {
   const [customTypes,    setCustomTypes]    = useState({})
   const [activeProgram,  setActiveProgram]  = useState(null)   // user_programs row or null
   const [onboardingDone, setOnboardingDone] = useState(null)   // null=loading, true/false
+  const [reloadKey,      setReloadKey]      = useState(0)      // bump to retrigger loadAll
 
   // panel: 'setup' | 'update' | 'history' | null
   const [panel,         setPanel]         = useState(null)
@@ -3940,7 +3941,7 @@ export default function GlowUpCalendar({ session }) {
       }
     }
     loadAll()
-  }, [userId])
+  }, [userId, reloadKey])
   const [showTreatments, setShowTreatments] = useState(false)
   const [showMenu,      setShowMenu]      = useState(false)
   const [showFeedback,  setShowFeedback]  = useState(false)
@@ -4677,8 +4678,7 @@ export default function GlowUpCalendar({ session }) {
       session={session}
       onEnrolled={() => {
         setOnboardingDone(true)
-        // Reload so activeProgram state is fresh
-        setLoading(true)
+        setReloadKey(k => k + 1)
       }}
       onSkipToBuilder={() => {
         setOnboardingDone(true)
