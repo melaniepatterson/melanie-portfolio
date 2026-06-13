@@ -34,48 +34,94 @@ function daysSince(dateStr) {
 
 // ─── PHASE 2 OPTION PICKER ────────────────────────────────────
 function Phase2Picker({ options, onChoose, onClose }) {
-  const [selected, setSelected] = useState(null)
+  const [selected, setSelected] = useState(new Set())
   const [saving, setSaving] = useState(false)
+
+  function toggle(opt) {
+    setSelected(prev => {
+      const next = new Set(prev)
+      if (opt.is_skip_option) {
+        // Skip is exclusive — selecting it clears everything else
+        return next.has(opt.id) ? new Set() : new Set([opt.id])
+      }
+      // Selecting a real option clears skip if present
+      const skipOpt = options.find(o => o.is_skip_option)
+      if (skipOpt) next.delete(skipOpt.id)
+      if (next.has(opt.id)) next.delete(opt.id)
+      else next.add(opt.id)
+      return next
+    })
+  }
+
+  const realOptions = options.filter(o => !o.is_skip_option)
+  const skipOption = options.find(o => o.is_skip_option)
 
   return (
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
       <div onClick={e => e.stopPropagation()} style={{ background: T.white, border: `1px solid ${T.border}`, borderRadius: 0, width: '100%', maxWidth: 460, maxHeight: '85vh', overflowY: 'auto', padding: '24px 20px' }}>
         <div style={{ fontSize: 11, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>
-          Phase 2 — Add one thing
+          Phase 2 — Add to your routine
         </div>
         <h3 style={{ fontSize: 20, fontWeight: 800, color: T.text, letterSpacing: '-0.03em', margin: '0 0 8px' }}>
           What do you want to add?
         </h3>
         <p style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.7, margin: '0 0 20px' }}>
-          Pick one. We'll slot it into your routine in the right place — you can add the actual product later.
+          Pick as many as you're ready for. We'll slot each one into your routine in the right place — you can add the actual products later.
         </p>
 
-        {options.map(opt => (
-          <button key={opt.id} onClick={() => setSelected(opt.id)}
+        {realOptions.map(opt => {
+          const isOn = selected.has(opt.id)
+          return (
+            <button key={opt.id} onClick={() => toggle(opt)}
+              style={{
+                width: '100%', textAlign: 'left', display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 8,
+                padding: '14px 16px', borderRadius: 0, cursor: 'pointer', fontFamily: 'inherit',
+                border: `1px solid ${isOn ? T.text : T.border}`,
+                background: isOn ? T.text : 'transparent',
+              }}>
+              <div style={{ width: 16, height: 16, border: `1.5px solid ${isOn ? '#fff' : T.border}`, background: isOn ? '#fff' : 'transparent', flexShrink: 0, marginTop: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {isOn && <svg width="10" height="8" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke={T.text} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+              </div>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: isOn ? '#fff' : T.text, marginBottom: 3 }}>
+                  {opt.label}
+                </div>
+                <div style={{ fontSize: 12, color: isOn ? 'rgba(255,255,255,0.75)' : T.textMuted, lineHeight: 1.6 }}>
+                  {opt.description}
+                </div>
+              </div>
+            </button>
+          )
+        })}
+
+        {skipOption && (
+          <button onClick={() => toggle(skipOption)}
             style={{
-              width: '100%', textAlign: 'left', display: 'block', marginBottom: 8,
+              width: '100%', textAlign: 'left', display: 'block', marginTop: 12, marginBottom: 8,
               padding: '14px 16px', borderRadius: 0, cursor: 'pointer', fontFamily: 'inherit',
-              border: `1px solid ${selected === opt.id ? T.text : T.border}`,
-              background: selected === opt.id ? T.text : 'transparent',
+              border: `1px solid ${selected.has(skipOption.id) ? T.text : T.border}`,
+              background: selected.has(skipOption.id) ? T.text : 'transparent',
+              borderTop: `1px solid ${T.border}`,
             }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: selected === opt.id ? '#fff' : T.text, marginBottom: 3 }}>
-              {opt.label}
+            <div style={{ fontSize: 13, fontWeight: 600, color: selected.has(skipOption.id) ? '#fff' : T.text, marginBottom: 3 }}>
+              {skipOption.label}
             </div>
-            <div style={{ fontSize: 12, color: selected === opt.id ? 'rgba(255,255,255,0.75)' : T.textMuted, lineHeight: 1.6 }}>
-              {opt.description}
+            <div style={{ fontSize: 12, color: selected.has(skipOption.id) ? 'rgba(255,255,255,0.75)' : T.textMuted, lineHeight: 1.6 }}>
+              {skipOption.description}
             </div>
           </button>
-        ))}
+        )}
 
         <button
-          disabled={!selected || saving}
+          disabled={selected.size === 0 || saving}
           onClick={async () => {
             setSaving(true)
-            await onChoose(options.find(o => o.id === selected))
+            const chosen = options.filter(o => selected.has(o.id))
+            await onChoose(chosen)
             setSaving(false)
           }}
-          style={{ width: '100%', padding: '12px', borderRadius: 0, border: 'none', background: selected ? T.pinkDeep : T.border, color: '#fff', cursor: selected ? 'pointer' : 'default', fontSize: 13, fontFamily: 'inherit', fontWeight: 600, marginTop: 12 }}>
-          {saving ? 'Saving…' : 'Add to my routine'}
+          style={{ width: '100%', padding: '12px', borderRadius: 0, border: 'none', background: selected.size > 0 ? T.pinkDeep : T.border, color: '#fff', cursor: selected.size > 0 ? 'pointer' : 'default', fontSize: 13, fontFamily: 'inherit', fontWeight: 600, marginTop: 12 }}>
+          {saving ? 'Saving…' : selected.size > 1 ? `Add ${selected.size} to my routine` : 'Add to my routine'}
         </button>
       </div>
     </div>
@@ -155,44 +201,45 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
   const ready = currentPhase.duration_days != null && elapsed >= currentPhase.duration_days
 
   // ── Phase 1 -> Phase 2 ─────────────────────────────────────
-  async function advanceToPhase2(chosenOption) {
+  async function advanceToPhase2(chosenOptions) {
     const today = new Date().toISOString().split('T')[0]
+    const realChoices = chosenOptions.filter(o => !o.is_skip_option)
 
-    // If user picked a real step (not "skip"), add it to routine_periods.steps
-    if (chosenOption && !chosenOption.is_skip_option && routinePeriod?._dbId) {
-      const map = STEP_KEY_MAP[chosenOption.step_key]
-      if (map) {
-        const newStep = {
-          id: `${chosenOption.time_of_day === 'am' ? 'am' : chosenOption.time_of_day === 'pm' ? 'pm' : 'both'}_${chosenOption.step_key}`,
+    // Add each chosen step to routine_periods.steps
+    if (realChoices.length && routinePeriod?._dbId) {
+      const currentSteps = routinePeriod.steps || { am: [], pm: [] }
+      const newSteps = { am: [...(currentSteps.am || [])], pm: [...(currentSteps.pm || [])] }
+
+      for (const opt of realChoices) {
+        const map = STEP_KEY_MAP[opt.step_key]
+        if (!map) continue
+        const base = {
           categoryKey: map.categoryKey,
           label: map.label,
           optional: false,
           enabled: true,
           professionalOnly: false,
         }
-        const currentSteps = routinePeriod.steps || { am: [], pm: [] }
-        const newSteps = { am: [...(currentSteps.am || [])], pm: [...(currentSteps.pm || [])] }
-
-        if (chosenOption.time_of_day === 'am' || chosenOption.time_of_day === 'both') {
-          newSteps.am.push({ ...newStep, id: `am_${chosenOption.step_key}` })
+        if (opt.time_of_day === 'am' || opt.time_of_day === 'both') {
+          newSteps.am.push({ ...base, id: `am_${opt.step_key}` })
         }
-        if (chosenOption.time_of_day === 'pm' || chosenOption.time_of_day === 'both') {
-          newSteps.pm.push({ ...newStep, id: `pm_${chosenOption.step_key}` })
+        if (opt.time_of_day === 'pm' || opt.time_of_day === 'both') {
+          newSteps.pm.push({ ...base, id: `pm_${opt.step_key}` })
         }
-
-        await supabase
-          .from('routine_periods')
-          .update({ steps: newSteps, updated_at: new Date().toISOString() })
-          .eq('id', routinePeriod._dbId)
       }
+
+      await supabase
+        .from('routine_periods')
+        .update({ steps: newSteps, updated_at: new Date().toISOString() })
+        .eq('id', routinePeriod._dbId)
     }
 
-    // Record the selection
-    if (chosenOption) {
+    // Record each selection (including skip, if that's what was chosen)
+    for (const opt of chosenOptions) {
       await supabase.from('user_program_phase_selections').insert({
         user_program_id: activeProgram.id,
         phase_id: currentPhase.id,
-        selected_option_id: chosenOption.id,
+        selected_option_id: opt.id,
       })
     }
 
