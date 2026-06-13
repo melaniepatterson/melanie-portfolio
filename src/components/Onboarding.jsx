@@ -111,17 +111,51 @@ export default function Onboarding({ session, onEnrolled, onSkipToBuilder }) {
   async function enroll() {
     setScreen('enrolling')
     try {
-      const { error } = await supabase
+      const today = new Date().toISOString().split('T')[0]
+
+      // 1. Enroll in the program
+      const { error: progErr } = await supabase
         .from('user_programs')
         .insert({
           user_id:              session.user.id,
           program_id:           program.id,
-          started_at:           new Date().toISOString().split('T')[0],
+          started_at:           today,
           current_phase_number: 1,
-          phase_started_at:     new Date().toISOString().split('T')[0],
+          phase_started_at:     today,
           status:               'active',
         })
-      if (error) throw error
+      if (progErr) throw progErr
+
+      // 2. Convert Phase 1 steps into the routine_periods steps shape
+      //    am/pm arrays of { id, categoryKey, label, optional, enabled, professionalOnly }
+      function buildSteps(tod) {
+        return phase1Steps
+          .filter(s => s.time_of_day === tod || s.time_of_day === 'both')
+          .sort((a, b) => a.position - b.position)
+          .map(s => ({
+            id: `${tod}_${s.step_key}`,
+            categoryKey: s.step_key,
+            label: s.label,
+            optional: false,
+            enabled: true,
+            professionalOnly: false,
+          }))
+      }
+
+      // 3. Create the active routine period — this is what the calendar renders
+      const { error: routineErr } = await supabase
+        .from('routine_periods')
+        .insert({
+          user_id:    session.user.id,
+          start_date: today,
+          end_date:   null,
+          steps: {
+            am: buildSteps('am'),
+            pm: buildSteps('pm'),
+          },
+        })
+      if (routineErr) throw routineErr
+
       onEnrolled()
     } catch (err) {
       setError(err.message)
