@@ -36,6 +36,7 @@ import { supabase } from '../lib/supabase'
 import GlowUpLoader from './GlowUpLoader'
 import { LoadError } from './ErrorBoundary'
 import Onboarding from './Onboarding'
+import ProgramAdvancement from './ProgramAdvancement'
 
 // ─── DESIGN TOKENS ───────────────────────────────────────────
 const T = {
@@ -4696,6 +4697,16 @@ export default function GlowUpCalendar({ session }) {
         <span style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.04em', color: T.text, lineHeight: 1 }}>glow up</span>
         <span style={{ width: 6, height: 6, borderRadius: '50%', background: T.pinkDeep, display: 'inline-block', flexShrink: 0 }} />
       </div>
+
+      {/* Active program status + advancement prompts */}
+      {activeProgram && (
+        <ProgramAdvancement
+          session={session}
+          activeProgram={activeProgram}
+          routinePeriod={getActivePeriod(now, routineHistory)}
+          onAdvanced={() => setReloadKey(k => k + 1)}
+        />
+      )}
 
       {/* Toast — always in flow at top, small so it doesn't displace much */}
       {toast && (
