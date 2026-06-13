@@ -107,7 +107,7 @@ function Phase2Picker({ options, onChoose, onClose }) {
               <div>
                 <div style={{ fontSize: 13, fontWeight: 600, color: isOn ? '#fff' : T.text, marginBottom: 3 }}>
                   {opt.label}
-                  {isActive && <span style={{ fontSize: 9, fontWeight: 700, color: isOn ? 'rgba(255,255,255,0.7)' : T.pinkDeep, marginLeft: 8, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Active</span>}
+                  {isActive && <span style={{ fontSize: 9, fontWeight: 700, color: isOn ? 'rgba(255,255,255,0.7)' : T.pinkDeep, marginLeft: 8, letterSpacing: '0.06em', textTransform: 'uppercase' }}>New ingredient — go slow</span>}
                 </div>
                 <div style={{ fontSize: 12, color: isOn ? 'rgba(255,255,255,0.75)' : T.textMuted, lineHeight: 1.6 }}>
                   {opt.description}
@@ -119,7 +119,7 @@ function Phase2Picker({ options, onChoose, onClose }) {
 
         {hasActiveSelected && (
           <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.6, padding: '8px 0 4px', fontStyle: 'italic' }}>
-            We limit new actives to one at a time, so it's clear what your skin is responding to. You can add another later.
+            We limit new ingredients like this to one at a time, so it's clear what your skin is responding to. You can add another later.
           </div>
         )}
 
