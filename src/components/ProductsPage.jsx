@@ -1701,7 +1701,7 @@ export default function ProductsPage({ session }) {
               onRemoveFromLibrary={removeFromLibrary}
               onSaveUserProductData={saveUserProductData}
             />
-      )}
+      }
     </div>
   )
 }
