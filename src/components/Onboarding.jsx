@@ -143,6 +143,9 @@ export default function Onboarding({ session, onEnrolled, onSkipToBuilder }) {
       }
 
       // 3. Create the active routine period — this is what the calendar renders
+      //    'off' is the key the calendar actually reads for PM days with no
+      //    active retinoid/treatment schedule — write PM steps there too.
+      const pmSteps = buildSteps('pm')
       const { error: routineErr } = await supabase
         .from('routine_periods')
         .insert({
@@ -150,8 +153,9 @@ export default function Onboarding({ session, onEnrolled, onSkipToBuilder }) {
           start_date: today,
           end_date:   null,
           steps: {
-            am: buildSteps('am'),
-            pm: buildSteps('pm'),
+            am:  buildSteps('am'),
+            pm:  pmSteps,
+            off: pmSteps,
           },
         })
       if (routineErr) throw routineErr

@@ -236,8 +236,12 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
 
     // Add each chosen step to routine_periods.steps
     if (realChoices.length && routinePeriod?._dbId) {
-      const currentSteps = routinePeriod.steps || { am: [], pm: [] }
-      const newSteps = { am: [...(currentSteps.am || [])], pm: [...(currentSteps.pm || [])] }
+      const currentSteps = routinePeriod.steps || { am: [], pm: [], off: [] }
+      const newSteps = {
+        am:  [...(currentSteps.am  || [])],
+        pm:  [...(currentSteps.pm  || [])],
+        off: [...(currentSteps.off || currentSteps.pm || [])],
+      }
 
       for (const opt of realChoices) {
         const map = STEP_KEY_MAP[opt.step_key]
@@ -254,6 +258,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
         }
         if (opt.time_of_day === 'pm' || opt.time_of_day === 'both') {
           newSteps.pm.push({ ...base, id: `pm_${opt.step_key}` })
+          newSteps.off.push({ ...base, id: `off_${opt.step_key}` })
         }
       }
 
