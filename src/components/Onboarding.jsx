@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
+import { buildStepEntries } from './programOptions'
+import ProgramOptionsChecklist, { toggleOption } from './ProgramOptionsChecklist'
 
 const T = {
   bg:        '#FAF7F2',
@@ -46,6 +48,57 @@ function StepList({ steps, tod }) {
           </div>
         </div>
       ))}
+    </div>
+  )
+}
+
+// ─── START AT PHASE 2 SCREEN ─────────────────────────────────
+function Phase2StartScreen({ phase2, phase1Steps, phase2Options, onBack, onConfirm }) {
+  const [selected, setSelected] = useState(new Set())
+  const [saving, setSaving] = useState(false)
+
+  return (
+    <div style={{ maxWidth: 480, margin: '0 auto', padding: '48px 24px' }}>
+      <button onClick={onBack}
+        style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.textMuted, fontSize: 13, padding: 0, marginBottom: 32, fontFamily: 'inherit' }}>
+        ← Back
+      </button>
+
+      <div style={{ fontSize: 11, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 12 }}>
+        Starting at Phase 2
+      </div>
+      <h2 style={{ fontSize: 24, fontWeight: 800, color: T.text, letterSpacing: '-0.03em', margin: '0 0 6px' }}>
+        What do you want to add?
+      </h2>
+      <p style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.7, margin: '0 0 16px' }}>
+        We'll start your routine with the basics — cleanser, moisturizer, SPF — already in place, plus whatever you pick here. Pick as many as you're ready for.
+      </p>
+
+      {/* Baseline reminder */}
+      <div style={{ background: T.cream, border: `1px solid ${T.border}`, borderRadius: 0, padding: '12px 16px', marginBottom: 20 }}>
+        <div style={{ fontSize: 10, fontWeight: 700, color: T.textMuted, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 6 }}>Already in your routine</div>
+        <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.6 }}>
+          {phase1Steps.map(s => s.label).filter((v, i, a) => a.indexOf(v) === i).join(' · ')}
+        </div>
+      </div>
+
+      <ProgramOptionsChecklist
+        options={phase2Options}
+        selected={selected}
+        onToggle={opt => setSelected(prev => toggleOption(prev, opt, phase2Options))}
+      />
+
+      <button
+        disabled={selected.size === 0 || saving}
+        onClick={async () => {
+          setSaving(true)
+          const chosen = phase2Options.filter(o => selected.has(o.id))
+          await onConfirm(chosen)
+          setSaving(false)
+        }}
+        style={{ width: '100%', padding: '12px', borderRadius: 0, border: 'none', background: selected.size > 0 ? T.pinkDeep : T.border, color: '#fff', cursor: selected.size > 0 ? 'pointer' : 'default', fontSize: 13, fontFamily: 'inherit', fontWeight: 600, marginTop: 16 }}>
+        {saving ? 'Setting up…' : selected.size > 1 ? `Start with ${selected.size} added` : selected.size === 1 ? 'Start with 1 added' : 'Choose at least one'}
+      </button>
     </div>
   )
 }
@@ -167,7 +220,78 @@ export default function Onboarding({ session, onEnrolled, onSkipToBuilder }) {
     }
   }
 
-  if (loading) return (
+  // For users who already do the basics in real life — enroll directly
+  // into Phase 2, with Phase 1 steps as baseline plus their chosen additions.
+  async function enrollAtPhase2(chosenOptions) {
+    setScreen('enrolling')
+    try {
+      const today = new Date().toISOString().split('T')[0]
+      const phase2 = phases.find(p => p.phase_number === 2)
+
+      function buildSteps(tod) {
+        return phase1Steps
+          .filter(s => s.time_of_day === tod || s.time_of_day === 'both')
+          .sort((a, b) => a.position - b.position)
+          .map(s => ({
+            id: `${tod}_${s.step_key}`,
+            categoryKey: s.step_key,
+            label: s.label,
+            optional: false,
+            enabled: true,
+            professionalOnly: false,
+          }))
+      }
+
+      const { am: amAdds, pm: pmAdds } = buildStepEntries(chosenOptions)
+      const baseAm = buildSteps('am')
+      const basePm = buildSteps('pm')
+      const mergedAm = [...baseAm, ...amAdds]
+      const mergedPm = [...basePm, ...pmAdds]
+      const mergedOff = [...mergedPm.map(s => ({ ...s, id: s.id.replace(/^pm_/, 'off_') }))]
+
+      // 1. Enroll directly into Phase 2
+      const { data: up, error: progErr } = await supabase
+        .from('user_programs')
+        .insert({
+          user_id:              session.user.id,
+          program_id:           program.id,
+          started_at:           today,
+          current_phase_number: 2,
+          phase_started_at:     today,
+          status:               'active',
+        })
+        .select()
+        .single()
+      if (progErr) throw progErr
+
+      // 2. Create routine period: Phase 1 baseline + chosen Phase 2 additions
+      const { error: routineErr } = await supabase
+        .from('routine_periods')
+        .insert({
+          user_id:    session.user.id,
+          start_date: today,
+          end_date:   null,
+          steps: { am: mergedAm, pm: mergedPm, off: mergedOff },
+        })
+      if (routineErr) throw routineErr
+
+      // 3. Record selections
+      for (const opt of chosenOptions) {
+        await supabase.from('user_program_phase_selections').insert({
+          user_program_id: up.id,
+          phase_id: phase2.id,
+          selected_option_id: opt.id,
+        })
+      }
+
+      onEnrolled()
+    } catch (err) {
+      setError(err.message)
+      setScreen('phase2start')
+    }
+  }
+
+
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', color: T.textMuted, fontSize: 13 }}>
       Loading…
     </div>
@@ -209,7 +333,18 @@ export default function Onboarding({ session, onEnrolled, onSkipToBuilder }) {
         </div>
       </button>
 
-      {/* Option B — already have a routine */}
+      {/* Option B — already doing the basics */}
+      <button onClick={() => setScreen('phase2start')}
+        style={{ width: '100%', textAlign: 'left', background: 'transparent', border: `1px solid ${T.border}`, borderRadius: 0, padding: '18px 20px', cursor: 'pointer', marginBottom: 10, display: 'block', fontFamily: 'inherit' }}>
+        <div style={{ fontSize: 14, fontWeight: 600, color: T.text, marginBottom: 4 }}>
+          I already do the basics →
+        </div>
+        <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.6 }}>
+          Cleanse, moisturize, SPF — that's covered. Start at Phase 2 and choose what to add next.
+        </div>
+      </button>
+
+      {/* Option C — already have a routine */}
       <button onClick={onSkipToBuilder}
         style={{ width: '100%', textAlign: 'left', background: 'transparent', border: `1px solid ${T.border}`, borderRadius: 0, padding: '18px 20px', cursor: 'pointer', display: 'block', fontFamily: 'inherit' }}>
         <div style={{ fontSize: 14, fontWeight: 600, color: T.text, marginBottom: 4 }}>
@@ -338,7 +473,21 @@ export default function Onboarding({ session, onEnrolled, onSkipToBuilder }) {
     )
   }
 
-  // ── ENROLLING ────────────────────────────────────────────
+  // ── START AT PHASE 2 ──────────────────────────────────────
+  if (screen === 'phase2start') {
+    const phase2 = phases.find(p => p.phase_number === 2)
+    return (
+      <Phase2StartScreen
+        phase2={phase2}
+        phase1Steps={phase1Steps}
+        phase2Options={phase2Options}
+        onBack={() => setScreen('entry')}
+        onConfirm={enrollAtPhase2}
+      />
+    )
+  }
+
+
   if (screen === 'enrolling') return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', flexDirection: 'column', gap: 12 }}>
       <div style={{ fontSize: 13, color: T.textMuted }}>Setting up your routine…</div>

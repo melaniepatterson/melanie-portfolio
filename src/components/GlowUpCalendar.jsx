@@ -1023,12 +1023,16 @@ function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = false, lo
         {showProducts && (
           <div>
             <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 8 }}>Assign products to each routine step. Unassigned steps will be faded in the day flyout.</div>
-            {/* Product assignment split by routine section */}
+            {/* Product assignment split by routine section.
+                If `form.steps` was carried over from an existing routine
+                (e.g. a graduated program baseline via `initial`), use it so
+                added steps like Toner/Eye Cream/Vitamin C show up here too.
+                Otherwise fall back to the generic defaults. */}
             {[
-              { section: 'Morning', steps: getDefaultSteps('am') },
+              { section: 'Morning', steps: (form.steps?.am?.length ? form.steps.am : getDefaultSteps('am')) },
               { section: form.activeName ? `Active nights (${form.activeName})` : 'Active nights', steps: getDefaultSteps('main') },
               { section: 'Off nights', steps: [
-                ...getDefaultSteps('off'),
+                ...(form.steps?.off?.length ? form.steps.off : getDefaultSteps('off')),
                 ...(form.secondaryActives||[]).filter(sa => sa.enabled && (sa.nights==='off'||sa.nights==='all')).map(sa => {
                   const d = AVAILABLE_SECONDARY_ACTIVES.find(a=>a.key===sa.key)
                   return d ? { id: 'off_' + d.stepKey, categoryKey: d.stepKey, label: d.label, optional: true, enabled: true } : null
@@ -4094,6 +4098,7 @@ export default function GlowUpCalendar({ session }) {
       active_name: form.activeName, tret_enabled: form.tretEnabled,
       tret_frequency: form.tretFrequency, tret_start_date: form.tretStartDate || null,
       secondary_actives: form.secondaryActives || [], products: form.products || {},
+      steps: form.steps || null,
     }
     const { data } = await supabase.from('routine_periods').insert(row).select().single()
     const formWithId = { ...form, _dbId: data?.id, createdAt: data?.created_at, updatedAt: data?.created_at }
@@ -4122,6 +4127,7 @@ export default function GlowUpCalendar({ session }) {
       active_name: form.activeName, tret_enabled: form.tretEnabled,
       tret_frequency: form.tretFrequency, tret_start_date: form.tretStartDate || null,
       secondary_actives: form.secondaryActives || [], products: form.products || {},
+      steps: form.steps || null,
     }
     const editNow = new Date().toISOString()
     if (editingPeriod._dbId) {
