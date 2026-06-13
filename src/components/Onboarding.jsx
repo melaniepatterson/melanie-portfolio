@@ -255,6 +255,9 @@ export default function Onboarding({ session, onEnrolled, onSkipToBuilder }) {
               )}
             </div>
             <div style={{ paddingTop: 3 }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 2 }}>
+                Phase {ph.phase_number}
+              </div>
               <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>
                 {ph.name}
                 {ph.duration_days && <span style={{ fontWeight: 400, color: T.textMuted, marginLeft: 8 }}>{ph.duration_days} days</span>}
@@ -313,9 +316,9 @@ export default function Onboarding({ session, onEnrolled, onSkipToBuilder }) {
 
         {/* What happens next */}
         <div style={{ background: T.cream, border: `1px solid ${T.border}`, borderRadius: 0, padding: '14px 16px', marginBottom: 24 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 6 }}>After 2 weeks</div>
+          <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 6 }}>After 2 weeks — Phase 2</div>
           <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.6 }}>
-            You'll get a prompt to advance to Phase 2 — where you choose one thing to add to your routine. You'll tap to confirm when you're ready.
+            You'll get a prompt to advance to Phase 2, where you choose what to add to your routine — you can pick more than one. You'll tap to confirm when you're ready.
           </div>
         </div>
 
