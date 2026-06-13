@@ -863,6 +863,7 @@ function PersonalDataForm({ productId, isCatalog, upd, product, onSaveUpd, onClo
           color: '#fff', cursor: saving ? 'default' : 'pointer',
           fontSize: 13, fontFamily: 'inherit', fontWeight: 500,
           transition: 'background 0.2s',
+          marginTop: 20,
         }}>
         {saving ? 'Saving...' : saved ? '✓ Saved' : 'Save my notes'}
       </button>
