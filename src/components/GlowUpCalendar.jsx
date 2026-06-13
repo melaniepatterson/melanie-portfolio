@@ -860,6 +860,46 @@ function findSafeDate(proposedKey, proposedType, allTypes, treatments, routineHi
 // ─── ROUTINE PERIOD FORM ─────────────────────────────────────
 // Used for both initial setup, adding new periods, and editing existing ones.
 // lockStartDate=true when editing — prevents accidental date change.
+// ─── CURRENT ROUTINE SUMMARY ──────────────────────────────────
+// Shows what's already in the routine being carried forward —
+// surfaced prominently so users can see what they're building on
+// top of (e.g. after graduating a program) before editing further.
+function CurrentRoutineSummary({ steps }) {
+  if (!steps) return null
+  const am = (steps.am || []).filter(s => s.enabled)
+  const pm = (steps.off || steps.pm || []).filter(s => s.enabled)
+  if (!am.length && !pm.length) return null
+
+  const sortByOrder = (a, b) => (INGREDIENT_CATEGORIES[a.categoryKey]?.order ?? 99) - (INGREDIENT_CATEGORIES[b.categoryKey]?.order ?? 99)
+
+  return (
+    <div style={{ background: T.creamDark, border: `0.5px solid ${T.border}`, borderRadius: 0, padding: '14px 16px', marginBottom: 14 }}>
+      <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 10 }}>
+        Your current routine
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+        <div>
+          <div style={{ fontSize: 10, fontWeight: 700, color: T.textLight, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 6 }}>☀ Morning</div>
+          {am.length === 0 && <div style={{ fontSize: 11, color: T.textLight }}>—</div>}
+          {[...am].sort(sortByOrder).map(s => (
+            <div key={s.id} style={{ fontSize: 12, color: T.text, marginBottom: 3 }}>{s.label}</div>
+          ))}
+        </div>
+        <div>
+          <div style={{ fontSize: 10, fontWeight: 700, color: T.textLight, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 6 }}>☾ Evening</div>
+          {pm.length === 0 && <div style={{ fontSize: 11, color: T.textLight }}>—</div>}
+          {[...pm].sort(sortByOrder).map(s => (
+            <div key={s.id} style={{ fontSize: 12, color: T.text, marginBottom: 3 }}>{s.label}</div>
+          ))}
+        </div>
+      </div>
+      <div style={{ fontSize: 11, color: T.textMuted, marginTop: 10, lineHeight: 1.6 }}>
+        This carries forward into your new routine. Adjust anything below to build on top of it.
+      </div>
+    </div>
+  )
+}
+
 function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = false, lockStartDate = false, allPeriods = [], onEditConflict, products = {}, onSaveProduct }) {
   const [form, setForm] = useState({ ...DEFAULT_PERIOD, ...initial, products: initial?.products || {} })
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
@@ -903,6 +943,8 @@ function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = false, lo
       </div>
 
       {conflict && <ConflictMessage conflict={conflict} onEditConflict={onEditConflict} />}
+
+      {!isFirst && <CurrentRoutineSummary steps={initial?.steps} />}
 
       <SectionLabel>What does your skincare routine consist of?</SectionLabel>
       <div style={{ fontSize: 12, color: T.textMuted, marginBottom: 12, lineHeight: 1.6, background: T.creamDark, borderRadius: 0, padding: '10px 12px' }}>
