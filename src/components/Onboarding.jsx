@@ -291,7 +291,7 @@ export default function Onboarding({ session, onEnrolled, onSkipToBuilder }) {
     }
   }
 
-
+  if (loading) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', color: T.textMuted, fontSize: 13 }}>
       Loading…
     </div>
