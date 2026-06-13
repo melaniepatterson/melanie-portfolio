@@ -194,6 +194,21 @@ function formatCatLabel(cat) {
   ).join(' ')
 }
 
+const ETHICS_FILTERS = [
+  { key: 'black_owned',       label: 'Black-owned'      },
+  { key: 'indigenous_owned',  label: 'Indigenous-owned' },
+  { key: 'poc_owned',         label: 'POC-owned'        },
+  { key: 'woman_owned',       label: 'Woman-owned'      },
+  { key: 'lgbtq_owned',       label: 'LGBTQ+-owned'     },
+  { key: 'cruelty_free',      label: 'Cruelty-free'     },
+  { key: 'vegan',             label: 'Vegan'            },
+  { key: 'certified_organic', label: 'Organic'          },
+  { key: 'fair_trade',        label: 'Fair trade'       },
+  { key: 'clean_formula',     label: 'Clean formula'    },
+  { key: 'science_backed',    label: 'Science-backed'   },
+  { key: 'is_prescription',   label: '℞ Prescription'   },
+]
+
 function FieldLabel({ children }) {
   return <div style={{ fontSize: 11, color: T.textLight, marginBottom: 3 }}>{children}</div>
 }
@@ -1177,22 +1192,6 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
   const availableBrands = [...new Set(filterExcluding('brand').map(p => p.brand||'').filter(Boolean))].sort((a,b) => a.toLowerCase().localeCompare(b.toLowerCase()))
   const availableCats   = PRODUCT_CATEGORIES.filter(cat => filterExcluding('cat').some(p => p.category === cat))
   const availableFlags  = ETHICS_FILTERS.filter(({key}) => filterExcluding('flags').some(p => p[key]))
-
-  // Shared filter content used in both sidebar and bottom sheet
-  const ETHICS_FILTERS = [
-    { key: 'black_owned',       label: 'Black-owned'      },
-    { key: 'indigenous_owned',  label: 'Indigenous-owned' },
-    { key: 'poc_owned',         label: 'POC-owned'        },
-    { key: 'woman_owned',       label: 'Woman-owned'      },
-    { key: 'lgbtq_owned',       label: 'LGBTQ+-owned'     },
-    { key: 'cruelty_free',      label: 'Cruelty-free'     },
-    { key: 'vegan',             label: 'Vegan'            },
-    { key: 'certified_organic', label: 'Organic'          },
-    { key: 'fair_trade',        label: 'Fair trade'       },
-    { key: 'clean_formula',     label: 'Clean formula'    },
-    { key: 'science_backed',    label: 'Science-backed'   },
-    { key: 'is_prescription',   label: '℞ Prescription'   },
-  ]
 
   function FilterContent() {
     return (
