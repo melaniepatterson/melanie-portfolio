@@ -3512,8 +3512,8 @@ function UpcomingTreatmentsPanel({ treatments, allTypes, routineHistory, onClose
               <Btn onClick={() => onEdit(key)} style={{ fontSize: 10, padding: '3px 8px' }}>Edit</Btn>
               {cfg.post > 0 && (
                 <Btn
-                  onClick={() => setEditingRecovery(editingRecovery === tv.type ? null : tv.type)}
-                  style={{ fontSize: 10, padding: '3px 8px', background: editingRecovery === tv.type ? T.pink : undefined, borderColor: editingRecovery === tv.type ? T.pinkDeep : undefined }}
+                  onClick={() => setEditingRecovery(editingRecovery === key ? null : key)}
+                  style={{ fontSize: 10, padding: '3px 8px', background: editingRecovery === key ? T.pink : undefined, borderColor: editingRecovery === key ? T.pinkDeep : undefined }}
                 >
                   Set recovery routine
                 </Btn>
@@ -3523,7 +3523,7 @@ function UpcomingTreatmentsPanel({ treatments, allTypes, routineHistory, onClose
           )}
         </div>
         {/* Recovery routine editor — full width BELOW the flex row */}
-        {editingRecovery === tv.type && (
+        {editingRecovery === key && (
           <div style={{ marginTop: 8 }}>
             <RecoveryRoutineEditor
               typeKey={tv.type}
