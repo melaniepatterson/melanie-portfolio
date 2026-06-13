@@ -35,6 +35,7 @@ import Avatar from './Avatar'
 import { supabase } from '../lib/supabase'
 import GlowUpLoader from './GlowUpLoader'
 import { LoadError } from './ErrorBoundary'
+import Onboarding from './Onboarding'
 
 // ─── DESIGN TOKENS ───────────────────────────────────────────
 const T = {
@@ -3787,6 +3788,8 @@ export default function GlowUpCalendar({ session }) {
   const [showerHistory,  setShowerHistory]  = useState([])
   const [treatments,     setTreatments]     = useState({})
   const [customTypes,    setCustomTypes]    = useState({})
+  const [activeProgram,  setActiveProgram]  = useState(null)   // user_programs row or null
+  const [onboardingDone, setOnboardingDone] = useState(null)   // null=loading, true/false
 
   // panel: 'setup' | 'update' | 'history' | null
   const [panel,         setPanel]         = useState(null)
@@ -3843,9 +3846,14 @@ export default function GlowUpCalendar({ session }) {
         supabase.from('shower_periods').select('*').eq('user_id', userId).order('start_date'),
         supabase.from('treatments').select('*').eq('user_id', userId),
         supabase.from('custom_treatment_types').select('*').eq('user_id', userId),
+        supabase.from('user_programs').select('*').eq('user_id', userId).eq('status', 'active').maybeSingle(),
       ])
       const getValue = (r) => r.status === 'fulfilled' ? (r.value?.data ?? null) : null
-      const [rp, profileRR, pr, ep, sp, tr, ct] = results.map(getValue)
+      const [rp, profileRR, pr, ep, sp, tr, ct, up] = results.map(getValue)
+
+      // Active program
+      setActiveProgram(up || null)
+      setOnboardingDone(!!(up || (rp && rp.length > 0)))
 
       // Routine periods — convert snake_case from DB to camelCase
       setRoutineHistory((rp || []).map(p => ({
@@ -4662,6 +4670,22 @@ export default function GlowUpCalendar({ session }) {
     />
   )
   if (loading) return <GlowUpLoader message="Loading your routine..." />
+
+  // Show onboarding for new users who have no routine and no active program
+  if (onboardingDone === false) return (
+    <Onboarding
+      session={session}
+      onEnrolled={() => {
+        setOnboardingDone(true)
+        // Reload so activeProgram state is fresh
+        setLoading(true)
+      }}
+      onSkipToBuilder={() => {
+        setOnboardingDone(true)
+        setPanel('setup')
+      }}
+    />
+  )
 
   return (
     <div onClick={() => { if (dayFlyout) setDayFlyout(null) }} style={{ fontFamily: 'inherit', padding: '1rem 0.75rem', maxWidth: 900, position: 'relative', margin: '0 auto' }}>
