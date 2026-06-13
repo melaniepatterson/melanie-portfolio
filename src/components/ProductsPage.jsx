@@ -379,7 +379,7 @@ function ProductImageUpload({ value, onChange, session, productName }) {
   return (
     <div>
       {preview && (
-        <div style={{ position: 'relative', marginBottom: 6, display: 'inline-block', borderRadius: 8, overflow: 'hidden', border: `0.5px solid ${T.border}`, background: T.creamDark, verticalAlign: 'top' }}>
+        <div style={{ position: 'relative', marginBottom: 6, display: 'inline-block', borderRadius: 0, overflow: 'hidden', border: `0.5px solid ${T.border}`, background: T.creamDark, verticalAlign: 'top' }}>
           <img src={preview} alt="" style={{ display: 'block', maxHeight: 88, maxWidth: 120, objectFit: 'contain' }} />
           <button
             onClick={() => { setPreview(null); onChange('') }}
@@ -392,7 +392,7 @@ function ProductImageUpload({ value, onChange, session, productName }) {
         <button
           onClick={() => ref.current?.click()}
           disabled={uploading}
-          style={{ flex: 1, padding: '6px 10px', borderRadius: 8, border: `0.5px solid ${T.border}`, background: T.creamDark, color: T.textMuted, fontSize: 11, cursor: uploading ? 'default' : 'pointer', fontFamily: 'inherit' }}>
+          style={{ flex: 1, padding: '6px 10px', borderRadius: 0, border: `0.5px solid ${T.border}`, background: T.creamDark, color: T.textMuted, fontSize: 11, cursor: uploading ? 'default' : 'pointer', fontFamily: 'inherit' }}>
           {uploading ? 'Uploading...' : preview ? '↑ Replace image' : '↑ Upload image'}
         </button>
         <input ref={ref} type="file" accept="image/*" onChange={handleFile} style={{ display: 'none' }} />
@@ -420,6 +420,12 @@ function ProductForm({ initial, onSave, onCancel, catalogProducts, session }) {
   const [tagInput, setTagInput] = useState('')
   const [suggestions, setSuggestions] = useState([])
   const [showSuggestions, setShowSuggestions] = useState(false)
+  const [brandSuggestions, setBrandSuggestions] = useState([])
+  const [showBrandSuggestions, setShowBrandSuggestions] = useState(false)
+
+  // All known brands from catalog
+  const allBrands = [...new Set(Object.values(catalogProducts || {}).map(p => p.brand || '').filter(Boolean))].sort()
+
   const set = (k, v) => {
     setForm(f => ({ ...f, [k]: v }))
     if (k === 'name' && catalogProducts) {
@@ -433,6 +439,17 @@ function ProductForm({ initial, onSave, onCancel, catalogProducts, session }) {
       } else {
         setSuggestions([])
         setShowSuggestions(false)
+      }
+    }
+    if (k === 'brand') {
+      const q = v.toLowerCase().trim()
+      if (q.length > 0) {
+        const matches = allBrands.filter(b => b.toLowerCase().startsWith(q)).slice(0, 6)
+        setBrandSuggestions(matches)
+        setShowBrandSuggestions(matches.length > 0)
+      } else {
+        setBrandSuggestions([])
+        setShowBrandSuggestions(false)
       }
     }
   }
@@ -508,9 +525,23 @@ function ProductForm({ initial, onSave, onCancel, catalogProducts, session }) {
 
       {/* Brand + Category side by side */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 10 }}>
-        <div>
+        <div style={{ position: 'relative' }}>
           <FieldLabel>Brand</FieldLabel>
-          <input value={form.brand} onChange={e => set('brand', e.target.value)} placeholder="e.g. Glow Recipe" style={inputStyle} />
+          <input value={form.brand} onChange={e => set('brand', e.target.value)}
+            onBlur={() => setTimeout(() => setShowBrandSuggestions(false), 150)}
+            placeholder="e.g. Glow Recipe" style={inputStyle} />
+          {showBrandSuggestions && brandSuggestions.length > 0 && (
+            <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 100, background: '#fff', border: '0.5px solid ' + T.border, borderRadius: 0, boxShadow: '0 4px 12px rgba(0,0,0,0.08)', maxHeight: 180, overflowY: 'auto' }}>
+              {brandSuggestions.map(b => (
+                <div key={b} onMouseDown={() => { set('brand', b); setShowBrandSuggestions(false) }}
+                  style={{ padding: '7px 12px', cursor: 'pointer', fontSize: 12, borderBottom: '0.5px solid ' + T.border, color: T.text }}
+                  onMouseEnter={e => e.currentTarget.style.background = T.creamDark}
+                  onMouseLeave={e => e.currentTarget.style.background = '#fff'}>
+                  {b}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
         <div>
           <FieldLabel>Category</FieldLabel>
@@ -524,26 +555,6 @@ function ProductForm({ initial, onSave, onCancel, catalogProducts, session }) {
       <div style={{ marginBottom: 10 }}>
         <FieldLabel>Product image</FieldLabel>
         <ProductImageUpload value={form.imageUrl} onChange={url => set('imageUrl', url)} session={session} productName={form.name} />
-      </div>
-
-      {/* Purchase URLs side by side */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 10 }}>
-        <div>
-          <FieldLabel>Affiliate URL</FieldLabel>
-          <input value={form.purchaseUrl || ''} onChange={e => set('purchaseUrl', e.target.value)} placeholder="https://..." style={inputStyle} />
-        </div>
-        <div>
-          <FieldLabel>Affiliate store name</FieldLabel>
-          <input value={form.store_name || ''} onChange={e => set('store_name', e.target.value)} placeholder="e.g. Sephora" style={inputStyle} />
-        </div>
-        <div>
-          <FieldLabel>Direct URL</FieldLabel>
-          <input value={form.direct_url || ''} onChange={e => set('direct_url', e.target.value)} placeholder="https://..." style={inputStyle} />
-        </div>
-        <div>
-          <FieldLabel>Direct store name</FieldLabel>
-          <input value={form.direct_store_name || ''} onChange={e => set('direct_store_name', e.target.value)} placeholder="e.g. Brand site" style={inputStyle} />
-        </div>
       </div>
 
       {/* Application area */}
@@ -1663,20 +1674,21 @@ export default function ProductsPage({ session }) {
       </div>
 
       {editingProduct && (
-        <div style={{ padding: '16px 20px' }}>
-          <ProductForm
-            initial={editingProduct === 'new' ? undefined : editingProduct}
-            onSave={saveProduct}
-            onCancel={() => setEditingProduct(null)}
-            catalogProducts={catalogProducts}
-          />
+        <div onClick={() => setEditingProduct(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', overflowY: 'auto' }}>
+          <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 460, maxHeight: '90vh', overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
+            <ProductForm
+              initial={editingProduct === 'new' ? undefined : editingProduct}
+              onSave={saveProduct}
+              onCancel={() => setEditingProduct(null)}
+              catalogProducts={catalogProducts}
+            />
+          </div>
         </div>
       )}
 
-      {!editingProduct && (
-        loading
-          ? <div style={{ padding: '40px 20px', fontSize: 13, color: T.textMuted, textAlign: 'center' }}>Loading your products...</div>
-          : <ProductLibrary
+      {loading
+        ? <div style={{ padding: '40px 20px', fontSize: 13, color: T.textMuted, textAlign: 'center' }}>Loading your products...</div>
+        : <ProductLibrary
               products={products}
               catalogProducts={catalogProducts}
               userProductData={userProductData}
