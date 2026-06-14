@@ -118,6 +118,17 @@ function LinearAdvanceModal({ nextPhase, isGraduation, onConfirm, onClose }) {
   )
 }
 
+// Shared "give me more time" link — pushes the ready-date out a week
+// without forcing a decision. Shown under every ready-banner.
+function NotReadyYetLink({ onClick, disabled }) {
+  return (
+    <button onClick={onClick} disabled={disabled}
+      style={{ width: '100%', textAlign: 'center', background: '#2A2A2A', color: 'rgba(255,255,255,0.6)', border: 'none', borderRadius: 0, padding: '8px 16px', cursor: disabled ? 'default' : 'pointer', fontFamily: 'inherit', fontSize: 11, marginBottom: 12 }}>
+      {disabled ? 'Saving…' : "Not ready yet — check back in a week"}
+    </button>
+  )
+}
+
 // ─── MAIN ADVANCEMENT BANNER ─────────────────────────────────
 // Renders nothing if no program is active, or if the current phase
 // hasn't reached its duration yet. Otherwise shows a tap-to-advance
@@ -130,6 +141,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
   const [showPicker, setShowPicker] = useState(false)
   const [showGraduation, setShowGraduation] = useState(false)
   const [showLinearAdvance, setShowLinearAdvance] = useState(false)
+  const [postponing, setPostponing] = useState(false)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -185,6 +197,23 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
   const ready = currentPhase.duration_days != null && effectiveElapsed >= currentPhase.duration_days
   const nextPhase = phases.find(p => p.phase_number === currentPhase.phase_number + 1)
   const isLinearProgram = program.slug !== 'basic-skincare'
+
+  // "Not ready yet" — push the ready-date out by a week without
+  // requiring a decision. Available wherever a phase is "ready".
+  async function postponePhase() {
+    setPostponing(true)
+    try {
+      const newStart = new Date(activeProgram.phase_started_at + 'T00:00:00')
+      newStart.setDate(newStart.getDate() + 7)
+      await supabase.from('user_programs').update({
+        phase_started_at: newStart.toISOString().split('T')[0],
+      }).eq('id', activeProgram.id)
+      onAdvanced()
+    } catch (err) {
+      console.error('Postpone phase error:', err)
+      setPostponing(false)
+    }
+  }
 
   // ── Generic linear advance (Tretinoin and similar) ─────────
   async function advanceLinear() {
@@ -297,6 +326,14 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
     .filter(p => p.phase_number < activeProgram.current_phase_number)
     .reduce((s, p) => s + (p.duration_days || 0), 0) + Math.max(effectiveElapsed, 0)
 
+  // Format a short date like "Jun 14"
+  const fmtDate = (d) => d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+
+  const phaseStart = new Date(activeProgram.phase_started_at + 'T00:00:00')
+  const phaseEnd = currentPhase.duration_days != null
+    ? new Date(phaseStart.getTime() + currentPhase.duration_days * 86400000)
+    : null
+
   return (
     <>
       {/* Status chip */}
@@ -308,10 +345,13 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
           <div style={{ fontSize: 12, fontWeight: 600, color: T.text }}>
             Phase {currentPhase.phase_number} of {phases.length} — {currentPhase.name}
             {elapsed < 0 ? (
-              <span style={{ fontWeight: 400, color: T.textMuted }}> · Starts {new Date(activeProgram.phase_started_at + 'T00:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
+              <span style={{ fontWeight: 400, color: T.textMuted }}> · Starts {fmtDate(phaseStart)}</span>
             ) : currentPhase.duration_days && (
               <span style={{ fontWeight: 400, color: T.textMuted }}> · Day {Math.min(Math.max(effectiveElapsed, 0) + 1, currentPhase.duration_days)} of {currentPhase.duration_days}</span>
             )}
+          </div>
+          <div style={{ fontSize: 10, color: T.textLight, marginTop: 2 }}>
+            {phaseEnd ? `${fmtDate(phaseStart)} – ${fmtDate(phaseEnd)}` : `Since ${fmtDate(phaseStart)}`}
           </div>
           {pauseDays > 0 && elapsed >= 0 && (
             <div style={{ fontSize: 10, color: T.textMuted, marginTop: 2, fontStyle: 'italic' }}>
@@ -327,26 +367,25 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
       </div>
 
       {/* Up next — visible ahead of time so people can plan, separate from the
-          tap-to-confirm gate which only appears once the phase is actually ready */}
-      {!ready && nextPhase && currentPhase.duration_days != null && (() => {
-        const estDate = new Date(activeProgram.phase_started_at + 'T00:00:00')
-        estDate.setDate(estDate.getDate() + currentPhase.duration_days)
-        return (
-          <div style={{ border: `1px solid ${T.border}`, borderRadius: 0, padding: '10px 14px', marginBottom: 12 }}>
-            <div style={{ fontSize: 10, fontWeight: 700, color: T.textLight, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 3 }}>
-              Up next — around {estDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-            </div>
-            <div style={{ fontSize: 12, fontWeight: 600, color: T.text, marginBottom: 2 }}>
-              {nextPhase.advancement_type === 'auto' ? 'Graduation' : `Phase ${nextPhase.phase_number} — ${nextPhase.name}`}
-            </div>
-            <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.6 }}>{nextPhase.description}</div>
+          tap-to-confirm gate which only appears once the phase is actually ready.
+          Uses preview_description (future tense — "this will become...") rather
+          than description (present tense — "this is..."), since the phase
+          hasn't happened yet. */}
+      {!ready && nextPhase && currentPhase.duration_days != null && (
+        <div style={{ border: `1px solid ${T.border}`, borderRadius: 0, padding: '10px 14px', marginBottom: 12 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, color: T.textLight, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 3 }}>
+            Up next — around {fmtDate(phaseEnd)}
           </div>
-        )
-      })()}
+          <div style={{ fontSize: 12, fontWeight: 600, color: T.text, marginBottom: 2 }}>
+            {nextPhase.advancement_type === 'auto' ? 'Graduation' : `Phase ${nextPhase.phase_number} — ${nextPhase.name}`}
+          </div>
+          <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.6 }}>{nextPhase.preview_description || nextPhase.description}</div>
+        </div>
+      )}
 
       {/* Advancement banner */}
       {!isLinearProgram && ready && currentPhase.phase_number === 1 && (
-        <div style={{ marginBottom: 12 }}>
+        <div>
           <div style={{ background: T.text, color: '#fff', padding: '14px 16px 12px' }}>
             <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 2 }}>You're ready for Phase 2</div>
             <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.75)' }}>Add something to your routine, or leave it as-is for now</div>
@@ -364,31 +403,38 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
               Leave as-is for now
             </button>
           </div>
+          <NotReadyYetLink onClick={postponePhase} disabled={postponing} />
         </div>
       )}
 
       {!isLinearProgram && ready && currentPhase.phase_number === 2 && (
-        <button onClick={() => setShowGraduation(true)}
-          style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, background: T.text, color: '#fff', border: 'none', borderRadius: 0, padding: '14px 16px', cursor: 'pointer', fontFamily: 'inherit', marginBottom: 12 }}>
-          <div>
-            <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 2 }}>You're ready to graduate</div>
-            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.75)' }}>Tap to lock in your routine</div>
-          </div>
-          <span style={{ fontSize: 18, flexShrink: 0 }}>→</span>
-        </button>
+        <>
+          <button onClick={() => setShowGraduation(true)}
+            style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, background: T.text, color: '#fff', border: 'none', borderRadius: 0, padding: '14px 16px', cursor: 'pointer', fontFamily: 'inherit', marginBottom: 0 }}>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 2 }}>You're ready to graduate</div>
+              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.75)' }}>Tap to lock in your routine</div>
+            </div>
+            <span style={{ fontSize: 18, flexShrink: 0 }}>→</span>
+          </button>
+          <NotReadyYetLink onClick={postponePhase} disabled={postponing} />
+        </>
       )}
 
       {isLinearProgram && ready && nextPhase && (
-        <button onClick={() => setShowLinearAdvance(true)}
-          style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, background: T.text, color: '#fff', border: 'none', borderRadius: 0, padding: '14px 16px', cursor: 'pointer', fontFamily: 'inherit', marginBottom: 12 }}>
-          <div>
-            <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 2 }}>
-              {nextPhase.advancement_type === 'auto' ? "You're ready to graduate" : `You're ready for Phase ${nextPhase.phase_number}`}
+        <>
+          <button onClick={() => setShowLinearAdvance(true)}
+            style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, background: T.text, color: '#fff', border: 'none', borderRadius: 0, padding: '14px 16px', cursor: 'pointer', fontFamily: 'inherit', marginBottom: 0 }}>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 2 }}>
+                {nextPhase.advancement_type === 'auto' ? "You're ready to graduate" : `You're ready for Phase ${nextPhase.phase_number}`}
+              </div>
+              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.75)' }}>{nextPhase.name}{nextPhase.advancement_type !== 'auto' ? ' — tap to continue' : ' — tap to lock it in'}</div>
             </div>
-            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.75)' }}>{nextPhase.name}{nextPhase.advancement_type !== 'auto' ? ' — tap to continue' : ' — tap to lock it in'}</div>
-          </div>
-          <span style={{ fontSize: 18, flexShrink: 0 }}>→</span>
-        </button>
+            <span style={{ fontSize: 18, flexShrink: 0 }}>→</span>
+          </button>
+          <NotReadyYetLink onClick={postponePhase} disabled={postponing} />
+        </>
       )}
 
       {showPicker && (
