@@ -195,6 +195,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
         steps: patch.steps,
         ...(patch.tret_enabled !== undefined && { tret_enabled: patch.tret_enabled }),
         ...(patch.tret_frequency !== undefined && { tret_frequency: patch.tret_frequency }),
+        ...(patch.active_name !== undefined && { active_name: patch.active_name }),
         updated_at: new Date().toISOString(),
       }).eq('id', routinePeriod._dbId)
     }

@@ -3199,6 +3199,7 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, onChanged }) {
             ...(patch.tret_enabled !== undefined && { tret_enabled: patch.tret_enabled }),
             ...(patch.tret_frequency !== undefined && { tret_frequency: patch.tret_frequency }),
             ...(patch.tret_start_date !== undefined && { tret_start_date: patch.tret_start_date }),
+            ...(patch.active_name !== undefined && { active_name: patch.active_name }),
             updated_at: new Date().toISOString(),
           })
           .eq('id', routinePeriod._dbId)

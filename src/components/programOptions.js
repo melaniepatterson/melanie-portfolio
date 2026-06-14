@@ -55,6 +55,7 @@ export function applyProgramPhase(phaseSteps, routinePeriod, { isFirstApplicatio
   if (retinoidStep?.frequency) {
     patch.tret_enabled = true
     patch.tret_frequency = retinoidStep.frequency
+    patch.active_name = retinoidStep.label.toLowerCase()
     if (isFirstApplication) {
       patch.tret_start_date = startDate || new Date().toISOString().split('T')[0]
     }
