@@ -53,11 +53,22 @@ export function applyProgramPhase(phaseSteps, routinePeriod, { isFirstApplicatio
   const patch = { steps: { ...currentSteps, main: newMain } }
 
   if (retinoidStep?.frequency) {
+    const effectiveStartDate = startDate || new Date().toISOString().split('T')[0]
     patch.tret_enabled = true
-    patch.tret_frequency = retinoidStep.frequency
+    patch.tret_frequency = retinoidStep.frequency // kept for display/back-compat (current segment)
     patch.active_name = retinoidStep.label.toLowerCase()
+
     if (isFirstApplication) {
-      patch.tret_start_date = startDate || new Date().toISOString().split('T')[0]
+      patch.tret_start_date = effectiveStartDate
+      patch.tret_frequency_history = [{ start_date: effectiveStartDate, frequency: retinoidStep.frequency }]
+    } else {
+      // Append a new segment — past dates keep rendering under the
+      // previous frequency's pattern, only dates from today onward
+      // use the new one.
+      const existing = routinePeriod?.tretFrequencyHistory?.length
+        ? routinePeriod.tretFrequencyHistory
+        : (routinePeriod?.tretStartDate ? [{ start_date: routinePeriod.tretStartDate, frequency: routinePeriod.tretFrequency }] : [])
+      patch.tret_frequency_history = [...existing, { start_date: effectiveStartDate, frequency: retinoidStep.frequency }]
     }
   }
 

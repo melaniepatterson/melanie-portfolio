@@ -56,7 +56,11 @@ function Phase2Picker({ options, onChoose, onClose }) {
             setSaving(false)
           }}
           style={{ width: '100%', padding: '12px', borderRadius: 0, border: 'none', background: selected.size > 0 ? T.pinkDeep : T.border, color: '#fff', cursor: selected.size > 0 ? 'pointer' : 'default', fontSize: 13, fontFamily: 'inherit', fontWeight: 600, marginTop: 12 }}>
-          {saving ? 'Saving…' : selected.size > 1 ? `Add ${selected.size} to my routine` : 'Add to my routine'}
+          {saving ? 'Saving…' : (() => {
+            const realCount = options.filter(o => selected.has(o.id) && !o.is_skip_option).length
+            if (realCount === 0) return 'Continue without adding anything'
+            return realCount > 1 ? `Add ${realCount} to my routine` : 'Add to my routine'
+          })()}
         </button>
       </div>
     </div>
@@ -195,6 +199,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
         steps: patch.steps,
         ...(patch.tret_enabled !== undefined && { tret_enabled: patch.tret_enabled }),
         ...(patch.tret_frequency !== undefined && { tret_frequency: patch.tret_frequency }),
+        ...(patch.tret_frequency_history !== undefined && { tret_frequency_history: patch.tret_frequency_history }),
         ...(patch.active_name !== undefined && { active_name: patch.active_name }),
         updated_at: new Date().toISOString(),
       }).eq('id', routinePeriod._dbId)
@@ -320,6 +325,24 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
           </div>
         )}
       </div>
+
+      {/* Up next — visible ahead of time so people can plan, separate from the
+          tap-to-confirm gate which only appears once the phase is actually ready */}
+      {!ready && nextPhase && currentPhase.duration_days != null && (() => {
+        const estDate = new Date(activeProgram.phase_started_at + 'T00:00:00')
+        estDate.setDate(estDate.getDate() + currentPhase.duration_days)
+        return (
+          <div style={{ border: `1px solid ${T.border}`, borderRadius: 0, padding: '10px 14px', marginBottom: 12 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: T.textLight, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 3 }}>
+              Up next — around {estDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+            </div>
+            <div style={{ fontSize: 12, fontWeight: 600, color: T.text, marginBottom: 2 }}>
+              {nextPhase.advancement_type === 'auto' ? 'Graduation' : `Phase ${nextPhase.phase_number} — ${nextPhase.name}`}
+            </div>
+            <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.6 }}>{nextPhase.description}</div>
+          </div>
+        )
+      })()}
 
       {/* Advancement banner */}
       {!isLinearProgram && ready && currentPhase.phase_number === 1 && (

@@ -471,6 +471,19 @@ function detectOverlap({ startDate, endDate, excludeId, excludeStartDate, exclud
 
 
 
+// If a manual edit changed tretFrequency/tretStartDate such that it no
+// longer matches the most recent history segment, treat it as a deliberate
+// override and reset history to a single fresh segment from the new date.
+// Otherwise, preserve the existing multi-segment history (e.g. from a
+// program's phase progression) unchanged.
+function reconcileTretFrequencyHistory(form) {
+  if (!form.tretEnabled || !form.tretStartDate) return []
+  const history = form.tretFrequencyHistory || []
+  const last = history[history.length - 1]
+  if (last && last.frequency === form.tretFrequency) return history
+  return [{ start_date: form.tretStartDate, frequency: form.tretFrequency }]
+}
+
 function getActivePeriod(dt, history) {
   const key = dateKey(dt)
   const sorted = [...history].sort((a, b) => a.startDate.localeCompare(b.startDate))
@@ -481,11 +494,30 @@ function getActivePeriod(dt, history) {
 
 function getTretBhaStatus(dt, period) {
   if (!period?.tretEnabled) return null
-  const tretStart = period.tretStartDate ? new Date(period.tretStartDate + 'T00:00:00') : null
-  if (!tretStart || isNaN(tretStart) || dt < tretStart) return null
-  const daysIn = Math.round((dt - tretStart) / 86400000)
+
+  // Frequency history: an array of { start_date, frequency } segments.
+  // Each segment governs dates from its start_date until the next
+  // segment's start_date. This preserves history when a program
+  // advances to a new frequency — past dates keep rendering under
+  // whatever frequency was actually active at the time.
+  const history = (period.tretFrequencyHistory && period.tretFrequencyHistory.length)
+    ? period.tretFrequencyHistory
+    : (period.tretStartDate ? [{ start_date: period.tretStartDate, frequency: period.tretFrequency }] : [])
+
+  if (!history.length) return null
+  const sorted = [...history].sort((a, b) => a.start_date.localeCompare(b.start_date))
+
+  let segment = null
+  for (const seg of sorted) {
+    const segStart = new Date(seg.start_date + 'T00:00:00')
+    if (!isNaN(segStart) && dt >= segStart) segment = seg
+  }
+  if (!segment) return null
+
+  const segStart = new Date(segment.start_date + 'T00:00:00')
+  const daysIn = Math.round((dt - segStart) / 86400000)
   const dow    = dt.getDay()
-  switch (period.tretFrequency) {
+  switch (segment.frequency) {
     case 'nightly':     return 'tret'
     case 'alternating': return daysIn % 2 === 0 ? 'tret' : (period.secondaryActives !== undefined ? 'rest' : (period.bhaEnabled ? 'bha' : 'rest'))
     case '5x': {
@@ -504,6 +536,7 @@ function getTretBhaStatus(dt, period) {
     default: return null
   }
 }
+
 
 function getDayInfo(dt, treatments, allTypes, routineHistory) {
   const key = dateKey(dt)
@@ -3198,6 +3231,7 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, onChanged }) {
             steps: patch.steps,
             ...(patch.tret_enabled !== undefined && { tret_enabled: patch.tret_enabled }),
             ...(patch.tret_frequency !== undefined && { tret_frequency: patch.tret_frequency }),
+            ...(patch.tret_frequency_history !== undefined && { tret_frequency_history: patch.tret_frequency_history }),
             ...(patch.tret_start_date !== undefined && { tret_start_date: patch.tret_start_date }),
             ...(patch.active_name !== undefined && { active_name: patch.active_name }),
             updated_at: new Date().toISOString(),
@@ -4136,6 +4170,7 @@ export default function GlowUpCalendar({ session }) {
         tretEnabled:     p.tret_enabled,
         tretFrequency:   p.tret_frequency,
         tretStartDate:   p.tret_start_date,
+        tretFrequencyHistory: p.tret_frequency_history || [],
         secondaryActives:p.secondary_actives || [],
         products:        p.products || {},
         steps:           p.steps || null,
@@ -4364,6 +4399,7 @@ export default function GlowUpCalendar({ session }) {
       user_id: userId, start_date: form.startDate, end_date: form.endDate || null,
       active_name: form.activeName, tret_enabled: form.tretEnabled,
       tret_frequency: form.tretFrequency, tret_start_date: form.tretStartDate || null,
+      tret_frequency_history: reconcileTretFrequencyHistory(form),
       secondary_actives: form.secondaryActives || [], products: form.products || {},
       steps: form.steps || null,
     }
@@ -4393,6 +4429,7 @@ export default function GlowUpCalendar({ session }) {
       start_date: form.startDate, end_date: form.endDate || null,
       active_name: form.activeName, tret_enabled: form.tretEnabled,
       tret_frequency: form.tretFrequency, tret_start_date: form.tretStartDate || null,
+      tret_frequency_history: reconcileTretFrequencyHistory(form),
       secondary_actives: form.secondaryActives || [], products: form.products || {},
       steps: form.steps || null,
     }
@@ -5004,7 +5041,7 @@ export default function GlowUpCalendar({ session }) {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, gap: 8 }}>
         {/* Left — primary actions */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-          <Btn variant={['update','setup'].includes(panel) ? 'active' : 'primary'} style={{ fontSize: 11, padding: '5px 10px' }} onClick={() => { setPanel(p => ['update','setup'].includes(p) ? null : (hasRoutine ? 'update' : 'setup')); setEditingPeriod(null); setDayFlyout(null) }}>+ Start new routine</Btn>
+          <Btn variant={['update','setup'].includes(panel) ? 'active' : 'primary'} style={{ fontSize: 11, padding: '5px 10px' }} onClick={() => { setPanel(p => ['update','setup'].includes(p) ? null : (hasRoutine ? 'update' : 'setup')); setEditingPeriod(null); setDayFlyout(null) }}>Build your routine</Btn>
           <Btn variant={showTreatments ? 'active' : 'default'} style={{ fontSize: 11, padding: '5px 10px' }} onClick={() => { setShowTreatments(s => !s); setDayFlyout(null) }}>My treatments</Btn>
           {(month !== now.getMonth() || year !== now.getFullYear()) && (
             <button onClick={() => { setMonth(now.getMonth()); setYear(now.getFullYear()) }} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 0, padding: '5px 10px', cursor: 'pointer', fontSize: 11, color: T.textMuted, fontFamily: 'inherit' }}>Today</button>

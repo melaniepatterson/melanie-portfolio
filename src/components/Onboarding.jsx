@@ -97,7 +97,12 @@ function Phase2StartScreen({ phase2, phase1Steps, phase2Options, onBack, onConfi
           setSaving(false)
         }}
         style={{ width: '100%', padding: '12px', borderRadius: 0, border: 'none', background: selected.size > 0 ? T.pinkDeep : T.border, color: '#fff', cursor: selected.size > 0 ? 'pointer' : 'default', fontSize: 13, fontFamily: 'inherit', fontWeight: 600, marginTop: 16 }}>
-        {saving ? 'Setting up…' : selected.size > 1 ? `Start with ${selected.size} added` : selected.size === 1 ? 'Start with 1 added' : 'Choose at least one'}
+        {saving ? 'Setting up…' : (() => {
+          if (selected.size === 0) return 'Choose at least one'
+          const realCount = phase2Options.filter(o => selected.has(o.id) && !o.is_skip_option).length
+          if (realCount === 0) return 'Start with the basics'
+          return realCount > 1 ? `Start with ${realCount} added` : 'Start with 1 added'
+        })()}
       </button>
     </div>
   )
