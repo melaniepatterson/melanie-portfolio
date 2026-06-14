@@ -36,8 +36,8 @@ import { supabase } from '../lib/supabase'
 import GlowUpLoader from './GlowUpLoader'
 import { LoadError } from './ErrorBoundary'
 import Onboarding from './Onboarding'
-import ProgramAdvancement from './ProgramAdvancement'
-import { applyProgramPhase } from './programOptions'
+import ProgramAdvancement, { Phase2Picker } from './ProgramAdvancement'
+import { applyProgramPhase, buildStepEntries } from './programOptions'
 
 // ─── DESIGN TOKENS ───────────────────────────────────────────
 const T = {
@@ -3142,11 +3142,15 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, onChanged }) {
   const [loading, setLoading] = useState(true)
   const [library, setLibrary] = useState([])
   const [activeProgramDetails, setActiveProgramDetails] = useState(null)
+  const [phase2Options, setPhase2Options] = useState([])
   const [endConfirm, setEndConfirm] = useState(false)
   const [ending, setEnding] = useState(false)
   const [starting, setStarting] = useState(null) // program id being started
   const [pickingProgram, setPickingProgram] = useState(null) // program selected, choosing start date
   const [startDate, setStartDate] = useState(() => new Date().toISOString().split('T')[0])
+  const [showAddMore, setShowAddMore] = useState(false)
+  const [endFoundationConfirm, setEndFoundationConfirm] = useState(false)
+  const [endingFoundation, setEndingFoundation] = useState(false)
 
   useEffect(() => { load() }, [activeProgram?.id])
 
@@ -3159,6 +3163,15 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, onChanged }) {
         const { data: ph } = await supabase
           .from('program_phases').select('*').eq('program_id', activeProgram.program_id).order('phase_number')
         setActiveProgramDetails({ program: prog, phases: ph || [] })
+
+        if (prog?.slug === 'basic-skincare') {
+          const phase2 = (ph || []).find(p => p.phase_number === 2)
+          if (phase2) {
+            const { data: opts } = await supabase
+              .from('program_phase_options').select('*').eq('phase_id', phase2.id).order('position')
+            setPhase2Options(opts || [])
+          }
+        }
       } else {
         setActiveProgramDetails(null)
         // Add-on programs only — basic-skincare is the foundation, not an add-on
@@ -3170,6 +3183,63 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, onChanged }) {
       console.error('AddProgramPanel load error:', err)
     } finally {
       setLoading(false)
+    }
+  }
+
+  // ── Add more, anytime during Phase 2 (doesn't touch phase/dates) ──
+  async function addStepsNow(chosenOptions) {
+    const realChoices = chosenOptions.filter(o => !o.is_skip_option)
+    const phase2 = activeProgramDetails?.phases.find(p => p.phase_number === 2)
+
+    if (realChoices.length && routinePeriod?._dbId) {
+      const currentSteps = routinePeriod.steps || { am: [], pm: [], off: [] }
+      const { am: amAdds, pm: pmAdds } = buildStepEntries(realChoices)
+      const newSteps = {
+        am:  [...(currentSteps.am  || []), ...amAdds],
+        pm:  [...(currentSteps.pm  || []), ...pmAdds],
+        off: [...(currentSteps.off || currentSteps.pm || []), ...pmAdds.map(s => ({ ...s, id: s.id.replace('pm_', 'off_') }))],
+      }
+
+      await supabase
+        .from('routine_periods')
+        .update({ steps: newSteps, updated_at: new Date().toISOString() })
+        .eq('id', routinePeriod._dbId)
+    }
+
+    for (const opt of realChoices) {
+      await supabase.from('user_program_phase_selections').insert({
+        user_program_id: activeProgram.id,
+        phase_id: phase2?.id || activeProgram.id,
+        selected_option_id: opt.id,
+      })
+    }
+
+    setShowAddMore(false)
+    onChanged()
+  }
+
+  // For foundation programs (e.g. Basic Skincare), "ending early" means
+  // graduating now with whatever's been built so far — not abandoning.
+  async function endFoundationEarly() {
+    setEndingFoundation(true)
+    try {
+      const today = new Date().toISOString().split('T')[0]
+      await supabase.from('user_programs').update({
+        status: 'completed',
+        completed_at: today,
+      }).eq('id', activeProgram.id)
+
+      await supabase.from('user_program_phase_history').insert({
+        user_program_id: activeProgram.id,
+        from_phase: activeProgram.current_phase_number,
+        to_phase: null,
+        reason: 'graduated_early',
+      })
+
+      onChanged()
+    } catch (err) {
+      console.error('End foundation program error:', err)
+      setEndingFoundation(false)
     }
   }
 
@@ -3275,9 +3345,48 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, onChanged }) {
             </div>
           </div>
 
-          <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.7 }}>
-            Look above your calendar for your status bar — it has buttons to add more to your routine, end Basic Skincare early, or wait for the next phase to become ready.
+          <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.7, marginBottom: 16 }}>
+            The same buttons live in your status bar above the calendar — here's where they take you.
           </div>
+
+          {!endFoundationConfirm && (
+            <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+              <button onClick={() => setShowAddMore(true)}
+                style={{ flex: 1, padding: '10px 12px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
+                Add to my routine
+              </button>
+              <button onClick={() => setEndFoundationConfirm(true)}
+                style={{ flex: 1, padding: '10px 12px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.textMuted, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
+                End Basic Skincare
+              </button>
+            </div>
+          )}
+
+          {endFoundationConfirm && (
+            <div style={{ border: `1px solid ${T.border}`, borderRadius: 0, padding: '14px 16px' }}>
+              <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.7, marginBottom: 14 }}>
+                This locks in your current routine exactly as it is — no more Basic Skincare phases. Whether you're happy with it or just ready to move on, your routine stays as-is and you can keep adjusting it manually or add a new program (like Tretinoin Onboarding) anytime.
+              </div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button onClick={() => setEndFoundationConfirm(false)} disabled={endingFoundation}
+                  style={{ flex: 1, padding: '10px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
+                  Cancel
+                </button>
+                <button onClick={endFoundationEarly} disabled={endingFoundation}
+                  style={{ flex: 1, padding: '10px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
+                  {endingFoundation ? 'Saving…' : 'End Basic Skincare'}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {showAddMore && (
+            <Phase2Picker
+              options={phase2Options}
+              onChoose={addStepsNow}
+              onClose={() => setShowAddMore(false)}
+            />
+          )}
         </div>
       )
     }
