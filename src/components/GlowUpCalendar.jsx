@@ -3272,7 +3272,7 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, onChanged }) {
   )
 }
 
-
+function NewRoutinePeriodPicker({ routineHistory, dailyHistory, showerHistory, products, onSaveNew, onSaveDaily, onSaveShower, onCancel, onSaveProduct, onEditConflictRoutine, now, session, activeProgram, onProgramChanged }) {
   const [chosen, setChosen] = useState(null)
 
   const options = [
