@@ -262,6 +262,13 @@ const INGREDIENT_CATEGORIES = {
     productCategories: ['serum', 'vitamin c', 'peptides'],
     ingredientCategories: ['vitamin_c', 'peptides', 'tranexamic_acid', 'alpha_arbutin', 'kojic_acid', 'bakuchiol', 'antioxidant'],
   },
+  moisturizer_buffer: {
+    label: 'Moisturizer (buffer layer)', order: 8.25,
+    dayTypes: { am: false, main: true, off: false, recovery: false, pause: false },
+    optional: true,
+    forms: ['Same as your regular moisturizer'],
+    productCategories: ['moisturizer', 'lotion', 'barrier cream'],
+  },
   retinoid: {
     label: 'Retinoid', order: 8.5,
     dayTypes: { am: false, main: true, off: false, recovery: false, pause: false },
@@ -3093,11 +3100,184 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
 
 // ─── NEW ROUTINE PERIOD PICKER ───────────────────────────────
 // Asks "What kind of routine would you like to add?" then shows the right form
-function NewRoutinePeriodPicker({ routineHistory, dailyHistory, showerHistory, products, onSaveNew, onSaveDaily, onSaveShower, onCancel, onSaveProduct, onEditConflictRoutine, now }) {
+// ─── ADD A PROGRAM PANEL ──────────────────────────────────────
+// The hub for enrolling in add-on programs (e.g. Tretinoin Onboarding)
+// on top of an existing baseline routine, and for ending/restarting
+// a program if the user falls off partway through.
+function AddProgramPanel({ session, activeProgram, routinePeriod, onChanged }) {
+  const [loading, setLoading] = useState(true)
+  const [library, setLibrary] = useState([])
+  const [activeProgramDetails, setActiveProgramDetails] = useState(null)
+  const [endConfirm, setEndConfirm] = useState(false)
+  const [ending, setEnding] = useState(false)
+  const [starting, setStarting] = useState(null) // program id being started
+
+  useEffect(() => { load() }, [activeProgram?.id])
+
+  async function load() {
+    setLoading(true)
+    try {
+      if (activeProgram) {
+        const { data: prog } = await supabase
+          .from('programs').select('*').eq('id', activeProgram.program_id).single()
+        const { data: ph } = await supabase
+          .from('program_phases').select('*').eq('program_id', activeProgram.program_id).order('phase_number')
+        setActiveProgramDetails({ program: prog, phases: ph || [] })
+      } else {
+        setActiveProgramDetails(null)
+        // Add-on programs only — basic-skincare is the foundation, not an add-on
+        const { data: progs } = await supabase
+          .from('programs').select('*').eq('is_stackable', true).order('name')
+        setLibrary(progs || [])
+      }
+    } catch (err) {
+      console.error('AddProgramPanel load error:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  async function endProgram() {
+    setEnding(true)
+    try {
+      const today = new Date().toISOString().split('T')[0]
+      await supabase.from('user_programs').update({
+        status: 'abandoned',
+        completed_at: today,
+      }).eq('id', activeProgram.id)
+
+      await supabase.from('user_program_phase_history').insert({
+        user_program_id: activeProgram.id,
+        from_phase: activeProgram.current_phase_number,
+        to_phase: null,
+        reason: 'abandoned',
+      })
+
+      onChanged()
+    } catch (err) {
+      console.error('End program error:', err)
+      setEnding(false)
+    }
+  }
+
+  async function startProgram(program) {
+    setStarting(program.id)
+    try {
+      const today = new Date().toISOString().split('T')[0]
+
+      // Load phase 1 for this program
+      const { data: ph } = await supabase
+        .from('program_phases').select('*').eq('program_id', program.id).order('phase_number')
+      const phase1 = (ph || []).find(p => p.phase_number === 1)
+
+      const { error: progErr } = await supabase
+        .from('user_programs')
+        .insert({
+          user_id:              session.user.id,
+          program_id:           program.id,
+          started_at:           today,
+          current_phase_number: 1,
+          phase_started_at:     today,
+          status:               'active',
+        })
+      if (progErr) throw progErr
+
+      // Phase 1 step changes get applied by ProgramAdvancement-style logic
+      // once phase content exists for this program — for now the enrollment
+      // itself is enough to start tracking; step application happens on
+      // first load via the program's own apply logic.
+
+      onChanged()
+    } catch (err) {
+      console.error('Start program error:', err)
+      setStarting(null)
+    }
+  }
+
+  if (loading) return (
+    <div style={{ padding: '20px 18px', fontSize: 13, color: T.textMuted }}>Loading programs…</div>
+  )
+
+  // ── ACTIVE PROGRAM — show status + end option ──────────────
+  if (activeProgram && activeProgramDetails) {
+    const { program, phases } = activeProgramDetails
+    const currentPhase = phases.find(p => p.phase_number === activeProgram.current_phase_number)
+    return (
+      <div style={{ padding: '18px 18px' }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 4 }}>You're already in a program</div>
+        <div style={{ fontSize: 12, color: T.textMuted, marginBottom: 16, lineHeight: 1.6 }}>
+          You can only run one structured program at a time, so it's clear what your skin is responding to.
+        </div>
+
+        <div style={{ background: T.cream, border: `1px solid ${T.border}`, borderRadius: 0, padding: '14px 16px', marginBottom: 16 }}>
+          <div style={{ fontSize: 9, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 4 }}>
+            {program.name}
+          </div>
+          <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>
+            {currentPhase ? `Phase ${currentPhase.phase_number} of ${phases.length} — ${currentPhase.name}` : 'In progress'}
+          </div>
+        </div>
+
+        {!endConfirm ? (
+          <button onClick={() => setEndConfirm(true)}
+            style={{ width: '100%', padding: '11px', borderRadius: 0, border: `1px solid ${T.pinkDeep}`, background: 'transparent', color: T.pinkDeep, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit' }}>
+            End this program
+          </button>
+        ) : (
+          <div style={{ border: `1px solid ${T.border}`, borderRadius: 0, padding: '14px 16px' }}>
+            <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.7, marginBottom: 14 }}>
+              This stops tracking progress for {program.name}. Anything already added to your routine stays — you can adjust it manually anytime. You can restart this program later if you want to pick it back up.
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button onClick={() => setEndConfirm(false)} disabled={ending}
+                style={{ flex: 1, padding: '10px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
+                Cancel
+              </button>
+              <button onClick={endProgram} disabled={ending}
+                style={{ flex: 1, padding: '10px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
+                {ending ? 'Ending…' : 'End program'}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  // ── NO ACTIVE PROGRAM — show library ────────────────────────
+  return (
+    <div style={{ padding: '18px 18px' }}>
+      <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 4 }}>Add a program</div>
+      <div style={{ fontSize: 12, color: T.textMuted, marginBottom: 16, lineHeight: 1.6 }}>
+        Programs guide you through introducing something new — pacing it out in phases so you can tell what your skin is responding to. Your current routine stays as your baseline.
+      </div>
+
+      {library.length === 0 ? (
+        <div style={{ fontSize: 12, color: T.textMuted, fontStyle: 'italic', padding: '20px 0', textAlign: 'center' }}>
+          No programs available yet — check back soon.
+        </div>
+      ) : (
+        library.map(program => (
+          <div key={program.id} style={{ border: `1px solid ${T.border}`, borderRadius: 0, padding: '14px 16px', marginBottom: 10 }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: T.text, marginBottom: 4 }}>{program.name}</div>
+            <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.6, marginBottom: 12 }}>{program.description}</div>
+            <button onClick={() => startProgram(program)} disabled={starting === program.id}
+              style={{ width: '100%', padding: '10px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
+              {starting === program.id ? 'Starting…' : 'Start program'}
+            </button>
+          </div>
+        ))
+      )}
+    </div>
+  )
+}
+
+
   const [chosen, setChosen] = useState(null)
 
   const options = [
     { key: 'skincare', label: 'Skincare routine', desc: 'Your morning and evening steps — from cleanse to SPF, actives, and treatments.' },
+    { key: 'program',  label: 'Add a program',    desc: 'Guided introductions for new actives — like a tretinoin ramp-up — that build on your current routine.' },
     { key: 'daily',    label: 'Extras',              desc: 'The little things that make a big difference — growth serums, eye patches, tools, supplements.' },
     { key: 'shower',   label: 'Shower routine',      desc: 'Body washes, hair treatments, and anything else that happens in the shower.' },
   ]
@@ -3144,6 +3324,14 @@ function NewRoutinePeriodPicker({ routineHistory, dailyHistory, showerHistory, p
               products={products}
               onSaveProduct={onSaveProduct}
               onEditConflict={onEditConflictRoutine}
+            />
+          )}
+          {chosen === 'program' && (
+            <AddProgramPanel
+              session={session}
+              activeProgram={activeProgram}
+              routinePeriod={getActivePeriod(now, routineHistory)}
+              onChanged={onProgramChanged}
             />
           )}
           {chosen === 'daily' && (
@@ -4969,6 +5157,9 @@ export default function GlowUpCalendar({ session }) {
                 onSaveProduct={saveProduct}
                 onEditConflictRoutine={(p) => { setEditingPeriod(p); setPanel(null) }}
                 now={now}
+                session={session}
+                activeProgram={activeProgram}
+                onProgramChanged={() => { setReloadKey(k => k + 1); setPanel(null) }}
               />
             )}
 
