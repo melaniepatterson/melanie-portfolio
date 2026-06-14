@@ -53,7 +53,7 @@ function StepList({ steps, tod }) {
 }
 
 // ─── START AT PHASE 2 SCREEN ─────────────────────────────────
-function Phase2StartScreen({ phase2, phase1Steps, phase2Options, onBack, onConfirm }) {
+function Phase2StartScreen({ phase2, phase1Steps, phase2Options, skinType, onBack, onConfirm }) {
   const [selected, setSelected] = useState(new Set())
   const [saving, setSaving] = useState(false)
 
@@ -86,6 +86,7 @@ function Phase2StartScreen({ phase2, phase1Steps, phase2Options, onBack, onConfi
         options={phase2Options}
         selected={selected}
         onToggle={opt => setSelected(prev => toggleOption(prev, opt, phase2Options))}
+        skinType={skinType}
       />
 
       <button
@@ -117,6 +118,7 @@ export default function Onboarding({ session, onEnrolled, onSkipToBuilder }) {
   const [phase2Options, setPhase2Options] = useState([])
   const [loading, setLoading]     = useState(true)
   const [error, setError]         = useState(null)
+  const [skinType, setSkinType]   = useState('')
 
   useEffect(() => {
     loadProgram()
@@ -154,6 +156,13 @@ export default function Onboarding({ session, onEnrolled, onSkipToBuilder }) {
         .select('*')
         .eq('phase_id', phase2.id)
         .order('position')
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('skin_type')
+        .eq('id', session.user.id)
+        .single()
+      setSkinType(profile?.skin_type || '')
 
       setProgram(prog)
       setPhases(ph)
@@ -486,6 +495,7 @@ export default function Onboarding({ session, onEnrolled, onSkipToBuilder }) {
         phase2={phase2}
         phase1Steps={phase1Steps}
         phase2Options={phase2Options}
+        skinType={skinType}
         onBack={() => setScreen('entry')}
         onConfirm={enrollAtPhase2}
       />

@@ -10,6 +10,19 @@ export const STEP_KEY_MAP = {
   facial_oil:      { categoryKey: 'face_oil',        label: 'Facial Oil' },
 }
 
+// Contextual notes shown on specific Phase 2 options based on the skin
+// type someone indicated in their profile. These are informational only —
+// the option remains fully selectable either way, never disabled.
+export const SKIN_TYPE_NOTES = {
+  oily: {
+    facial_oil: "Since you indicated oily skin: facial oils can feel counterintuitive, but a light, non-comedogenic oil can actually help balance oil production for some people. There's no wrong answer here — still your call.",
+    hydrating_serum: "Since you indicated oily skin: it's a common myth that oily skin doesn't need hydration — skipping it can actually trigger more oil production. A lightweight, water-based serum is usually a good fit.",
+  },
+  dry: {
+    exfoliant: "Since you indicated dry skin: exfoliating acids can be more drying for some people. Starting with a gentler formula or less frequent use is common — but it's still worth trying if you're curious.",
+  },
+}
+
 // Step keys that introduce a new active ingredient — only one
 // can be selected at a time so the user isn't ramping multiple
 // actives simultaneously.

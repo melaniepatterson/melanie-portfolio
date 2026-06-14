@@ -3138,7 +3138,7 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
 // The hub for enrolling in add-on programs (e.g. Tretinoin Onboarding)
 // on top of an existing baseline routine, and for ending/restarting
 // a program if the user falls off partway through.
-function AddProgramPanel({ session, activeProgram, routinePeriod, onChanged }) {
+function AddProgramPanel({ session, activeProgram, routinePeriod, skinType, onChanged }) {
   const [loading, setLoading] = useState(true)
   const [library, setLibrary] = useState([])
   const [activeProgramDetails, setActiveProgramDetails] = useState(null)
@@ -3385,6 +3385,7 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, onChanged }) {
               options={phase2Options}
               onChoose={addStepsNow}
               onClose={() => setShowAddMore(false)}
+              skinType={skinType}
             />
           )}
         </div>
@@ -3480,7 +3481,7 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, onChanged }) {
   )
 }
 
-function NewRoutinePeriodPicker({ routineHistory, dailyHistory, showerHistory, products, onSaveNew, onSaveDaily, onSaveShower, onCancel, onSaveProduct, onEditConflictRoutine, now, session, activeProgram, onProgramChanged }) {
+function NewRoutinePeriodPicker({ routineHistory, dailyHistory, showerHistory, products, onSaveNew, onSaveDaily, onSaveShower, onCancel, onSaveProduct, onEditConflictRoutine, now, session, activeProgram, skinType, onProgramChanged }) {
   const [chosen, setChosen] = useState(null)
 
   const primaryOptions = [
@@ -3566,6 +3567,7 @@ function NewRoutinePeriodPicker({ routineHistory, dailyHistory, showerHistory, p
               session={session}
               activeProgram={activeProgram}
               routinePeriod={getActivePeriod(now, routineHistory)}
+              skinType={skinType}
               onChanged={onProgramChanged}
             />
           )}
@@ -4311,7 +4313,7 @@ export default function GlowUpCalendar({ session }) {
       setLoading(true)
       const results = await Promise.allSettled([
         supabase.from('routine_periods').select('*').eq('user_id', userId).order('start_date'),
-        supabase.from('profiles').select('recovery_routines, display_name, avatar_url').eq('id', userId).single(),
+        supabase.from('profiles').select('recovery_routines, display_name, avatar_url, skin_type').eq('id', userId).single(),
         supabase.from('products').select('*').or(`is_catalog.eq.true,user_id.eq.${userId}`),
         supabase.from('extras_periods').select('*').eq('user_id', userId).order('start_date'),
         supabase.from('shower_periods').select('*').eq('user_id', userId).order('start_date'),
@@ -4348,6 +4350,7 @@ export default function GlowUpCalendar({ session }) {
       // Load recovery routines from profiles
       if (profileRR?.recovery_routines) setRecoveryRoutines(profileRR.recovery_routines)
       if (profileRR) setMenuProfile({ display_name: profileRR.display_name, avatar_url: profileRR.avatar_url })
+      setSkinType(profileRR?.skin_type || '')
       catalogIds.current = new Set()
       ;(pr || []).forEach(p => {
         if (p.is_catalog) catalogIds.current.add(p.id)
@@ -4417,6 +4420,7 @@ export default function GlowUpCalendar({ session }) {
   const [showMenu,      setShowMenu]      = useState(false)
   const [showFeedback,  setShowFeedback]  = useState(false)
   const [recoveryRoutines, setRecoveryRoutines] = useState({})
+  const [skinType, setSkinType] = useState('')
   const [menuProfile, setMenuProfile] = useState(null)
   const [loadError, setLoadError] = useState(null)
   const [editFromHistory, setEditFromHistory] = useState(false)
@@ -5180,6 +5184,7 @@ export default function GlowUpCalendar({ session }) {
           routinePeriod={getActivePeriod(now, routineHistory)}
           treatments={treatments}
           allTypes={allTypes}
+          skinType={skinType}
           onAdvanced={() => setReloadKey(k => k + 1)}
         />
       )}
@@ -5399,6 +5404,7 @@ export default function GlowUpCalendar({ session }) {
                 now={now}
                 session={session}
                 activeProgram={activeProgram}
+                skinType={skinType}
                 onProgramChanged={() => { setReloadKey(k => k + 1); setPanel(null) }}
               />
             )}

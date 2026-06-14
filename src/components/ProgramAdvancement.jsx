@@ -24,7 +24,7 @@ function daysSince(dateStr) {
 }
 
 // ─── PHASE 2 OPTION PICKER ────────────────────────────────────
-export function Phase2Picker({ options, onChoose, onClose }) {
+export function Phase2Picker({ options, onChoose, onClose, skinType }) {
   const [selected, setSelected] = useState(new Set())
   const [saving, setSaving] = useState(false)
 
@@ -45,6 +45,7 @@ export function Phase2Picker({ options, onChoose, onClose }) {
           options={options}
           selected={selected}
           onToggle={opt => setSelected(prev => toggleOption(prev, opt, options))}
+          skinType={skinType}
         />
 
         <button
@@ -133,7 +134,7 @@ function NotReadyYetLink({ onClick, disabled }) {
 // Renders nothing if no program is active, or if the current phase
 // hasn't reached its duration yet. Otherwise shows a tap-to-advance
 // banner appropriate to the current phase.
-export default function ProgramAdvancement({ session, activeProgram, routinePeriod, treatments, allTypes, onAdvanced }) {
+export default function ProgramAdvancement({ session, activeProgram, routinePeriod, treatments, allTypes, skinType, onAdvanced }) {
   const [program, setProgram] = useState(null)
   const [phases, setPhases] = useState([])
   const [phase2Options, setPhase2Options] = useState([])
@@ -538,6 +539,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
           options={phase2Options}
           onChoose={advanceToPhase2}
           onClose={() => setShowPicker(false)}
+          skinType={skinType}
         />
       )}
 
@@ -546,6 +548,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
           options={phase2Options}
           onChoose={addStepsNow}
           onClose={() => setShowAddMore(false)}
+          skinType={skinType}
         />
       )}
 
