@@ -3196,6 +3196,32 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, onChanged }) {
     }
   }
 
+  // For foundation programs (e.g. Basic Skincare), "ending early" means
+  // graduating now with whatever's been built so far — not abandoning.
+  // The routine stays exactly as it is; the program is just marked done.
+  async function endFoundationEarly() {
+    setEnding(true)
+    try {
+      const today = new Date().toISOString().split('T')[0]
+      await supabase.from('user_programs').update({
+        status: 'completed',
+        completed_at: today,
+      }).eq('id', activeProgram.id)
+
+      await supabase.from('user_program_phase_history').insert({
+        user_program_id: activeProgram.id,
+        from_phase: activeProgram.current_phase_number,
+        to_phase: null,
+        reason: 'graduated_early',
+      })
+
+      onChanged()
+    } catch (err) {
+      console.error('End foundation program error:', err)
+      setEnding(false)
+    }
+  }
+
   async function startProgram(program, chosenStartDate) {
     setStarting(program.id)
     try {
@@ -3257,13 +3283,13 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, onChanged }) {
 
     // Foundation programs (e.g. Basic Skincare) aren't "add-ons" — finishing
     // them is what unlocks this hub's library in the first place. Show
-    // progress + an explanation rather than "End this program."
+    // progress + an explanation, plus the option to call it done early.
     if (!program.is_stackable) {
       return (
         <div style={{ padding: '18px 18px' }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 4 }}>Finish your foundation first</div>
+          <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 4 }}>You're still building your foundation</div>
           <div style={{ fontSize: 12, color: T.textMuted, marginBottom: 16, lineHeight: 1.6 }}>
-            Once you graduate from {program.name}, you'll be able to add programs here — like Tretinoin Onboarding.
+            {program.name} walks you through your first routine in phases. Once you finish, programs like Tretinoin Onboarding will show up here.
           </div>
 
           <div style={{ background: T.cream, border: `1px solid ${T.border}`, borderRadius: 0, padding: '14px 16px', marginBottom: 16 }}>
@@ -3275,9 +3301,32 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, onChanged }) {
             </div>
           </div>
 
-          <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.6 }}>
-            Check the status banner above for when you're ready to advance.
+          <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.7, marginBottom: 16 }}>
+            Look above your calendar for a status bar — when a phase is ready to advance, a banner will appear there to walk you through it.
           </div>
+
+          {!endConfirm ? (
+            <button onClick={() => setEndConfirm(true)}
+              style={{ width: '100%', padding: '11px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.textMuted, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit' }}>
+              I'm happy with my routine as-is — call it done
+            </button>
+          ) : (
+            <div style={{ border: `1px solid ${T.border}`, borderRadius: 0, padding: '14px 16px' }}>
+              <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.7, marginBottom: 14 }}>
+                This treats your current routine as finished — exactly as it is now. You'll skip the rest of {program.name}'s phases, and programs like Tretinoin Onboarding will become available here.
+              </div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button onClick={() => setEndConfirm(false)} disabled={ending}
+                  style={{ flex: 1, padding: '10px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
+                  Cancel
+                </button>
+                <button onClick={endFoundationEarly} disabled={ending}
+                  style={{ flex: 1, padding: '10px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
+                  {ending ? 'Saving…' : "That's my routine"}
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )
     }
