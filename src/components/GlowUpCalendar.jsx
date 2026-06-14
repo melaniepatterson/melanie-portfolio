@@ -4238,7 +4238,7 @@ export default function GlowUpCalendar({ session }) {
     if (!userId || loading) return
     async function sync() {
       const rows = Object.values(products)
-        .filter(p => !p.id?.startsWith('seed-') || p._modified)
+        .filter(p => !p._isCatalog && (!p.id?.startsWith('seed-') || p._modified))
         .map(p => ({
           id: p.id, user_id: userId,
           name: p.name, brand: p.brand, category: p.category,
