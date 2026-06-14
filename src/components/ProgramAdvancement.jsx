@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
-import { STEP_KEY_MAP, ACTIVE_STEP_KEYS, buildStepEntries } from './programOptions'
+import { STEP_KEY_MAP, ACTIVE_STEP_KEYS, buildStepEntries, applyProgramPhase } from './programOptions'
 import ProgramOptionsChecklist, { toggleOption } from './ProgramOptionsChecklist'
 
 const T = {
@@ -87,6 +87,33 @@ function GraduationModal({ onConfirm, onClose }) {
   )
 }
 
+// ─── LINEAR PHASE ADVANCE CONFIRM ─────────────────────────────
+// Generic tap-to-advance for programs with no per-phase options
+// (e.g. Tretinoin Onboarding) — each phase fully redefines the
+// active-night routine, so there's nothing to choose, just confirm.
+function LinearAdvanceModal({ nextPhase, isGraduation, onConfirm, onClose }) {
+  const [saving, setSaving] = useState(false)
+  return (
+    <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+      <div onClick={e => e.stopPropagation()} style={{ background: T.white, border: `1px solid ${T.border}`, borderRadius: 0, width: '100%', maxWidth: 420, padding: '24px 20px' }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>
+          {isGraduation ? 'Graduation' : `Phase ${nextPhase.phase_number}`}
+        </div>
+        <h3 style={{ fontSize: 20, fontWeight: 800, color: T.text, letterSpacing: '-0.03em', margin: '0 0 12px' }}>
+          {isGraduation ? 'This is your routine now.' : nextPhase.name}
+        </h3>
+        <p style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.7, margin: '0 0 20px' }}>
+          {nextPhase.description}
+        </p>
+        <button disabled={saving} onClick={async () => { setSaving(true); await onConfirm() }}
+          style={{ width: '100%', padding: '12px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 600 }}>
+          {saving ? 'Saving…' : isGraduation ? "Got it — that's my routine" : `Start Phase ${nextPhase.phase_number}`}
+        </button>
+      </div>
+    </div>
+  )
+}
+
 // ─── MAIN ADVANCEMENT BANNER ─────────────────────────────────
 // Renders nothing if no program is active, or if the current phase
 // hasn't reached its duration yet. Otherwise shows a tap-to-advance
@@ -95,8 +122,10 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
   const [program, setProgram] = useState(null)
   const [phases, setPhases] = useState([])
   const [phase2Options, setPhase2Options] = useState([])
+  const [allPhaseSteps, setAllPhaseSteps] = useState({}) // phase_id -> program_phase_steps[]
   const [showPicker, setShowPicker] = useState(false)
   const [showGraduation, setShowGraduation] = useState(false)
+  const [showLinearAdvance, setShowLinearAdvance] = useState(false)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -115,10 +144,21 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
       setPhases(ph || [])
 
       const phase2 = (ph || []).find(p => p.phase_number === 2)
-      if (phase2) {
+      if (prog?.slug === 'basic-skincare' && phase2) {
         const { data: opts } = await supabase
           .from('program_phase_options').select('*').eq('phase_id', phase2.id).order('position')
         setPhase2Options(opts || [])
+      } else if (ph?.length) {
+        // Linear programs (e.g. Tretinoin) — preload all phases' step config
+        // so advancing is a single tap with no extra fetch
+        const { data: steps } = await supabase
+          .from('program_phase_steps').select('*').in('phase_id', ph.map(p => p.id))
+        const byPhase = {}
+        for (const s of (steps || [])) {
+          if (!byPhase[s.phase_id]) byPhase[s.phase_id] = []
+          byPhase[s.phase_id].push(s)
+        }
+        setAllPhaseSteps(byPhase)
       }
     } catch (err) {
       console.error('ProgramAdvancement load error:', err)
@@ -134,6 +174,42 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
 
   const elapsed = daysSince(activeProgram.phase_started_at)
   const ready = currentPhase.duration_days != null && elapsed >= currentPhase.duration_days
+  const nextPhase = phases.find(p => p.phase_number === currentPhase.phase_number + 1)
+  const isLinearProgram = program.slug !== 'basic-skincare'
+
+  // ── Generic linear advance (Tretinoin and similar) ─────────
+  async function advanceLinear() {
+    if (!nextPhase) return
+    const today = new Date().toISOString().split('T')[0]
+    const isGraduation = nextPhase.advancement_type === 'auto'
+    const nextSteps = allPhaseSteps[nextPhase.id] || []
+    const patch = applyProgramPhase(nextSteps, routinePeriod, { isFirstApplication: false })
+
+    if (routinePeriod?._dbId) {
+      await supabase.from('routine_periods').update({
+        steps: patch.steps,
+        ...(patch.tret_enabled !== undefined && { tret_enabled: patch.tret_enabled }),
+        ...(patch.tret_frequency !== undefined && { tret_frequency: patch.tret_frequency }),
+        updated_at: new Date().toISOString(),
+      }).eq('id', routinePeriod._dbId)
+    }
+
+    await supabase.from('user_programs').update({
+      current_phase_number: nextPhase.phase_number,
+      phase_started_at: today,
+      ...(isGraduation && { status: 'completed', completed_at: today }),
+    }).eq('id', activeProgram.id)
+
+    await supabase.from('user_program_phase_history').insert({
+      user_program_id: activeProgram.id,
+      from_phase: currentPhase.phase_number,
+      to_phase: nextPhase.phase_number,
+      reason: isGraduation ? 'graduated' : 'manual',
+    })
+
+    setShowLinearAdvance(false)
+    onAdvanced()
+  }
 
   // ── Phase 1 -> Phase 2 ─────────────────────────────────────
   async function advanceToPhase2(chosenOptions) {
@@ -233,7 +309,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
       </div>
 
       {/* Advancement banner */}
-      {ready && currentPhase.phase_number === 1 && (
+      {!isLinearProgram && ready && currentPhase.phase_number === 1 && (
         <button onClick={() => setShowPicker(true)}
           style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, background: T.text, color: '#fff', border: 'none', borderRadius: 0, padding: '14px 16px', cursor: 'pointer', fontFamily: 'inherit', marginBottom: 12 }}>
           <div>
@@ -244,12 +320,25 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
         </button>
       )}
 
-      {ready && currentPhase.phase_number === 2 && (
+      {!isLinearProgram && ready && currentPhase.phase_number === 2 && (
         <button onClick={() => setShowGraduation(true)}
           style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, background: T.text, color: '#fff', border: 'none', borderRadius: 0, padding: '14px 16px', cursor: 'pointer', fontFamily: 'inherit', marginBottom: 12 }}>
           <div>
             <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 2 }}>You're ready to graduate</div>
             <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.75)' }}>Tap to lock in your routine</div>
+          </div>
+          <span style={{ fontSize: 18, flexShrink: 0 }}>→</span>
+        </button>
+      )}
+
+      {isLinearProgram && ready && nextPhase && (
+        <button onClick={() => setShowLinearAdvance(true)}
+          style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, background: T.text, color: '#fff', border: 'none', borderRadius: 0, padding: '14px 16px', cursor: 'pointer', fontFamily: 'inherit', marginBottom: 12 }}>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 2 }}>
+              {nextPhase.advancement_type === 'auto' ? "You're ready to graduate" : `You're ready for Phase ${nextPhase.phase_number}`}
+            </div>
+            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.75)' }}>{nextPhase.name}{nextPhase.advancement_type !== 'auto' ? ' — tap to continue' : ' — tap to lock it in'}</div>
           </div>
           <span style={{ fontSize: 18, flexShrink: 0 }}>→</span>
         </button>
@@ -267,6 +356,15 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
         <GraduationModal
           onConfirm={graduate}
           onClose={() => setShowGraduation(false)}
+        />
+      )}
+
+      {showLinearAdvance && nextPhase && (
+        <LinearAdvanceModal
+          nextPhase={nextPhase}
+          isGraduation={nextPhase.advancement_type === 'auto'}
+          onConfirm={advanceLinear}
+          onClose={() => setShowLinearAdvance(false)}
         />
       )}
     </>

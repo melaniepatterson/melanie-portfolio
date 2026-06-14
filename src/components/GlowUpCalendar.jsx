@@ -37,6 +37,7 @@ import GlowUpLoader from './GlowUpLoader'
 import { LoadError } from './ErrorBoundary'
 import Onboarding from './Onboarding'
 import ProgramAdvancement from './ProgramAdvancement'
+import { applyProgramPhase } from './programOptions'
 
 // ─── DESIGN TOKENS ───────────────────────────────────────────
 const T = {
@@ -3182,10 +3183,24 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, onChanged }) {
         })
       if (progErr) throw progErr
 
-      // Phase 1 step changes get applied by ProgramAdvancement-style logic
-      // once phase content exists for this program — for now the enrollment
-      // itself is enough to start tracking; step application happens on
-      // first load via the program's own apply logic.
+      // Apply Phase 1's step changes (e.g. sandwich method + tret frequency)
+      if (phase1 && routinePeriod?._dbId) {
+        const { data: phase1Steps } = await supabase
+          .from('program_phase_steps').select('*').eq('phase_id', phase1.id)
+
+        const patch = applyProgramPhase(phase1Steps || [], routinePeriod, { isFirstApplication: true })
+
+        await supabase
+          .from('routine_periods')
+          .update({
+            steps: patch.steps,
+            ...(patch.tret_enabled !== undefined && { tret_enabled: patch.tret_enabled }),
+            ...(patch.tret_frequency !== undefined && { tret_frequency: patch.tret_frequency }),
+            ...(patch.tret_start_date !== undefined && { tret_start_date: patch.tret_start_date }),
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', routinePeriod._dbId)
+      }
 
       onChanged()
     } catch (err) {
