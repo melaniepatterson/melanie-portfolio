@@ -3112,6 +3112,8 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, onChanged }) {
   const [endConfirm, setEndConfirm] = useState(false)
   const [ending, setEnding] = useState(false)
   const [starting, setStarting] = useState(null) // program id being started
+  const [pickingProgram, setPickingProgram] = useState(null) // program selected, choosing start date
+  const [startDate, setStartDate] = useState(() => new Date().toISOString().split('T')[0])
 
   useEffect(() => { load() }, [activeProgram?.id])
 
@@ -3161,10 +3163,10 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, onChanged }) {
     }
   }
 
-  async function startProgram(program) {
+  async function startProgram(program, chosenStartDate) {
     setStarting(program.id)
     try {
-      const today = new Date().toISOString().split('T')[0]
+      const today = chosenStartDate || new Date().toISOString().split('T')[0]
 
       // Load phase 1 for this program
       const { data: ph } = await supabase
@@ -3188,7 +3190,7 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, onChanged }) {
         const { data: phase1Steps } = await supabase
           .from('program_phase_steps').select('*').eq('phase_id', phase1.id)
 
-        const patch = applyProgramPhase(phase1Steps || [], routinePeriod, { isFirstApplication: true })
+        const patch = applyProgramPhase(phase1Steps || [], routinePeriod, { isFirstApplication: true, startDate: today })
 
         await supabase
           .from('routine_periods')
@@ -3276,10 +3278,29 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, onChanged }) {
           <div key={program.id} style={{ border: `1px solid ${T.border}`, borderRadius: 0, padding: '14px 16px', marginBottom: 10 }}>
             <div style={{ fontSize: 14, fontWeight: 700, color: T.text, marginBottom: 4 }}>{program.name}</div>
             <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.6, marginBottom: 12 }}>{program.description}</div>
-            <button onClick={() => startProgram(program)} disabled={starting === program.id}
-              style={{ width: '100%', padding: '10px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
-              {starting === program.id ? 'Starting…' : 'Start program'}
-            </button>
+
+            {pickingProgram === program.id ? (
+              <div>
+                <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 6 }}>When did/will you start?</div>
+                <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)}
+                  style={{ width: '100%', boxSizing: 'border-box', fontSize: 12, padding: '6px 2px', border: 'none', borderBottom: '1px solid #000000', borderRadius: 0, background: 'transparent', color: T.text, fontFamily: 'inherit', outline: 'none', marginBottom: 12 }} />
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button onClick={() => setPickingProgram(null)} disabled={starting === program.id}
+                    style={{ flex: 1, padding: '10px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
+                    Cancel
+                  </button>
+                  <button onClick={() => startProgram(program, startDate)} disabled={starting === program.id}
+                    style={{ flex: 1, padding: '10px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
+                    {starting === program.id ? 'Starting…' : 'Start program'}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button onClick={() => { setPickingProgram(program.id); setStartDate(new Date().toISOString().split('T')[0]) }}
+                style={{ width: '100%', padding: '10px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
+                Start program
+              </button>
+            )}
           </div>
         ))
       )}
@@ -4955,6 +4976,8 @@ export default function GlowUpCalendar({ session }) {
           session={session}
           activeProgram={activeProgram}
           routinePeriod={getActivePeriod(now, routineHistory)}
+          treatments={treatments}
+          allTypes={allTypes}
           onAdvanced={() => setReloadKey(k => k + 1)}
         />
       )}

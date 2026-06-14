@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
-import { STEP_KEY_MAP, ACTIVE_STEP_KEYS, buildStepEntries, applyProgramPhase } from './programOptions'
+import { STEP_KEY_MAP, ACTIVE_STEP_KEYS, buildStepEntries, applyProgramPhase, countTreatmentPauseDays } from './programOptions'
 import ProgramOptionsChecklist, { toggleOption } from './ProgramOptionsChecklist'
 
 const T = {
@@ -118,7 +118,7 @@ function LinearAdvanceModal({ nextPhase, isGraduation, onConfirm, onClose }) {
 // Renders nothing if no program is active, or if the current phase
 // hasn't reached its duration yet. Otherwise shows a tap-to-advance
 // banner appropriate to the current phase.
-export default function ProgramAdvancement({ session, activeProgram, routinePeriod, onAdvanced }) {
+export default function ProgramAdvancement({ session, activeProgram, routinePeriod, treatments, allTypes, onAdvanced }) {
   const [program, setProgram] = useState(null)
   const [phases, setPhases] = useState([])
   const [phase2Options, setPhase2Options] = useState([])
@@ -173,7 +173,12 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
   if (!currentPhase) return null
 
   const elapsed = daysSince(activeProgram.phase_started_at)
-  const ready = currentPhase.duration_days != null && elapsed >= currentPhase.duration_days
+  const todayKey = new Date().toISOString().split('T')[0]
+  const pauseDays = (treatments && allTypes && elapsed >= 0)
+    ? countTreatmentPauseDays(activeProgram.phase_started_at, todayKey, treatments, allTypes)
+    : 0
+  const effectiveElapsed = elapsed - pauseDays
+  const ready = currentPhase.duration_days != null && effectiveElapsed >= currentPhase.duration_days
   const nextPhase = phases.find(p => p.phase_number === currentPhase.phase_number + 1)
   const isLinearProgram = program.slug !== 'basic-skincare'
 
@@ -284,7 +289,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
   const totalDuration = phases.filter(p => p.duration_days).reduce((s, p) => s + p.duration_days, 0)
   const daysCompleted = phases
     .filter(p => p.phase_number < activeProgram.current_phase_number)
-    .reduce((s, p) => s + (p.duration_days || 0), 0) + elapsed
+    .reduce((s, p) => s + (p.duration_days || 0), 0) + Math.max(effectiveElapsed, 0)
 
   return (
     <>
@@ -296,10 +301,17 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
           </div>
           <div style={{ fontSize: 12, fontWeight: 600, color: T.text }}>
             Phase {currentPhase.phase_number} of {phases.length} — {currentPhase.name}
-            {currentPhase.duration_days && (
-              <span style={{ fontWeight: 400, color: T.textMuted }}> · Day {Math.min(elapsed + 1, currentPhase.duration_days)} of {currentPhase.duration_days}</span>
+            {elapsed < 0 ? (
+              <span style={{ fontWeight: 400, color: T.textMuted }}> · Starts {new Date(activeProgram.phase_started_at + 'T00:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
+            ) : currentPhase.duration_days && (
+              <span style={{ fontWeight: 400, color: T.textMuted }}> · Day {Math.min(Math.max(effectiveElapsed, 0) + 1, currentPhase.duration_days)} of {currentPhase.duration_days}</span>
             )}
           </div>
+          {pauseDays > 0 && elapsed >= 0 && (
+            <div style={{ fontSize: 10, color: T.textMuted, marginTop: 2, fontStyle: 'italic' }}>
+              Paused {pauseDays} day{pauseDays === 1 ? '' : 's'} for a treatment — your timeline shifted to match
+            </div>
+          )}
         </div>
         {totalDuration > 0 && (
           <div style={{ width: 80, height: 4, background: T.creamDark, borderRadius: 0, overflow: 'hidden', flexShrink: 0 }}>

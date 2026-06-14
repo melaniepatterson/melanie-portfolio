@@ -26,7 +26,7 @@ export const ACTIVE_STEP_KEYS = new Set(['vitamin_c', 'exfoliant'])
 // phase's moisturizer_buffer (if present) and retinoid step.
 //
 // Returns a patch object: { steps, tret_enabled?, tret_frequency?, tret_start_date? }
-export function applyProgramPhase(phaseSteps, routinePeriod, { isFirstApplication } = {}) {
+export function applyProgramPhase(phaseSteps, routinePeriod, { isFirstApplication, startDate } = {}) {
   const mainPhaseSteps = (phaseSteps || []).filter(s => s.time_of_day === 'main')
   const bufferStep   = mainPhaseSteps.find(s => s.step_key === 'moisturizer_buffer')
   const retinoidStep = mainPhaseSteps.find(s => s.step_key === 'retinoid')
@@ -56,7 +56,7 @@ export function applyProgramPhase(phaseSteps, routinePeriod, { isFirstApplicatio
     patch.tret_enabled = true
     patch.tret_frequency = retinoidStep.frequency
     if (isFirstApplication) {
-      patch.tret_start_date = new Date().toISOString().split('T')[0]
+      patch.tret_start_date = startDate || new Date().toISOString().split('T')[0]
     }
   }
 
@@ -89,4 +89,28 @@ export function buildStepEntries(chosenOptions) {
     }
   }
   return { am, pm }
+}
+
+// Counts days within [phaseStartedAt, today] where a treatment caused
+// a 'pause' (pre-treatment) or 'recovery'/'pca' (post-treatment) night —
+// i.e. days where an active-night program step (like retinoid) wouldn't
+// have been applied. Used to extend a program phase's effective duration
+// so treatments don't fast-track someone through a tolerance ramp.
+export function countTreatmentPauseDays(phaseStartedAt, today, treatments, allTypes) {
+  const start = new Date(phaseStartedAt + 'T00:00:00')
+  const end = new Date(today + 'T00:00:00')
+  if (start > end) return 0
+
+  let count = 0
+  for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+    if (treatments[key]) { count++; continue }
+    for (const [tk, tv] of Object.entries(treatments)) {
+      const td = new Date(tk + 'T00:00:00')
+      const cfg = allTypes[tv.type] || { pre: 3, post: 3, pca: false }
+      const diff = Math.round((d - td) / 86400000)
+      if ((diff >= -cfg.pre && diff <= -1) || (diff >= 1 && diff <= cfg.post)) { count++; break }
+    }
+  }
+  return count
 }
