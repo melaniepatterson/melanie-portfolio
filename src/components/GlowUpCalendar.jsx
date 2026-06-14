@@ -3254,6 +3254,34 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, onChanged }) {
   if (activeProgram && activeProgramDetails) {
     const { program, phases } = activeProgramDetails
     const currentPhase = phases.find(p => p.phase_number === activeProgram.current_phase_number)
+
+    // Foundation programs (e.g. Basic Skincare) aren't "add-ons" — finishing
+    // them is what unlocks this hub's library in the first place. Show
+    // progress + an explanation rather than "End this program."
+    if (!program.is_stackable) {
+      return (
+        <div style={{ padding: '18px 18px' }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 4 }}>Finish your foundation first</div>
+          <div style={{ fontSize: 12, color: T.textMuted, marginBottom: 16, lineHeight: 1.6 }}>
+            Once you graduate from {program.name}, you'll be able to add programs here — like Tretinoin Onboarding.
+          </div>
+
+          <div style={{ background: T.cream, border: `1px solid ${T.border}`, borderRadius: 0, padding: '14px 16px', marginBottom: 16 }}>
+            <div style={{ fontSize: 9, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 4 }}>
+              {program.name}
+            </div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>
+              {currentPhase ? `Phase ${currentPhase.phase_number} of ${phases.length} — ${currentPhase.name}` : 'In progress'}
+            </div>
+          </div>
+
+          <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.6 }}>
+            Check the status banner above for when you're ready to advance.
+          </div>
+        </div>
+      )
+    }
+
     return (
       <div style={{ padding: '18px 18px' }}>
         <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 4 }}>You're already in a program</div>
