@@ -346,14 +346,25 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
 
       {/* Advancement banner */}
       {!isLinearProgram && ready && currentPhase.phase_number === 1 && (
-        <button onClick={() => setShowPicker(true)}
-          style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, background: T.text, color: '#fff', border: 'none', borderRadius: 0, padding: '14px 16px', cursor: 'pointer', fontFamily: 'inherit', marginBottom: 12 }}>
-          <div>
+        <div style={{ marginBottom: 12 }}>
+          <div style={{ background: T.text, color: '#fff', padding: '14px 16px 12px' }}>
             <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 2 }}>You're ready for Phase 2</div>
-            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.75)' }}>Tap to choose what to add to your routine</div>
+            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.75)' }}>Add something to your routine, or leave it as-is for now</div>
           </div>
-          <span style={{ fontSize: 18, flexShrink: 0 }}>→</span>
-        </button>
+          <div style={{ display: 'flex' }}>
+            <button onClick={() => setShowPicker(true)}
+              style={{ flex: 1, textAlign: 'center', background: T.pinkDeep, color: '#fff', border: 'none', borderRadius: 0, padding: '12px 16px', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13, fontWeight: 600 }}>
+              Add to my routine
+            </button>
+            <button onClick={() => {
+              const skipOpt = phase2Options.find(o => o.is_skip_option)
+              advanceToPhase2(skipOpt ? [skipOpt] : [])
+            }}
+              style={{ flex: 1, textAlign: 'center', background: '#3A3A3A', color: 'rgba(255,255,255,0.85)', border: 'none', borderRadius: 0, padding: '12px 16px', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13, fontWeight: 600 }}>
+              Leave as-is for now
+            </button>
+          </div>
+        </div>
       )}
 
       {!isLinearProgram && ready && currentPhase.phase_number === 2 && (
