@@ -3423,21 +3423,47 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, onChanged }) {
 function NewRoutinePeriodPicker({ routineHistory, dailyHistory, showerHistory, products, onSaveNew, onSaveDaily, onSaveShower, onCancel, onSaveProduct, onEditConflictRoutine, now, session, activeProgram, onProgramChanged }) {
   const [chosen, setChosen] = useState(null)
 
-  const options = [
-    { key: 'skincare', label: 'Skincare routine', desc: 'Your morning and evening steps — from cleanse to SPF, actives, and treatments.' },
-    { key: 'program',  label: 'Add a program',    desc: 'Guided introductions for new actives — like a tretinoin ramp-up — that build on your current routine.' },
-    { key: 'daily',    label: 'Extras',              desc: 'The little things that make a big difference — growth serums, eye patches, tools, supplements.' },
-    { key: 'shower',   label: 'Shower routine',      desc: 'Body washes, hair treatments, and anything else that happens in the shower.' },
+  const primaryOptions = [
+    { key: 'program',  label: 'Build a program',              desc: 'Guided phases for introducing something new — like a tretinoin ramp-up — that build on your current routine.' },
+    { key: 'skincare', label: 'Manually adjust your routine',  desc: 'Edit your morning and evening steps directly — cleanse, moisturize, actives, SPF.' },
   ]
+  const otherOptions = [
+    { key: 'daily',  label: 'Extras',         desc: 'Growth serums, eye patches, tools, supplements.' },
+    { key: 'shower', label: 'Shower routine', desc: 'Body washes, hair treatments, and anything else in the shower.' },
+  ]
+  const options = [...primaryOptions, ...otherOptions]
 
   if (!chosen) return (
     <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 0, padding: '18px 18px', marginBottom: 14 }}>
       <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 4 }}>What kind of routine would you like to add?</div>
       <div style={{ fontSize: 12, color: T.textMuted, marginBottom: 14 }}>Each type is tracked separately with its own history.</div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 14 }}>
-        {options.map(o => (
+
+      {/* Primary choice: build a program vs manually adjust */}
+      <div style={{ display: 'flex', alignItems: 'stretch', gap: 10, marginBottom: 16 }}>
+        {primaryOptions.map(o => (
           <button key={o.key} onClick={() => setChosen(o.key)} style={{
-            padding: '12px 14px', borderRadius: 0,
+            flex: 1, padding: '16px 14px', borderRadius: 0,
+            border: `1px solid ${T.text}`, background: T.cream,
+            textAlign: 'left', cursor: 'pointer',
+            transition: 'border-color 0.15s, background 0.15s',
+          }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = T.pinkDeep; e.currentTarget.style.background = T.pink }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = T.text; e.currentTarget.style.background = T.cream }}
+          >
+            <div style={{ fontSize: 14, fontWeight: 700, color: T.text, marginBottom: 4 }}>{o.label}</div>
+            <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.6 }}>{o.desc}</div>
+          </button>
+        )).reduce((acc, el, i) => i === 0 ? [el] : [...acc,
+          <div key="or" style={{ display: 'flex', alignItems: 'center', fontSize: 11, color: T.textLight, fontStyle: 'italic', flexShrink: 0 }}>or</div>,
+          el
+        ], [])}
+      </div>
+
+      <SectionLabel>Other options</SectionLabel>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
+        {otherOptions.map(o => (
+          <button key={o.key} onClick={() => setChosen(o.key)} style={{
+            flex: 1, padding: '10px 12px', borderRadius: 0,
             border: `0.5px solid ${T.border}`, background: T.cream,
             textAlign: 'left', cursor: 'pointer',
             transition: 'border-color 0.15s, background 0.15s',
@@ -3445,11 +3471,12 @@ function NewRoutinePeriodPicker({ routineHistory, dailyHistory, showerHistory, p
             onMouseEnter={e => { e.currentTarget.style.borderColor = T.pinkDeep; e.currentTarget.style.background = T.pink }}
             onMouseLeave={e => { e.currentTarget.style.borderColor = T.border; e.currentTarget.style.background = T.cream }}
           >
-            <div style={{ fontSize: 13, fontWeight: 500, color: T.text, marginBottom: 2 }}>{o.label}</div>
-            <div style={{ fontSize: 11, color: T.textMuted }}>{o.desc}</div>
+            <div style={{ fontSize: 12, fontWeight: 500, color: T.text, marginBottom: 2 }}>{o.label}</div>
+            <div style={{ fontSize: 10, color: T.textMuted, lineHeight: 1.5 }}>{o.desc}</div>
           </button>
         ))}
       </div>
+
       <Btn onClick={onCancel}>Cancel</Btn>
     </div>
   )
