@@ -4249,6 +4249,11 @@ function SideMenu({ session, menuProfile, onClose, onHistory, onLibrary, onExpor
 // ─── MAIN COMPONENT ──────────────────────────────────────────
 export default function GlowUpCalendar({ session }) {
   const userId = session?.user?.id
+
+  // timezone must be declared FIRST so all date computations below are correct.
+  // Initialize from device timezone immediately — profile load will override once
+  // the saved preference arrives from Supabase.
+  const [timezone, setTimezone] = useState(() => detectTimezone())
   const now = nowInTz(timezone)
   const [year,  setYear]  = useState(now.getFullYear())
   const [month, setMonth] = useState(now.getMonth())
@@ -4422,7 +4427,6 @@ export default function GlowUpCalendar({ session }) {
   const [showFeedback,  setShowFeedback]  = useState(false)
   const [recoveryRoutines, setRecoveryRoutines] = useState({})
   const [skinType, setSkinType] = useState('')
-  const [timezone, setTimezone] = useState(() => detectTimezone())
   const [menuProfile, setMenuProfile] = useState(null)
   const [loadError, setLoadError] = useState(null)
   const [editFromHistory, setEditFromHistory] = useState(false)
