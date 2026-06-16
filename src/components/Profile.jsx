@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 import Avatar from './Avatar'
 import CropModal from './CropModal'
+import { detectTimezone, TIMEZONE_OPTIONS } from './timezone'
 
 const T = {
   white:    '#FFFFFF',
@@ -81,8 +82,6 @@ function PillButton({ active, onClick, children, sub }) {
     </button>
   )
 }
-
-import { detectTimezone, TIMEZONE_OPTIONS } from './timezone'
 
 export default function Profile({ session }) {
   const [displayName,   setDisplayName]   = useState('')
