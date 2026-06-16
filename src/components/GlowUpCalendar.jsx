@@ -38,6 +38,7 @@ import { LoadError } from './ErrorBoundary'
 import Onboarding from './Onboarding'
 import ProgramAdvancement, { Phase2Picker } from './ProgramAdvancement'
 import { applyProgramPhase, buildStepEntries } from './programOptions'
+import { todayInTz, nowInTz, detectTimezone } from './timezone'
 
 // ─── DESIGN TOKENS ───────────────────────────────────────────
 const T = {
@@ -422,8 +423,8 @@ function dateKey(dt) {
 
 
 // Returns the date string for the day before a given date string
-function getPeriodStatus(p) {
-  const today = new Date(); today.setHours(0,0,0,0)
+function getPeriodStatus(p, today) {
+  if (!today) { today = new Date(); today.setHours(0,0,0,0) }
   const start = new Date(p.startDate + 'T00:00:00')
   const end   = p.endDate ? new Date(p.endDate + 'T00:00:00') : null
   if (start > today) return 'upcoming'
@@ -1238,7 +1239,7 @@ function RoutineHistoryPanel({ history, onClose, onEdit, onDelete, onAddNew, get
               <div>
                 <div style={{ fontSize: 12, fontWeight: 600, color: T.text }}>
                   {(() => {
-                    const status = getPeriodStatus(p)
+                    const status = getPeriodStatus(p, now)
                     if (status === 'current') return `Current routine (as of ${fmtDate(p.startDate)})`
                     if (status === 'upcoming') return `Upcoming — starts ${fmtDate(p.startDate)}`
                     return `${fmtDate(p.startDate)} — ${p.endDate ? fmtDate(p.endDate) : '—'}`
@@ -1294,7 +1295,7 @@ function RoutineHistoryPanel({ history, onClose, onEdit, onDelete, onAddNew, get
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
               <div style={{ fontSize: 12, fontWeight: 600, color: T.text }}>
                 {(() => {
-                    const status = getPeriodStatus(p)
+                    const status = getPeriodStatus(p, now)
                     if (status === 'current') return `Current (as of ${fmtDate(p.startDate)})`
                     if (status === 'upcoming') return `Upcoming — starts ${fmtDate(p.startDate)}`
                     return `${fmtDate(p.startDate)} — ${p.endDate ? fmtDate(p.endDate) : '—'}`
@@ -1337,7 +1338,7 @@ function RoutineHistoryPanel({ history, onClose, onEdit, onDelete, onAddNew, get
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
               <div style={{ fontSize: 12, fontWeight: 600, color: T.text }}>
                 {(() => {
-                    const status = getPeriodStatus(p)
+                    const status = getPeriodStatus(p, now)
                     if (status === 'current') return `Current (as of ${fmtDate(p.startDate)})`
                     if (status === 'upcoming') return `Upcoming — starts ${fmtDate(p.startDate)}`
                     return `${fmtDate(p.startDate)} — ${p.endDate ? fmtDate(p.endDate) : '—'}`
@@ -3147,7 +3148,7 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, skinType, onCh
   const [ending, setEnding] = useState(false)
   const [starting, setStarting] = useState(null) // program id being started
   const [pickingProgram, setPickingProgram] = useState(null) // program selected, choosing start date
-  const [startDate, setStartDate] = useState(() => new Date().toISOString().split('T')[0])
+  const [startDate, setStartDate] = useState(() => todayInTz(timezone))
   const [showAddMore, setShowAddMore] = useState(false)
   const [endFoundationConfirm, setEndFoundationConfirm] = useState(false)
   const [endingFoundation, setEndingFoundation] = useState(false)
@@ -3223,7 +3224,7 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, skinType, onCh
   async function endFoundationEarly() {
     setEndingFoundation(true)
     try {
-      const today = new Date().toISOString().split('T')[0]
+      const today = todayInTz(timezone)
       await supabase.from('user_programs').update({
         status: 'completed',
         completed_at: today,
@@ -3246,7 +3247,7 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, skinType, onCh
   async function endProgram() {
     setEnding(true)
     try {
-      const today = new Date().toISOString().split('T')[0]
+      const today = todayInTz(timezone)
       await supabase.from('user_programs').update({
         status: 'abandoned',
         completed_at: today,
@@ -3269,7 +3270,7 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, skinType, onCh
   async function startProgram(program, chosenStartDate) {
     setStarting(program.id)
     try {
-      const today = chosenStartDate || new Date().toISOString().split('T')[0]
+      const today = chosenStartDate || todayInTz(timezone)
 
       // Load phase 1 for this program
       const { data: ph } = await supabase
@@ -3469,7 +3470,7 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, skinType, onCh
                 </div>
               </div>
             ) : (
-              <button onClick={() => { setPickingProgram(program.id); setStartDate(new Date().toISOString().split('T')[0]) }}
+              <button onClick={() => { setPickingProgram(program.id); setStartDate(todayInTz(timezone)) }}
                 style={{ width: '100%', padding: '10px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
                 Start program
               </button>
@@ -3636,7 +3637,7 @@ function addMins(timeStr, mins) {
   return `${String(Math.floor(total / 60) % 24).padStart(2,'0')}:${String(total % 60).padStart(2,'0')}`
 }
 
-function generateICS({ routineHistory, treatments, allTypes, products, settings }) {
+function generateICS({ routineHistory, treatments, allTypes, products, settings, timezone }) {
   // format: 'allday' | 'combined' | 'separate'
   // amMode / pmMode: 'same' | 'custom'
   // amTimes, pmTimes: { 0..6: 'HH:MM' }
@@ -3650,7 +3651,7 @@ function generateICS({ routineHistory, treatments, allTypes, products, settings 
   // Sequence number — increments each export so calendar apps update existing events
   const seqNum = Math.floor(Date.now() / 1000)
   const dtstamp = (() => { const n = new Date(); return `${n.getUTCFullYear()}${String(n.getUTCMonth()+1).padStart(2,'0')}${String(n.getUTCDate()).padStart(2,'0')}T${String(n.getUTCHours()).padStart(2,'0')}${String(n.getUTCMinutes()).padStart(2,'0')}${String(n.getUTCSeconds()).padStart(2,'0')}Z` })()
-  const today = new Date(); today.setHours(0,0,0,0)
+  const today = nowInTz(timezone)
 
   for (let offset = 0; offset < daysAhead; offset++) {
     const dt = new Date(today); dt.setDate(today.getDate() + offset)
@@ -3752,7 +3753,7 @@ function ExportPanel({ routineHistory, treatments, allTypes, products, dailyHist
 
   function handleDownload() {
     const settings = { format, daysAhead, amMode, amTimes, amTime, pmMode, pmTimes, pmTime }
-    const ics = generateICS({ routineHistory, treatments, allTypes, products, settings })
+    const ics = generateICS({ routineHistory, treatments, allTypes, products, settings, timezone })
     const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a'); a.href = url; a.download = 'glowup-routine.ics'; a.click()
@@ -3915,8 +3916,8 @@ function RecoveryRoutineEditor({ typeKey, typeLabel, steps, products, allProduct
   )
 }
 
-function UpcomingTreatmentsPanel({ treatments, allTypes, routineHistory, onClose, onEdit, onRemove, onAddNew, recoveryRoutines, onUpdateRecoveryProducts, onUpdateRecoverySteps, getRecoveryStepsForType, products }) {
-  const now = new Date(); now.setHours(0,0,0,0)
+function UpcomingTreatmentsPanel({ treatments, allTypes, routineHistory, onClose, onEdit, onRemove, onAddNew, recoveryRoutines, onUpdateRecoveryProducts, onUpdateRecoverySteps, getRecoveryStepsForType, products, timezone }) {
+  const now = nowInTz(timezone)
   const [addingDate, setAddingDate] = useState('')
   const [editingRecovery, setEditingRecovery] = useState(null) // typeKey being edited
   const sorted = Object.entries(treatments).sort(([a],[b]) => a.localeCompare(b))
@@ -4248,8 +4249,7 @@ function SideMenu({ session, menuProfile, onClose, onHistory, onLibrary, onExpor
 // ─── MAIN COMPONENT ──────────────────────────────────────────
 export default function GlowUpCalendar({ session }) {
   const userId = session?.user?.id
-  const now = new Date(); now.setHours(0,0,0,0)
-
+  const now = nowInTz(timezone)
   const [year,  setYear]  = useState(now.getFullYear())
   const [month, setMonth] = useState(now.getMonth())
 
@@ -4313,7 +4313,7 @@ export default function GlowUpCalendar({ session }) {
       setLoading(true)
       const results = await Promise.allSettled([
         supabase.from('routine_periods').select('*').eq('user_id', userId).order('start_date'),
-        supabase.from('profiles').select('recovery_routines, display_name, avatar_url, skin_type').eq('id', userId).single(),
+        supabase.from('profiles').select('recovery_routines, display_name, avatar_url, skin_type, timezone').eq('id', userId).single(),
         supabase.from('products').select('*').or(`is_catalog.eq.true,user_id.eq.${userId}`),
         supabase.from('extras_periods').select('*').eq('user_id', userId).order('start_date'),
         supabase.from('shower_periods').select('*').eq('user_id', userId).order('start_date'),
@@ -4351,6 +4351,7 @@ export default function GlowUpCalendar({ session }) {
       if (profileRR?.recovery_routines) setRecoveryRoutines(profileRR.recovery_routines)
       if (profileRR) setMenuProfile({ display_name: profileRR.display_name, avatar_url: profileRR.avatar_url })
       setSkinType(profileRR?.skin_type || '')
+      if (profileRR?.timezone) setTimezone(profileRR.timezone)
       catalogIds.current = new Set()
       ;(pr || []).forEach(p => {
         if (p.is_catalog) catalogIds.current.add(p.id)
@@ -4421,6 +4422,7 @@ export default function GlowUpCalendar({ session }) {
   const [showFeedback,  setShowFeedback]  = useState(false)
   const [recoveryRoutines, setRecoveryRoutines] = useState({})
   const [skinType, setSkinType] = useState('')
+  const [timezone, setTimezone] = useState(() => detectTimezone())
   const [menuProfile, setMenuProfile] = useState(null)
   const [loadError, setLoadError] = useState(null)
   const [editFromHistory, setEditFromHistory] = useState(false)
@@ -5486,6 +5488,7 @@ export default function GlowUpCalendar({ session }) {
                 products={products}
                 allTypes={allTypes}
                 routineHistory={routineHistory}
+                timezone={timezone}
                 onClose={() => setShowTreatments(false)}
                 onEdit={(key) => {
                   const [y,m,d] = key.split('-').map(Number)

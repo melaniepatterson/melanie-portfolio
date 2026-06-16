@@ -82,6 +82,8 @@ function PillButton({ active, onClick, children, sub }) {
   )
 }
 
+import { detectTimezone, TIMEZONE_OPTIONS } from './timezone'
+
 export default function Profile({ session }) {
   const [displayName,   setDisplayName]   = useState('')
   const [skinType,      setSkinType]      = useState('')
@@ -91,6 +93,7 @@ export default function Profile({ session }) {
   const [ageRange,      setAgeRange]      = useState('')
   const [retinoidExp,   setRetinoidExp]   = useState('')
   const [climate,       setClimate]       = useState('')
+  const [timezone,      setTimezone]      = useState(() => detectTimezone())
   const [newsletterOptIn, setNewsletterOptIn] = useState(false)
   const [avatarUrl,     setAvatarUrl]     = useState(null)
   const [cropSrc,       setCropSrc]       = useState(null)
@@ -173,6 +176,7 @@ export default function Profile({ session }) {
           setFitzpatrick(data.fitzpatrick || null)
           setAgeRange(data.age_range || '')
           setRetinoidExp(data.retinoid_experience || '')
+          setTimezone(data.timezone || detectTimezone())
           setClimate(data.climate || '')
           if (data.avatar_url) setAvatarUrl(data.avatar_url)
           setNewsletterOptIn(data.newsletter_opt_in || false)
@@ -231,6 +235,7 @@ export default function Profile({ session }) {
       age_range:           ageRange || null,
       retinoid_experience: retinoidExp || null,
       climate:             climate || null,
+      timezone:            timezone || null,
       newsletter_opt_in:   newsletterOptIn,
       updated_at:          new Date().toISOString(),
     })
@@ -399,6 +404,39 @@ export default function Profile({ session }) {
               <PillButton key={c} active={climate === c} onClick={() => setClimate(climate === c ? '' : c)}>{c}</PillButton>
             ))}
           </div>
+        </div>
+
+        {/* Timezone */}
+        <div style={{ marginBottom: 24, padding: '14px 16px', background: T.white, borderRadius: 10, border: `0.5px solid ${T.border}` }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: T.text, marginBottom: 4 }}>Time zone</div>
+          <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 12, lineHeight: 1.6 }}>
+            Used to determine what day it is for your calendar — important if you use the app near midnight.
+          </div>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', flexWrap: 'wrap' }}>
+            <select
+              value={timezone}
+              onChange={e => setTimezone(e.target.value)}
+              style={{ flex: 1, minWidth: 0, fontSize: 12, padding: '8px 10px', border: `1px solid ${T.border}`, borderRadius: 0, background: T.white, color: T.text, fontFamily: 'inherit', cursor: 'pointer' }}
+            >
+              {TIMEZONE_OPTIONS.map(opt => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
+              {/* Show current value even if not in the list */}
+              {timezone && !TIMEZONE_OPTIONS.find(o => o.value === timezone) && (
+                <option value={timezone}>{timezone}</option>
+              )}
+            </select>
+            <button
+              onClick={() => setTimezone(detectTimezone())}
+              style={{ padding: '8px 12px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.textMuted, cursor: 'pointer', fontSize: 11, fontFamily: 'inherit', whiteSpace: 'nowrap' }}>
+              Auto-detect
+            </button>
+          </div>
+          {timezone && (
+            <div style={{ fontSize: 10, color: T.textMuted, marginTop: 8 }}>
+              Currently: {timezone} — today is {new Intl.DateTimeFormat('en-US', { timeZone: timezone, weekday: 'short', month: 'short', day: 'numeric' }).format(new Date())}
+            </div>
+          )}
         </div>
 
         {/* Newsletter opt-in */}
