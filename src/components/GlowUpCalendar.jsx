@@ -3352,18 +3352,18 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, skinType, onCh
           {!endFoundationConfirm && (
             <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
               <button onClick={() => setShowAddMore(true)}
-                style={{ flex: 1, padding: '10px 12px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
+                style={{ padding: '7px 14px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 11, fontFamily: 'inherit', whiteSpace: 'nowrap' }}>
                 Add to my routine
               </button>
               <button onClick={() => setEndFoundationConfirm(true)}
-                style={{ flex: 1, padding: '10px 12px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.textMuted, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
-                End Basic Skincare
+                style={{ padding: '7px 14px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.textMuted, cursor: 'pointer', fontSize: 11, fontFamily: 'inherit', whiteSpace: 'nowrap' }}>
+                End Basic Skincare program
               </button>
             </div>
           )}
 
           {endFoundationConfirm && (
-            <div style={{ border: `1px solid ${T.border}`, borderRadius: 0, padding: '14px 16px' }}>
+            <div style={{ maxWidth: 400, border: `1px solid ${T.border}`, borderRadius: 0, padding: '14px 16px' }}>
               <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.7, marginBottom: 14 }}>
                 This locks in your current routine exactly as it is — no more Basic Skincare phases. Whether you're happy with it or just ready to move on, your routine stays as-is and you can keep adjusting it manually or add a new program (like Tretinoin Onboarding) anytime.
               </div>
@@ -3374,7 +3374,7 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, skinType, onCh
                 </button>
                 <button onClick={endFoundationEarly} disabled={endingFoundation}
                   style={{ flex: 1, padding: '10px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
-                  {endingFoundation ? 'Saving…' : 'End Basic Skincare'}
+                  {endingFoundation ? 'Saving…' : 'End Basic Skincare program'}
                 </button>
               </div>
             </div>
