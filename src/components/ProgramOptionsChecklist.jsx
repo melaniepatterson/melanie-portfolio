@@ -18,7 +18,7 @@ export default function ProgramOptionsChecklist({ options, selected, onToggle, s
   const realOptions = options.filter(o => !o.is_skip_option)
   const skipOption = options.find(o => o.is_skip_option)
   const hasActiveSelected = realOptions.some(o => ACTIVE_STEP_KEYS.has(o.step_key) && selected.has(o.id))
-  const notesForSkinType = SKIN_TYPE_NOTES[skinType] || {}
+  const notesForSkinType = SKIN_TYPE_NOTES[(skinType || '').toLowerCase()] || {}
 
   return (
     <>

@@ -30,11 +30,16 @@ export function Phase2Picker({ options, onChoose, onClose, skinType }) {
 
   return (
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-      <div onClick={e => e.stopPropagation()} style={{ background: T.white, border: `1px solid ${T.border}`, borderRadius: 0, width: '100%', maxWidth: 460, maxHeight: '85vh', overflowY: 'auto', padding: '24px 20px' }}>
-        <div style={{ fontSize: 11, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>
+      <div onClick={e => e.stopPropagation()} style={{ position: 'relative', background: T.white, border: `1px solid ${T.border}`, borderRadius: 0, width: '100%', maxWidth: 460, maxHeight: '85vh', overflowY: 'auto', padding: '24px 20px' }}>
+        <button onClick={onClose} aria-label="Close"
+          style={{ position: 'absolute', top: 16, right: 16, width: 28, height: 28, border: `1px solid ${T.border}`, background: 'transparent', borderRadius: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: T.textMuted, fontSize: 14, lineHeight: 1, fontFamily: 'inherit', padding: 0 }}>
+          ×
+        </button>
+
+        <div style={{ fontSize: 11, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8, paddingRight: 36 }}>
           Phase 2 — Add to your routine
         </div>
-        <h3 style={{ fontSize: 20, fontWeight: 800, color: T.text, letterSpacing: '-0.03em', margin: '0 0 8px' }}>
+        <h3 style={{ fontSize: 20, fontWeight: 800, color: T.text, letterSpacing: '-0.03em', margin: '0 0 8px', paddingRight: 36 }}>
           What do you want to add?
         </h3>
         <p style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.7, margin: '0 0 20px' }}>
@@ -58,6 +63,7 @@ export function Phase2Picker({ options, onChoose, onClose, skinType }) {
           }}
           style={{ width: '100%', padding: '12px', borderRadius: 0, border: 'none', background: selected.size > 0 ? T.pinkDeep : T.border, color: '#fff', cursor: selected.size > 0 ? 'pointer' : 'default', fontSize: 13, fontFamily: 'inherit', fontWeight: 600, marginTop: 12 }}>
           {saving ? 'Saving…' : (() => {
+            if (selected.size === 0) return 'Select an option to continue'
             const realCount = options.filter(o => selected.has(o.id) && !o.is_skip_option).length
             if (realCount === 0) return 'Continue without adding anything'
             return realCount > 1 ? `Add ${realCount} to my routine` : 'Add to my routine'
