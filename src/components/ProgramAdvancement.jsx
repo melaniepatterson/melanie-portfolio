@@ -141,6 +141,19 @@ function NotReadyYetLink({ onClick, disabled }) {
 // hasn't reached its duration yet. Otherwise shows a tap-to-advance
 // banner appropriate to the current phase.
 export default function ProgramAdvancement({ session, activeProgram, routinePeriod, treatments, allTypes, skinType, onAdvanced }) {
+  const storageKey = `program_banner_collapsed_${session?.user?.id || 'anon'}`
+  const [collapsed, setCollapsed] = useState(() => {
+    try { return localStorage.getItem(storageKey) === 'true' } catch { return false }
+  })
+
+  function toggleCollapsed() {
+    setCollapsed(prev => {
+      const next = !prev
+      try { localStorage.setItem(storageKey, String(next)) } catch {}
+      return next
+    })
+  }
+
   const [program, setProgram] = useState(null)
   const [phases, setPhases] = useState([])
   const [phase2Options, setPhase2Options] = useState([])
@@ -406,9 +419,12 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
 
   return (
     <div style={{ overflow: 'hidden' }}>
-      {/* Status chip */}
-      <div style={{ background: T.cream, border: `1px solid ${T.border}`, borderRadius: 0, padding: '10px 14px', marginBottom: 12 }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, flexWrap: 'wrap', marginBottom: program.slug === 'basic-skincare' ? 10 : 0 }}>
+      {/* Status chip — always visible, acts as the toggle handle */}
+      <div style={{ background: T.cream, border: `1px solid ${T.border}`, borderRadius: 0, padding: '10px 14px', marginBottom: collapsed ? 12 : 0 }}>
+
+        {/* Header row — always visible */}
+        <button onClick={toggleCollapsed}
+          style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, background: 'transparent', border: 'none', padding: 0, cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left' }}>
           <div>
             <div style={{ fontSize: 9, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 2 }}>
               {program.name}
@@ -421,53 +437,64 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
                 <span style={{ fontWeight: 400, color: T.textMuted }}> · Day {Math.min(Math.max(effectiveElapsed, 0) + 1, currentPhase.duration_days)} of {currentPhase.duration_days}</span>
               )}
             </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
+            {currentPhase.duration_days && !collapsed && (
+              <div style={{ width: 80, height: 4, background: T.creamDark, borderRadius: 0, overflow: 'hidden' }}>
+                <div style={{ width: `${phaseProgress}%`, height: '100%', background: T.pinkDeep }} />
+              </div>
+            )}
+            <span style={{ fontSize: 10, color: T.textMuted, transition: 'transform 0.15s', display: 'inline-block', transform: collapsed ? 'rotate(0deg)' : 'rotate(180deg)' }}>▼</span>
+          </div>
+        </button>
+
+        {/* Expandable content */}
+        {!collapsed && (
+          <>
             {pauseDays > 0 && elapsed >= 0 && (
-              <div style={{ fontSize: 10, color: T.textMuted, marginTop: 2, fontStyle: 'italic' }}>
+              <div style={{ fontSize: 10, color: T.textMuted, marginTop: 6, fontStyle: 'italic' }}>
                 Paused {pauseDays} day{pauseDays === 1 ? '' : 's'} for a treatment — your timeline shifted to match
               </div>
             )}
-          </div>
-          {currentPhase.duration_days && (
-            <div style={{ width: 80, height: 4, background: T.creamDark, borderRadius: 0, overflow: 'hidden', flexShrink: 0 }}>
-              <div style={{ width: `${phaseProgress}%`, height: '100%', background: T.pinkDeep }} />
-            </div>
-          )}
-        </div>
 
-        {/* Buttons inside the chip for Basic Skincare */}
-        {program.slug === 'basic-skincare' && !endFoundationConfirm && (
-          <div style={{ display: 'flex', gap: 8, borderTop: `1px solid ${T.border}`, paddingTop: 10 }}>
-            <button onClick={() => setShowAddMore(true)}
-              style={{ padding: '7px 14px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 11, fontFamily: 'inherit', whiteSpace: 'nowrap' }}>
-              Add to my routine
-            </button>
-            <button onClick={() => setEndFoundationConfirm(true)}
-              style={{ padding: '7px 14px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.textMuted, cursor: 'pointer', fontSize: 11, fontFamily: 'inherit', whiteSpace: 'nowrap' }}>
-              End Basic Skincare program
-            </button>
-          </div>
-        )}
+            {/* Buttons inside the chip for Basic Skincare */}
+            {program.slug === 'basic-skincare' && !endFoundationConfirm && (
+              <div style={{ display: 'flex', gap: 8, borderTop: `1px solid ${T.border}`, marginTop: 10, paddingTop: 10 }}>
+                <button onClick={e => { e.stopPropagation(); setShowAddMore(true) }}
+                  style={{ padding: '7px 14px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 11, fontFamily: 'inherit', whiteSpace: 'nowrap' }}>
+                  Add to my routine
+                </button>
+                <button onClick={e => { e.stopPropagation(); setEndFoundationConfirm(true) }}
+                  style={{ padding: '7px 14px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.textMuted, cursor: 'pointer', fontSize: 11, fontFamily: 'inherit', whiteSpace: 'nowrap' }}>
+                  End Basic Skincare program
+                </button>
+              </div>
+            )}
 
-        {program.slug === 'basic-skincare' && endFoundationConfirm && (
-          <div style={{ borderTop: `1px solid ${T.border}`, paddingTop: 10 }}>
-            <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.7, marginBottom: 12 }}>
-              This locks in your current routine exactly as it is — no more Basic Skincare phases. Whether you're happy with it or just ready to move on, your routine stays as-is and you can keep adjusting it manually or add a new program (like Tretinoin Onboarding) anytime.
-            </div>
-            <div style={{ display: 'flex', gap: 8, maxWidth: 400 }}>
-              <button onClick={() => setEndFoundationConfirm(false)} disabled={endingFoundation}
-                style={{ flex: 1, padding: '9px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
-                Cancel
-              </button>
-              <button onClick={endFoundationEarly} disabled={endingFoundation}
-                style={{ flex: 1, padding: '9px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
-                {endingFoundation ? 'Saving…' : 'End Basic Skincare program'}
-              </button>
-            </div>
-          </div>
+            {program.slug === 'basic-skincare' && endFoundationConfirm && (
+              <div style={{ borderTop: `1px solid ${T.border}`, marginTop: 10, paddingTop: 10 }}>
+                <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.7, marginBottom: 12 }}>
+                  This locks in your current routine exactly as it is — no more Basic Skincare phases. Whether you're happy with it or just ready to move on, your routine stays as-is and you can keep adjusting it manually or add a new program (like Tretinoin Onboarding) anytime.
+                </div>
+                <div style={{ display: 'flex', gap: 8, maxWidth: 400 }}>
+                  <button onClick={e => { e.stopPropagation(); setEndFoundationConfirm(false) }} disabled={endingFoundation}
+                    style={{ flex: 1, padding: '9px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
+                    Cancel
+                  </button>
+                  <button onClick={e => { e.stopPropagation(); endFoundationEarly() }} disabled={endingFoundation}
+                    style={{ flex: 1, padding: '9px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
+                    {endingFoundation ? 'Saving…' : 'End Basic Skincare program'}
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
 
-      {/* Up next — visible ahead of time so people can plan, separate from the
+      {/* Everything below is hidden when collapsed */}
+      {!collapsed && (
+        <>      {/* Up next — visible ahead of time so people can plan, separate from the
           tap-to-confirm gate which only appears once the phase is actually ready.
           Uses preview_description (future tense — "this will become...") rather
           than description (present tense — "this is..."), since the phase
@@ -546,7 +573,11 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
           skinType={skinType}
         />
       )}
+      </> /* end !collapsed */
+      )}
 
+      {/* Modals always rendered outside the collapsed gate so they
+          can appear even if someone triggers them before collapsing */}
       {showAddMore && (
         <Phase2Picker
           options={phase2Options}
