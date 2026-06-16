@@ -389,10 +389,12 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
   }
 
   // ── Status chip — always visible while program is active ──
-  const totalDuration = phases.filter(p => p.duration_days).reduce((s, p) => s + p.duration_days, 0)
-  const daysCompleted = phases
-    .filter(p => p.phase_number < activeProgram.current_phase_number)
-    .reduce((s, p) => s + (p.duration_days || 0), 0) + Math.max(effectiveElapsed, 0)
+  // Progress bar: show progress within the current phase only.
+  // Cross-phase bars (e.g. "Day 16 of 28") are too abstract — the day
+  // count shown in the chip already gives phase-level context.
+  const phaseProgress = currentPhase.duration_days
+    ? Math.min(100, (Math.max(effectiveElapsed, 0) / currentPhase.duration_days) * 100)
+    : 0
 
   // Format a short date like "Jun 14"
   const fmtDate = (d) => d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
@@ -403,7 +405,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
     : null
 
   return (
-    <>
+    <div style={{ overflow: 'hidden' }}>
       {/* Status chip */}
       <div style={{ background: T.cream, border: `1px solid ${T.border}`, borderRadius: 0, padding: '10px 14px', marginBottom: 12 }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, flexWrap: 'wrap', marginBottom: program.slug === 'basic-skincare' ? 10 : 0 }}>
@@ -425,9 +427,9 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
               </div>
             )}
           </div>
-          {totalDuration > 0 && (
+          {currentPhase.duration_days && (
             <div style={{ width: 80, height: 4, background: T.creamDark, borderRadius: 0, overflow: 'hidden', flexShrink: 0 }}>
-              <div style={{ width: `${Math.min(100, (daysCompleted / totalDuration) * 100)}%`, height: '100%', background: T.pinkDeep }} />
+              <div style={{ width: `${phaseProgress}%`, height: '100%', background: T.pinkDeep }} />
             </div>
           )}
         </div>
@@ -569,6 +571,6 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
           onClose={() => setShowLinearAdvance(false)}
         />
       )}
-    </>
+    </div>
   )
 }
