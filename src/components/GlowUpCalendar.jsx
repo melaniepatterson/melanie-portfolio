@@ -5550,15 +5550,14 @@ export default function GlowUpCalendar({ session }) {
               zIndex: 50,
               pointerEvents: 'none',
               animation: 'panelIn 0.2s ease',
+              overflowY: 'auto',
+              WebkitOverflowScrolling: 'touch',
             }}>
-            {/* Inner wrapper — scrollable, restores pointer events, stops propagation */}
+            {/* Inner wrapper — restores pointer events, stops propagation */}
             <div
               onClick={e => e.stopPropagation()}
               style={{
                 pointerEvents: 'auto',
-                height: '100%',
-                overflowY: 'auto',
-                WebkitOverflowScrolling: 'touch',
                 maxWidth: 900, margin: '0 auto', padding: '12px 12px 60px',
               }}>
 
