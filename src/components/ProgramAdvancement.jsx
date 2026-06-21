@@ -470,9 +470,8 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
             <div style={{ fontSize: 9, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 2 }}>
               {program.name}
             </div>
-            <div style={{ fontSize: 12, fontWeight: 600, color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', position: 'relative' }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               Phase {currentPhase.phase_number} of {phases.length} — {currentPhase.name}
-              {/sandwich/i.test(currentPhase.name) && <> <SandwichInfo /></>}
               {elapsed < 0 ? (
                 <span style={{ fontWeight: 400, color: T.textMuted }}> · Starts {fmtDate(phaseStart)}</span>
               ) : currentPhase.duration_days && (
@@ -492,10 +491,18 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
 
         {/* Expandable content */}
         {!collapsed && (
-          <>
+          <div style={{ width: '100%', minWidth: 0, boxSizing: 'border-box' }}>
             {pauseDays > 0 && elapsed >= 0 && (
               <div style={{ fontSize: 10, color: T.textMuted, marginTop: 6, fontStyle: 'italic' }}>
                 Paused {pauseDays} day{pauseDays === 1 ? '' : 's'} for a treatment — your timeline shifted to match
+              </div>
+            )}
+
+            {/* Sandwich method description — shown inline when relevant */}
+            {/sandwich/i.test(currentPhase.name) && (
+              <div style={{ marginTop: 8, fontSize: 11, color: T.textMuted, lineHeight: 1.7, padding: '8px 10px', background: T.creamDark, borderRadius: 0 }}>
+                <span style={{ fontWeight: 600, color: T.text }}>Sandwich method: </span>
+                Apply moisturizer, wait 2–3 min, apply tretinoin, then moisturizer again on top. The buffer layers reduce irritation while it still absorbs.
               </div>
             )}
 
@@ -535,7 +542,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
                 </div>
               </div>
             )}
-          </>
+          </div>
         )}
       </div>
 
@@ -553,7 +560,6 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
           </div>
           <div style={{ fontSize: 12, fontWeight: 600, color: T.text, marginBottom: 2 }}>
             {nextPhase.advancement_type === 'auto' ? 'Graduation' : `Phase ${nextPhase.phase_number} — ${nextPhase.name}`}
-            {/sandwich/i.test(nextPhase.name || '') && <> <SandwichInfo /></>}
           </div>
           <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.6 }}>{nextPhase.preview_description || nextPhase.description}</div>
         </div>
@@ -621,7 +627,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
           alreadyAdded={alreadyAdded}
         />
       )}
-      </> /* end !collapsed */
+      </div> /* end expandable content */
       )}
 
       {/* Modals always rendered outside the collapsed gate so they
