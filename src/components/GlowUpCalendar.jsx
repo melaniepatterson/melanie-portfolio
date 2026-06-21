@@ -541,14 +541,28 @@ function getTretBhaStatus(dt, period) {
 
 function getDayInfo(dt, treatments, allTypes, routineHistory) {
   const key = dateKey(dt)
-  if (treatments[key]) return { status: treatments[key].type, isTreatment: true }
-  for (const [tk, tv] of Object.entries(treatments)) {
-    const td   = new Date(tk + 'T00:00:00')
-    const cfg  = allTypes[tv.type] || { pre: 3, post: 3, pca: false }
-    const diff = Math.round((dt - td) / 86400000)
-    if (diff >= -cfg.pre && diff <= -1)      return { status: 'pause',    isTreatment: false }
-    if (diff >= 1 && diff <= cfg.post)       return { status: cfg.pca ? 'pca' : 'recovery', isTreatment: false, activeTreatmentType: tv.type }
+
+  // Treatments is now { [dateKey]: TreatmentEntry[] }
+  // Check if this day itself has treatments
+  const dayEntries = treatments[key]
+  if (dayEntries?.length) {
+    // Use most severe type (prefer face treatments over body for determining status)
+    const faceEntry = dayEntries.find(e => e.area === 'face' || e.area === 'both')
+    const primary = faceEntry || dayEntries[0]
+    return { status: primary.type, isTreatment: true, allTreatments: dayEntries }
   }
+
+  // Check if this day falls within pre/post window of any treatment on any other day
+  for (const [tk, entries] of Object.entries(treatments)) {
+    for (const tv of (entries || [])) {
+      const td   = new Date(tk + 'T00:00:00')
+      const cfg  = allTypes[tv.type] || { pre: 3, post: 3, pca: false }
+      const diff = Math.round((dt - td) / 86400000)
+      if (diff >= -cfg.pre && diff <= -1)    return { status: 'pause',    isTreatment: false }
+      if (diff >= 1 && diff <= cfg.post)     return { status: cfg.pca ? 'pca' : 'recovery', isTreatment: false, activeTreatmentType: tv.type }
+    }
+  }
+
   const period  = getActivePeriod(dt, routineHistory)
   const tretBha = getTretBhaStatus(dt, period)
   if (tretBha && tretBha !== 'rest') return { status: tretBha, isTreatment: false }
@@ -657,32 +671,36 @@ function detectTreatmentConflicts(proposedKey, proposedType, allTypes, treatment
   if (!cfg) return conflicts
 
   // (a) Proposed date falls inside an existing treatment's pre/post window
-  for (const [tk, tv] of Object.entries(treatments)) {
+  for (const [tk, entries] of Object.entries(treatments)) {
     if (tk === proposedKey) continue
-    const td = new Date(tk + 'T00:00:00')
-    const ec = { pre: tv.pre ?? allTypes[tv.type]?.pre ?? 3, post: tv.post ?? allTypes[tv.type]?.post ?? 3 }
-    const diff = Math.round((proposedDt - td) / 86400000)
-    if (diff >= -ec.pre && diff <= ec.post) {
-      const dir = diff < 0 ? `${Math.abs(diff)}d before` : `${diff}d after`
-      conflicts.push({
-        kind: 'treatment',
-        message: `Falls inside ${allTypes[tv.type]?.label || tv.type} window (${tk})`,
-        detail: `That treatment needs ${ec.pre}d before + ${ec.post}d after clear. You're ${dir} it.`
-      })
+    for (const tv of (entries || [])) {
+      const td = new Date(tk + 'T00:00:00')
+      const ec = { pre: tv.pre ?? allTypes[tv.type]?.pre ?? 3, post: tv.post ?? allTypes[tv.type]?.post ?? 3 }
+      const diff = Math.round((proposedDt - td) / 86400000)
+      if (diff >= -ec.pre && diff <= ec.post) {
+        const dir = diff < 0 ? `${Math.abs(diff)}d before` : `${diff}d after`
+        conflicts.push({
+          kind: 'treatment',
+          message: `Falls inside ${allTypes[tv.type]?.label || tv.type} window (${tk})`,
+          detail: `That treatment needs ${ec.pre}d before + ${ec.post}d after clear. You're ${dir} it.`
+        })
+      }
     }
   }
 
   // (b) An existing treatment falls inside this treatment's own pre-window
-  for (const [tk, tv] of Object.entries(treatments)) {
+  for (const [tk, entries] of Object.entries(treatments)) {
     if (tk === proposedKey) continue
-    const td = new Date(tk + 'T00:00:00')
-    const diffExisting = Math.round((td - proposedDt) / 86400000)
-    if (diffExisting < 0 && diffExisting >= -cfg.pre) {
-      conflicts.push({
-        kind: 'treatment',
-        message: `Pre-treatment window conflicts with ${allTypes[tv.type]?.label || tv.type} (${tk})`,
-        detail: `This treatment needs ${cfg.pre}d clear before it. That treatment is ${Math.abs(diffExisting)}d prior.`
-      })
+    for (const tv of (entries || [])) {
+      const td = new Date(tk + 'T00:00:00')
+      const diffExisting = Math.round((td - proposedDt) / 86400000)
+      if (diffExisting < 0 && diffExisting >= -cfg.pre) {
+        conflicts.push({
+          kind: 'treatment',
+          message: `Pre-treatment window conflicts with ${allTypes[tv.type]?.label || tv.type} (${tk})`,
+          detail: `This treatment needs ${cfg.pre}d clear before it. That treatment is ${Math.abs(diffExisting)}d prior.`
+        })
+      }
     }
   }
 
@@ -1377,10 +1395,13 @@ function RoutineHistoryPanel({ history, now, onClose, onEdit, onDelete, onAddNew
 
 // ─── TREATMENT SELECTOR PANEL ────────────────────────────────
 function TreatmentSelectorPanel({ selector, treatments, allTypes, customTypes, setCustomTypes, onApply, onRemove, onClose, routineHistory, showerHistory, products }) {
-  const existing = treatments[selector.key]
+  const existingEntries = treatments[selector.key] || []
+  // When editingDbId is set, we're editing a specific entry; otherwise adding new
+  const editingEntry = selector.editingDbId ? existingEntries.find(e => e._dbId === selector.editingDbId) : null
+  const existing = editingEntry // alias for legacy compat
   const [selType,     setSelType]     = useState(existing?.type       || null)
   const [timeOfDay,   setTimeOfDay]   = useState(existing?.timeOfDay  || 'am')
-  const [treatArea,   setTreatArea]   = useState(existing?.area || (selType && allTypes[selType]?.area) || 'face')
+  const [treatArea,   setTreatArea]   = useState(existing?.area || (existing?.type && allTypes[existing?.type]?.area) || 'face')
   const [customPre,   setCustomPre]   = useState(existing?.pre  ?? (existing?.type ? (allTypes[existing.type]?.pre ?? 0) : 0))
   const [customPost,  setCustomPost]  = useState(existing?.post ?? (existing?.type ? (allTypes[existing.type]?.post ?? 0) : 0))
   const [newName, setNewName] = useState('')
@@ -1431,7 +1452,7 @@ function TreatmentSelectorPanel({ selector, treatments, allTypes, customTypes, s
     <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 0, padding: '16px 18px', marginBottom: 14 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12, flexWrap: 'wrap' }}>
         <div style={{ fontSize: 13, fontWeight: 600, color: T.text, flexShrink: 0 }}>
-          {existing ? 'Edit treatment' : 'Add treatment'}
+          {editingEntry ? 'Edit treatment' : existingEntries.length > 0 ? 'Add another treatment' : 'Add treatment'}
         </div>
         <input
           type="date"
@@ -1440,6 +1461,27 @@ function TreatmentSelectorPanel({ selector, treatments, allTypes, customTypes, s
           style={{ fontSize: 12, padding: '4px 6px', border: 'none', borderBottom: `1px solid ${T.border}`, borderRadius: 0, background: 'transparent', color: T.text, fontFamily: 'inherit', outline: 'none', cursor: 'pointer' }}
         />
       </div>
+
+      {/* Existing treatments on this day */}
+      {existingEntries.length > 0 && (
+        <div style={{ marginBottom: 14 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, color: T.textMuted, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 6 }}>
+            Already logged this day
+          </div>
+          {existingEntries.map(e => (
+            <div key={e._dbId} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, padding: '6px 0', borderTop: `0.5px solid ${T.border}` }}>
+              <div style={{ fontSize: 12, color: T.text }}>
+                {allTypes[e.type]?.label || e.type}
+                <span style={{ color: T.textMuted, marginLeft: 6 }}>{e.area} · {e.timeOfDay === 'am' ? 'Morning' : 'Evening'}</span>
+              </div>
+              <div style={{ display: 'flex', gap: 6 }}>
+                <button onClick={() => onRemove(e._dbId)}
+                  style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 16, padding: '0 4px', lineHeight: 1 }}>×</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 6, marginBottom: 12 }}>
         {Object.entries(allTypes).map(([k, v]) => (
           <button key={k} onClick={() => { setSelType(k); setTreatArea(v.area || 'face'); setCustomPre(v.pre ?? 0); setCustomPost(v.post ?? 0) }} style={{ border: `0.5px solid ${selType === k ? T.pinkDeep : T.border}`, borderRadius: 0, padding: '8px 10px', cursor: 'pointer', background: selType === k ? T.pink : T.white, textAlign: 'left' }}>
@@ -1498,7 +1540,7 @@ function TreatmentSelectorPanel({ selector, treatments, allTypes, customTypes, s
         <Btn variant="primary" onClick={() => { if (selType && conflicts.length === 0) onApply(selType, false, timeOfDay, treatArea, customPre, customPost, dateKey) }} disabled={!selType || conflicts.length > 0}>Save</Btn>
         {conflicts.length > 0 && safeDate && <div style={{ fontSize: 11, color: '#166534', padding: '4px 0' }}>Move to {safeDate} to save.</div>}
         <Btn onClick={onClose}>Cancel</Btn>
-        {existing && <Btn variant="danger" onClick={() => { if (window.confirm('Remove this treatment? This cannot be undone.')) onRemove() }}>Remove treatment</Btn>}
+        {editingEntry && <Btn variant="danger" onClick={() => { if (window.confirm('Remove this treatment? This cannot be undone.')) onRemove(editingEntry._dbId) }}>Remove treatment</Btn>}
       </div>
       <SectionLabel>Add a new treatment type</SectionLabel>
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
@@ -3934,98 +3976,92 @@ function UpcomingTreatmentsPanel({ treatments, allTypes, routineHistory, onClose
   const upcoming = sorted.filter(([k]) => new Date(k+'T00:00:00') >= now)
   const past     = sorted.filter(([k]) => new Date(k+'T00:00:00') <  now)
 
-  function renderTreatment([key, tv], isPast) {
-    const dt  = new Date(key+'T00:00:00')
-    const cfg = { pre: tv.pre ?? allTypes[tv.type]?.pre ?? 0, post: tv.post ?? allTypes[tv.type]?.post ?? 0 }
-    const typeLabel = allTypes[tv.type]?.label || tv.type
+  function renderTreatment([key, entries], isPast) {
+    const dt = new Date(key+'T00:00:00')
     const isToday = key === dateKey(now)
-    const areaLabel = tv.area ? ` · ${tv.area.charAt(0).toUpperCase()+tv.area.slice(1)}` : ''
-    const todLabel  = tv.timeOfDay === 'pm' ? 'Evening' : 'Morning'
-
+    const entriesArr = Array.isArray(entries) ? entries : [entries]
     return (
       <div key={key} style={{ padding: '10px 0', borderBottom: `0.5px solid ${T.border}`, opacity: isPast ? 0.55 : 1 }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-          {/* Date block */}
           <div style={{ minWidth: 48, textAlign: 'center', padding: '4px 6px', borderRadius: 0, background: isToday ? T.pink : T.creamDark, border: `0.5px solid ${isToday ? T.pinkDeep : T.border}`, flexShrink: 0 }}>
-            <div style={{ fontSize: 9, fontWeight: 600, color: isToday ? T.pinkDeep : T.textMuted, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              {dt.toLocaleString('default',{month:'short'})}
-            </div>
+            <div style={{ fontSize: 9, fontWeight: 600, color: isToday ? T.pinkDeep : T.textMuted, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{dt.toLocaleString('default',{month:'short'})}</div>
             <div style={{ fontSize: 18, fontWeight: 700, color: isToday ? T.pinkDeep : T.text, lineHeight: 1.1 }}>{dt.getDate()}</div>
             <div style={{ fontSize: 9, color: T.textLight }}>{dt.getFullYear()}</div>
           </div>
-
-          {/* Details */}
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
-              <span style={{ fontSize: 13, fontWeight: 600, color: T.text }}>{typeLabel}</span>
-              {isToday && <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 0, background: T.pink, color: T.pinkDeep, fontWeight: 600 }}>Today</span>}
-            </div>
-            <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 4 }}>
-              {todLabel}{areaLabel}
-              {cfg.pre > 0 && ` · ${cfg.pre}d pause before`}
-              {cfg.post > 0 && ` · ${cfg.post}d recovery after`}
-            </div>
-            {isPast && (
-              <div style={{ fontSize: 10, color: T.textLight, fontStyle: 'italic' }}>
-                Recovery ended {(() => {
-                  const recEnd = new Date(dt); recEnd.setDate(recEnd.getDate() + cfg.post)
-                  const daysSince = Math.round((now - recEnd) / 86400000)
-                  return daysSince <= 0 ? 'today' : `${daysSince}d ago`
-                })()}
-              </div>
+            {isToday && <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 0, background: T.pink, color: T.pinkDeep, fontWeight: 600, display: 'inline-block', marginBottom: 6 }}>Today</span>}
+            {entriesArr.map(tv => {
+              const cfg = { pre: tv.pre ?? allTypes[tv.type]?.pre ?? 0, post: tv.post ?? allTypes[tv.type]?.post ?? 0 }
+              const typeLabel = allTypes[tv.type]?.label || tv.type
+              const areaLabel = tv.area ? ` · ${tv.area.charAt(0).toUpperCase()+tv.area.slice(1)}` : ''
+              const todLabel  = tv.timeOfDay === 'pm' ? 'Evening' : 'Morning'
+              return (
+                <div key={tv._dbId} style={{ marginBottom: 8, paddingBottom: 8, borderBottom: entriesArr.length > 1 ? `0.5px dashed ${T.border}` : 'none' }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 2 }}>{typeLabel}</div>
+                  <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 2 }}>
+                    {todLabel}{areaLabel}
+                    {cfg.pre > 0 && ` · ${cfg.pre}d pause before`}
+                    {cfg.post > 0 && ` · ${cfg.post}d recovery after`}
+                  </div>
+                  {isPast && (
+                    <div style={{ fontSize: 10, color: T.textLight, fontStyle: 'italic' }}>
+                      Recovery ended {(() => {
+                        const recEnd = new Date(dt); recEnd.setDate(recEnd.getDate() + cfg.post)
+                        const daysSince = Math.round((now - recEnd) / 86400000)
+                        return daysSince <= 0 ? 'today' : `${daysSince}d ago`
+                      })()}
+                    </div>
+                  )}
+                  {!isPast && cfg.pre > 0 && (() => {
+                    const pauseStart = new Date(dt); pauseStart.setDate(pauseStart.getDate() - cfg.pre)
+                    const daysUntilPause = Math.round((pauseStart - now) / 86400000)
+                    const daysUntil = Math.round((dt - now) / 86400000)
+                    return daysUntilPause <= 0 && daysUntil > 0 ? (
+                      <div style={{ fontSize: 10, color: '#92400E', background: '#FFFBEB', border: '0.5px solid #FCD34D', borderRadius: 0, padding: '2px 6px', display: 'inline-block', marginTop: 2 }}>
+                        Pause window active — {daysUntil}d until treatment
+                      </div>
+                    ) : daysUntilPause > 0 ? (
+                      <div style={{ fontSize: 10, color: T.textMuted, marginTop: 2 }}>
+                        Pause actives in {daysUntilPause}d · Treatment in {daysUntil}d
+                      </div>
+                    ) : null
+                  })()}
+                  {!isPast && (
+                    <div style={{ display: 'flex', gap: 4, marginTop: 4 }}>
+                      <Btn onClick={() => onEdit(key)} style={{ fontSize: 10, padding: '3px 8px' }}>Edit</Btn>
+                      {cfg.post > 0 && (
+                        <Btn onClick={() => setEditingRecovery(editingRecovery === tv._dbId ? null : tv._dbId)}
+                          style={{ fontSize: 10, padding: '3px 8px', background: editingRecovery === tv._dbId ? T.pink : undefined, borderColor: editingRecovery === tv._dbId ? T.pinkDeep : undefined }}>
+                          Set recovery routine
+                        </Btn>
+                      )}
+                      <button onClick={() => onRemove(tv._dbId)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 16, padding: '0 4px', lineHeight: 1 }}>×</button>
+                    </div>
+                  )}
+                  {editingRecovery === tv._dbId && (
+                    <div style={{ marginTop: 8 }}>
+                      <RecoveryRoutineEditor
+                        typeKey={tv.type}
+                        typeLabel={allTypes[tv.type]?.label || tv.type}
+                        steps={getRecoveryStepsForType(tv.type)}
+                        products={recoveryRoutines?.[tv.type]?.products || {}}
+                        allProducts={products}
+                        onStepToggle={(stepId, enabled) => { const steps = getRecoveryStepsForType(tv.type).map(s => s.id === stepId ? { ...s, enabled } : s); onUpdateRecoverySteps(tv.type, steps) }}
+                        onProductSelect={(stepKey, productId) => onUpdateRecoveryProducts(tv.type, stepKey, productId)}
+                        onClose={() => setEditingRecovery(null)}
+                      />
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+            {!isPast && (
+              <button onClick={() => onAddNew(key)} style={{ fontSize: 10, color: T.textMuted, background: 'transparent', border: `0.5px dashed ${T.border}`, borderRadius: 0, padding: '3px 8px', cursor: 'pointer', fontFamily: 'inherit', marginTop: 2 }}>
+                + Add another treatment this day
+              </button>
             )}
-            {!isPast && cfg.pre > 0 && (() => {
-              const pauseStart = new Date(dt); pauseStart.setDate(pauseStart.getDate() - cfg.pre)
-              const daysUntilPause = Math.round((pauseStart - now) / 86400000)
-              const daysUntil = Math.round((dt - now) / 86400000)
-              return daysUntilPause <= 0 && daysUntil > 0 ? (
-                <div style={{ fontSize: 10, color: '#92400E', background: '#FFFBEB', border: '0.5px solid #FCD34D', borderRadius: 0, padding: '2px 6px', display: 'inline-block', marginTop: 2 }}>
-                  Pause window active — {daysUntil}d until treatment
-                </div>
-              ) : daysUntilPause > 0 ? (
-                <div style={{ fontSize: 10, color: T.textMuted, marginTop: 2 }}>
-                  Pause actives in {daysUntilPause}d · Treatment in {daysUntil}d
-                </div>
-              ) : null
-            })()}
           </div>
-
-          {/* Actions */}
-          {!isPast && (
-            <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
-              <Btn onClick={() => onEdit(key)} style={{ fontSize: 10, padding: '3px 8px' }}>Edit</Btn>
-              {cfg.post > 0 && (
-                <Btn
-                  onClick={() => setEditingRecovery(editingRecovery === key ? null : key)}
-                  style={{ fontSize: 10, padding: '3px 8px', background: editingRecovery === key ? T.pink : undefined, borderColor: editingRecovery === key ? T.pinkDeep : undefined }}
-                >
-                  Set recovery routine
-                </Btn>
-              )}
-              <button onClick={() => onRemove(key)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 16, padding: '0 4px', lineHeight: 1 }}>×</button>
-            </div>
-          )}
         </div>
-        {/* Recovery routine editor — full width BELOW the flex row */}
-        {editingRecovery === key && (
-          <div style={{ marginTop: 8 }}>
-            <RecoveryRoutineEditor
-              typeKey={tv.type}
-              typeLabel={allTypes[tv.type]?.label || tv.type}
-              steps={getRecoveryStepsForType(tv.type)}
-              products={recoveryRoutines?.[tv.type]?.products || {}}
-              allProducts={products}
-              onStepToggle={(stepId, enabled) => {
-                const steps = getRecoveryStepsForType(tv.type).map(s =>
-                  s.id === stepId ? { ...s, enabled } : s
-                )
-                onUpdateRecoverySteps(tv.type, steps)
-              }}
-              onProductSelect={(stepKey, productId) => onUpdateRecoveryProducts(tv.type, stepKey, productId)}
-              onClose={() => setEditingRecovery(null)}
-            />
-          </div>
-        )}
       </div>
     )
   }
@@ -4300,21 +4336,23 @@ function computeNotifications({ products, treatments, allTypes, timezone }) {
   }
 
   // ── Post-recovery nudge ───────────────────────────────────
-  for (const [dateKey, tx] of Object.entries(treatments || {})) {
-    const cfg = allTypes[tx.type]
-    if (!cfg || !cfg.post) continue
-    const resumeDate = new Date(dateKey + 'T00:00:00')
-    resumeDate.setDate(resumeDate.getDate() + cfg.post + 1)
-    const resumeKey = resumeDate.toISOString().split('T')[0]
-    if (resumeKey === today) {
-      notes.push({
-        id: `recovery-${dateKey}`,
-        type: 'nudge',
-        category: 'recovery',
-        title: 'Your recovery window ended',
-        body: `Your ${cfg.label || tx.type} recovery is over — your full routine resumes tonight.`,
-        date: today,
-      })
+  for (const [dateKey, entries] of Object.entries(treatments || {})) {
+    for (const tx of (Array.isArray(entries) ? entries : [entries])) {
+      const cfg = allTypes[tx.type]
+      if (!cfg || !cfg.post) continue
+      const resumeDate = new Date(dateKey + 'T00:00:00')
+      resumeDate.setDate(resumeDate.getDate() + cfg.post + 1)
+      const resumeKey = resumeDate.toISOString().split('T')[0]
+      if (resumeKey === today) {
+        notes.push({
+          id: `recovery-${dateKey}-${tx._dbId || tx.type}`,
+          type: 'nudge',
+          category: 'recovery',
+          title: 'Your recovery window ended',
+          body: `Your ${cfg.label || tx.type} recovery is over — your full routine resumes tonight.`,
+          date: today,
+        })
+      }
     }
   }
 
@@ -4478,10 +4516,11 @@ export default function GlowUpCalendar({ session }) {
       // Shower periods
       setShowerHistory((sp || []).map(p => ({ id: p.id, startDate: p.start_date, endDate: p.end_date, items: p.items || [], createdAt: p.created_at, updatedAt: p.updated_at })))
 
-      // Treatments — convert array to keyed object
+      // Treatments — group into arrays per date (multiple treatments allowed per day)
       const treatMap = {}
       ;(tr || []).forEach(t => {
-        treatMap[t.date] = { type: t.type, timeOfDay: t.time_of_day, area: t.area, pre: t.pre_days, post: t.post_days, _dbId: t.id }
+        if (!treatMap[t.date]) treatMap[t.date] = []
+        treatMap[t.date].push({ type: t.type, timeOfDay: t.time_of_day, area: t.area, pre: t.pre_days, post: t.post_days, _dbId: t.id })
       })
       setTreatments(treatMap)
 
@@ -4904,7 +4943,7 @@ export default function GlowUpCalendar({ session }) {
   // ── Treatment handlers ────────────────────────────────────
   function openDayFlyout(key, dt, tab) {
     const info = getDayInfo(dt, treatments, allTypes, routineHistory)
-    const treatTod = info.isTreatment ? (treatments[key]?.timeOfDay || 'am') : null
+    const treatTod = info.isTreatment ? (info.allTreatments?.[0]?.timeOfDay || 'am') : null
     setDayFlyout({ key, date: dt, tab, dayType: info.status, isTreatment: info.isTreatment, treatmentTimeOfDay: treatTod, activeTreatmentType: info.activeTreatmentType || null })
     setPanel(null)
     setEditingPeriod(null)
@@ -4916,33 +4955,58 @@ export default function GlowUpCalendar({ session }) {
 
   async function applyTreatment(type, qure, timeOfDay = 'am', area = 'face', pre, post, newDateKey) {
     const cfg = allTypes[type] || {}
-    const existing = treatments[selector.key]
     const effectiveDate = newDateKey || selector.key
+    // selector.editingDbId is set when editing an existing entry; null for new ones
+    const editingDbId = selector.editingDbId || null
     const row = {
       user_id: userId, date: effectiveDate, type,
       time_of_day: timeOfDay, area, pre_days: pre ?? cfg.pre, post_days: post ?? cfg.post,
     }
-    let dbId = existing?._dbId
+    let dbId = editingDbId
     if (dbId) {
       await supabase.from('treatments').update(row).eq('id', dbId)
     } else {
       const { data } = await supabase.from('treatments').insert(row).select().single()
       dbId = data?.id
     }
+    const entry = { type, timeOfDay, area, pre: pre ?? cfg.pre, post: post ?? cfg.post, _dbId: dbId }
     setTreatments(t => {
       const next = { ...t }
-      // If date changed, remove the old key
-      if (effectiveDate !== selector.key) delete next[selector.key]
-      next[effectiveDate] = { type, timeOfDay, area, pre: pre ?? cfg.pre, post: post ?? cfg.post, _dbId: dbId }
+      // Remove old entry if date changed or we were editing
+      if (editingDbId) {
+        const oldKey = selector.key
+        if (next[oldKey]) {
+          next[oldKey] = next[oldKey].filter(e => e._dbId !== editingDbId)
+          if (!next[oldKey].length) delete next[oldKey]
+        }
+        // If date changed, also clean old key
+        if (effectiveDate !== oldKey && next[oldKey]) {
+          next[oldKey] = next[oldKey].filter(e => e._dbId !== editingDbId)
+          if (!next[oldKey].length) delete next[oldKey]
+        }
+      }
+      if (!next[effectiveDate]) next[effectiveDate] = []
+      // Replace or append
+      const idx = next[effectiveDate].findIndex(e => e._dbId === dbId)
+      if (idx >= 0) next[effectiveDate][idx] = entry
+      else next[effectiveDate] = [...next[effectiveDate], entry]
       return next
     })
     setSelector(null)
   }
 
-  async function removeTreatment() {
-    const existing = treatments[selector.key]
-    if (existing?._dbId) await supabase.from('treatments').delete().eq('id', existing._dbId)
-    setTreatments(t => { const n = { ...t }; delete n[selector.key]; return n })
+  async function removeTreatment(dbId) {
+    // dbId targets a specific entry, not the whole date
+    const targetId = dbId || selector.editingDbId
+    if (targetId) await supabase.from('treatments').delete().eq('id', targetId)
+    setTreatments(t => {
+      const next = { ...t }
+      for (const key of Object.keys(next)) {
+        next[key] = (next[key] || []).filter(e => e._dbId !== targetId)
+        if (!next[key].length) delete next[key]
+      }
+      return next
+    })
     setSelector(null)
   }
 
@@ -5024,7 +5088,7 @@ export default function GlowUpCalendar({ session }) {
     const dateColor = isToday ? T.pinkDeep : (info.isTreatment && T[s] ? T[s].text : s === 'pause' ? T.pause.text : (s === 'pca' || s === 'recovery') ? T.recovery.text : s === 'tret' ? T.tret.text : s === 'bha' ? T.bha.text : T.textMuted)
 
     // Determine treatment time of day (default am for backward compat)
-    const treatmentTimeOfDay = info.isTreatment ? (treatments[key]?.timeOfDay || 'am') : null
+    const treatmentTimeOfDay = info.isTreatment ? (info.allTreatments?.[0]?.timeOfDay || 'am') : null
 
     // AM badge — tier system, single badge
     const amBadge = (() => {
@@ -5617,11 +5681,9 @@ export default function GlowUpCalendar({ session }) {
                   setSelector({ key, date: new Date(y,m-1,d) })
                   setShowTreatments(false)
                 }}
-                onRemove={async (key) => {
+                onRemove={async (dbId) => {
                   if (window.confirm('Remove this treatment? This cannot be undone.')) {
-                    const t = treatments[key]
-                    if (t?._dbId) await supabase.from('treatments').delete().eq('id', t._dbId)
-                    setTreatments(t => { const n={...t}; delete n[key]; return n })
+                    await removeTreatment(dbId)
                   }
                 }}
                 onAddNew={(dateStr) => {

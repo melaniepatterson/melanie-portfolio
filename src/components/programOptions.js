@@ -129,13 +129,18 @@ export function countTreatmentPauseDays(phaseStartedAt, today, treatments, allTy
   let count = 0
   for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
     const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-    if (treatments[key]) { count++; continue }
-    for (const [tk, tv] of Object.entries(treatments)) {
-      const td = new Date(tk + 'T00:00:00')
-      const cfg = allTypes[tv.type] || { pre: 3, post: 3, pca: false }
-      const diff = Math.round((d - td) / 86400000)
-      if ((diff >= -cfg.pre && diff <= -1) || (diff >= 1 && diff <= cfg.post)) { count++; break }
+    if (treatments[key]?.length) { count++; continue }
+    let hit = false
+    for (const [tk, entries] of Object.entries(treatments)) {
+      for (const tv of (Array.isArray(entries) ? entries : [entries])) {
+        const td = new Date(tk + 'T00:00:00')
+        const cfg = allTypes[tv.type] || { pre: 3, post: 3, pca: false }
+        const diff = Math.round((d - td) / 86400000)
+        if ((diff >= -cfg.pre && diff <= -1) || (diff >= 1 && diff <= cfg.post)) { hit = true; break }
+      }
+      if (hit) break
     }
+    if (hit) count++
   }
   return count
 }
