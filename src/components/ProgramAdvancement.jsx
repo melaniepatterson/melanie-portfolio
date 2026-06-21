@@ -562,7 +562,6 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
             </div>
             <span style={{ fontSize: 18, flexShrink: 0 }}>→</span>
           </button>
-          <NotReadyYetLink onClick={postponePhase} disabled={postponing} />
         </>
       )}
 
