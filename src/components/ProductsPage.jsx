@@ -1010,14 +1010,55 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
           {p.ingredients && <IngredientsAccordion ingredients={p.ingredients} />}
 
           {/* PAO + dates */}
-          {(p.pao_months || p.opened_at || p.expires_at || p.purchased_at) && (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 6, marginBottom: 12 }}>
-              {p.pao_months && <div style={{ fontSize: 11 }}><span style={{ color: T.textLight }}>PAO: </span><span style={{ color: T.text }}>{p.pao_months}mo</span></div>}
-              {p.purchased_at && <div style={{ fontSize: 11 }}><span style={{ color: T.textLight }}>Purchased: </span><span style={{ color: T.text }}>{p.purchased_at}</span></div>}
-              {p.opened_at && <div style={{ fontSize: 11 }}><span style={{ color: T.textLight }}>Opened: </span><span style={{ color: T.text }}>{p.opened_at}</span></div>}
-              {p.expires_at && <div style={{ fontSize: 11 }}><span style={{ color: T.textLight }}>Expires: </span><span style={{ color: T.text }}>{p.expires_at}</span></div>}
-            </div>
-          )}
+          {(p.pao_months || p.opened_at || p.expires_at || p.purchased_at) && (() => {
+            const fmt = (d) => new Date(d + 'T00:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
+            const computedExpiry = (!p.expires_at && p.opened_at && p.pao_months)
+              ? (() => { const d = new Date(p.opened_at + 'T00:00:00'); d.setMonth(d.getMonth() + Number(p.pao_months)); return d })()
+              : p.expires_at ? new Date(p.expires_at + 'T00:00:00') : null
+            const today = new Date(); today.setHours(0,0,0,0)
+            const daysLeft = computedExpiry ? Math.round((computedExpiry - today) / 86400000) : null
+            const isExpired = daysLeft !== null && daysLeft < 0
+            const expiringSoon = daysLeft !== null && daysLeft >= 0 && daysLeft <= 30
+
+            return (
+              <div style={{ marginBottom: 12 }}>
+                {/* PAO / expiry line */}
+                {(p.opened_at || p.expires_at) && (
+                  <div style={{
+                    display: 'flex', alignItems: 'center', gap: 8,
+                    padding: '8px 10px', marginBottom: 6, borderRadius: 0,
+                    background: isExpired ? '#FEF2F2' : expiringSoon ? '#FFFBEB' : T.creamDark,
+                    border: `0.5px solid ${isExpired ? '#FCA5A5' : expiringSoon ? '#FCD34D' : T.border}`,
+                  }}>
+                    <span style={{ fontSize: 14 }}>{isExpired ? '⚠️' : expiringSoon ? '⏳' : '🗓'}</span>
+                    <div>
+                      {p.opened_at && (
+                        <div style={{ fontSize: 12, color: T.text, fontWeight: 500 }}>
+                          Opened {fmt(p.opened_at)}
+                          {p.pao_months && <span style={{ color: T.textMuted, fontWeight: 400 }}> · {p.pao_months}mo PAO</span>}
+                        </div>
+                      )}
+                      {computedExpiry && (
+                        <div style={{ fontSize: 11, color: isExpired ? '#DC2626' : expiringSoon ? '#92400E' : T.textMuted }}>
+                          {isExpired
+                            ? `Expired ${fmt(computedExpiry.toISOString().split('T')[0])} (${Math.abs(daysLeft)}d ago)`
+                            : daysLeft === 0
+                            ? 'Expires today'
+                            : `Expires ${fmt(computedExpiry.toISOString().split('T')[0])} (${daysLeft}d left)`}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+                {/* Purchased */}
+                {p.purchased_at && (
+                  <div style={{ fontSize: 11, color: T.textMuted }}>
+                    Purchased {fmt(p.purchased_at)}
+                  </div>
+                )}
+              </div>
+            )
+          })()}
 
           {/* Personal data form */}
           {(isCatalog ? upd?.in_library : true) && (
