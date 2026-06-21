@@ -523,11 +523,8 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
 
       {/* Everything below is hidden when collapsed */}
       {!collapsed && (
-        <>      {/* Up next — visible ahead of time so people can plan, separate from the
-          tap-to-confirm gate which only appears once the phase is actually ready.
-          Uses preview_description (future tense — "this will become...") rather
-          than description (present tense — "this is..."), since the phase
-          hasn't happened yet. */}
+        <div style={{ width: '100%', minWidth: 0, maxWidth: '100%', boxSizing: 'border-box', overflow: 'hidden' }}>
+          {/* Up next — visible ahead of time so people can plan */}
       {!ready && nextPhase && currentPhase.duration_days != null && (
         <div style={{ border: `1px solid ${T.border}`, borderRadius: 0, padding: '10px 14px', marginBottom: 12, width: '100%', minWidth: 0, boxSizing: 'border-box' }}>
           <div style={{ fontSize: 10, fontWeight: 700, color: T.textLight, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 3 }}>
@@ -560,7 +557,6 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
               Leave as-is for now
             </button>
           </div>
-          <NotReadyYetLink onClick={postponePhase} disabled={postponing} />
         </div>
       )}
 
@@ -602,7 +598,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
           alreadyAdded={alreadyAdded}
         />
       )}
-      </> /* end expandable content */
+      </div> /* end expandable content */
       )}
 
       {/* Modals always rendered outside the collapsed gate so they

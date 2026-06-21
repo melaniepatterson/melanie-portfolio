@@ -79,6 +79,8 @@ function Layout() {
           alignItems: 'center',
           justifyContent: 'center',
           minHeight: '100vh',
+          overflowX: 'hidden',
+          maxWidth: '100vw',
         })
       }}>
         <main className="content">
