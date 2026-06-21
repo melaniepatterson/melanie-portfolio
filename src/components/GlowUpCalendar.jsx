@@ -3191,7 +3191,7 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
 // The hub for enrolling in add-on programs (e.g. Tretinoin Onboarding)
 // on top of an existing baseline routine, and for ending/restarting
 // a program if the user falls off partway through.
-function AddProgramPanel({ session, activeProgram, routinePeriod, skinType, onChanged }) {
+function AddProgramPanel({ session, activeProgram, routinePeriod, skinType, timezone, onChanged }) {
   const [loading, setLoading] = useState(true)
   const [library, setLibrary] = useState([])
   const [activeProgramDetails, setActiveProgramDetails] = useState(null)
@@ -3200,7 +3200,7 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, skinType, onCh
   const [ending, setEnding] = useState(false)
   const [starting, setStarting] = useState(null) // program id being started
   const [pickingProgram, setPickingProgram] = useState(null) // program selected, choosing start date
-  const [startDate, setStartDate] = useState(() => todayInTz(timezone))
+  const [startDate, setStartDate] = useState(() => todayInTz(timezone || detectTimezone()))
   const [showAddMore, setShowAddMore] = useState(false)
   const [endFoundationConfirm, setEndFoundationConfirm] = useState(false)
   const [endingFoundation, setEndingFoundation] = useState(false)
@@ -3522,7 +3522,7 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, skinType, onCh
                 </div>
               </div>
             ) : (
-              <button onClick={() => { setPickingProgram(program.id); setStartDate(todayInTz(timezone)) }}
+              <button onClick={() => { setPickingProgram(program.id); setStartDate(todayInTz(timezone || detectTimezone())) }}
                 style={{ width: '100%', padding: '10px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
                 Start program
               </button>
@@ -3621,6 +3621,7 @@ function NewRoutinePeriodPicker({ routineHistory, dailyHistory, showerHistory, p
               activeProgram={activeProgram}
               routinePeriod={getActivePeriod(now, routineHistory)}
               skinType={skinType}
+              timezone={timezone}
               onChanged={onProgramChanged}
             />
           )}
@@ -4635,37 +4636,6 @@ export default function GlowUpCalendar({ session }) {
     }
     sync()
   }, [showerHistory, userId, loading])
-
-  // Treatments — upsert changed rows, delete removed rows by tracking a ref
-  const prevTreatmentsRef = useRef(null)
-  useEffect(() => {
-    if (!userId || loading) return
-    // Never wipe all treatments — only delete keys that were removed since last sync
-    async function sync() {
-      const prev = prevTreatmentsRef.current
-      const current = treatments
-
-      // Upsert all current treatments
-      const rows = Object.entries(current).map(([date, t]) => ({
-        id: t._dbId,
-        user_id: userId, date,
-        type: t.type, time_of_day: t.timeOfDay || 'am',
-        area: t.area || 'face', pre_days: t.pre, post_days: t.post,
-      }))
-      if (rows.length > 0) await supabase.from('treatments').upsert(rows)
-
-      // Delete only keys that existed before but are gone now
-      if (prev) {
-        const removed = Object.keys(prev).filter(k => !current[k])
-        for (const date of removed) {
-          const dbId = prev[date]?._dbId
-          if (dbId) await supabase.from('treatments').delete().eq('id', dbId)
-        }
-      }
-      prevTreatmentsRef.current = current
-    }
-    sync()
-  }, [treatments, userId, loading])
 
   // Custom treatment types
   useEffect(() => {
