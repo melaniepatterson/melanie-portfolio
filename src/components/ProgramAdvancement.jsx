@@ -81,31 +81,6 @@ export function Phase2Picker({ options, onChoose, onClose, skinType, alreadyAdde
   )
 }
 
-// ─── SANDWICH INFO CHIP ──────────────────────────────────────
-// Shown whenever the current or upcoming phase name includes "sandwich"
-function SandwichInfo() {
-  const [open, setOpen] = useState(false)
-  return (
-    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-      <button
-        onClick={e => { e.stopPropagation(); setOpen(s => !s) }}
-        style={{ width: 16, height: 16, borderRadius: '50%', border: `1px solid ${T.border}`, background: T.creamDark, color: T.textMuted, fontSize: 10, fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1, padding: 0, fontFamily: 'inherit', flexShrink: 0 }}>
-        ?
-      </button>
-      {open && (
-        <div onClick={e => e.stopPropagation()}
-          style={{ position: 'absolute', left: 0, top: '100%', marginTop: 4, zIndex: 100, background: T.white, border: `1px solid ${T.border}`, borderRadius: 0, padding: '12px 14px', maxWidth: 300, boxShadow: '0 4px 16px rgba(0,0,0,0.08)', fontSize: 12, color: T.textMuted, lineHeight: 1.7 }}>
-          <div style={{ fontWeight: 700, color: T.text, marginBottom: 4 }}>The sandwich method</div>
-          Apply a thin layer of moisturizer first, wait 2–3 minutes, then apply your tretinoin, then another layer of moisturizer on top. The buffer layers reduce irritation while the tretinoin still absorbs fully — it's especially helpful when you're first starting out.
-          <button onClick={() => setOpen(false)}
-            style={{ display: 'block', marginTop: 8, fontSize: 11, color: T.pinkDeep, background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit' }}>
-            Got it ×
-          </button>
-        </div>
-      )}
-    </div>
-  )
-}
 
 
 function GraduationModal({ onConfirm, onClose }) {
@@ -499,7 +474,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
             )}
 
             {/* Sandwich method description — shown inline when relevant */}
-            {/sandwich/i.test(currentPhase.name) && (
+            {(/sandwich/i.test(currentPhase.name || '') || /sandwich/i.test(currentPhase.description || '')) && (
               <div style={{ marginTop: 8, fontSize: 11, color: T.textMuted, lineHeight: 1.7, padding: '8px 10px', background: T.creamDark, borderRadius: 0 }}>
                 <span style={{ fontWeight: 600, color: T.text }}>Sandwich method: </span>
                 Apply moisturizer, wait 2–3 min, apply tretinoin, then moisturizer again on top. The buffer layers reduce irritation while it still absorbs.
