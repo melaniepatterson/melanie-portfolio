@@ -111,7 +111,7 @@ function Phase2StartScreen({ phase2, phase1Steps, phase2Options, skinType, onBac
 
 // ─── MAIN ONBOARDING COMPONENT ───────────────────────────────
 export default function Onboarding({ session, onEnrolled, onSkipToBuilder }) {
-  const [screen, setScreen]       = useState('entry')     // entry | program | phase1 | enrolling
+  const [screen, setScreen]       = useState('disclaimer') // disclaimer | entry | program | phase1 | enrolling
   const [program, setProgram]     = useState(null)
   const [phases, setPhases]       = useState([])
   const [phase1Steps, setPhase1Steps] = useState([])
@@ -304,6 +304,36 @@ export default function Onboarding({ session, onEnrolled, onSkipToBuilder }) {
       setScreen('phase2start')
     }
   }
+
+  // ── DISCLAIMER ───────────────────────────────────────────────
+  if (screen === 'disclaimer') return (
+    <div style={{ maxWidth: 480, margin: '0 auto', padding: '64px 24px' }}>
+      <div style={{ fontSize: 11, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 12 }}>
+        Before you start
+      </div>
+      <h2 style={{ fontSize: 26, fontWeight: 800, color: T.text, letterSpacing: '-0.03em', margin: '0 0 20px' }}>
+        Glow Up is a tracking tool, not medical advice
+      </h2>
+      <p style={{ fontSize: 14, color: T.textMuted, lineHeight: 1.8, margin: '0 0 14px' }}>
+        Everything in this app — routines, programs, ingredient notes, skin type suggestions — is here to help you track and build your own practice. It's not a substitute for advice from a dermatologist or other medical professional.
+      </p>
+      <p style={{ fontSize: 14, color: T.textMuted, lineHeight: 1.8, margin: '0 0 32px' }}>
+        This is especially true for prescription treatments like tretinoin. If you have questions about what's right for your skin, please talk to your dermatologist.
+      </p>
+      <button
+        onClick={async () => {
+          // Record acceptance, then advance to entry
+          await supabase
+            .from('profiles')
+            .update({ disclaimer_accepted_at: new Date().toISOString() })
+            .eq('id', session.user.id)
+          setScreen('entry')
+        }}
+        style={{ width: '100%', padding: '14px', borderRadius: 0, border: 'none', background: T.text, color: '#fff', cursor: 'pointer', fontSize: 14, fontFamily: 'inherit', fontWeight: 700 }}>
+        Got it — let's get started
+      </button>
+    </div>
+  )
 
   if (loading) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', color: T.textMuted, fontSize: 13 }}>
