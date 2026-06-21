@@ -24,7 +24,7 @@ function daysSince(dateStr) {
 }
 
 // ─── PHASE 2 OPTION PICKER ────────────────────────────────────
-export function Phase2Picker({ options, onChoose, onClose, skinType }) {
+export function Phase2Picker({ options, onChoose, onClose, skinType, alreadyAdded = new Set() }) {
   const [selected, setSelected] = useState(new Set())
   const [saving, setSaving] = useState(false)
 
@@ -49,8 +49,12 @@ export function Phase2Picker({ options, onChoose, onClose, skinType }) {
         <ProgramOptionsChecklist
           options={options}
           selected={selected}
-          onToggle={opt => setSelected(prev => toggleOption(prev, opt, options))}
+          onToggle={opt => {
+            if (alreadyAdded.has(opt.step_key)) return // can't re-add
+            setSelected(prev => toggleOption(prev, opt, options))
+          }}
           skinType={skinType}
+          alreadyAdded={alreadyAdded}
         />
 
         <button
@@ -417,6 +421,14 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
     ? new Date(phaseStart.getTime() + currentPhase.duration_days * 86400000)
     : null
 
+  // Build set of step_keys already present in the routine so Phase2Picker can grey them out
+  const alreadyAdded = new Set(
+    [
+      ...(routinePeriod?.steps?.am  || []),
+      ...(routinePeriod?.steps?.pm  || []),
+    ].map(s => s.id?.replace(/^(am|pm|off)_/, '') || '').filter(Boolean)
+  )
+
   return (
     <div style={{ overflow: 'hidden', width: '100%', minWidth: 0, boxSizing: 'border-box' }}>
       {/* Status chip — always visible, acts as the toggle handle */}
@@ -576,6 +588,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
           onChoose={advanceToPhase2}
           onClose={() => setShowPicker(false)}
           skinType={skinType}
+          alreadyAdded={alreadyAdded}
         />
       )}
       </> /* end !collapsed */
@@ -589,6 +602,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
           onChoose={addStepsNow}
           onClose={() => setShowAddMore(false)}
           skinType={skinType}
+          alreadyAdded={alreadyAdded}
         />
       )}
 

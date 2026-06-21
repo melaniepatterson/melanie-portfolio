@@ -14,7 +14,7 @@ const T = {
 // - "skip" option exclusive with everything else
 // - actives (vitamin_c / exfoliant) mutually exclusive with each other
 // - contextual skin-type notes (informational only — never disables an option)
-export default function ProgramOptionsChecklist({ options, selected, onToggle, skinType }) {
+export default function ProgramOptionsChecklist({ options, selected, onToggle, skinType, alreadyAdded = new Set() }) {
   const realOptions = options.filter(o => !o.is_skip_option)
   const skipOption = options.find(o => o.is_skip_option)
   const hasActiveSelected = realOptions.some(o => ACTIVE_STEP_KEYS.has(o.step_key) && selected.has(o.id))
@@ -25,28 +25,34 @@ export default function ProgramOptionsChecklist({ options, selected, onToggle, s
       {realOptions.map(opt => {
         const isOn = selected.has(opt.id)
         const isActive = ACTIVE_STEP_KEYS.has(opt.step_key)
-        const disabledByOtherActive = isActive && hasActiveSelected && !isOn
+        const isAlreadyAdded = alreadyAdded.has(opt.step_key)
+        const disabledByOtherActive = !isAlreadyAdded && isActive && hasActiveSelected && !isOn
+        const disabled = isAlreadyAdded || disabledByOtherActive
         const skinNote = notesForSkinType[opt.step_key]
         return (
           <div key={opt.id} style={{ marginBottom: 8 }}>
-            <button onClick={() => !disabledByOtherActive && onToggle(opt)}
-              disabled={disabledByOtherActive}
+            <button onClick={() => !disabled && onToggle(opt)}
+              disabled={disabled}
               style={{
                 width: '100%', textAlign: 'left', display: 'flex', alignItems: 'flex-start', gap: 10,
-                padding: '14px 16px', borderRadius: 0, cursor: disabledByOtherActive ? 'default' : 'pointer', fontFamily: 'inherit',
-                border: `1px solid ${isOn ? T.text : T.border}`,
-                background: isOn ? T.text : 'transparent',
+                padding: '14px 16px', borderRadius: 0, cursor: disabled ? 'default' : 'pointer', fontFamily: 'inherit',
+                border: `1px solid ${isAlreadyAdded ? T.border : isOn ? T.text : T.border}`,
+                background: isAlreadyAdded ? T.cream : isOn ? T.text : 'transparent',
                 opacity: disabledByOtherActive ? 0.4 : 1,
               }}>
-              <div style={{ width: 16, height: 16, border: `1.5px solid ${isOn ? '#fff' : T.border}`, background: isOn ? '#fff' : 'transparent', flexShrink: 0, marginTop: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                {isOn && <svg width="10" height="8" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke={T.text} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+              <div style={{ width: 16, height: 16, border: `1.5px solid ${isAlreadyAdded ? T.border : isOn ? '#fff' : T.border}`, background: isAlreadyAdded ? T.border : isOn ? '#fff' : 'transparent', flexShrink: 0, marginTop: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {isAlreadyAdded && <svg width="10" height="8" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke={T.textMuted} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                {!isAlreadyAdded && isOn && <svg width="10" height="8" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke={T.text} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>}
               </div>
               <div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: isOn ? '#fff' : T.text, marginBottom: 3 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: isAlreadyAdded ? T.textMuted : isOn ? '#fff' : T.text, marginBottom: 3 }}>
                   {opt.label}
-                  {isActive && <span style={{ fontSize: 9, fontWeight: 700, color: isOn ? 'rgba(255,255,255,0.7)' : T.pinkDeep, marginLeft: 8, letterSpacing: '0.06em', textTransform: 'uppercase' }}>New ingredient — go slow</span>}
+                  {isAlreadyAdded
+                    ? <span style={{ fontSize: 9, fontWeight: 700, color: T.textMuted, marginLeft: 8, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Already in your routine</span>
+                    : isActive && <span style={{ fontSize: 9, fontWeight: 700, color: isOn ? 'rgba(255,255,255,0.7)' : T.pinkDeep, marginLeft: 8, letterSpacing: '0.06em', textTransform: 'uppercase' }}>New ingredient — go slow</span>
+                  }
                 </div>
-                <div style={{ fontSize: 12, color: isOn ? 'rgba(255,255,255,0.75)' : T.textMuted, lineHeight: 1.6 }}>
+                <div style={{ fontSize: 12, color: isAlreadyAdded ? T.textMuted : isOn ? 'rgba(255,255,255,0.75)' : T.textMuted, lineHeight: 1.6 }}>
                   {opt.description}
                 </div>
               </div>

@@ -129,7 +129,7 @@ export function countTreatmentPauseDays(phaseStartedAt, today, treatments, allTy
   let count = 0
   for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
     const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-    if (treatments[key]?.length) { count++; continue }
+    // The treatment day itself is not a "routine pause" — only the pre/post windows are
     let hit = false
     for (const [tk, entries] of Object.entries(treatments)) {
       for (const tv of (Array.isArray(entries) ? entries : [entries])) {
