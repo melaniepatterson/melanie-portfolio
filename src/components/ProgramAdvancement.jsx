@@ -488,9 +488,15 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
               </div>
             )}
 
-            {/* Buttons inside the chip for Basic Skincare — Phase 2+ only */}
-            {program.slug === 'basic-skincare' && currentPhase.phase_number >= 2 && (
+            {/* Buttons inside the chip for Basic Skincare */}
+            {program.slug === 'basic-skincare' && (
               <div style={{ display: 'flex', gap: 8, borderTop: `1px solid ${T.border}`, marginTop: 10, paddingTop: 10 }}>
+                {currentPhase.phase_number >= 2 && (
+                  <button onClick={e => { e.stopPropagation(); setShowAddMore(true) }}
+                    style={{ padding: '7px 14px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 11, fontFamily: 'inherit' }}>
+                    Add to my routine
+                  </button>
+                )}
                 <button onClick={e => { e.stopPropagation(); setShowAddMore(true) }}
                   style={{ padding: '7px 14px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 11, fontFamily: 'inherit' }}>
                   Add to my routine
