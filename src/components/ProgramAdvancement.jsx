@@ -499,7 +499,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
                 )}
                 <button onClick={e => { e.stopPropagation(); setEndFoundationConfirm(true) }}
                   style={{ padding: '7px 14px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.textMuted, cursor: 'pointer', fontSize: 11, fontFamily: 'inherit' }}>
-                  Done with this program
+                  End this program early
                 </button>
               </div>
             )}
@@ -520,7 +520,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
                     </button>
                     <button onClick={endFoundationEarly} disabled={endingFoundation}
                       style={{ flex: 1, padding: '10px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
-                      {endingFoundation ? 'Saving…' : 'Done with this program'}
+                      {endingFoundation ? 'Saving…' : 'End this program early'}
                     </button>
                   </div>
                 </div>
