@@ -1386,6 +1386,7 @@ function TreatmentSelectorPanel({ selector, treatments, allTypes, customTypes, s
   const [newName, setNewName] = useState('')
   const [newPre,  setNewPre]  = useState(3)
   const [newPost, setNewPost] = useState(3)
+  const [dateKey, setDateKey] = useState(selector.key) // editable date
 
   function addCustomType() {
     if (!newName.trim()) return
@@ -1394,17 +1395,18 @@ function TreatmentSelectorPanel({ selector, treatments, allTypes, customTypes, s
     setNewName(''); setNewPre(3); setNewPost(3)
   }
 
-  // Compute conflicts and ingredient needs whenever a type is selected
+  // Compute conflicts and ingredient needs whenever a type or date is selected
   const conflicts = selType
-    ? detectTreatmentConflicts(selector.key, selType, allTypes, treatments, routineHistory || [])
+    ? detectTreatmentConflicts(dateKey, selType, allTypes, treatments, routineHistory || [])
     : []
 
   const ingredientConflicts = (() => {
     if (!selType) return null
     const cfg = allTypes[selType]
     if (!cfg) return null
-    const activePeriod = getActivePeriod(selector.date, routineHistory || [])
-    const routineFlags = getActiveRoutineFlags(activePeriod, showerHistory || [], selector.date, products || {})
+    const dateObj = new Date(dateKey + 'T00:00:00')
+    const activePeriod = getActivePeriod(dateObj, routineHistory || [])
+    const routineFlags = getActiveRoutineFlags(activePeriod, showerHistory || [], dateObj, products || {})
     const area = treatArea || cfg.area || 'face'
     const preConflicts  = getRoutineConflicts(cfg.avoidPre  || [], routineFlags, area)
     const postConflicts = getRoutineConflicts(cfg.avoidPost || [], routineFlags, area)
@@ -1420,15 +1422,23 @@ function TreatmentSelectorPanel({ selector, treatments, allTypes, customTypes, s
   })()
 
   const safeDate = conflicts.length > 0
-    ? findSafeDate(selector.key, selType, allTypes, treatments, routineHistory || [])
+    ? findSafeDate(dateKey, selType, allTypes, treatments, routineHistory || [])
     : null
 
   const hasAnyConflict = conflicts.length > 0 || !!ingredientConflicts
 
   return (
     <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 0, padding: '16px 18px', marginBottom: 14 }}>
-      <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 12 }}>
-        {MONTHS[selector.date.getMonth()]} {selector.date.getDate()}, {selector.date.getFullYear()} — {existing ? 'Edit treatment' : 'Add treatment'}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12, flexWrap: 'wrap' }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: T.text, flexShrink: 0 }}>
+          {existing ? 'Edit treatment' : 'Add treatment'}
+        </div>
+        <input
+          type="date"
+          value={dateKey}
+          onChange={e => setDateKey(e.target.value)}
+          style={{ fontSize: 12, padding: '4px 6px', border: 'none', borderBottom: `1px solid ${T.border}`, borderRadius: 0, background: 'transparent', color: T.text, fontFamily: 'inherit', outline: 'none', cursor: 'pointer' }}
+        />
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 6, marginBottom: 12 }}>
         {Object.entries(allTypes).map(([k, v]) => (
@@ -1485,7 +1495,7 @@ function TreatmentSelectorPanel({ selector, treatments, allTypes, customTypes, s
         </div>
       )}
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', borderTop: `0.5px solid ${T.border}`, paddingTop: 10, marginTop: 4 }}>
-        <Btn variant="primary" onClick={() => { if (selType && conflicts.length === 0) onApply(selType, false, timeOfDay, treatArea, customPre, customPost) }} disabled={!selType || conflicts.length > 0}>Save</Btn>
+        <Btn variant="primary" onClick={() => { if (selType && conflicts.length === 0) onApply(selType, false, timeOfDay, treatArea, customPre, customPost, dateKey) }} disabled={!selType || conflicts.length > 0}>Save</Btn>
         {conflicts.length > 0 && safeDate && <div style={{ fontSize: 11, color: '#166534', padding: '4px 0' }}>Move to {safeDate} to save.</div>}
         <Btn onClick={onClose}>Cancel</Btn>
         {existing && <Btn variant="danger" onClick={() => { if (window.confirm('Remove this treatment? This cannot be undone.')) onRemove() }}>Remove treatment</Btn>}
@@ -4834,11 +4844,12 @@ export default function GlowUpCalendar({ session }) {
 
   
 
-  async function applyTreatment(type, qure, timeOfDay = 'am', area = 'face', pre, post) {
+  async function applyTreatment(type, qure, timeOfDay = 'am', area = 'face', pre, post, newDateKey) {
     const cfg = allTypes[type] || {}
     const existing = treatments[selector.key]
+    const effectiveDate = newDateKey || selector.key
     const row = {
-      user_id: userId, date: selector.key, type,
+      user_id: userId, date: effectiveDate, type,
       time_of_day: timeOfDay, area, pre_days: pre ?? cfg.pre, post_days: post ?? cfg.post,
     }
     let dbId = existing?._dbId
@@ -4848,7 +4859,13 @@ export default function GlowUpCalendar({ session }) {
       const { data } = await supabase.from('treatments').insert(row).select().single()
       dbId = data?.id
     }
-    setTreatments(t => ({ ...t, [selector.key]: { type, timeOfDay, area, pre: pre ?? cfg.pre, post: post ?? cfg.post, _dbId: dbId } }))
+    setTreatments(t => {
+      const next = { ...t }
+      // If date changed, remove the old key
+      if (effectiveDate !== selector.key) delete next[selector.key]
+      next[effectiveDate] = { type, timeOfDay, area, pre: pre ?? cfg.pre, post: post ?? cfg.post, _dbId: dbId }
+      return next
+    })
     setSelector(null)
   }
 
