@@ -602,7 +602,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
           alreadyAdded={alreadyAdded}
         />
       )}
-      </div> /* end expandable content */
+      </> /* end expandable content */
       )}
 
       {/* Modals always rendered outside the collapsed gate so they
