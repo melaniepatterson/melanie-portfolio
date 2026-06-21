@@ -461,28 +461,28 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
             {program.slug === 'basic-skincare' && !endFoundationConfirm && (
               <div style={{ display: 'flex', gap: 8, borderTop: `1px solid ${T.border}`, marginTop: 10, paddingTop: 10 }}>
                 <button onClick={e => { e.stopPropagation(); setShowAddMore(true) }}
-                  style={{ padding: '7px 14px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 11, fontFamily: 'inherit', whiteSpace: 'nowrap' }}>
+                  style={{ padding: '7px 14px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 11, fontFamily: 'inherit' }}>
                   Add to my routine
                 </button>
                 <button onClick={e => { e.stopPropagation(); setEndFoundationConfirm(true) }}
-                  style={{ padding: '7px 14px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.textMuted, cursor: 'pointer', fontSize: 11, fontFamily: 'inherit', whiteSpace: 'nowrap' }}>
+                  style={{ padding: '7px 14px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.textMuted, cursor: 'pointer', fontSize: 11, fontFamily: 'inherit' }}>
                   Done with this program
                 </button>
               </div>
             )}
 
             {program.slug === 'basic-skincare' && endFoundationConfirm && (
-              <div style={{ borderTop: `1px solid ${T.border}`, marginTop: 10, paddingTop: 10, maxWidth: '100%', overflow: 'hidden' }}>
-                <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.7, marginBottom: 12, wordBreak: 'break-word' }}>
+              <div style={{ borderTop: `1px solid ${T.border}`, marginTop: 10, paddingTop: 10, width: '100%', boxSizing: 'border-box' }}>
+                <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.7, marginBottom: 12 }}>
                   This locks in your current routine exactly as it is — no more Basic Skincare phases. Whether you're happy with it or just ready to move on, your routine stays as-is and you can keep adjusting it manually or add a new program (like Tretinoin Onboarding) anytime.
                 </div>
-                <div style={{ display: 'flex', gap: 8 }}>
+                <div style={{ display: 'flex', gap: 8, width: '100%', boxSizing: 'border-box' }}>
                   <button onClick={e => { e.stopPropagation(); setEndFoundationConfirm(false) }} disabled={endingFoundation}
-                    style={{ flex: 1, padding: '9px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
+                    style={{ flex: 1, minWidth: 0, padding: '9px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
                     Cancel
                   </button>
                   <button onClick={e => { e.stopPropagation(); endFoundationEarly() }} disabled={endingFoundation}
-                    style={{ flex: 1, padding: '9px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
+                    style={{ flex: 1, minWidth: 0, padding: '9px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
                     {endingFoundation ? 'Saving…' : 'Done with this program'}
                   </button>
                 </div>
