@@ -682,7 +682,7 @@ function detectTreatmentConflicts(proposedKey, proposedType, allTypes, treatment
         conflicts.push({
           kind: 'treatment',
           message: `Falls inside ${allTypes[tv.type]?.label || tv.type} window (${tk})`,
-          detail: `That treatment needs ${ec.pre}d before + ${ec.post}d after clear. You're ${dir} it.`
+          detail: `That treatment needs ${ec.pre} days before + ${ec.post} days after clear. You're ${dir} it.`
         })
       }
     }
@@ -698,7 +698,7 @@ function detectTreatmentConflicts(proposedKey, proposedType, allTypes, treatment
         conflicts.push({
           kind: 'treatment',
           message: `Pre-treatment window conflicts with ${allTypes[tv.type]?.label || tv.type} (${tk})`,
-          detail: `This treatment needs ${cfg.pre}d clear before it. That treatment is ${Math.abs(diffExisting)}d prior.`
+          detail: `This treatment needs ${cfg.pre} days clear before it. That treatment is ${Math.abs(diffExisting)} days prior.`
         })
       }
     }
@@ -716,7 +716,7 @@ function detectTreatmentConflicts(proposedKey, proposedType, allTypes, treatment
       conflicts.push({
         kind: 'tret',
         message: `Recovery window overlaps ${period.activeName || 'Tretinoin'} start (${period.tretStartDate})`,
-        detail: `This treatment needs ${cfg.post}d recovery. Your retinoid starts in ${daysToTret}d — you won't be healed in time.`
+        detail: `This treatment needs ${cfg.post} days recovery. Your retinoid starts in ${daysToTret} days — you won't be healed in time.`
       })
     }
 
@@ -725,7 +725,7 @@ function detectTreatmentConflicts(proposedKey, proposedType, allTypes, treatment
       conflicts.push({
         kind: 'tret',
         message: `Too close to ${period.activeName || 'Tretinoin'} start (${period.tretStartDate})`,
-        detail: `This treatment needs ${cfg.pre}d retinoid pause before it. Your retinoid started ${Math.abs(daysToTret)}d ago — not enough time.`
+        detail: `This treatment needs ${cfg.pre} days retinoid pause before it. Your retinoid started ${Math.abs(daysToTret)} days ago — not enough time.`
       })
     }
 
@@ -1486,7 +1486,7 @@ function TreatmentSelectorPanel({ selector, treatments, allTypes, customTypes, s
         {Object.entries(allTypes).map(([k, v]) => (
           <button key={k} onClick={() => { setSelType(k); setTreatArea(v.area || 'face'); setCustomPre(v.pre ?? 0); setCustomPost(v.post ?? 0) }} style={{ border: `0.5px solid ${selType === k ? T.pinkDeep : T.border}`, borderRadius: 0, padding: '8px 10px', cursor: 'pointer', background: selType === k ? T.pink : T.white, textAlign: 'left' }}>
             <div style={{ fontSize: 12, fontWeight: 600, color: T.text }}>{v.label}</div>
-            <div style={{ fontSize: 10, color: T.textLight }}>{v.pre}d before / {v.post}d after</div>
+            <div style={{ fontSize: 10, color: T.textLight }}>{v.pre} days before / {v.post} days after</div>
           </button>
         ))}
       </div>
@@ -1538,15 +1538,15 @@ function TreatmentSelectorPanel({ selector, treatments, allTypes, customTypes, s
       )}
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', borderTop: `0.5px solid ${T.border}`, paddingTop: 10, marginTop: 4 }}>
         <Btn variant="primary" onClick={() => { if (selType && conflicts.length === 0) onApply(selType, false, timeOfDay, treatArea, customPre, customPost, dateKey) }} disabled={!selType || conflicts.length > 0}>Save</Btn>
-        {conflicts.length > 0 && safeDate && <div style={{ fontSize: 11, color: '#166534', padding: '4px 0' }}>Move to {safeDate} to save.</div>}
+        {conflicts.length > 0 && safeDate && <div style={{ fontSize: 11, color: '#166534', padding: '4px 0' }}>Move to {new Date(safeDate + 'T00:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })} to save.</div>}
         <Btn onClick={onClose}>Cancel</Btn>
         {editingEntry && <Btn variant="danger" onClick={() => { if (window.confirm('Remove this treatment? This cannot be undone.')) onRemove(editingEntry._dbId) }}>Remove treatment</Btn>}
       </div>
       <SectionLabel>Add a new treatment type</SectionLabel>
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
         <div><FieldLabel>Name</FieldLabel><TextInput value={newName} onChange={e => setNewName(e.target.value)} placeholder="e.g. LED therapy" /></div>
-        <div><FieldLabel>Days before</FieldLabel><NumberInput value={newPre} onChange={e => setNewPre(+e.target.value)} /></div>
-        <div><FieldLabel>Days after</FieldLabel><NumberInput value={newPost} onChange={e => setNewPost(+e.target.value)} /></div>
+        <div><FieldLabel>Days before — pause actives</FieldLabel><NumberInput value={newPre} onChange={e => setNewPre(+e.target.value)} /></div>
+        <div><FieldLabel>Days after — recovery period</FieldLabel><NumberInput value={newPost} onChange={e => setNewPost(+e.target.value)} /></div>
         <Btn variant="secondary" onClick={addCustomType}>Add</Btn>
       </div>
     </div>
@@ -4011,8 +4011,8 @@ function UpcomingTreatmentsPanel({ treatments, allTypes, routineHistory, onClose
                   <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 2 }}>{typeLabel}</div>
                   <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 2 }}>
                     {todLabel}{areaLabel}
-                    {cfg.pre > 0 && ` · ${cfg.pre}d pause before`}
-                    {cfg.post > 0 && ` · ${cfg.post}d recovery after`}
+                    {cfg.pre > 0 && ` · ${cfg.pre} days pause before`}
+                    {cfg.post > 0 && ` · ${cfg.post} days recovery after`}
                   </div>
                   {isPast && (
                     <div style={{ fontSize: 10, color: T.textLight, fontStyle: 'italic' }}>
@@ -4029,11 +4029,11 @@ function UpcomingTreatmentsPanel({ treatments, allTypes, routineHistory, onClose
                     const daysUntil = Math.round((dt - now) / 86400000)
                     return daysUntilPause <= 0 && daysUntil > 0 ? (
                       <div style={{ fontSize: 10, color: '#92400E', background: '#FFFBEB', border: '0.5px solid #FCD34D', borderRadius: 0, padding: '2px 6px', display: 'inline-block', marginTop: 2 }}>
-                        Pause window active — {daysUntil}d until treatment
+                        Pause window active — {daysUntil} days until treatment
                       </div>
                     ) : daysUntilPause > 0 ? (
                       <div style={{ fontSize: 10, color: T.textMuted, marginTop: 2 }}>
-                        Pause actives in {daysUntilPause}d · Treatment in {daysUntil}d
+                        Pause actives in {daysUntilPause} days · Treatment in {daysUntil} days
                       </div>
                     ) : null
                   })()}
@@ -4209,7 +4209,7 @@ function FeedbackPanel({ onClose }) {
 }
 
 // ─── SIDE MENU ────────────────────────────────────────────────
-function SideMenu({ session, menuProfile, onClose, onHistory, onLibrary, onExport, onSignOut, onFeedback }) {
+function SideMenu({ session, menuProfile, onClose, onHistory, onLibrary, onSignOut, onFeedback }) {
   const email = session?.user?.email || ''
   // Use pre-loaded profile from parent — no fetch, no flash
   const displayName = menuProfile?.display_name || email.split('@')[0]
@@ -4225,10 +4225,9 @@ function SideMenu({ session, menuProfile, onClose, onHistory, onLibrary, onExpor
   }, [avatarUrl])
   const avatarReady = menuProfile !== null && imageReady
   const menuItems = [
-    { label: 'Routine history',  icon: '📋', action: onHistory },
-    { label: 'Product library',  icon: '🧴', action: onLibrary },
-    { label: 'Export',           icon: '↑',  action: onExport  },
-    { label: 'Profile',          icon: '👤', action: () => { window.location.href = '/routine/profile' } },
+    { label: 'Routine history',   icon: '📋', action: onHistory },
+    { label: 'Product library',   icon: '🧴', action: onLibrary },
+    { label: 'Account & settings', icon: '👤', action: () => { window.location.href = '/routine/profile' } },
     { label: 'Send feedback',     icon: '💬', action: onFeedback },
   ]
 
@@ -5473,7 +5472,6 @@ export default function GlowUpCalendar({ session }) {
           onClose={() => setShowMenu(false)}
           onHistory={() => { setPanel(p => p === 'history' ? null : 'history'); setEditingPeriod(null); setDayFlyout(null) }}
           onLibrary={() => { window.location.href = '/routine/products' }}
-          onExport={() => { setShowExport(s => !s); setDayFlyout(null) }}
           onSignOut={handleSignOut}
           onFeedback={() => { setShowFeedback(true); setShowMenu(false) }}
         />

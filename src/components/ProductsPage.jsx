@@ -188,6 +188,42 @@ const PRODUCT_CATEGORIES = [
 
 // Acronyms that should be fully uppercase in labels
 const UPPERCASE_WORDS = new Set(['spf', 'bha', 'aha', 'pha', 'bha/aha', 'aha/bha'])
+// Lightweight nav menu — same links as the calendar sidebar
+function NavMenu() {
+  const [open, setOpen] = useState(false)
+  const links = [
+    { label: 'Calendar',          href: '/routine' },
+    { label: 'Routine history',   href: '/routine' },
+    { label: 'Product library',   href: '/routine/products' },
+    { label: 'Account & settings', href: '/routine/profile' },
+  ]
+  return (
+    <div style={{ position: 'relative' }}>
+      <button onClick={() => setOpen(s => !s)}
+        style={{ border: `0.5px solid ${open ? T.pinkDeep : T.border}`, background: open ? T.pink : 'transparent', borderRadius: 0, padding: '5px 10px', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', justifyContent: 'center', width: 36, height: 32 }}>
+        <span style={{ display: 'block', width: 14, height: 1.5, background: T.text }} />
+        <span style={{ display: 'block', width: 14, height: 1.5, background: T.text }} />
+        <span style={{ display: 'block', width: 14, height: 1.5, background: T.text }} />
+      </button>
+      {open && (
+        <>
+          <div onClick={() => setOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 200 }} />
+          <div style={{ position: 'absolute', top: '100%', right: 0, marginTop: 4, background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 0, zIndex: 201, minWidth: 180, boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}>
+            {links.map(l => (
+              <a key={l.label} href={l.href}
+                style={{ display: 'block', padding: '11px 16px', fontSize: 13, color: T.text, textDecoration: 'none', borderBottom: `0.5px solid ${T.border}` }}
+                onMouseEnter={e => e.currentTarget.style.background = T.cream}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                {l.label}
+              </a>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
 function formatCatLabel(cat) {
   return cat.split(' ').map(w =>
     UPPERCASE_WORDS.has(w.toLowerCase()) ? w.toUpperCase() : w.charAt(0).toUpperCase() + w.slice(1)
@@ -1703,10 +1739,13 @@ export default function ProductsPage({ session }) {
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: T.pinkDeep, display: 'inline-block', marginBottom: 2 }} />
           </a>
           <div className="glowup-prodlogo" style={{ flex: 1 }} />
-          <button onClick={() => setEditingProduct('new')}
-            style={{ border: 'none', background: T.pinkDeep, color: '#fff', borderRadius: 0, padding: '7px 16px', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 500, whiteSpace: 'nowrap' }}>
-            + Add new product
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <button onClick={() => setEditingProduct('new')}
+              style={{ border: 'none', background: T.pinkDeep, color: '#fff', borderRadius: 0, padding: '7px 16px', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 500, whiteSpace: 'nowrap' }}>
+              + Add new product
+            </button>
+            <NavMenu />
+          </div>
         </div>
         {/* Page title row — no back arrow, logo is the nav */}
         <div style={{ padding: '0 20px 12px' }}>

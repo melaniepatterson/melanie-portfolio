@@ -16,6 +16,41 @@ const T = {
   pinkDeep: '#C93500',
 }
 
+function NavMenu() {
+  const [open, setOpen] = useState(false)
+  const links = [
+    { label: 'Calendar',           href: '/routine' },
+    { label: 'Routine history',    href: '/routine' },
+    { label: 'Product library',    href: '/routine/products' },
+    { label: 'Account & settings', href: '/routine/profile' },
+  ]
+  return (
+    <div style={{ position: 'relative' }}>
+      <button onClick={() => setOpen(s => !s)}
+        style={{ border: `0.5px solid ${open ? T.pinkDeep : T.border}`, background: open ? T.pink : 'transparent', borderRadius: 0, padding: '5px 10px', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', justifyContent: 'center', width: 36, height: 32 }}>
+        <span style={{ display: 'block', width: 14, height: 1.5, background: T.text }} />
+        <span style={{ display: 'block', width: 14, height: 1.5, background: T.text }} />
+        <span style={{ display: 'block', width: 14, height: 1.5, background: T.text }} />
+      </button>
+      {open && (
+        <>
+          <div onClick={() => setOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 200 }} />
+          <div style={{ position: 'absolute', top: '100%', right: 0, marginTop: 4, background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 0, zIndex: 201, minWidth: 180, boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}>
+            {links.map(l => (
+              <a key={l.label} href={l.href}
+                style={{ display: 'block', padding: '11px 16px', fontSize: 13, color: T.text, textDecoration: 'none', borderBottom: `0.5px solid ${T.border}` }}
+                onMouseEnter={e => e.currentTarget.style.background = T.cream}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                {l.label}
+              </a>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
 const SUPABASE_URL = 'https://brcjhshptisevcndqavz.supabase.co'
 
 const SKIN_TYPES = ['Dry', 'Oily', 'Combination', 'Normal', 'Sensitive']
@@ -264,12 +299,15 @@ export default function Profile({ session }) {
           <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#C93500', display: 'inline-block', marginBottom: 2 }} />
         </div>
         {/* Nav row */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 20px 14px' }}>
-          <button onClick={() => window.location.href = '/routine'}
-            style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 8, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.text }}>
-            ←
-          </button>
-          <div style={{ fontSize: 15, fontWeight: 600, color: T.text }}>Profile</div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 20px 14px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <button onClick={() => window.location.href = '/routine'}
+              style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 8, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.text }}>
+              ←
+            </button>
+            <div style={{ fontSize: 15, fontWeight: 600, color: T.text }}>Account & settings</div>
+          </div>
+          <NavMenu />
         </div>
       </div>
 
