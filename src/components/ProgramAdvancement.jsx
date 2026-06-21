@@ -138,7 +138,7 @@ function LinearAdvanceModal({ nextPhase, isGraduation, onConfirm, onClose }) {
 function NotReadyYetLink({ onClick, disabled }) {
   return (
     <button onClick={onClick} disabled={disabled}
-      style={{ width: '100%', textAlign: 'center', background: 'transparent', color: T.textMuted, border: `1px solid ${T.border}`, borderRadius: 0, padding: '8px 16px', cursor: disabled ? 'default' : 'pointer', fontFamily: 'inherit', fontSize: 12, marginTop: 6 }}>
+      style={{ width: '100%', textAlign: 'center', background: T.creamDark, color: T.textMuted, border: 'none', borderTop: `1px solid ${T.border}`, borderRadius: 0, padding: '9px 16px', cursor: disabled ? 'default' : 'pointer', fontFamily: 'inherit', fontSize: 11 }}>
       {disabled ? 'Saving…' : "I'm not ready yet — add a week"}
     </button>
   )
@@ -546,46 +546,41 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
         </div>
       )}
 
-      {/* Advancement banner */}
+      {/* Advancement banner — Phase 1 → 2 */}
       {!isLinearProgram && ready && currentPhase.phase_number === 1 && (
         <div style={{ width: '100%', minWidth: 0, boxSizing: 'border-box' }}>
-          <div style={{ background: T.text, color: '#fff', padding: '14px 16px 12px', width: '100%', boxSizing: 'border-box' }}>
-            <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 2 }}>You're ready for Phase 2</div>
-            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.75)' }}>Add something to your routine, or leave it as-is for now</div>
-          </div>
-          <div style={{ display: 'flex', width: '100%', boxSizing: 'border-box' }}>
-            <button onClick={() => setShowPicker(true)}
-              style={{ flex: 1, minWidth: 0, textAlign: 'center', background: T.pinkDeep, color: '#fff', border: 'none', borderRadius: 0, padding: '12px 16px', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13, fontWeight: 600 }}>
-              Add to my routine
-            </button>
-            <button onClick={() => {
-              const skipOpt = phase2Options.find(o => o.is_skip_option)
-              advanceToPhase2(skipOpt ? [skipOpt] : [])
-            }}
-              style={{ flex: 1, minWidth: 0, textAlign: 'center', background: '#3A3A3A', color: 'rgba(255,255,255,0.85)', border: 'none', borderRadius: 0, padding: '12px 16px', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13, fontWeight: 600 }}>
-              Leave as-is for now
-            </button>
-          </div>
+          <button onClick={() => setShowPicker(true)}
+            style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, background: T.text, color: '#fff', border: 'none', borderRadius: 0, padding: '14px 16px', cursor: 'pointer', fontFamily: 'inherit' }}>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 2 }}>You're ready for Phase 2</div>
+              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.75)' }}>Add something to your routine — tap to choose</div>
+            </div>
+            <span style={{ fontSize: 18, flexShrink: 0 }}>→</span>
+          </button>
+          <NotReadyYetLink onClick={postponePhase} disabled={postponing} />
         </div>
       )}
 
+      {/* Advancement banner — Phase 2 → Graduation */}
       {!isLinearProgram && ready && currentPhase.phase_number === 2 && (
-        <>
+        <div style={{ width: '100%', minWidth: 0, boxSizing: 'border-box' }}>
           <button onClick={() => setShowGraduation(true)}
-            style={{ width: '100%', minWidth: 0, boxSizing: 'border-box', textAlign: 'left', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, background: T.text, color: '#fff', border: 'none', borderRadius: 0, padding: '14px 16px', cursor: 'pointer', fontFamily: 'inherit', marginBottom: 0 }}>
+            style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, background: T.text, color: '#fff', border: 'none', borderRadius: 0, padding: '14px 16px', cursor: 'pointer', fontFamily: 'inherit' }}>
             <div>
               <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 2 }}>You're ready to graduate</div>
               <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.75)' }}>Tap to lock in your routine</div>
             </div>
             <span style={{ fontSize: 18, flexShrink: 0 }}>→</span>
           </button>
-        </>
+          <NotReadyYetLink onClick={postponePhase} disabled={postponing} />
+        </div>
       )}
 
+      {/* Advancement banner — Linear programs (Tretinoin etc) */}
       {isLinearProgram && ready && nextPhase && (
-        <>
+        <div style={{ width: '100%', minWidth: 0, boxSizing: 'border-box' }}>
           <button onClick={() => setShowLinearAdvance(true)}
-            style={{ width: '100%', minWidth: 0, boxSizing: 'border-box', textAlign: 'left', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, background: T.text, color: '#fff', border: 'none', borderRadius: 0, padding: '14px 16px', cursor: 'pointer', fontFamily: 'inherit', marginBottom: 0 }}>
+            style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, background: T.text, color: '#fff', border: 'none', borderRadius: 0, padding: '14px 16px', cursor: 'pointer', fontFamily: 'inherit' }}>
             <div>
               <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 2 }}>
                 {nextPhase.advancement_type === 'auto' ? "You're ready to graduate" : `You're ready for Phase ${nextPhase.phase_number}`}
@@ -595,7 +590,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
             <span style={{ fontSize: 18, flexShrink: 0 }}>→</span>
           </button>
           <NotReadyYetLink onClick={postponePhase} disabled={postponing} />
-        </>
+        </div>
       )}
 
       {showPicker && (
