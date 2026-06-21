@@ -424,12 +424,12 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
 
         {/* Header row — always visible */}
         <button onClick={toggleCollapsed}
-          style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, background: 'transparent', border: 'none', padding: 0, cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left' }}>
-          <div>
+          style={{ width: '100%', minWidth: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, background: 'transparent', border: 'none', padding: 0, cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left', boxSizing: 'border-box' }}>
+          <div style={{ minWidth: 0, flex: 1, overflow: 'hidden' }}>
             <div style={{ fontSize: 9, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 2 }}>
               {program.name}
             </div>
-            <div style={{ fontSize: 12, fontWeight: 600, color: T.text }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               Phase {currentPhase.phase_number} of {phases.length} — {currentPhase.name}
               {elapsed < 0 ? (
                 <span style={{ fontWeight: 400, color: T.textMuted }}> · Starts {fmtDate(phaseStart)}</span>
