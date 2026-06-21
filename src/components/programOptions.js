@@ -54,12 +54,14 @@ export function applyProgramPhase(phaseSteps, routinePeriod, { isFirstApplicatio
     newMain.push({
       id: 'main_moisturizer_buffer', categoryKey: 'moisturizer_buffer', label: bufferStep.label,
       optional: false, enabled: true, professionalOnly: false,
+      notes: bufferStep.notes || null,
     })
   }
   if (retinoidStep) {
     newMain.push({
       id: 'main_retinoid', categoryKey: 'retinoid', label: retinoidStep.label,
       optional: false, enabled: true, professionalOnly: false,
+      notes: retinoidStep.notes || null,
     })
   }
 

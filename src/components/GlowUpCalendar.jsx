@@ -3005,6 +3005,11 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
               ) : (
                 <div style={{ fontSize: 11, color: T.textLight, fontStyle: 'italic' }}>Tap to assign product</div>
               )}
+              {step.notes && (
+                <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.6, marginTop: 5, paddingTop: 5, borderTop: `0.5px solid ${T.border}` }}>
+                  {step.notes}
+                </div>
+              )}
             </div>
             <div style={{ fontSize: 10, color: T.textLight }}>{isThisOpen ? '▲' : '▼'}</div>
           </div>
@@ -5433,7 +5438,7 @@ export default function GlowUpCalendar({ session }) {
   )
 
   return (
-    <div onClick={() => { if (dayFlyout) setDayFlyout(null) }} style={{ fontFamily: 'inherit', padding: '1rem 0.75rem', maxWidth: 900, position: 'relative', margin: '0 auto', overflow: 'hidden' }}>
+    <div onClick={() => { if (dayFlyout) setDayFlyout(null) }} style={{ fontFamily: 'inherit', padding: '1rem 0.75rem', maxWidth: 900, width: '100%', boxSizing: 'border-box', position: 'relative', margin: '0 auto', overflow: 'hidden' }}>
       <style>{`html, body { overflow-x: hidden; } @keyframes slideDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } } @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } } @keyframes panelIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } } @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } } .glowup-cal-logo { display: flex } @media (max-width: 639px) { .glowup-cal-logo { display: none } }`}</style>
 
       {/* Glow Up logo — desktop only */}
@@ -5444,15 +5449,17 @@ export default function GlowUpCalendar({ session }) {
 
       {/* Active program status + advancement prompts */}
       {activeProgram && (
-        <ProgramAdvancement
-          session={session}
-          activeProgram={activeProgram}
-          routinePeriod={getActivePeriod(now, routineHistory)}
-          treatments={treatments}
-          allTypes={allTypes}
-          skinType={skinType}
-          onAdvanced={() => setReloadKey(k => k + 1)}
-        />
+        <div style={{ width: '100%', minWidth: 0, maxWidth: '100%', overflow: 'hidden', boxSizing: 'border-box' }}>
+          <ProgramAdvancement
+            session={session}
+            activeProgram={activeProgram}
+            routinePeriod={getActivePeriod(now, routineHistory)}
+            treatments={treatments}
+            allTypes={allTypes}
+            skinType={skinType}
+            onAdvanced={() => setReloadKey(k => k + 1)}
+          />
+        </div>
       )}
 
       {/* Toast — always in flow at top, small so it doesn't displace much */}
