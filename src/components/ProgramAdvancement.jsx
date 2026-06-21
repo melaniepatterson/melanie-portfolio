@@ -497,10 +497,6 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
                     Add to my routine
                   </button>
                 )}
-                <button onClick={e => { e.stopPropagation(); setShowAddMore(true) }}
-                  style={{ padding: '7px 14px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 11, fontFamily: 'inherit' }}>
-                  Add to my routine
-                </button>
                 <button onClick={e => { e.stopPropagation(); setEndFoundationConfirm(true) }}
                   style={{ padding: '7px 14px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.textMuted, cursor: 'pointer', fontSize: 11, fontFamily: 'inherit' }}>
                   Done with this program
