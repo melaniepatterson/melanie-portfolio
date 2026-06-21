@@ -4256,7 +4256,74 @@ function SideMenu({ session, menuProfile, onClose, onHistory, onLibrary, onExpor
   )
 }
 
-// ─── MAIN COMPONENT ──────────────────────────────────────────
+// ─── NOTIFICATIONS ───────────────────────────────────────────
+// Pure function — computes all current alerts from app state.
+// Runs on every render so it's always fresh with no extra fetches.
+function computeNotifications({ products, treatments, allTypes, timezone }) {
+  const notes = []
+  const today = todayInTz(timezone)
+
+  // ── PAO / expiry warnings ─────────────────────────────────
+  const productsArr = Object.values(products || {})
+  for (const p of productsArr) {
+    if (!p.name) continue
+
+    // Compute expiry date: explicit expires_at wins, then opened_at + pao_months
+    let expiryDate = p.expires_at || null
+    if (!expiryDate && p.opened_at && p.pao_months) {
+      const d = new Date(p.opened_at + 'T00:00:00')
+      d.setMonth(d.getMonth() + Number(p.pao_months))
+      expiryDate = d.toISOString().split('T')[0]
+    }
+    if (!expiryDate) continue
+
+    const daysLeft = Math.round((new Date(expiryDate + 'T00:00:00') - new Date(today + 'T00:00:00')) / 86400000)
+    if (daysLeft < 0) {
+      notes.push({
+        id: `pao-expired-${p.id}`,
+        type: 'warning',
+        category: 'pao',
+        title: `${p.name} has expired`,
+        body: `Expired ${Math.abs(daysLeft)} day${Math.abs(daysLeft) === 1 ? '' : 's'} ago. Check if it's still safe to use.`,
+        date: expiryDate,
+      })
+    } else if (daysLeft <= 30) {
+      notes.push({
+        id: `pao-soon-${p.id}`,
+        type: 'info',
+        category: 'pao',
+        title: `${p.name} expires soon`,
+        body: `${daysLeft === 0 ? 'Expires today' : `${daysLeft} day${daysLeft === 1 ? '' : 's'} left`}. Opened ${p.opened_at ? new Date(p.opened_at + 'T00:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : ''}.`,
+        date: expiryDate,
+      })
+    }
+  }
+
+  // ── Post-recovery nudge ───────────────────────────────────
+  for (const [dateKey, tx] of Object.entries(treatments || {})) {
+    const cfg = allTypes[tx.type]
+    if (!cfg || !cfg.post) continue
+    const resumeDate = new Date(dateKey + 'T00:00:00')
+    resumeDate.setDate(resumeDate.getDate() + cfg.post + 1)
+    const resumeKey = resumeDate.toISOString().split('T')[0]
+    if (resumeKey === today) {
+      notes.push({
+        id: `recovery-${dateKey}`,
+        type: 'nudge',
+        category: 'recovery',
+        title: 'Your recovery window ended',
+        body: `Your ${cfg.label || tx.type} recovery is over — your full routine resumes tonight.`,
+        date: today,
+      })
+    }
+  }
+
+  // Sort: warnings first, then by date descending
+  const priority = { warning: 0, nudge: 1, info: 2 }
+  return notes.sort((a, b) => (priority[a.type] ?? 3) - (priority[b.type] ?? 3) || b.date.localeCompare(a.date))
+}
+
+
 export default function GlowUpCalendar({ session }) {
   const userId = session?.user?.id
 
@@ -4433,7 +4500,8 @@ export default function GlowUpCalendar({ session }) {
     loadAll()
   }, [userId, reloadKey])
   const [showTreatments, setShowTreatments] = useState(false)
-  const [showMenu,      setShowMenu]      = useState(false)
+  const [showMenu,          setShowMenu]          = useState(false)
+  const [showNotifications, setShowNotifications] = useState(false)
   const [showFeedback,  setShowFeedback]  = useState(false)
   const [recoveryRoutines, setRecoveryRoutines] = useState({})
   const [skinType, setSkinType] = useState('')
@@ -5230,6 +5298,10 @@ export default function GlowUpCalendar({ session }) {
       </div>
 
       {/* Header — always visible, never moves */}
+      {(() => {
+        const notifications = computeNotifications({ products, treatments, allTypes, timezone })
+        const unread = notifications.length
+        return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, gap: 8 }}>
         {/* Left — primary actions */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
@@ -5239,17 +5311,54 @@ export default function GlowUpCalendar({ session }) {
             <button onClick={() => { setMonth(now.getMonth()); setYear(now.getFullYear()) }} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 0, padding: '5px 10px', cursor: 'pointer', fontSize: 11, color: T.textMuted, fontFamily: 'inherit' }}>Today</button>
           )}
         </div>
-        {/* Right — hamburger */}
-        <button
-          onClick={() => setShowMenu(s => !s)}
-          style={{ border: `0.5px solid ${showMenu ? T.pinkDeep : T.border}`, background: showMenu ? T.pink : 'transparent', borderRadius: 0, padding: '5px 10px', cursor: 'pointer', color: T.text, fontSize: 16, lineHeight: 1, display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', justifyContent: 'center', width: 36, height: 32 }}
-          aria-label="Menu"
-        >
-          <span style={{ display: 'block', width: 14, height: 1.5, background: T.text, borderRadius: 0 }} />
-          <span style={{ display: 'block', width: 14, height: 1.5, background: T.text, borderRadius: 0 }} />
-          <span style={{ display: 'block', width: 14, height: 1.5, background: T.text, borderRadius: 0 }} />
-        </button>
+        {/* Right — bell + hamburger */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          {/* Bell */}
+          <button onClick={() => setShowNotifications(s => !s)} aria-label="Notifications"
+            style={{ position: 'relative', border: `0.5px solid ${showNotifications ? T.pinkDeep : T.border}`, background: showNotifications ? T.pink : 'transparent', borderRadius: 0, padding: '5px 10px', cursor: 'pointer', color: T.text, fontSize: 15, lineHeight: 1, width: 36, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            🔔
+            {unread > 0 && (
+              <span style={{ position: 'absolute', top: 2, right: 2, width: 14, height: 14, borderRadius: '50%', background: T.pinkDeep, color: '#fff', fontSize: 8, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>
+                {unread > 9 ? '9+' : unread}
+              </span>
+            )}
+          </button>
+          {/* Hamburger */}
+          <button
+            onClick={() => setShowMenu(s => !s)}
+            style={{ border: `0.5px solid ${showMenu ? T.pinkDeep : T.border}`, background: showMenu ? T.pink : 'transparent', borderRadius: 0, padding: '5px 10px', cursor: 'pointer', color: T.text, fontSize: 16, lineHeight: 1, display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', justifyContent: 'center', width: 36, height: 32 }}
+            aria-label="Menu"
+          >
+            <span style={{ display: 'block', width: 14, height: 1.5, background: T.text, borderRadius: 0 }} />
+            <span style={{ display: 'block', width: 14, height: 1.5, background: T.text, borderRadius: 0 }} />
+            <span style={{ display: 'block', width: 14, height: 1.5, background: T.text, borderRadius: 0 }} />
+          </button>
+        </div>
       </div>
+
+      {/* Notification feed */}
+      {showNotifications && (
+        <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 0, padding: '14px 16px', marginBottom: 14, animation: 'panelIn 0.15s ease' }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: T.text, marginBottom: 12 }}>Notifications</div>
+          {notifications.length === 0 ? (
+            <div style={{ fontSize: 12, color: T.textMuted, fontStyle: 'italic', padding: '8px 0' }}>
+              You're all caught up — nothing needs attention right now.
+            </div>
+          ) : notifications.map(n => (
+            <div key={n.id} style={{ display: 'flex', gap: 12, padding: '10px 0', borderTop: `0.5px solid ${T.border}` }}>
+              <div style={{ fontSize: 16, flexShrink: 0, marginTop: 1 }}>
+                {n.type === 'warning' ? '⚠️' : n.type === 'nudge' ? '✅' : 'ℹ️'}
+              </div>
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: T.text, marginBottom: 2 }}>{n.title}</div>
+                <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.6 }}>{n.body}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+        )
+      })()}
 
       {/* Day flyout — unified centered modal, works on mobile and desktop */}
       {dayFlyout && (() => {
