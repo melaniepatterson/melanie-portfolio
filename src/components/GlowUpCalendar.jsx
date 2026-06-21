@@ -3410,7 +3410,7 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, skinType, onCh
               </button>
               <button onClick={() => setEndFoundationConfirm(true)}
                 style={{ padding: '7px 14px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.textMuted, cursor: 'pointer', fontSize: 11, fontFamily: 'inherit', whiteSpace: 'nowrap' }}>
-                End Basic Skincare program
+                Done with this program
               </button>
             </div>
           )}
@@ -3427,7 +3427,7 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, skinType, onCh
                 </button>
                 <button onClick={endFoundationEarly} disabled={endingFoundation}
                   style={{ flex: 1, padding: '10px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
-                  {endingFoundation ? 'Saving…' : 'End Basic Skincare program'}
+                  {endingFoundation ? 'Saving…' : 'Done with this program'}
                 </button>
               </div>
             </div>
@@ -3464,7 +3464,7 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, skinType, onCh
         {!endConfirm ? (
           <button onClick={() => setEndConfirm(true)}
             style={{ width: '100%', padding: '11px', borderRadius: 0, border: `1px solid ${T.pinkDeep}`, background: 'transparent', color: T.pinkDeep, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit' }}>
-            End this program
+            Done with this program
           </button>
         ) : (
           <div style={{ border: `1px solid ${T.border}`, borderRadius: 0, padding: '14px 16px' }}>
@@ -3478,7 +3478,7 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, skinType, onCh
               </button>
               <button onClick={endProgram} disabled={ending}
                 style={{ flex: 1, padding: '10px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
-                {ending ? 'Ending…' : 'End program'}
+                {ending ? 'Saving…' : 'Done with this program'}
               </button>
             </div>
           </div>
