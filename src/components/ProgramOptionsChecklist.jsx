@@ -49,7 +49,7 @@ export default function ProgramOptionsChecklist({ options, selected, onToggle, s
                   {opt.label}
                   {isAlreadyAdded
                     ? <span style={{ fontSize: 9, fontWeight: 700, color: T.textMuted, marginLeft: 8, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Already in your routine</span>
-                    : isActive && <span style={{ fontSize: 9, fontWeight: 700, color: isOn ? 'rgba(255,255,255,0.7)' : T.pinkDeep, marginLeft: 8, letterSpacing: '0.06em', textTransform: 'uppercase' }}>New ingredient — go slow</span>
+                    : isActive && <span style={{ fontSize: 9, fontWeight: 700, color: isOn ? 'rgba(255,255,255,0.7)' : T.pinkDeep, marginLeft: 8, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Introduce slowly</span>
                   }
                 </div>
                 <div style={{ fontSize: 12, color: isAlreadyAdded ? T.textMuted : isOn ? 'rgba(255,255,255,0.75)' : T.textMuted, lineHeight: 1.6 }}>

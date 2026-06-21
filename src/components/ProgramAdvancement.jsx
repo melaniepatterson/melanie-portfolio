@@ -42,9 +42,12 @@ export function Phase2Picker({ options, onChoose, onClose, skinType, alreadyAdde
         <h3 style={{ fontSize: 20, fontWeight: 800, color: T.text, letterSpacing: '-0.03em', margin: '0 0 8px', paddingRight: 36 }}>
           What do you want to add?
         </h3>
-        <p style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.7, margin: '0 0 20px' }}>
+        <p style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.7, margin: '0 0 8px' }}>
           Pick as many as you're ready for. We'll slot each one into your routine in the right place — you can add the actual products later.
         </p>
+        <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.7, padding: '10px 12px', background: T.cream, borderRadius: 0, border: `0.5px solid ${T.border}`, marginBottom: 20 }}>
+          <strong style={{ color: T.text, fontWeight: 600 }}>SPF is already part of your foundation</strong> — it goes on every morning and you don't need to add it here. The options below are about layering in new treatments over time, like exfoliants or eye cream. Items marked <span style={{ color: T.pinkDeep, fontWeight: 600 }}>introduce slowly</span> are ones that can cause irritation if you jump in too fast — start once or twice a week and build up.
+        </div>
 
         <ProgramOptionsChecklist
           options={options}
@@ -78,7 +81,33 @@ export function Phase2Picker({ options, onChoose, onClose, skinType, alreadyAdde
   )
 }
 
-// ─── GRADUATION CONFIRM ───────────────────────────────────────
+// ─── SANDWICH INFO CHIP ──────────────────────────────────────
+// Shown whenever the current or upcoming phase name includes "sandwich"
+function SandwichInfo() {
+  const [open, setOpen] = useState(false)
+  return (
+    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+      <button
+        onClick={e => { e.stopPropagation(); setOpen(s => !s) }}
+        style={{ width: 16, height: 16, borderRadius: '50%', border: `1px solid ${T.border}`, background: T.creamDark, color: T.textMuted, fontSize: 10, fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1, padding: 0, fontFamily: 'inherit', flexShrink: 0 }}>
+        ?
+      </button>
+      {open && (
+        <div onClick={e => e.stopPropagation()}
+          style={{ position: 'absolute', left: 0, top: '100%', marginTop: 4, zIndex: 100, background: T.white, border: `1px solid ${T.border}`, borderRadius: 0, padding: '12px 14px', maxWidth: 300, boxShadow: '0 4px 16px rgba(0,0,0,0.08)', fontSize: 12, color: T.textMuted, lineHeight: 1.7 }}>
+          <div style={{ fontWeight: 700, color: T.text, marginBottom: 4 }}>The sandwich method</div>
+          Apply a thin layer of moisturizer first, wait 2–3 minutes, then apply your tretinoin, then another layer of moisturizer on top. The buffer layers reduce irritation while the tretinoin still absorbs fully — it's especially helpful when you're first starting out.
+          <button onClick={() => setOpen(false)}
+            style={{ display: 'block', marginTop: 8, fontSize: 11, color: T.pinkDeep, background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit' }}>
+            Got it ×
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
+
 function GraduationModal({ onConfirm, onClose }) {
   const [saving, setSaving] = useState(false)
   return (
@@ -441,8 +470,9 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
             <div style={{ fontSize: 9, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 2 }}>
               {program.name}
             </div>
-            <div style={{ fontSize: 12, fontWeight: 600, color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', position: 'relative' }}>
               Phase {currentPhase.phase_number} of {phases.length} — {currentPhase.name}
+              {/sandwich/i.test(currentPhase.name) && <> <SandwichInfo /></>}
               {elapsed < 0 ? (
                 <span style={{ fontWeight: 400, color: T.textMuted }}> · Starts {fmtDate(phaseStart)}</span>
               ) : currentPhase.duration_days && (
@@ -523,6 +553,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
           </div>
           <div style={{ fontSize: 12, fontWeight: 600, color: T.text, marginBottom: 2 }}>
             {nextPhase.advancement_type === 'auto' ? 'Graduation' : `Phase ${nextPhase.phase_number} — ${nextPhase.name}`}
+            {/sandwich/i.test(nextPhase.name || '') && <> <SandwichInfo /></>}
           </div>
           <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.6 }}>{nextPhase.preview_description || nextPhase.description}</div>
         </div>

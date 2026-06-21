@@ -1486,7 +1486,7 @@ function TreatmentSelectorPanel({ selector, treatments, allTypes, customTypes, s
         {Object.entries(allTypes).map(([k, v]) => (
           <button key={k} onClick={() => { setSelType(k); setTreatArea(v.area || 'face'); setCustomPre(v.pre ?? 0); setCustomPost(v.post ?? 0) }} style={{ border: `0.5px solid ${selType === k ? T.pinkDeep : T.border}`, borderRadius: 0, padding: '8px 10px', cursor: 'pointer', background: selType === k ? T.pink : T.white, textAlign: 'left' }}>
             <div style={{ fontSize: 12, fontWeight: 600, color: T.text }}>{v.label}</div>
-            <div style={{ fontSize: 10, color: T.textLight }}>Pause actives {v.pre} days before</div>
+            <div style={{ fontSize: 10, color: T.textLight }}>Pause exfoliants & retinoids {v.pre} days before</div>
             <div style={{ fontSize: 10, color: T.textLight }}>Recovery for {v.post} days after</div>
           </button>
         ))}
@@ -1525,7 +1525,7 @@ function TreatmentSelectorPanel({ selector, treatments, allTypes, customTypes, s
           <div style={{ fontSize: 12, fontWeight: 500, color: T.text, marginBottom: 8 }}>Pause and recovery window</div>
           <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
             <div>
-              <FieldLabel>Days before — pause actives</FieldLabel>
+              <FieldLabel>Days before — pause exfoliants & retinoids</FieldLabel>
               <div style={{ fontSize: 10, color: T.textLight, marginBottom: 4 }}>How many days before this treatment should you stop using actives (retinoids, acids, etc.)?</div>
               <NumberInput value={customPre} onChange={e => setCustomPre(+e.target.value)} min={0} max={30} width={70} />
             </div>
@@ -1546,7 +1546,7 @@ function TreatmentSelectorPanel({ selector, treatments, allTypes, customTypes, s
       <SectionLabel>Add a new treatment type</SectionLabel>
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
         <div><FieldLabel>Name</FieldLabel><TextInput value={newName} onChange={e => setNewName(e.target.value)} placeholder="e.g. LED therapy" /></div>
-        <div><FieldLabel>Days before — pause actives</FieldLabel><NumberInput value={newPre} onChange={e => setNewPre(+e.target.value)} /></div>
+        <div><FieldLabel>Days before — pause exfoliants & retinoids</FieldLabel><NumberInput value={newPre} onChange={e => setNewPre(+e.target.value)} /></div>
         <div><FieldLabel>Days after — recovery period</FieldLabel><NumberInput value={newPost} onChange={e => setNewPost(+e.target.value)} /></div>
         <Btn variant="secondary" onClick={addCustomType}>Add</Btn>
       </div>
@@ -3202,6 +3202,135 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
 // The hub for enrolling in add-on programs (e.g. Tretinoin Onboarding)
 // on top of an existing baseline routine, and for ending/restarting
 // a program if the user falls off partway through.
+// ─── PROGRAM ENROLLMENT PREVIEW ──────────────────────────────
+function ProgramEnrollmentPreview({ program, onConfirm, onBack, timezone }) {
+  const [phases, setPhases] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [startDate, setStartDate] = useState(() => todayInTz(timezone || detectTimezone()))
+  const [confirming, setConfirming] = useState(false)
+  const [activePhase, setActivePhase] = useState(0)
+
+  useEffect(() => {
+    supabase.from('program_phases').select('*').eq('program_id', program.id).order('phase_number')
+      .then(({ data }) => { setPhases(data || []); setLoading(false) })
+  }, [program.id])
+
+  const totalDays = phases.filter(p => p.duration_days).reduce((s, p) => s + p.duration_days, 0)
+  const hasSandwich = phases.some(p => /sandwich/i.test(p.name || '') || /sandwich/i.test(p.description || ''))
+
+  const advancementLabel = t => ({
+    auto: 'Advances automatically', picker: 'You choose what to add', linear: 'Tap to advance when ready'
+  })[t] || null
+
+  return (
+    <div style={{ padding: '18px 18px' }}>
+      <button onClick={onBack}
+        style={{ fontSize: 12, color: T.textMuted, background: 'transparent', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit', marginBottom: 16 }}>
+        ← Back to programs
+      </button>
+
+      <div style={{ marginBottom: 20 }}>
+        <div style={{ fontSize: 9, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 6 }}>Program overview</div>
+        <div style={{ fontSize: 18, fontWeight: 800, color: T.text, letterSpacing: '-0.03em', marginBottom: 8 }}>{program.name}</div>
+        <div style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.7, marginBottom: 10 }}>{program.description}</div>
+        {totalDays > 0 && (
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 11, color: T.textMuted, background: T.creamDark, border: `0.5px solid ${T.border}`, padding: '4px 10px' }}>
+            📅 ~{totalDays} days total · {phases.length} phases
+          </div>
+        )}
+      </div>
+
+      {hasSandwich && (
+        <div style={{ background: T.cream, border: `0.5px solid ${T.border}`, padding: '12px 14px', marginBottom: 20 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: T.text, marginBottom: 4 }}>About the sandwich method</div>
+          <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.7 }}>
+            Apply a thin layer of moisturizer first, wait 2–3 minutes, apply your tretinoin, then finish with another layer of moisturizer on top. The buffer layers reduce irritation while the tretinoin still absorbs fully — especially helpful in the early weeks.
+          </div>
+        </div>
+      )}
+
+      {loading ? (
+        <div style={{ fontSize: 12, color: T.textMuted, padding: '20px 0', textAlign: 'center' }}>Loading…</div>
+      ) : (
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 12 }}>What to expect</div>
+
+          {/* Phase pills */}
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 14 }}>
+            {phases.map((p, i) => (
+              <button key={p.id} onClick={() => setActivePhase(i)}
+                style={{ padding: '4px 12px', border: `0.5px solid ${activePhase === i ? T.pinkDeep : T.border}`, background: activePhase === i ? T.pink : 'transparent', color: activePhase === i ? T.pinkDeep : T.textMuted, cursor: 'pointer', fontSize: 11, fontWeight: activePhase === i ? 600 : 400, fontFamily: 'inherit', borderRadius: 0 }}>
+                Phase {p.phase_number}
+              </button>
+            ))}
+          </div>
+
+          {/* Active phase card */}
+          {phases[activePhase] && (() => {
+            const p = phases[activePhase]
+            const adv = advancementLabel(p.advancement_type)
+            return (
+              <div style={{ border: `1px solid ${T.border}`, padding: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 8 }}>
+                  <div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: T.text, marginBottom: 2 }}>
+                      Phase {p.phase_number} — {p.name}
+                    </div>
+                    {p.duration_days && <div style={{ fontSize: 11, color: T.textMuted }}>~{p.duration_days} days</div>}
+                  </div>
+                  {adv && <div style={{ fontSize: 10, color: T.textMuted, background: T.creamDark, border: `0.5px solid ${T.border}`, padding: '3px 8px', whiteSpace: 'nowrap', flexShrink: 0 }}>{adv}</div>}
+                </div>
+                <div style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.8 }}>
+                  {p.preview_description || p.description}
+                </div>
+                {p.advancement_type === 'picker' && (
+                  <div style={{ fontSize: 12, color: T.textMuted, marginTop: 10, padding: '8px 10px', background: T.creamDark }}>
+                    At the end of this phase you'll pick what to add to your routine — nothing gets added automatically.
+                  </div>
+                )}
+              </div>
+            )
+          })()}
+
+          {phases.length > 1 && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 10 }}>
+              <button onClick={() => setActivePhase(i => Math.max(0, i - 1))} disabled={activePhase === 0}
+                style={{ fontSize: 12, color: activePhase === 0 ? T.border : T.textMuted, background: 'transparent', border: 'none', cursor: activePhase === 0 ? 'default' : 'pointer', fontFamily: 'inherit', padding: 0 }}>
+                ← Previous
+              </button>
+              <button onClick={() => setActivePhase(i => Math.min(phases.length - 1, i + 1))} disabled={activePhase === phases.length - 1}
+                style={{ fontSize: 12, color: activePhase === phases.length - 1 ? T.border : T.textMuted, background: 'transparent', border: 'none', cursor: activePhase === phases.length - 1 ? 'default' : 'pointer', fontFamily: 'inherit', padding: 0 }}>
+                Next →
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {!loading && (
+        <div style={{ borderTop: `0.5px solid ${T.border}`, paddingTop: 16 }}>
+          <div style={{ fontSize: 12, fontWeight: 600, color: T.text, marginBottom: 4 }}>When did/will you start?</div>
+          <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 10, lineHeight: 1.6 }}>
+            Already using this? Set the date you actually started so the calendar reflects where you are.
+          </div>
+          <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)}
+            style={{ width: '100%', boxSizing: 'border-box', fontSize: 12, padding: '6px 2px', border: 'none', borderBottom: `1px solid ${T.text}`, borderRadius: 0, background: 'transparent', color: T.text, fontFamily: 'inherit', outline: 'none', marginBottom: 14 }} />
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button onClick={onBack} disabled={confirming}
+              style={{ flex: 1, padding: '11px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
+              Cancel
+            </button>
+            <button onClick={async () => { setConfirming(true); await onConfirm(startDate); setConfirming(false) }} disabled={confirming}
+              style={{ flex: 2, padding: '11px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
+              {confirming ? 'Starting…' : `Start ${program.name}`}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
 function AddProgramPanel({ session, activeProgram, routinePeriod, skinType, timezone, onChanged }) {
   const [loading, setLoading] = useState(true)
   const [library, setLibrary] = useState([])
@@ -3210,7 +3339,8 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, skinType, time
   const [endConfirm, setEndConfirm] = useState(false)
   const [ending, setEnding] = useState(false)
   const [starting, setStarting] = useState(null) // program id being started
-  const [pickingProgram, setPickingProgram] = useState(null) // program selected, choosing start date
+  const [pickingProgram, setPickingProgram] = useState(null)
+  const [previewingProgram, setPreviewingProgram] = useState(null) // program object being previewed
   const [startDate, setStartDate] = useState(() => todayInTz(timezone || detectTimezone()))
   const [showAddMore, setShowAddMore] = useState(false)
   const [endFoundationConfirm, setEndFoundationConfirm] = useState(false)
@@ -3498,7 +3628,21 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, skinType, time
     )
   }
 
-  // ── NO ACTIVE PROGRAM — show library ────────────────────────
+  // ── NO ACTIVE PROGRAM — show library or preview ─────────────
+  if (previewingProgram) {
+    return (
+      <ProgramEnrollmentPreview
+        program={previewingProgram}
+        timezone={timezone}
+        onBack={() => setPreviewingProgram(null)}
+        onConfirm={async (startDate) => {
+          await startProgram(previewingProgram, startDate)
+          setPreviewingProgram(null)
+        }}
+      />
+    )
+  }
+
   return (
     <div style={{ padding: '18px 18px' }}>
       <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 4 }}>Add a program</div>
@@ -3515,29 +3659,10 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, skinType, time
           <div key={program.id} style={{ border: `1px solid ${T.border}`, borderRadius: 0, padding: '14px 16px', marginBottom: 10 }}>
             <div style={{ fontSize: 14, fontWeight: 700, color: T.text, marginBottom: 4 }}>{program.name}</div>
             <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.6, marginBottom: 12 }}>{program.description}</div>
-
-            {pickingProgram === program.id ? (
-              <div>
-                <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 6 }}>When did/will you start?</div>
-                <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)}
-                  style={{ width: '100%', boxSizing: 'border-box', fontSize: 12, padding: '6px 2px', border: 'none', borderBottom: '1px solid #000000', borderRadius: 0, background: 'transparent', color: T.text, fontFamily: 'inherit', outline: 'none', marginBottom: 12 }} />
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <button onClick={() => setPickingProgram(null)} disabled={starting === program.id}
-                    style={{ flex: 1, padding: '10px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
-                    Cancel
-                  </button>
-                  <button onClick={() => startProgram(program, startDate)} disabled={starting === program.id}
-                    style={{ flex: 1, padding: '10px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
-                    {starting === program.id ? 'Starting…' : 'Start program'}
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <button onClick={() => { setPickingProgram(program.id); setStartDate(todayInTz(timezone || detectTimezone())) }}
-                style={{ width: '100%', padding: '10px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
-                Start program
-              </button>
-            )}
+            <button onClick={() => setPreviewingProgram(program)}
+              style={{ width: '100%', padding: '10px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
+              Learn more & start →
+            </button>
           </div>
         ))
       )}
@@ -4034,7 +4159,7 @@ function UpcomingTreatmentsPanel({ treatments, allTypes, routineHistory, onClose
                       </div>
                     ) : daysUntilPause > 0 ? (
                       <div style={{ fontSize: 10, color: T.textMuted, marginTop: 2 }}>
-                        Pause actives in {daysUntilPause} days · Treatment in {daysUntil} days
+                        Pause exfoliants & retinoids in {daysUntilPause} days · Treatment in {daysUntil} days
                       </div>
                     ) : null
                   })()}
