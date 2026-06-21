@@ -138,8 +138,8 @@ function LinearAdvanceModal({ nextPhase, isGraduation, onConfirm, onClose }) {
 function NotReadyYetLink({ onClick, disabled }) {
   return (
     <button onClick={onClick} disabled={disabled}
-      style={{ width: '100%', textAlign: 'center', background: '#2A2A2A', color: 'rgba(255,255,255,0.6)', border: 'none', borderRadius: 0, padding: '8px 16px', cursor: disabled ? 'default' : 'pointer', fontFamily: 'inherit', fontSize: 11, marginBottom: 12 }}>
-      {disabled ? 'Saving…' : "Not ready yet — add a week"}
+      style={{ width: '100%', textAlign: 'center', background: 'transparent', color: T.textMuted, border: `1px solid ${T.border}`, borderRadius: 0, padding: '8px 16px', cursor: disabled ? 'default' : 'pointer', fontFamily: 'inherit', fontSize: 12, marginTop: 6 }}>
+      {disabled ? 'Saving…' : "I'm not ready yet — add a week"}
     </button>
   )
 }
