@@ -4641,6 +4641,8 @@ export default function GlowUpCalendar({ session }) {
 
   const allTypes   = { ...BASE_TYPES, ...customTypes }
   const hasRoutine = routineHistory.length > 0
+  const notifications = computeNotifications({ products, treatments, allTypes, timezone })
+  const unreadCount = notifications.length
 
   // ── Routine handlers ─────────────────────────────────────
 
@@ -5298,10 +5300,6 @@ export default function GlowUpCalendar({ session }) {
       </div>
 
       {/* Header — always visible, never moves */}
-      {(() => {
-        const notifications = computeNotifications({ products, treatments, allTypes, timezone })
-        const unread = notifications.length
-        return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, gap: 8 }}>
         {/* Left — primary actions */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
@@ -5313,22 +5311,17 @@ export default function GlowUpCalendar({ session }) {
         </div>
         {/* Right — bell + hamburger */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          {/* Bell */}
           <button onClick={() => setShowNotifications(s => !s)} aria-label="Notifications"
-            style={{ position: 'relative', border: `0.5px solid ${showNotifications ? T.pinkDeep : T.border}`, background: showNotifications ? T.pink : 'transparent', borderRadius: 0, padding: '5px 10px', cursor: 'pointer', color: T.text, fontSize: 15, lineHeight: 1, width: 36, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            style={{ position: 'relative', border: `0.5px solid ${showNotifications ? T.pinkDeep : T.border}`, background: showNotifications ? T.pink : 'transparent', borderRadius: 0, padding: '5px 10px', cursor: 'pointer', fontSize: 15, lineHeight: 1, width: 36, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             🔔
-            {unread > 0 && (
+            {unreadCount > 0 && (
               <span style={{ position: 'absolute', top: 2, right: 2, width: 14, height: 14, borderRadius: '50%', background: T.pinkDeep, color: '#fff', fontSize: 8, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>
-                {unread > 9 ? '9+' : unread}
+                {unreadCount > 9 ? '9+' : unreadCount}
               </span>
             )}
           </button>
-          {/* Hamburger */}
-          <button
-            onClick={() => setShowMenu(s => !s)}
-            style={{ border: `0.5px solid ${showMenu ? T.pinkDeep : T.border}`, background: showMenu ? T.pink : 'transparent', borderRadius: 0, padding: '5px 10px', cursor: 'pointer', color: T.text, fontSize: 16, lineHeight: 1, display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', justifyContent: 'center', width: 36, height: 32 }}
-            aria-label="Menu"
-          >
+          <button onClick={() => setShowMenu(s => !s)} aria-label="Menu"
+            style={{ border: `0.5px solid ${showMenu ? T.pinkDeep : T.border}`, background: showMenu ? T.pink : 'transparent', borderRadius: 0, padding: '5px 10px', cursor: 'pointer', color: T.text, fontSize: 16, lineHeight: 1, display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', justifyContent: 'center', width: 36, height: 32 }}>
             <span style={{ display: 'block', width: 14, height: 1.5, background: T.text, borderRadius: 0 }} />
             <span style={{ display: 'block', width: 14, height: 1.5, background: T.text, borderRadius: 0 }} />
             <span style={{ display: 'block', width: 14, height: 1.5, background: T.text, borderRadius: 0 }} />
@@ -5357,8 +5350,6 @@ export default function GlowUpCalendar({ session }) {
           ))}
         </div>
       )}
-        )
-      })()}
 
       {/* Day flyout — unified centered modal, works on mobile and desktop */}
       {dayFlyout && (() => {
