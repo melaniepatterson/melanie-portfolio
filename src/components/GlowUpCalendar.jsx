@@ -3534,7 +3534,7 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, skinType, time
   )
 }
 
-function NewRoutinePeriodPicker({ routineHistory, dailyHistory, showerHistory, products, onSaveNew, onSaveDaily, onSaveShower, onCancel, onSaveProduct, onEditConflictRoutine, now, session, activeProgram, skinType, onProgramChanged }) {
+function NewRoutinePeriodPicker({ routineHistory, dailyHistory, showerHistory, products, onSaveNew, onSaveDaily, onSaveShower, onCancel, onSaveProduct, onEditConflictRoutine, now, session, activeProgram, skinType, timezone, onProgramChanged }) {
   const [chosen, setChosen] = useState(null)
 
   const primaryOptions = [
@@ -5561,6 +5561,7 @@ export default function GlowUpCalendar({ session }) {
                 session={session}
                 activeProgram={activeProgram}
                 skinType={skinType}
+                timezone={timezone}
                 onProgramChanged={() => { setReloadKey(k => k + 1); setPanel(null) }}
               />
             )}
