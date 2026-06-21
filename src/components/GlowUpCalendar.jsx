@@ -2904,7 +2904,7 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
   const [openStepKey, setOpenStepKey] = useState(null)
   const [addingProduct, setAddingProduct] = useState(false)
   function switchTab(t) { onTabChange?.(t); setOpenStepKey(null) }
-  const { date, dayType, isTreatment, treatmentTimeOfDay, activeTreatmentType } = flyout
+  const { date, dayType, isTreatment, treatmentTimeOfDay, activeTreatmentType, allTreatments } = flyout
   const treatTod = treatmentTimeOfDay || 'am'
 
   // nightType: PM of treatment day always shows recovery steps
@@ -3120,6 +3120,16 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
         const key = isTreatment ? null : dayType
         const b = banners[key]
         if (!b && !isTreatment) return null
+        if (isTreatment && allTreatments?.length > 1) {
+          return (
+            <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 10 }}>
+              {allTreatments.map(t => {
+                const lbl = allTypes?.[t.type]?.label || t.type
+                return <div key={t._dbId} style={{ fontSize: 11, fontWeight: 500, padding: '4px 10px', borderRadius: 0, background: '#E0F2FE', color: '#0C4A6E', display: 'inline-block' }}>{lbl.charAt(0).toUpperCase() + lbl.slice(1).toLowerCase()}</div>
+              })}
+            </div>
+          )
+        }
         const label = isTreatment ? (allTypes?.[dayType]?.label || dayType) : b.label
         const bg    = isTreatment ? '#E0F2FE' : b.bg
         const color = isTreatment ? '#0C4A6E' : b.color
@@ -4914,7 +4924,7 @@ export default function GlowUpCalendar({ session }) {
   function openDayFlyout(key, dt, tab) {
     const info = getDayInfo(dt, treatments, allTypes, routineHistory)
     const treatTod = info.isTreatment ? (info.allTreatments?.[0]?.timeOfDay || 'am') : null
-    setDayFlyout({ key, date: dt, tab, dayType: info.status, isTreatment: info.isTreatment, treatmentTimeOfDay: treatTod, activeTreatmentType: info.activeTreatmentType || null })
+    setDayFlyout({ key, date: dt, tab, dayType: info.status, isTreatment: info.isTreatment, treatmentTimeOfDay: treatTod, activeTreatmentType: info.activeTreatmentType || null, allTreatments: info.allTreatments || null })
     setPanel(null)
     setEditingPeriod(null)
     setEditingDaily(null)
@@ -5063,8 +5073,11 @@ export default function GlowUpCalendar({ session }) {
     // AM badge — tier system, single badge
     const amBadge = (() => {
       // Tier 1 — AM treatment
-      if (info.isTreatment && treatmentTimeOfDay === 'am')
+      if (info.isTreatment && treatmentTimeOfDay === 'am') {
+        const count = info.allTreatments?.length || 1
+        if (count > 1) return <Badge key="t" colorKey={s} label={`${count} treatments`} />
         return (() => { const lbl = allTypes[s]?.label || s; return <Badge key="t" colorKey={s} label={lbl.charAt(0).toUpperCase() + lbl.slice(1).toLowerCase()} /> })()
+      }
       // Recovery AM
       if (s === 'pca' || s === 'recovery')
         return <Badge key="r" colorKey="recovery" label="Recovery" />
@@ -5099,7 +5112,8 @@ export default function GlowUpCalendar({ session }) {
     // T4: shower items today (only if showAllBadges)
     const pmBadge = (() => {
       if (info.isTreatment) {
-        // PM of treatment day: show treatment badge if PM appt, recovery badge if AM appt
+        const count = info.allTreatments?.length || 1
+        if (count > 1) return <Badge key="t" colorKey={s} label={`${count} treatments`} />
         if (treatmentTimeOfDay === 'pm')
           return (() => { const lbl = allTypes[s]?.label || s; return <Badge key="t" colorKey={s} label={lbl.charAt(0).toUpperCase() + lbl.slice(1).toLowerCase()} /> })()
         return <Badge key="r" colorKey="recovery" label="Recovery" />
