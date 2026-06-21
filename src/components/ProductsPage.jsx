@@ -41,6 +41,7 @@ const PRODUCT_FLAGS = [
   { key: 'is_prescription',    label: '℞ Prescription',      bg: '#FFF7ED', color: '#9A3412' },
   { key: 'clean_formula',      label: '✨ Clean',             bg: '#FDF4FF', color: '#7E22CE' },
   { key: 'science_backed',     label: '🔬 Science-backed',    bg: '#EFF6FF', color: '#1D4ED8' },
+  { key: 'is_discontinued',    label: '⛔ Discontinued',      bg: '#FEF2F2', color: '#991B1B' },
 ]
 
 const PAO_OPTIONS = [3, 6, 9, 12, 18, 24, 36]
@@ -448,7 +449,7 @@ function ProductForm({ initial, onSave, onCancel, catalogProducts, session }) {
     ingredient_category: '', ingredient_form: '',
     black_owned: false, indigenous_owned: false, poc_owned: false, woman_owned: false,
     lgbtq_owned: false, cruelty_free: false, vegan: false, certified_organic: false, fair_trade: false,
-    clean_formula: false, science_backed: false, is_prescription: false,
+    clean_formula: false, science_backed: false, is_prescription: false, is_discontinued: false,
     purchased_at: '', opened_at: '', expires_at: '', pao_months: null,
     store_name: '', direct_url: '', direct_store_name: '', catalog_product_id: null,
     ...(initial ? { ...initial, tags: initial.tags || [] } : {})
@@ -653,6 +654,7 @@ function ProductForm({ initial, onSave, onCancel, catalogProducts, session }) {
           { key: 'is_prescription',   label: '℞ Prescription'    },
           { key: 'clean_formula',     label: 'Clean formula'     },
           { key: 'science_backed',    label: 'Science-backed'    },
+          { key: 'is_discontinued',   label: '⛔ Discontinued'   },
         ].map(({ key, label }) => (
           <button key={key} type="button" onClick={() => set(key, !form[key])} style={{
             padding: '4px 10px', borderRadius: 0, fontSize: 11, cursor: 'pointer',
@@ -1516,6 +1518,7 @@ export default function ProductsPage({ session }) {
             clean_formula: p.clean_formula || false,
             science_backed: p.science_backed || false,
             is_prescription: p.is_prescription || false,
+            is_discontinued: p.is_discontinued || false,
             purchased_at: p.purchased_at || '',
             opened_at: p.opened_at || '',
             expires_at: p.expires_at || '',
@@ -1685,6 +1688,7 @@ export default function ProductsPage({ session }) {
       clean_formula: product.clean_formula || false,
       science_backed: product.science_backed || false,
       is_prescription: product.is_prescription || false,
+      is_discontinued: product.is_discontinued || false,
     }
     if (!row.id) {
       // Check for duplicate name+brand in user products
@@ -1699,8 +1703,10 @@ export default function ProductsPage({ session }) {
       row.id = crypto.randomUUID()
       product = { ...product, id: row.id }
     }
-    const { data: saved } = await supabase.from('products')
-      .upsert(row, { onConflict: 'name,brand' }).select().single()
+    const { data: saved, error: saveErr } = row.id && product._existingId
+      ? await supabase.from('products').update(row).eq('id', row.id).select().single()
+      : await supabase.from('products').insert(row).select().single()
+    if (saveErr) { console.error('saveProduct error:', saveErr); return }
     if (saved) {
       setProducts(prev => ({ ...prev, [saved.id]: { ...product, id: saved.id, _isCatalog: false } }))
       // Save personal effectiveness + buy again to user_product_data

@@ -939,14 +939,14 @@ function CurrentRoutineSummary({ steps }) {
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
         <div>
-          <div style={{ fontSize: 10, fontWeight: 700, color: T.textLight, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 6 }}>☀ Morning</div>
+          <div style={{ fontSize: 10, fontWeight: 700, color: T.textLight, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 6 }}>☀ Morning (AM)</div>
           {am.length === 0 && <div style={{ fontSize: 11, color: T.textLight }}>—</div>}
           {[...am].sort(sortByOrder).map(s => (
             <div key={s.id} style={{ fontSize: 12, color: T.text, marginBottom: 3 }}>{s.label}</div>
           ))}
         </div>
         <div>
-          <div style={{ fontSize: 10, fontWeight: 700, color: T.textLight, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 6 }}>☾ Evening</div>
+          <div style={{ fontSize: 10, fontWeight: 700, color: T.textLight, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 6 }}>☾ Evening (PM)</div>
           {pm.length === 0 && <div style={{ fontSize: 11, color: T.textLight }}>—</div>}
           {[...pm].sort(sortByOrder).map(s => (
             <div key={s.id} style={{ fontSize: 12, color: T.text, marginBottom: 3 }}>{s.label}</div>
@@ -1472,7 +1472,7 @@ function TreatmentSelectorPanel({ selector, treatments, allTypes, customTypes, s
             <div key={e._dbId} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, padding: '6px 0', borderTop: `0.5px solid ${T.border}` }}>
               <div style={{ fontSize: 12, color: T.text }}>
                 {allTypes[e.type]?.label || e.type}
-                <span style={{ color: T.textMuted, marginLeft: 6 }}>{e.area} · {e.timeOfDay === 'am' ? 'Morning' : 'Evening'}</span>
+                <span style={{ color: T.textMuted, marginLeft: 6 }}>{e.area} · {e.timeOfDay === 'am' ? 'Morning (AM)' : 'Evening (PM)'}</span>
               </div>
               <div style={{ display: 'flex', gap: 6 }}>
                 <button onClick={() => onRemove(e._dbId)}
@@ -1486,7 +1486,8 @@ function TreatmentSelectorPanel({ selector, treatments, allTypes, customTypes, s
         {Object.entries(allTypes).map(([k, v]) => (
           <button key={k} onClick={() => { setSelType(k); setTreatArea(v.area || 'face'); setCustomPre(v.pre ?? 0); setCustomPost(v.post ?? 0) }} style={{ border: `0.5px solid ${selType === k ? T.pinkDeep : T.border}`, borderRadius: 0, padding: '8px 10px', cursor: 'pointer', background: selType === k ? T.pink : T.white, textAlign: 'left' }}>
             <div style={{ fontSize: 12, fontWeight: 600, color: T.text }}>{v.label}</div>
-            <div style={{ fontSize: 10, color: T.textLight }}>{v.pre} days before / {v.post} days after</div>
+            <div style={{ fontSize: 10, color: T.textLight }}>Pause actives {v.pre} days before</div>
+            <div style={{ fontSize: 10, color: T.textLight }}>Recovery for {v.post} days after</div>
           </button>
         ))}
       </div>
@@ -3141,8 +3142,8 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
 
       {/* 2. Morning / Night tabs */}
       <div style={{ display: 'flex', gap: 6, marginBottom: 8, marginTop: 10 }}>
-        <button onClick={() => switchTab('am')} style={{ padding: '4px 14px', borderRadius: 0, border: `0.5px solid ${tab === 'am' ? T.pinkDeep : T.border}`, background: tab === 'am' ? T.pink : 'transparent', fontSize: 12, fontWeight: tab === 'am' ? 500 : 400, cursor: 'pointer', color: T.text }}>Morning</button>
-        <button onClick={() => switchTab('pm')} style={{ padding: '4px 14px', borderRadius: 0, border: `0.5px solid ${tab === 'pm' ? T.pinkDeep : T.border}`, background: tab === 'pm' ? T.pink : 'transparent', fontSize: 12, fontWeight: tab === 'pm' ? 500 : 400, cursor: 'pointer', color: T.text }}>Night</button>
+        <button onClick={() => switchTab('am')} style={{ padding: '4px 14px', borderRadius: 0, border: `0.5px solid ${tab === 'am' ? T.pinkDeep : T.border}`, background: tab === 'am' ? T.pink : 'transparent', fontSize: 12, fontWeight: tab === 'am' ? 500 : 400, cursor: 'pointer', color: T.text }}>Morning (AM)</button>
+        <button onClick={() => switchTab('pm')} style={{ padding: '4px 14px', borderRadius: 0, border: `0.5px solid ${tab === 'pm' ? T.pinkDeep : T.border}`, background: tab === 'pm' ? T.pink : 'transparent', fontSize: 12, fontWeight: tab === 'pm' ? 500 : 400, cursor: 'pointer', color: T.text }}>Evening (PM)</button>
       </div>
 
       {/* 3. Extras — filtered by frequency + current tab, hidden when nothing matches */}
@@ -4005,7 +4006,7 @@ function UpcomingTreatmentsPanel({ treatments, allTypes, routineHistory, onClose
               const cfg = { pre: tv.pre ?? allTypes[tv.type]?.pre ?? 0, post: tv.post ?? allTypes[tv.type]?.post ?? 0 }
               const typeLabel = allTypes[tv.type]?.label || tv.type
               const areaLabel = tv.area ? ` · ${tv.area.charAt(0).toUpperCase()+tv.area.slice(1)}` : ''
-              const todLabel  = tv.timeOfDay === 'pm' ? 'Evening' : 'Morning'
+              const todLabel  = tv.timeOfDay === 'pm' ? 'Evening (PM)' : 'Morning (AM)'
               return (
                 <div key={tv._dbId} style={{ marginBottom: 8, paddingBottom: 8, borderBottom: entriesArr.length > 1 ? `0.5px dashed ${T.border}` : 'none' }}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 2 }}>{typeLabel}</div>
@@ -4404,7 +4405,7 @@ export default function GlowUpCalendar({ session }) {
   const [selector,      setSelector]      = useState(null)
   const [dayFlyout,     setDayFlyout]     = useState(null) // { key, date, tab: 'am'|'pm', dayType }
   const [toast,         setToast]         = useState(false)
-  const [showExport,    setShowExport]    = useState(false)
+  const [showExport, setShowExport] = useState(() => new URLSearchParams(window.location.search).get('export') === '1')
   const [loading,       setLoading]       = useState(true)
 
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 
 const T = {
@@ -9,8 +9,44 @@ const T = {
 
 const TOOLTIP_TEXT = "Add a new routine when your approach is changing — it preserves your history and lets you track what you used before. Edit when you're correcting a mistake. Think of each routine as a chapter."
 
+
+function NavMenu() {
+  const [open, setOpen] = React.useState(false)
+  const links = [
+    { label: 'Calendar',           href: '/routine' },
+    { label: 'Routine history',    href: '/routine/history' },
+    { label: 'Product library',    href: '/routine/products' },
+    { label: 'Account & settings', href: '/routine/profile' },
+  ]
+  return (
+    <div style={{ position: 'relative' }}>
+      <button onClick={() => setOpen(s => !s)}
+        style={{ border: `0.5px solid ${open ? T.pinkDeep : T.border}`, background: open ? T.pink : 'transparent', borderRadius: 0, padding: '5px 10px', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', justifyContent: 'center', width: 36, height: 32 }}>
+        <span style={{ display: 'block', width: 14, height: 1.5, background: T.text }} />
+        <span style={{ display: 'block', width: 14, height: 1.5, background: T.text }} />
+        <span style={{ display: 'block', width: 14, height: 1.5, background: T.text }} />
+      </button>
+      {open && (
+        <>
+          <div onClick={() => setOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 200 }} />
+          <div style={{ position: 'absolute', top: '100%', right: 0, marginTop: 4, background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 0, zIndex: 201, minWidth: 180, boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}>
+            {links.map(l => (
+              <a key={l.label} href={l.href}
+                style={{ display: 'block', padding: '11px 16px', fontSize: 13, color: T.text, textDecoration: 'none', borderBottom: `0.5px solid ${T.border}` }}
+                onMouseEnter={e => e.currentTarget.style.background = T.cream}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                {l.label}
+              </a>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
 function Btn({ children, onClick, style, variant = 'default' }) {
-  const base = { border: 'none', borderRadius: 8, cursor: 'pointer', fontSize: 11, padding: '4px 10px', fontFamily: 'inherit' }
+  const base = { border: 'none', borderRadius: 0, cursor: 'pointer', fontSize: 11, padding: '4px 10px', fontFamily: 'inherit' }
   const variants = {
     default:  { background: T.creamDark, color: T.text, border: `0.5px solid ${T.border}` },
     primary:  { background: T.pinkDeep, color: '#fff' },
@@ -130,16 +166,19 @@ export default function RoutineHistory({ session }) {
   return (
     <div style={{ fontFamily: 'inherit', minHeight: '100vh', background: T.cream, paddingBottom: 40 }}>
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '20px 20px 16px', borderBottom: `0.5px solid ${T.border}`, background: T.white }}>
-        <button onClick={() => window.history.back()} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 8, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.text }}>←</button>
-        <div style={{ fontSize: 15, fontWeight: 600, color: T.text }}>Full history</div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 20px 16px', borderBottom: `0.5px solid ${T.border}`, background: T.white }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <button onClick={() => window.history.back()} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 0, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.text }}>←</button>
+          <div style={{ fontSize: 15, fontWeight: 600, color: T.text }}>Full history</div>
+        </div>
+        <NavMenu />
       </div>
 
       {/* Tabs */}
       <div style={{ display: 'flex', gap: 6, padding: '16px 20px 8px' }}>
         {tabs.map(t => (
           <button key={t.key} onClick={() => setTab(t.key)} style={{
-            padding: '6px 14px', borderRadius: 20, fontSize: 12, cursor: 'pointer',
+            padding: '6px 14px', borderRadius: 0, fontSize: 12, cursor: 'pointer',
             border: `0.5px solid ${tab === t.key ? T.pinkDeep : T.border}`,
             background: tab === t.key ? T.pink : T.white,
             color: T.text, fontFamily: 'inherit',
@@ -165,7 +204,7 @@ export default function RoutineHistory({ session }) {
                 {routineHistory.length === 0
                   ? <div style={{ fontSize: 13, color: T.textMuted, fontStyle: 'italic' }}>No skincare routines yet.</div>
                   : routineHistory.map((p, i) => (
-                    <div key={i} style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 10, padding: '12px 14px', marginBottom: 10 }}>
+                    <div key={i} style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 0, padding: '12px 14px', marginBottom: 10 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
                         <div style={{ fontSize: 12, fontWeight: 600, color: T.text }}>{getPeriodLabel(p)}</div>
                         <div style={{ display: 'flex', gap: 4 }}>
@@ -199,7 +238,7 @@ export default function RoutineHistory({ session }) {
                 {dailyHistory.length === 0
                   ? <div style={{ fontSize: 13, color: T.textMuted, fontStyle: 'italic' }}>No extras routines yet.</div>
                   : dailyHistory.map((p, i) => (
-                    <div key={i} style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 10, padding: '12px 14px', marginBottom: 10 }}>
+                    <div key={i} style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 0, padding: '12px 14px', marginBottom: 10 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
                         <div style={{ fontSize: 12, fontWeight: 600, color: T.text }}>{getPeriodLabel(p)}</div>
                         <div style={{ display: 'flex', gap: 4 }}>
@@ -228,7 +267,7 @@ export default function RoutineHistory({ session }) {
                 {showerHistory.length === 0
                   ? <div style={{ fontSize: 13, color: T.textMuted, fontStyle: 'italic' }}>No shower routines yet.</div>
                   : showerHistory.map((p, i) => (
-                    <div key={i} style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 10, padding: '12px 14px', marginBottom: 10 }}>
+                    <div key={i} style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 0, padding: '12px 14px', marginBottom: 10 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
                         <div style={{ fontSize: 12, fontWeight: 600, color: T.text }}>{getPeriodLabel(p)}</div>
                         <div style={{ display: 'flex', gap: 4 }}>

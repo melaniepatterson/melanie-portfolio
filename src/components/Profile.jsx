@@ -106,7 +106,7 @@ function PillButton({ active, onClick, children, sub }) {
   return (
     <button onClick={onClick} style={{
       padding: sub ? '6px 12px' : '6px 14px',
-      borderRadius: 20, fontSize: 12, cursor: 'pointer',
+      borderRadius: 0, fontSize: 12, cursor: 'pointer',
       border: `0.5px solid ${active ? T.pinkDeep : T.border}`,
       background: active ? T.pink : T.white,
       color: T.text, fontFamily: 'inherit',
@@ -302,7 +302,7 @@ export default function Profile({ session }) {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 20px 14px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <button onClick={() => window.location.href = '/routine'}
-              style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 8, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.text }}>
+              style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 0, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.text }}>
               ←
             </button>
             <div style={{ fontSize: 15, fontWeight: 600, color: T.text }}>Account & settings</div>
@@ -338,13 +338,13 @@ export default function Profile({ session }) {
         <div style={{ marginBottom: 20 }}>
           <SectionLabel>Display name</SectionLabel>
           <input type="text" value={displayName} onChange={e => setDisplayName(e.target.value)} placeholder="Your name"
-            style={{ width: '100%', fontSize: 13, padding: '10px 12px', border: `0.5px solid ${T.border}`, borderRadius: 8, background: T.white, color: T.text, boxSizing: 'border-box', outline: 'none', fontFamily: 'inherit' }} />
+            style={{ width: '100%', fontSize: 13, padding: '10px 12px', border: `0.5px solid ${T.border}`, borderRadius: 0, background: T.white, color: T.text, boxSizing: 'border-box', outline: 'none', fontFamily: 'inherit' }} />
         </div>
 
         {/* Email */}
         <div style={{ marginBottom: 24 }}>
           <SectionLabel>Email</SectionLabel>
-          <div style={{ fontSize: 13, color: T.textMuted, padding: '10px 12px', background: T.creamDark, borderRadius: 8, border: `0.5px solid ${T.border}` }}>{email}</div>
+          <div style={{ fontSize: 13, color: T.textMuted, padding: '10px 12px', background: T.creamDark, borderRadius: 0, border: `0.5px solid ${T.border}` }}>{email}</div>
         </div>
 
         <div style={{ height: 1, background: T.border, marginBottom: 24 }} />
@@ -361,7 +361,7 @@ export default function Profile({ session }) {
                 title={`${f.label} — ${f.sub}`}
                 style={{
                   display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
-                  padding: '8px 10px', borderRadius: 10, cursor: 'pointer', fontFamily: 'inherit',
+                  padding: '8px 10px', borderRadius: 0, cursor: 'pointer', fontFamily: 'inherit',
                   border: `2px solid ${fitzpatrick === f.n ? T.pinkDeep : T.border}`,
                   background: fitzpatrick === f.n ? T.pink : T.white,
                   minWidth: 54,
@@ -444,7 +444,7 @@ export default function Profile({ session }) {
         </div>
 
         {/* Timezone */}
-        <div style={{ marginBottom: 24, padding: '14px 16px', background: T.white, borderRadius: 10, border: `0.5px solid ${T.border}` }}>
+        <div style={{ marginBottom: 24, padding: '14px 16px', background: T.white, borderRadius: 0, border: `0.5px solid ${T.border}` }}>
           <div style={{ fontSize: 12, fontWeight: 700, color: T.text, marginBottom: 4 }}>Time zone</div>
           <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 12, lineHeight: 1.6 }}>
             Used to determine what day it is for your calendar — important if you use the app near midnight.
@@ -477,7 +477,7 @@ export default function Profile({ session }) {
         </div>
 
         {/* Newsletter opt-in */}
-        <div style={{ marginBottom: 24, padding: '14px 16px', background: T.white, borderRadius: 10, border: `0.5px solid ${T.border}` }}>
+        <div style={{ marginBottom: 24, padding: '14px 16px', background: T.white, borderRadius: 0, border: `0.5px solid ${T.border}` }}>
           <label style={{ display: 'flex', alignItems: 'flex-start', gap: 12, cursor: 'pointer' }}>
             <div style={{ position: 'relative', flexShrink: 0, marginTop: 2 }}>
               <input
@@ -499,15 +499,29 @@ export default function Profile({ session }) {
         </div>
 
         {/* Privacy note */}
-        <div style={{ fontSize: 11, color: T.textLight, lineHeight: 1.6, padding: '12px 14px', background: T.creamDark, borderRadius: 8, border: `0.5px solid ${T.border}`, marginBottom: 20 }}>
+        <div style={{ fontSize: 11, color: T.textLight, lineHeight: 1.6, padding: '12px 14px', background: T.creamDark, borderRadius: 0, border: `0.5px solid ${T.border}`, marginBottom: 20 }}>
           Your data is never sold or shared. Optional fields help us understand which products work best for different skin tones, types, and concerns — so recommendations get better for everyone.
         </div>
 
         {/* Save */}
         <button onClick={handleSave} disabled={saving}
-          style={{ width: '100%', padding: '12px', borderRadius: 10, border: 'none', background: saved ? '#4ADE80' : T.pinkDeep, color: saved ? '#14532D' : T.white, fontSize: 13, fontWeight: 600, cursor: saving ? 'default' : 'pointer', opacity: saving ? 0.7 : 1, transition: 'background 0.2s', fontFamily: 'inherit', marginBottom: 16 }}>
+          style={{ width: '100%', padding: '12px', borderRadius: 0, border: 'none', background: saved ? '#4ADE80' : T.pinkDeep, color: saved ? '#14532D' : T.white, fontSize: 13, fontWeight: 600, cursor: saving ? 'default' : 'pointer', opacity: saving ? 0.7 : 1, transition: 'background 0.2s', fontFamily: 'inherit', marginBottom: 16 }}>
           {saved ? '✓ Saved' : saving ? 'Saving...' : 'Save profile'}
         </button>
+
+        {/* Export */}
+        <div style={{ borderTop: `0.5px solid ${T.border}`, paddingTop: 16, marginBottom: 16 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 10 }}>
+            Export
+          </div>
+          <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.7, marginBottom: 12 }}>
+            Export your routine as a calendar file (.ics) to add to Apple Calendar, Google Calendar, or any other calendar app.
+          </div>
+          <a href="/routine?export=1"
+            style={{ display: 'inline-block', padding: '9px 16px', borderRadius: 0, border: `0.5px solid ${T.border}`, background: 'transparent', color: T.text, fontSize: 12, fontFamily: 'inherit', cursor: 'pointer', textDecoration: 'none' }}>
+            Open export options →
+          </a>
+        </div>
 
         {/* Danger zone */}
         <div style={{ borderTop: `0.5px solid ${T.border}`, paddingTop: 16, marginBottom: 16 }}>
@@ -585,7 +599,7 @@ export default function Profile({ session }) {
 
         {/* Sign out */}
         <button onClick={async () => { await supabase.auth.signOut(); window.location.href = '/routine' }}
-          style={{ width: '100%', padding: '12px', borderRadius: 10, border: `0.5px solid ${T.border}`, background: 'transparent', fontSize: 13, color: T.textMuted, cursor: 'pointer', fontFamily: 'inherit' }}>
+          style={{ width: '100%', padding: '12px', borderRadius: 0, border: `0.5px solid ${T.border}`, background: 'transparent', fontSize: 13, color: T.textMuted, cursor: 'pointer', fontFamily: 'inherit' }}>
           Sign out
         </button>
       </div>
