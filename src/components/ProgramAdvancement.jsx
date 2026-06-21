@@ -139,7 +139,7 @@ function NotReadyYetLink({ onClick, disabled }) {
   return (
     <button onClick={onClick} disabled={disabled}
       style={{ width: '100%', textAlign: 'center', background: '#2A2A2A', color: 'rgba(255,255,255,0.6)', border: 'none', borderRadius: 0, padding: '8px 16px', cursor: disabled ? 'default' : 'pointer', fontFamily: 'inherit', fontSize: 11, marginBottom: 12 }}>
-      {disabled ? 'Saving…' : "Not ready yet — check back in a week"}
+      {disabled ? 'Saving…' : "Not ready yet — add a week"}
     </button>
   )
 }
@@ -473,8 +473,15 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
               </div>
             )}
 
-            {/* Sandwich method description — shown inline when relevant */}
-            {(/sandwich/i.test(currentPhase.name || '') || /sandwich/i.test(currentPhase.description || '')) && (
+            {/* Current phase description — for linear programs like Tretinoin */}
+            {program.slug !== 'basic-skincare' && currentPhase.description && (
+              <div style={{ marginTop: 8, fontSize: 11, color: T.textMuted, lineHeight: 1.7, padding: '8px 10px', background: T.creamDark, borderRadius: 0 }}>
+                {currentPhase.description}
+              </div>
+            )}
+
+            {/* Sandwich method description — only shown on Phase 1 */}
+            {currentPhase.phase_number === 1 && (/sandwich/i.test(currentPhase.name || '') || /sandwich/i.test(currentPhase.description || '')) && (
               <div style={{ marginTop: 8, fontSize: 11, color: T.textMuted, lineHeight: 1.7, padding: '8px 10px', background: T.creamDark, borderRadius: 0 }}>
                 <span style={{ fontWeight: 600, color: T.text }}>Sandwich method: </span>
                 Apply moisturizer, wait 2–3 min, apply tretinoin, then moisturizer again on top. The buffer layers reduce irritation while it still absorbs.
