@@ -458,7 +458,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
             )}
 
             {/* Buttons inside the chip for Basic Skincare */}
-            {program.slug === 'basic-skincare' && !endFoundationConfirm && (
+            {program.slug === 'basic-skincare' && (
               <div style={{ display: 'flex', gap: 8, borderTop: `1px solid ${T.border}`, marginTop: 10, paddingTop: 10 }}>
                 <button onClick={e => { e.stopPropagation(); setShowAddMore(true) }}
                   style={{ padding: '7px 14px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 11, fontFamily: 'inherit' }}>
@@ -471,20 +471,25 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
               </div>
             )}
 
+            {/* Confirm as a fixed modal so it never affects layout width */}
             {program.slug === 'basic-skincare' && endFoundationConfirm && (
-              <div style={{ borderTop: `1px solid ${T.border}`, marginTop: 10, paddingTop: 10, width: '100%', boxSizing: 'border-box' }}>
-                <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.7, marginBottom: 12 }}>
-                  This locks in your current routine exactly as it is — no more Basic Skincare phases. Whether you're happy with it or just ready to move on, your routine stays as-is and you can keep adjusting it manually or add a new program (like Tretinoin Onboarding) anytime.
-                </div>
-                <div style={{ display: 'flex', gap: 8, width: '100%', boxSizing: 'border-box' }}>
-                  <button onClick={e => { e.stopPropagation(); setEndFoundationConfirm(false) }} disabled={endingFoundation}
-                    style={{ flex: 1, minWidth: 0, padding: '9px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
-                    Cancel
-                  </button>
-                  <button onClick={e => { e.stopPropagation(); endFoundationEarly() }} disabled={endingFoundation}
-                    style={{ flex: 1, minWidth: 0, padding: '9px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
-                    {endingFoundation ? 'Saving…' : 'Done with this program'}
-                  </button>
+              <div onClick={() => setEndFoundationConfirm(false)}
+                style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 400, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+                <div onClick={e => e.stopPropagation()}
+                  style={{ background: T.white, border: `1px solid ${T.border}`, borderRadius: 0, padding: '24px 20px', width: '100%', maxWidth: 420 }}>
+                  <div style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.7, marginBottom: 20 }}>
+                    This locks in your current routine exactly as it is — no more Basic Skincare phases. Whether you're happy with it or just ready to move on, your routine stays as-is and you can keep adjusting it manually or add a new program (like Tretinoin Onboarding) anytime.
+                  </div>
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <button onClick={() => setEndFoundationConfirm(false)} disabled={endingFoundation}
+                      style={{ flex: 1, padding: '10px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
+                      Cancel
+                    </button>
+                    <button onClick={endFoundationEarly} disabled={endingFoundation}
+                      style={{ flex: 1, padding: '10px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
+                      {endingFoundation ? 'Saving…' : 'Done with this program'}
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
