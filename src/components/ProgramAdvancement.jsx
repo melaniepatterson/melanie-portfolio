@@ -472,11 +472,11 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
             )}
 
             {program.slug === 'basic-skincare' && endFoundationConfirm && (
-              <div style={{ borderTop: `1px solid ${T.border}`, marginTop: 10, paddingTop: 10 }}>
-                <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.7, marginBottom: 12 }}>
+              <div style={{ borderTop: `1px solid ${T.border}`, marginTop: 10, paddingTop: 10, maxWidth: '100%', overflow: 'hidden' }}>
+                <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.7, marginBottom: 12, wordBreak: 'break-word' }}>
                   This locks in your current routine exactly as it is — no more Basic Skincare phases. Whether you're happy with it or just ready to move on, your routine stays as-is and you can keep adjusting it manually or add a new program (like Tretinoin Onboarding) anytime.
                 </div>
-                <div style={{ display: 'flex', gap: 8, maxWidth: 400 }}>
+                <div style={{ display: 'flex', gap: 8 }}>
                   <button onClick={e => { e.stopPropagation(); setEndFoundationConfirm(false) }} disabled={endingFoundation}
                     style={{ flex: 1, padding: '9px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
                     Cancel

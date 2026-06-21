@@ -3416,8 +3416,8 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, skinType, onCh
           )}
 
           {endFoundationConfirm && (
-            <div style={{ maxWidth: 400, border: `1px solid ${T.border}`, borderRadius: 0, padding: '14px 16px' }}>
-              <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.7, marginBottom: 14 }}>
+            <div style={{ maxWidth: '100%', overflow: 'hidden', border: `1px solid ${T.border}`, borderRadius: 0, padding: '14px 16px' }}>
+              <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.7, marginBottom: 14, wordBreak: 'break-word' }}>
                 This locks in your current routine exactly as it is — no more Basic Skincare phases. Whether you're happy with it or just ready to move on, your routine stays as-is and you can keep adjusting it manually or add a new program (like Tretinoin Onboarding) anytime.
               </div>
               <div style={{ display: 'flex', gap: 8 }}>
@@ -3467,8 +3467,8 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, skinType, onCh
             Done with this program
           </button>
         ) : (
-          <div style={{ border: `1px solid ${T.border}`, borderRadius: 0, padding: '14px 16px' }}>
-            <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.7, marginBottom: 14 }}>
+          <div style={{ border: `1px solid ${T.border}`, borderRadius: 0, padding: '14px 16px', maxWidth: '100%', overflow: 'hidden' }}>
+            <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.7, marginBottom: 14, wordBreak: 'break-word' }}>
               This stops tracking progress for {program.name}. Anything already added to your routine stays — you can adjust it manually anytime. You can restart this program later if you want to pick it back up.
             </div>
             <div style={{ display: 'flex', gap: 8 }}>
