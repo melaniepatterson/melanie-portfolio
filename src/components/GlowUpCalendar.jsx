@@ -1209,7 +1209,7 @@ function InfoTooltip({ text }) {
   )
 }
 
-function RoutineHistoryPanel({ history, onClose, onEdit, onDelete, onAddNew, getActivePeriod, dailyHistory, onEditDaily, onDeleteDaily, showerHistory, onEditShower, onDeleteShower }) {
+function RoutineHistoryPanel({ history, now, onClose, onEdit, onDelete, onAddNew, getActivePeriod, dailyHistory, onEditDaily, onDeleteDaily, showerHistory, onEditShower, onDeleteShower }) {
   const sorted = [...history].sort((a, b) => b.startDate.localeCompare(a.startDate)).slice(0, 3)
   return (
     <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 0, padding: '16px 18px', marginBottom: 14 }}>
@@ -5476,6 +5476,7 @@ export default function GlowUpCalendar({ session }) {
             {panel === 'history' && !editingPeriod && (
               <RoutineHistoryPanel
                 history={routineHistory}
+                now={now}
                 onClose={() => setPanel(null)}
                 onEdit={(period) => { startEdit(period); setPanel(null); setEditFromHistory(true) }}
                 onDelete={deletePeriod}
