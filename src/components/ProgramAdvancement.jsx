@@ -418,9 +418,9 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
     : null
 
   return (
-    <div style={{ overflow: 'hidden' }}>
+    <div style={{ overflow: 'hidden', width: '100%', minWidth: 0, boxSizing: 'border-box' }}>
       {/* Status chip — always visible, acts as the toggle handle */}
-      <div style={{ background: T.cream, border: `1px solid ${T.border}`, borderRadius: 0, padding: '10px 14px', marginBottom: collapsed ? 12 : 0 }}>
+      <div style={{ background: T.cream, border: `1px solid ${T.border}`, borderRadius: 0, padding: '10px 14px', marginBottom: collapsed ? 12 : 0, overflow: 'hidden', minWidth: 0 }}>
 
         {/* Header row — always visible */}
         <button onClick={toggleCollapsed}
