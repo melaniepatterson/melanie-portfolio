@@ -3732,7 +3732,7 @@ function NewRoutinePeriodPicker({ routineHistory, dailyHistory, showerHistory, p
   const [chosen, setChosen] = useState(null)
 
   const primaryOptions = [
-    { key: 'program',  label: 'Build a program',              desc: 'Guided phases for introducing something new — like a tretinoin ramp-up — that build on your current routine.' },
+    { key: 'program',  label: 'Add a program',              desc: 'Guided phases for introducing something new — like a tretinoin ramp-up — that build on your current routine.' },
     { key: 'skincare', label: 'Manually adjust your routine',  desc: 'Edit your morning and evening steps directly — cleanse, moisturize, actives, SPF.' },
   ]
   const otherOptions = [

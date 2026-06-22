@@ -472,8 +472,8 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
               </div>
             )}
 
-            {/* Current phase description — for linear programs like Tretinoin */}
-            {program.slug !== 'basic-skincare' && currentPhase.description && (
+            {/* Current phase description — hide for Phase 1 tretinoin since sandwich note covers it */}
+            {program.slug !== 'basic-skincare' && currentPhase.description && !(currentPhase.phase_number === 1 && (/sandwich/i.test(currentPhase.name || '') || /sandwich/i.test(currentPhase.description || ''))) && (
               <div style={{ marginTop: 8, fontSize: 11, color: T.textMuted, lineHeight: 1.7, padding: '8px 10px', background: T.creamDark, borderRadius: 0 }}>
                 {currentPhase.description}
               </div>
@@ -482,7 +482,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
             {/* Sandwich method description — only shown on Phase 1 */}
             {currentPhase.phase_number === 1 && (/sandwich/i.test(currentPhase.name || '') || /sandwich/i.test(currentPhase.description || '')) && (
               <div style={{ marginTop: 8, fontSize: 11, color: T.textMuted, lineHeight: 1.7, padding: '8px 10px', background: T.creamDark, borderRadius: 0 }}>
-                <span style={{ fontWeight: 600, color: T.text }}>Sandwich method: </span>
+                <span style={{ fontWeight: 600, color: T.text }}>What is the sandwich method? </span>
                 Apply moisturizer, wait 2–3 min, apply tretinoin, then moisturizer again on top. The buffer layers reduce irritation while it still absorbs.
               </div>
             )}
