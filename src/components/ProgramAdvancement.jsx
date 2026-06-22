@@ -137,10 +137,12 @@ function LinearAdvanceModal({ nextPhase, isGraduation, onConfirm, onClose }) {
 // without forcing a decision. Shown under every ready-banner.
 function NotReadyYetLink({ onClick, disabled }) {
   return (
-    <button onClick={onClick} disabled={disabled}
-      style={{ width: '100%', textAlign: 'center', background: T.creamDark, color: T.textMuted, border: 'none', borderTop: `1px solid ${T.border}`, borderRadius: 0, padding: '9px 16px', cursor: disabled ? 'default' : 'pointer', fontFamily: 'inherit', fontSize: 11 }}>
-      {disabled ? 'Saving…' : "I'm not ready yet — add a week"}
-    </button>
+    <div style={{ padding: '10px 0 2px' }}>
+      <button onClick={onClick} disabled={disabled}
+        style={{ padding: '7px 14px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.textMuted, cursor: disabled ? 'default' : 'pointer', fontSize: 11, fontFamily: 'inherit' }}>
+        {disabled ? 'Saving…' : "I'm not ready yet — add a week"}
+      </button>
+    </div>
   )
 }
 
