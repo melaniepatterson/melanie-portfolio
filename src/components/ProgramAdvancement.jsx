@@ -137,7 +137,7 @@ function LinearAdvanceModal({ nextPhase, isGraduation, onConfirm, onClose }) {
 // without forcing a decision. Shown under every ready-banner.
 function NotReadyYetLink({ onClick, disabled }) {
   return (
-    <div style={{ padding: '10px 0 2px' }}>
+    <div style={{ borderTop: `1px solid ${T.border}`, padding: '10px 16px' }}>
       <button onClick={onClick} disabled={disabled}
         style={{ padding: '7px 14px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.textMuted, cursor: disabled ? 'default' : 'pointer', fontSize: 11, fontFamily: 'inherit' }}>
         {disabled ? 'Saving…' : "I'm not ready yet — add a week"}
@@ -550,7 +550,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
 
       {/* Advancement banner — Phase 1 → 2 */}
       {!isLinearProgram && ready && currentPhase.phase_number === 1 && (
-        <div style={{ width: '100%', minWidth: 0, boxSizing: 'border-box' }}>
+        <div style={{ border: `1px solid ${T.border}`, borderRadius: 0, overflow: 'hidden', width: '100%', minWidth: 0, boxSizing: 'border-box' }}>
           <button onClick={() => setShowPicker(true)}
             style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, background: T.text, color: '#fff', border: 'none', borderRadius: 0, padding: '14px 16px', cursor: 'pointer', fontFamily: 'inherit' }}>
             <div>
@@ -565,7 +565,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
 
       {/* Advancement banner — Phase 2 → Graduation */}
       {!isLinearProgram && ready && currentPhase.phase_number === 2 && (
-        <div style={{ width: '100%', minWidth: 0, boxSizing: 'border-box' }}>
+        <div style={{ border: `1px solid ${T.border}`, borderRadius: 0, overflow: 'hidden', width: '100%', minWidth: 0, boxSizing: 'border-box' }}>
           <button onClick={() => setShowGraduation(true)}
             style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, background: T.text, color: '#fff', border: 'none', borderRadius: 0, padding: '14px 16px', cursor: 'pointer', fontFamily: 'inherit' }}>
             <div>
@@ -580,7 +580,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
 
       {/* Advancement banner — Linear programs (Tretinoin etc) */}
       {isLinearProgram && ready && nextPhase && (
-        <div style={{ width: '100%', minWidth: 0, boxSizing: 'border-box' }}>
+        <div style={{ border: `1px solid ${T.border}`, borderRadius: 0, overflow: 'hidden', width: '100%', minWidth: 0, boxSizing: 'border-box' }}>
           <button onClick={() => setShowLinearAdvance(true)}
             style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, background: T.text, color: '#fff', border: 'none', borderRadius: 0, padding: '14px 16px', cursor: 'pointer', fontFamily: 'inherit' }}>
             <div>
