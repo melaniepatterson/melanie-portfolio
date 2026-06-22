@@ -3214,6 +3214,36 @@ function ProgramEnrollmentPreview({ program, onConfirm, onBack, timezone }) {
   const [startDate, setStartDate] = useState(() => todayInTz(timezone || detectTimezone()))
   const [confirming, setConfirming] = useState(false)
 
+  // Pace tiers — only shown for linear programs like Tretinoin
+  const PACE_TIERS = [
+    {
+      id: 'sensitive',
+      label: 'Sensitive skin',
+      sublabel: "I want to take it slow",
+      durations: { 1: 42, 2: 28, 3: 28 },
+      total: 98,
+    },
+    {
+      id: 'recommended',
+      label: 'Recommended',
+      sublabel: 'Dermatologist standard pace',
+      durations: { 1: 28, 2: 21, 3: 14 },
+      total: 63,
+      default: true,
+    },
+    {
+      id: 'faster',
+      label: 'Faster',
+      sublabel: "I've used retinoids before",
+      durations: { 1: 21, 2: 14, 3: 7 },
+      total: 42,
+    },
+  ]
+
+  const isLinear = program.slug === 'tretinoin-onboarding'
+  const [pace, setPace] = useState('recommended')
+  const selectedTier = PACE_TIERS.find(t => t.id === pace)
+
   useEffect(() => {
     supabase.from('program_phases').select('*').eq('program_id', program.id).order('phase_number')
       .then(({ data }) => { setPhases(data || []); setLoading(false) })
@@ -3275,6 +3305,31 @@ function ProgramEnrollmentPreview({ program, onConfirm, onBack, timezone }) {
 
       {!loading && (
         <div style={{ borderTop: `0.5px solid ${T.border}`, paddingTop: 16 }}>
+          {/* Pace picker — linear programs only */}
+          {isLinear && (
+            <div style={{ marginBottom: 16 }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: T.text, marginBottom: 4 }}>How fast do you want to ramp up?</div>
+              <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 10, lineHeight: 1.6 }}>
+                Slower is always safer. If you have sensitive or reactive skin, start slow — you can always push through phases faster once you know your skin handles it.
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                {PACE_TIERS.map(tier => (
+                  <button key={tier.id} onClick={() => setPace(tier.id)}
+                    style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderRadius: 0, border: `1px solid ${pace === tier.id ? T.text : T.border}`, background: pace === tier.id ? T.text : 'transparent', cursor: 'pointer', fontFamily: 'inherit' }}>
+                    <div>
+                      <div style={{ fontSize: 12, fontWeight: 600, color: pace === tier.id ? '#fff' : T.text }}>
+                        {tier.label}
+                        {tier.default && <span style={{ fontSize: 10, fontWeight: 400, color: pace === tier.id ? 'rgba(255,255,255,0.6)' : T.pinkDeep, marginLeft: 8 }}>recommended</span>}
+                      </div>
+                      <div style={{ fontSize: 11, color: pace === tier.id ? 'rgba(255,255,255,0.7)' : T.textMuted }}>{tier.sublabel}</div>
+                    </div>
+                    <div style={{ fontSize: 11, color: pace === tier.id ? 'rgba(255,255,255,0.7)' : T.textMuted, flexShrink: 0, marginLeft: 12 }}>~{tier.total} days</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div style={{ fontSize: 12, fontWeight: 600, color: T.text, marginBottom: 4 }}>When did/will you start?</div>
           <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 10, lineHeight: 1.6 }}>
             Already using this? Set the date you actually started so the calendar reflects where you are.
@@ -3286,7 +3341,11 @@ function ProgramEnrollmentPreview({ program, onConfirm, onBack, timezone }) {
               style={{ flex: 1, padding: '11px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
               Cancel
             </button>
-            <button onClick={async () => { setConfirming(true); await onConfirm(startDate); setConfirming(false) }} disabled={confirming}
+            <button onClick={async () => {
+              setConfirming(true)
+              await onConfirm(startDate, isLinear ? selectedTier?.durations : null)
+              setConfirming(false)
+            }} disabled={confirming}
               style={{ flex: 2, padding: '11px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
               {confirming ? 'Starting…' : `Start ${program.name}`}
             </button>
@@ -3426,7 +3485,7 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, skinType, time
     }
   }
 
-  async function startProgram(program, chosenStartDate) {
+  async function startProgram(program, chosenStartDate, phaseDurations) {
     setStarting(program.id)
     try {
       const today = chosenStartDate || todayInTz(timezone)
@@ -3435,6 +3494,17 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, skinType, time
       const { data: ph } = await supabase
         .from('program_phases').select('*').eq('program_id', program.id).order('phase_number')
       const phase1 = (ph || []).find(p => p.phase_number === 1)
+
+      // Apply custom pace durations if provided
+      if (phaseDurations && ph) {
+        for (const phase of ph) {
+          if (phaseDurations[phase.phase_number] !== undefined) {
+            await supabase.from('program_phases')
+              .update({ duration_days: phaseDurations[phase.phase_number] })
+              .eq('id', phase.id)
+          }
+        }
+      }
 
       const { error: progErr } = await supabase
         .from('user_programs')
@@ -3601,8 +3671,8 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, skinType, time
         program={previewingProgram}
         timezone={timezone}
         onBack={() => setPreviewingProgram(null)}
-        onConfirm={async (startDate) => {
-          await startProgram(previewingProgram, startDate)
+        onConfirm={async (startDate, phaseDurations) => {
+          await startProgram(previewingProgram, startDate, phaseDurations)
           setPreviewingProgram(null)
         }}
       />
