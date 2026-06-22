@@ -3213,7 +3213,6 @@ function ProgramEnrollmentPreview({ program, onConfirm, onBack, timezone }) {
   const [loading, setLoading] = useState(true)
   const [startDate, setStartDate] = useState(() => todayInTz(timezone || detectTimezone()))
   const [confirming, setConfirming] = useState(false)
-  const [activePhase, setActivePhase] = useState(0)
 
   useEffect(() => {
     supabase.from('program_phases').select('*').eq('program_id', program.id).order('phase_number')
@@ -3221,11 +3220,7 @@ function ProgramEnrollmentPreview({ program, onConfirm, onBack, timezone }) {
   }, [program.id])
 
   const totalDays = phases.filter(p => p.duration_days).reduce((s, p) => s + p.duration_days, 0)
-  const hasSandwich = phases.some(p => /sandwich/i.test(p.name || '') || /sandwich/i.test(p.description || ''))
 
-  const advancementLabel = t => ({
-    auto: 'Advances automatically', picker: 'You choose what to add', linear: 'Tap to advance when ready'
-  })[t] || null
 
   return (
     <div style={{ padding: '18px 18px' }}>
@@ -3245,70 +3240,36 @@ function ProgramEnrollmentPreview({ program, onConfirm, onBack, timezone }) {
         )}
       </div>
 
-      {hasSandwich && (
-        <div style={{ background: T.cream, border: `0.5px solid ${T.border}`, padding: '12px 14px', marginBottom: 20 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: T.text, marginBottom: 4 }}>About the sandwich method</div>
-          <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.7 }}>
-            Apply a thin layer of moisturizer first, wait 2–3 minutes, apply your tretinoin, then finish with another layer of moisturizer on top. The buffer layers reduce irritation while the tretinoin still absorbs fully — especially helpful in the early weeks.
-          </div>
-        </div>
-      )}
-
       {loading ? (
         <div style={{ fontSize: 12, color: T.textMuted, padding: '20px 0', textAlign: 'center' }}>Loading…</div>
       ) : (
         <div style={{ marginBottom: 24 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 12 }}>What to expect</div>
+          <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 14 }}>What to expect</div>
 
-          {/* Phase pills */}
-          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 14 }}>
-            {phases.map((p, i) => (
-              <button key={p.id} onClick={() => setActivePhase(i)}
-                style={{ padding: '4px 12px', border: `0.5px solid ${activePhase === i ? T.pinkDeep : T.border}`, background: activePhase === i ? T.pink : 'transparent', color: activePhase === i ? T.pinkDeep : T.textMuted, cursor: 'pointer', fontSize: 11, fontWeight: activePhase === i ? 600 : 400, fontFamily: 'inherit', borderRadius: 0 }}>
-                Phase {p.phase_number}
-              </button>
-            ))}
-          </div>
-
-          {/* Active phase card */}
-          {phases[activePhase] && (() => {
-            const p = phases[activePhase]
-            const adv = advancementLabel(p.advancement_type)
-            return (
-              <div style={{ border: `1px solid ${T.border}`, padding: '16px' }}>
-                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 8 }}>
-                  <div>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: T.text, marginBottom: 2 }}>
-                      Phase {p.phase_number} — {p.name}
-                    </div>
-                    {p.duration_days && <div style={{ fontSize: 11, color: T.textMuted }}>~{p.duration_days} days</div>}
-                  </div>
-                  {adv && <div style={{ fontSize: 10, color: T.textMuted, background: T.creamDark, border: `0.5px solid ${T.border}`, padding: '3px 8px', whiteSpace: 'nowrap', flexShrink: 0 }}>{adv}</div>}
+          {phases.map((p, i) => (
+            <div key={p.id} style={{ display: 'flex', gap: 14, marginBottom: 14 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div style={{ width: 24, height: 24, borderRadius: 0, background: i === 0 ? T.text : T.creamDark, border: `1px solid ${i === 0 ? T.text : T.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: i === 0 ? '#fff' : T.textMuted, flexShrink: 0 }}>
+                  {p.phase_number}
                 </div>
-                <div style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.8 }}>
-                  {p.preview_description || p.description}
-                </div>
-                {p.advancement_type === 'picker' && (
-                  <div style={{ fontSize: 12, color: T.textMuted, marginTop: 10, padding: '8px 10px', background: T.creamDark }}>
-                    At the end of this phase you'll pick what to add to your routine — nothing gets added automatically.
-                  </div>
+                {i < phases.length - 1 && (
+                  <div style={{ width: 1, height: 16, background: T.border, marginTop: 4 }} />
                 )}
               </div>
-            )
-          })()}
-
-          {phases.length > 1 && (
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 10 }}>
-              <button onClick={() => setActivePhase(i => Math.max(0, i - 1))} disabled={activePhase === 0}
-                style={{ fontSize: 12, color: activePhase === 0 ? T.border : T.textMuted, background: 'transparent', border: 'none', cursor: activePhase === 0 ? 'default' : 'pointer', fontFamily: 'inherit', padding: 0 }}>
-                ← Previous
-              </button>
-              <button onClick={() => setActivePhase(i => Math.min(phases.length - 1, i + 1))} disabled={activePhase === phases.length - 1}
-                style={{ fontSize: 12, color: activePhase === phases.length - 1 ? T.border : T.textMuted, background: 'transparent', border: 'none', cursor: activePhase === phases.length - 1 ? 'default' : 'pointer', fontFamily: 'inherit', padding: 0 }}>
-                Next →
-              </button>
+              <div style={{ paddingTop: 3 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 2 }}>
+                  Phase {p.phase_number}
+                </div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>
+                  {p.name}
+                  {p.duration_days && <span style={{ fontWeight: 400, color: T.textMuted, marginLeft: 8 }}>{p.duration_days} days</span>}
+                </div>
+                <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.6, marginTop: 2 }}>
+                  {p.preview_description || p.description}
+                </div>
+              </div>
             </div>
-          )}
+          ))}
         </div>
       )}
 
