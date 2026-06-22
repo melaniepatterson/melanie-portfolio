@@ -3249,8 +3249,23 @@ function ProgramEnrollmentPreview({ program, onConfirm, onBack, timezone }) {
       .then(({ data }) => { setPhases(data || []); setLoading(false) })
   }, [program.id])
 
-  const totalDays = phases.filter(p => p.duration_days).reduce((s, p) => s + p.duration_days, 0)
+  // For linear programs, use selected tier durations; otherwise use DB durations
+  const displayedTotal = isLinear && selectedTier
+    ? selectedTier.total
+    : phases.filter(p => p.duration_days).reduce((s, p) => s + p.duration_days, 0)
 
+  const displayedDuration = (phase) => {
+    if (isLinear && selectedTier && selectedTier.durations[phase.phase_number]) {
+      return selectedTier.durations[phase.phase_number]
+    }
+    return phase.duration_days
+  }
+
+  const toWeeks = (days) => {
+    if (!days) return null
+    const w = days / 7
+    return Number.isInteger(w) ? `${w}w` : `${days}d`
+  }
 
   return (
     <div style={{ padding: '18px 18px' }}>
@@ -3263,9 +3278,9 @@ function ProgramEnrollmentPreview({ program, onConfirm, onBack, timezone }) {
         <div style={{ fontSize: 9, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 6 }}>Program overview</div>
         <div style={{ fontSize: 18, fontWeight: 800, color: T.text, letterSpacing: '-0.03em', marginBottom: 8 }}>{program.name}</div>
         <div style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.7, marginBottom: 10 }}>{program.description}</div>
-        {totalDays > 0 && (
+        {displayedTotal > 0 && (
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 11, color: T.textMuted, background: T.creamDark, border: `0.5px solid ${T.border}`, padding: '4px 10px' }}>
-            📅 ~{totalDays} days total · {phases.length} phases
+            📅 ~{displayedTotal} days ({Math.round(displayedTotal / 7)} weeks) · {phases.length} phases
           </div>
         )}
       </div>
@@ -3273,45 +3288,11 @@ function ProgramEnrollmentPreview({ program, onConfirm, onBack, timezone }) {
       {loading ? (
         <div style={{ fontSize: 12, color: T.textMuted, padding: '20px 0', textAlign: 'center' }}>Loading…</div>
       ) : (
-        <div style={{ marginBottom: 24 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 14 }}>What to expect</div>
-
-          {phases.map((p, i) => (
-            <div key={p.id} style={{ display: 'flex', gap: 14, marginBottom: 14 }}>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <div style={{ width: 24, height: 24, borderRadius: 0, background: i === 0 ? T.text : T.creamDark, border: `1px solid ${i === 0 ? T.text : T.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: i === 0 ? '#fff' : T.textMuted, flexShrink: 0 }}>
-                  {p.phase_number}
-                </div>
-                {i < phases.length - 1 && (
-                  <div style={{ width: 1, height: 16, background: T.border, marginTop: 4 }} />
-                )}
-              </div>
-              <div style={{ paddingTop: 3 }}>
-                <div style={{ fontSize: 10, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 2 }}>
-                  Phase {p.phase_number}
-                </div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>
-                  {p.name}
-                  {p.duration_days && <span style={{ fontWeight: 400, color: T.textMuted, marginLeft: 8 }}>{p.duration_days} days</span>}
-                </div>
-                <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.6, marginTop: 2 }}>
-                  {p.preview_description || p.description}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {!loading && (
-        <div style={{ borderTop: `0.5px solid ${T.border}`, paddingTop: 16 }}>
-          {/* Pace picker — linear programs only */}
+        <>
+          {/* Pace picker — above phases, linear programs only */}
           {isLinear && (
-            <div style={{ marginBottom: 16 }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: T.text, marginBottom: 4 }}>How fast do you want to ramp up?</div>
-              <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 10, lineHeight: 1.6 }}>
-                Slower is always safer. If you have sensitive or reactive skin, start slow — you can always push through phases faster once you know your skin handles it.
-              </div>
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 10 }}>Choose your pace</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {PACE_TIERS.map(tier => (
                   <button key={tier.id} onClick={() => setPace(tier.id)}
@@ -3323,13 +3304,54 @@ function ProgramEnrollmentPreview({ program, onConfirm, onBack, timezone }) {
                       </div>
                       <div style={{ fontSize: 11, color: pace === tier.id ? 'rgba(255,255,255,0.7)' : T.textMuted }}>{tier.sublabel}</div>
                     </div>
-                    <div style={{ fontSize: 11, color: pace === tier.id ? 'rgba(255,255,255,0.7)' : T.textMuted, flexShrink: 0, marginLeft: 12 }}>~{tier.total} days</div>
+                    <div style={{ fontSize: 11, color: pace === tier.id ? 'rgba(255,255,255,0.7)' : T.textMuted, flexShrink: 0, marginLeft: 12 }}>
+                      ~{Math.round(tier.total / 7)} weeks
+                    </div>
                   </button>
                 ))}
+              </div>
+              <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.6, marginTop: 10, fontStyle: 'italic' }}>
+                Slower is always safer — you can always move faster once you know your skin handles it.
               </div>
             </div>
           )}
 
+          {/* Phase timeline — durations update with pace selection */}
+          <div style={{ marginBottom: 24 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 14 }}>What to expect</div>
+            {phases.map((p, i) => {
+              const dur = displayedDuration(p)
+              return (
+                <div key={p.id} style={{ display: 'flex', gap: 14, marginBottom: 14 }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <div style={{ width: 24, height: 24, borderRadius: 0, background: i === 0 ? T.text : T.creamDark, border: `1px solid ${i === 0 ? T.text : T.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: i === 0 ? '#fff' : T.textMuted, flexShrink: 0 }}>
+                      {p.phase_number}
+                    </div>
+                    {i < phases.length - 1 && (
+                      <div style={{ width: 1, height: 16, background: T.border, marginTop: 4 }} />
+                    )}
+                  </div>
+                  <div style={{ paddingTop: 3 }}>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 2 }}>
+                      Phase {p.phase_number}
+                    </div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>
+                      {p.name}
+                      {dur && <span style={{ fontWeight: 400, color: T.textMuted, marginLeft: 8 }}>{toWeeks(dur)}</span>}
+                    </div>
+                    <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.6, marginTop: 2 }}>
+                      {p.preview_description || p.description}
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </>
+      )}
+
+      {!loading && (
+        <div style={{ borderTop: `0.5px solid ${T.border}`, paddingTop: 16 }}>
           <div style={{ fontSize: 12, fontWeight: 600, color: T.text, marginBottom: 4 }}>When did/will you start?</div>
           <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 10, lineHeight: 1.6 }}>
             Already using this? Set the date you actually started so the calendar reflects where you are.
