@@ -1462,6 +1462,11 @@ function TreatmentSelectorPanel({ selector, treatments, allTypes, customTypes, s
         />
       </div>
 
+      {/* Disclaimer */}
+      <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.7, padding: '8px 10px', background: T.creamDark, border: `0.5px solid ${T.border}`, marginBottom: 12 }}>
+        ⚠️ Treatments pause active ingredients (retinoids, exfoliants, vitamin C) during pre-treatment and recovery windows. If you're on a program, your timer pauses too and resumes where it left off. Always consult your dermatologist before scheduling a treatment.
+      </div>
+
       {/* Existing treatments on this day */}
       {existingEntries.length > 0 && (
         <div style={{ marginBottom: 14 }}>
@@ -4486,6 +4491,28 @@ function SideMenu({ session, menuProfile, onClose, onHistory, onLibrary, onSignO
   )
 }
 
+// Returns list of active ingredient names currently in the routine
+// Used to warn users when adding a treatment that will pause those actives
+function getActiveIngredients(routinePeriod) {
+  if (!routinePeriod) return []
+  const actives = []
+  if (routinePeriod.tret_enabled) actives.push('tretinoin')
+  const ACTIVE_KEYS = new Set(['bha_acid', 'aha_acid', 'vitamin_c', 'exfoliant', 'retinoid'])
+  const steps = [
+    ...(routinePeriod.steps?.am   || []),
+    ...(routinePeriod.steps?.pm   || []),
+    ...(routinePeriod.steps?.main || []),
+  ]
+  for (const s of steps) {
+    if (s.enabled !== false && ACTIVE_KEYS.has(s.categoryKey)) {
+      // Avoid duplication if tretinoin already listed
+      if (s.categoryKey === 'retinoid' && routinePeriod.tret_enabled) continue
+      actives.push(s.label || s.categoryKey)
+    }
+  }
+  return [...new Set(actives)]
+}
+
 // ─── NOTIFICATIONS ───────────────────────────────────────────
 // Pure function — computes all current alerts from app state.
 // Runs on every render so it's always fresh with no extra fetches.
@@ -4735,6 +4762,7 @@ export default function GlowUpCalendar({ session }) {
   const [showTreatments, setShowTreatments] = useState(false)
   const [showMenu,          setShowMenu]          = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
+  const [treatmentWarning,  setTreatmentWarning]  = useState(null) // { key, date } pending selector
   const [showFeedback,  setShowFeedback]  = useState(false)
   const [recoveryRoutines, setRecoveryRoutines] = useState({})
   const [skinType, setSkinType] = useState('')
@@ -5584,7 +5612,40 @@ export default function GlowUpCalendar({ session }) {
         </div>
       )}
 
-      {/* Day flyout — unified centered modal, works on mobile and desktop */}
+      {/* Treatment warning modal — shown when adding a treatment during an active-ingredient phase */}
+      {treatmentWarning && (() => {
+        const activePeriod = getActivePeriod(new Date(treatmentWarning.key + 'T00:00:00'), routineHistory)
+        const actives = getActiveIngredients(activePeriod)
+        const activeList = actives.join(', ')
+        return (
+          <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+            <div style={{ background: T.white, border: `1px solid ${T.border}`, borderRadius: 0, padding: '24px 20px', width: '100%', maxWidth: 420 }}>
+              <div style={{ fontSize: 9, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 10 }}>
+                Heads up
+              </div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: T.text, marginBottom: 12 }}>
+                This treatment will pause your active ingredients
+              </div>
+              <div style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.8, marginBottom: 20 }}>
+                Your routine currently includes <strong style={{ color: T.text }}>{activeList}</strong>. Adding a treatment pauses these actives for any pre-treatment and recovery windows — your program timer extends to match, so you don't lose any progress. Everything picks back up right where you left off once the recovery period ends.
+              </div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button onClick={() => setTreatmentWarning(null)}
+                  style={{ flex: 1, padding: '10px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
+                  Cancel
+                </button>
+                <button onClick={() => {
+                  setSelector({ key: treatmentWarning.key, date: treatmentWarning.date })
+                  setTreatmentWarning(null)
+                }}
+                  style={{ flex: 2, padding: '10px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
+                  Got it — add treatment
+                </button>
+              </div>
+            </div>
+          </div>
+        )
+      })()}
       {dayFlyout && (() => {
         const activePeriodFlyout = getActivePeriod(dayFlyout.date, routineHistory)
         const fmt = new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'long', day: 'numeric' })
@@ -5632,7 +5693,17 @@ export default function GlowUpCalendar({ session }) {
                   allTypes={allTypes}
                   onClose={() => setDayFlyout(null)}
                   onTabChange={(t) => setDayFlyout(f => ({ ...f, tab: t }))}
-                  onAddTreatment={() => { setSelector({ key: dayFlyout.key, date: dayFlyout.date }); setDayFlyout(null) }}
+                  onAddTreatment={() => {
+                    const activePeriod = getActivePeriod(dayFlyout.date, routineHistory)
+                    const activeIngredients = getActiveIngredients(activePeriod)
+                    if (activeIngredients.length > 0) {
+                      setTreatmentWarning({ key: dayFlyout.key, date: dayFlyout.date })
+                      setDayFlyout(null)
+                    } else {
+                      setSelector({ key: dayFlyout.key, date: dayFlyout.date })
+                      setDayFlyout(null)
+                    }
+                  }}
                   onEditDaily={() => openDailyEditor(getActiveDailyPeriod(dayFlyout.date, dailyHistory))}
                   onEditShower={() => openShowerEditor(getActiveShowerPeriod(dayFlyout.date, showerHistory))}
                   onUpdatePeriodProducts={updatePeriodProducts}
