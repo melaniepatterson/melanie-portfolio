@@ -42,12 +42,9 @@ export function Phase2Picker({ options, onChoose, onClose, skinType, alreadyAdde
         <h3 style={{ fontSize: 20, fontWeight: 800, color: T.text, letterSpacing: '-0.03em', margin: '0 0 8px', paddingRight: 36 }}>
           What do you want to add?
         </h3>
-        <p style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.7, margin: '0 0 8px' }}>
+        <p style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.7, margin: '0 0 20px' }}>
           Pick as many as you're ready for. We'll slot each one into your routine in the right place — you can add the actual products later.
         </p>
-        <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.7, padding: '10px 12px', background: T.cream, borderRadius: 0, border: `0.5px solid ${T.border}`, marginBottom: 20 }}>
-          <strong style={{ color: T.text, fontWeight: 600 }}>SPF is already part of your foundation</strong> — it goes on every morning and you don't need to add it here. The options below are about layering in new treatments over time, like exfoliants or eye cream. Items marked <span style={{ color: T.pinkDeep, fontWeight: 600 }}>introduce slowly</span> are ones that can cause irritation if you jump in too fast — start once or twice a week and build up.
-        </div>
 
         <ProgramOptionsChecklist
           options={options}

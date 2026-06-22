@@ -17,7 +17,10 @@ const T = {
 export default function ProgramOptionsChecklist({ options, selected, onToggle, skinType, alreadyAdded = new Set() }) {
   const realOptions = options.filter(o => !o.is_skip_option)
   const skipOption = options.find(o => o.is_skip_option)
-  const hasActiveSelected = realOptions.some(o => ACTIVE_STEP_KEYS.has(o.step_key) && selected.has(o.id))
+  // An active is "taken" if it's already in the routine OR currently selected in the picker
+  const hasActiveTaken = realOptions.some(o =>
+    ACTIVE_STEP_KEYS.has(o.step_key) && (alreadyAdded.has(o.step_key) || selected.has(o.id))
+  )
   const notesForSkinType = SKIN_TYPE_NOTES[(skinType || '').toLowerCase()] || {}
 
   return (
@@ -26,7 +29,7 @@ export default function ProgramOptionsChecklist({ options, selected, onToggle, s
         const isOn = selected.has(opt.id)
         const isActive = ACTIVE_STEP_KEYS.has(opt.step_key)
         const isAlreadyAdded = alreadyAdded.has(opt.step_key)
-        const disabledByOtherActive = !isAlreadyAdded && isActive && hasActiveSelected && !isOn
+        const disabledByOtherActive = !isAlreadyAdded && isActive && hasActiveTaken && !isOn
         const disabled = isAlreadyAdded || disabledByOtherActive
         const skinNote = notesForSkinType[opt.step_key]
         return (
