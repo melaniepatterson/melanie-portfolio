@@ -5566,15 +5566,16 @@ export default function GlowUpCalendar({ session }) {
 
       {/* Beta survey soft banner — shows after completing first phase of any program */}
       {!surveySubmitted && !surveyDismissed && betaTester && (() => {
-        const phase = activeProgram?.current_phase_number
         const graduated = completedPrograms.some(p => p.status_detail === 'graduated')
-        console.log('[Survey banner]', { surveySubmitted, surveyDismissed, betaTester, phase, graduated, activeProgram: !!activeProgram })
+        if (graduated) return true
         if (activeProgram && activeProgram.current_phase_number > 1) return true
-        return graduated
+        return false
       })() && (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, padding: '10px 14px', background: T.pink, border: `1px solid ${T.pinkDeep}`, marginBottom: 12, flexWrap: 'wrap' }}>
           <div style={{ fontSize: 12, color: T.pinkDeep, fontWeight: 500 }}>
-            You've completed your first phase 🎉 — we'd love to know what you think so far.
+            {completedPrograms.some(p => p.status_detail === 'graduated')
+              ? "You've completed a program 🎉 — we'd love to know what you think."
+              : "You've completed your first phase 🎉 — we'd love to know what you think so far."}
           </div>
           <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
             <button onClick={() => setShowSurvey(true)}
