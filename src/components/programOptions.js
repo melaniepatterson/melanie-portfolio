@@ -141,7 +141,8 @@ export function countTreatmentPauseDays(phaseStartedAt, today, treatments, allTy
           post: tv.post ?? allTypes[tv.type]?.post ?? 3,
         }
         const diff = Math.round((d - td) / 86400000)
-        if ((diff >= -cfg.pre && diff <= -1) || (diff >= 1 && diff <= cfg.post)) { hit = true; break }
+        // Count pre-window, treatment day itself, and post-window as pause days
+        if (diff >= -cfg.pre && diff <= cfg.post) { hit = true; break }
       }
       if (hit) break
     }
