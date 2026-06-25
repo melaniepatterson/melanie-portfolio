@@ -129,6 +129,7 @@ export default function Profile({ session }) {
   const [climate,       setClimate]       = useState('')
   const [timezone,      setTimezone]      = useState(() => detectTimezone())
   const [betaTester,    setBetaTester]    = useState(false)
+  const [savedBetaTester, setSavedBetaTester] = useState(false)
   const [newsletterOptIn, setNewsletterOptIn] = useState(false)
   const [avatarUrl,     setAvatarUrl]     = useState(null)
   const [cropSrc,       setCropSrc]       = useState(null)
@@ -213,6 +214,7 @@ export default function Profile({ session }) {
           setRetinoidExp(data.retinoid_experience || '')
           setTimezone(data.timezone || detectTimezone())
           setBetaTester(data.beta_tester || false)
+          setSavedBetaTester(data.beta_tester || false)
           setClimate(data.climate || '')
           if (data.avatar_url) setAvatarUrl(data.avatar_url)
           setNewsletterOptIn(data.newsletter_opt_in || false)
@@ -278,6 +280,7 @@ export default function Profile({ session }) {
     })
     setSaving(false)
     setSaved(true)
+    setSavedBetaTester(betaTester)
     setTimeout(() => setSaved(false), 2000)
   }
 
@@ -524,7 +527,7 @@ export default function Profile({ session }) {
               <strong style={{ color: T.text }}>I'm interested in being a beta tester</strong> — you may hear from us about new features, early previews, and occasional check-ins. No spam, ever.
             </div>
           </label>
-          {betaTester && (
+          {savedBetaTester && (
             <a href="/routine?survey=1"
               style={{ fontSize: 12, color: T.pinkDeep, textDecoration: 'none', fontWeight: 500 }}>
               Share feedback about the app →
