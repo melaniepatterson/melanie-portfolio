@@ -221,6 +221,17 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
   const elapsed = daysSince(activeProgram.phase_started_at)
   // Use local midnight (same reference as daysSince) so pause day counting
   // iterates exactly the same days that elapsed counts
+  // Only count phases with a duration (graduation phases with null don't count)
+  const countedPhases = phases.filter(p => p.duration_days != null)
+
+  // Effective duration for current phase — respects per-user overrides and postponements
+  const phaseOverrides  = activeProgram.phase_duration_overrides || {}
+  const phasePostponed  = activeProgram.phase_postponed_days     || {}
+  const baseDuration    = phaseOverrides[currentPhase.phase_number]
+    ?? currentPhase.duration_days
+  const postponedDays   = phasePostponed[currentPhase.phase_number] || 0
+  const effectiveDuration = baseDuration != null ? baseDuration + postponedDays : null
+
   const todayLocal = new Date(); todayLocal.setHours(0, 0, 0, 0)
   const todayKey = `${todayLocal.getFullYear()}-${String(todayLocal.getMonth()+1).padStart(2,'0')}-${String(todayLocal.getDate()).padStart(2,'0')}`
   const pauseDays = (treatments && allTypes && elapsed >= 0)
@@ -248,7 +259,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
     const resume = new Date(latest); resume.setDate(resume.getDate() + 1)
     return resume.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
   })()
-  const ready = currentPhase.duration_days != null && effectiveElapsed >= currentPhase.duration_days
+  const ready = effectiveDuration != null && effectiveElapsed >= effectiveDuration
   const nextPhase = phases.find(p => p.phase_number === currentPhase.phase_number + 1)
   const isLinearProgram = program.slug !== 'basic-skincare'
 
@@ -257,10 +268,11 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
   async function postponePhase() {
     setPostponing(true)
     try {
-      const newStart = new Date(activeProgram.phase_started_at + 'T00:00:00')
-      newStart.setDate(newStart.getDate() + 7)
+      const current = activeProgram.phase_postponed_days || {}
+      const phaseNum = currentPhase.phase_number
+      const updated = { ...current, [phaseNum]: (current[phaseNum] || 0) + 7 }
       await supabase.from('user_programs').update({
-        phase_started_at: newStart.toISOString().split('T')[0],
+        phase_postponed_days: updated,
       }).eq('id', activeProgram.id)
       onAdvanced()
     } catch (err) {
@@ -291,7 +303,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
     await supabase.from('user_programs').update({
       current_phase_number: nextPhase.phase_number,
       phase_started_at: today,
-      ...(isGraduation && { status: 'completed', completed_at: today }),
+      ...(isGraduation && { status: 'completed', completed_at: today, status_detail: 'graduated' }),
     }).eq('id', activeProgram.id)
 
     await supabase.from('user_program_phase_history').insert({
@@ -394,6 +406,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
       await supabase.from('user_programs').update({
         status: 'completed',
         completed_at: today,
+        status_detail: 'graduated',
       }).eq('id', activeProgram.id)
 
       await supabase.from('user_program_phase_history').insert({
@@ -436,8 +449,8 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
   // Progress bar: show progress within the current phase only.
   // Cross-phase bars (e.g. "Day 16 of 28") are too abstract — the day
   // count shown in the chip already gives phase-level context.
-  const phaseProgress = currentPhase.duration_days
-    ? Math.min(100, (Math.max(effectiveElapsed, 0) / currentPhase.duration_days) * 100)
+  const phaseProgress = effectiveDuration
+    ? Math.min(100, (Math.max(effectiveElapsed, 0) / effectiveDuration) * 100)
     : 0
 
   // Format a short date like "Jun 14"
@@ -469,18 +482,18 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
               {program.name}
             </div>
             <div style={{ fontSize: 12, fontWeight: 600, color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-              Phase {currentPhase.phase_number} of {phases.length} — {currentPhase.name}
+              Phase {currentPhase.phase_number} of {countedPhases.length} — {currentPhase.name}
               {elapsed < 0 ? (
                 <span style={{ fontWeight: 400, color: T.textMuted }}> · Starts {fmtDate(phaseStart)}</span>
               ) : currentPhase.duration_days && (
                 pauseDays > 0 && effectiveElapsed <= elapsed
                   ? <span style={{ fontWeight: 400, color: T.textMuted }}> · Day {Math.max(effectiveElapsed, 1)} of {currentPhase.duration_days} — paused for treatment{resumeDate ? `, resumes ${resumeDate}` : ''}</span>
-                  : <span style={{ fontWeight: 400, color: T.textMuted }}> · Day {Math.min(Math.max(effectiveElapsed, 0) + 1, currentPhase.duration_days)} of {currentPhase.duration_days}</span>
+                  : <span style={{ fontWeight: 400, color: T.textMuted }}> · Day {Math.min(Math.max(effectiveElapsed, 0) + 1, currentPhase.duration_days)} of {effectiveDuration}</span>
               )}
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
-            {currentPhase.duration_days && !collapsed && (
+            {effectiveDuration && !collapsed && (
               <div style={{ width: 80, height: 4, background: T.creamDark, borderRadius: 0, overflow: 'hidden' }}>
                 <div style={{ width: `${phaseProgress}%`, height: '100%', background: T.pinkDeep }} />
               </div>
@@ -554,7 +567,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
       {!collapsed && (
         <div style={{ width: '100%', minWidth: 0, maxWidth: '100%', boxSizing: 'border-box', overflow: 'hidden' }}>
           {/* Up next — visible ahead of time so people can plan */}
-      {!ready && nextPhase && currentPhase.duration_days != null && (
+      {!ready && nextPhase && effectiveDuration != null && (
         <div style={{ border: `1px solid ${T.border}`, borderRadius: 0, padding: '10px 14px', marginBottom: 12, width: '100%', minWidth: 0, boxSizing: 'border-box' }}>
           <div style={{ fontSize: 10, fontWeight: 700, color: T.textLight, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 3 }}>
             Up next — around {fmtDate(phaseEnd)}

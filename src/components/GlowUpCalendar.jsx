@@ -3391,6 +3391,7 @@ function ProgramEnrollmentPreview({ program, onConfirm, onBack, timezone }) {
 function AddProgramPanel({ session, activeProgram, routinePeriod, skinType, timezone, onChanged }) {
   const [loading, setLoading] = useState(true)
   const [library, setLibrary] = useState([])
+  const [completionCounts, setCompletionCounts] = useState({})
   const [activeProgramDetails, setActiveProgramDetails] = useState(null)
   const [phase2Options, setPhase2Options] = useState([])
   const [endConfirm, setEndConfirm] = useState(false)
@@ -3429,6 +3430,18 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, skinType, time
         const { data: progs } = await supabase
           .from('programs').select('*').eq('is_stackable', true).order('name')
         setLibrary(progs || [])
+
+        // Load completion counts per program for this user
+        const { data: completions } = await supabase
+          .from('user_programs')
+          .select('program_id, status_detail')
+          .eq('user_id', session.user.id)
+          .in('status', ['completed'])
+        const counts = {}
+        for (const c of (completions || [])) {
+          counts[c.program_id] = (counts[c.program_id] || 0) + 1
+        }
+        setCompletionCounts(counts)
       }
     } catch (err) {
       console.error('AddProgramPanel load error:', err)
@@ -3527,26 +3540,17 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, skinType, time
         .from('program_phases').select('*').eq('program_id', program.id).order('phase_number')
       const phase1 = (ph || []).find(p => p.phase_number === 1)
 
-      // Apply custom pace durations if provided
-      if (phaseDurations && ph) {
-        for (const phase of ph) {
-          if (phaseDurations[phase.phase_number] !== undefined) {
-            await supabase.from('program_phases')
-              .update({ duration_days: phaseDurations[phase.phase_number] })
-              .eq('id', phase.id)
-          }
-        }
-      }
-
+      // Store pace overrides per-user in user_programs (not global program_phases)
       const { error: progErr } = await supabase
         .from('user_programs')
         .insert({
-          user_id:              session.user.id,
-          program_id:           program.id,
-          started_at:           today,
-          current_phase_number: 1,
-          phase_started_at:     today,
-          status:               'active',
+          user_id:                  session.user.id,
+          program_id:               program.id,
+          started_at:               today,
+          current_phase_number:     1,
+          phase_started_at:         today,
+          status:                   'active',
+          phase_duration_overrides: phaseDurations || null,
         })
       if (progErr) throw progErr
 
@@ -3723,16 +3727,26 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, skinType, time
           No programs available yet — check back soon.
         </div>
       ) : (
-        library.map(program => (
-          <div key={program.id} style={{ border: `1px solid ${T.border}`, borderRadius: 0, padding: '14px 16px', marginBottom: 10 }}>
-            <div style={{ fontSize: 14, fontWeight: 700, color: T.text, marginBottom: 4 }}>{program.name}</div>
-            <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.6, marginBottom: 12 }}>{program.description}</div>
-            <button onClick={() => setPreviewingProgram(program)}
-              style={{ width: '100%', padding: '10px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
-              Learn more & start →
-            </button>
-          </div>
-        ))
+        library.map(program => {
+          const completions = completionCounts[program.id] || 0
+          return (
+            <div key={program.id} style={{ border: `1px solid ${T.border}`, borderRadius: 0, padding: '14px 16px', marginBottom: 10 }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: 4 }}>
+                <div style={{ fontSize: 14, fontWeight: 700, color: T.text }}>{program.name}</div>
+                {completions > 0 && (
+                  <div style={{ fontSize: 10, color: T.textMuted, background: T.creamDark, border: `0.5px solid ${T.border}`, padding: '2px 8px', borderRadius: 0, flexShrink: 0, whiteSpace: 'nowrap' }}>
+                    {completions === 1 ? 'Completed once' : `Completed ${completions} times`}
+                  </div>
+                )}
+              </div>
+              <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.6, marginBottom: 12 }}>{program.description}</div>
+              <button onClick={() => setPreviewingProgram(program)}
+                style={{ width: '100%', padding: '10px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
+                {completions > 0 ? 'Start again →' : 'Learn more & start →'}
+              </button>
+            </div>
+          )
+        })
       )}
     </div>
   )
