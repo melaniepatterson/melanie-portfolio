@@ -4495,7 +4495,7 @@ function SideMenu({ session, menuProfile, onClose, onHistory, onLibrary, onSignO
         </div>
 
         {/* Footer — sign out + legal */}
-        <div style={{ padding: '12px 20px', borderTop: `0.5px solid ${T.border}` }}>
+        <div style={{ padding: '12px 20px', borderTop: `0.5px solid ${T.border}`, flexShrink: 0 }}>
           <button onClick={onSignOut} style={{
             display: 'flex', alignItems: 'center', gap: 12, width: '100%',
             padding: '10px 0', border: 'none', background: 'transparent',
