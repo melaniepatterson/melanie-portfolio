@@ -65,7 +65,7 @@ export default function PrivacyPolicy() {
               'No advertising or tracking pixels',
               'No Google Analytics or third-party analytics',
               'No selling of your data — ever',
-              'No third-party sharing beyond what's described here',
+              'No third-party sharing beyond what\u2019s described here',
             ]} />
           </Section>
 
@@ -80,7 +80,7 @@ export default function PrivacyPolicy() {
               'To provide and improve the GlowUp app',
               'To send you authentication emails (magic links)',
               'To personalise your experience based on skin type and program progress',
-              'To read beta feedback if you've opted in and submitted a survey',
+              'To read beta feedback if you\u2019ve opted in and submitted a survey',
             ]} />
             <P>We don't use your data for advertising or profiling.</P>
           </Section>
