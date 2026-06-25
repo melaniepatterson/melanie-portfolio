@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import GlowUpLogo from './GlowUpLogo'
 import { supabase } from '../lib/supabase'
 
 const T = {
@@ -169,7 +170,7 @@ export default function RoutineHistory({ session }) {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 20px 16px', borderBottom: `0.5px solid ${T.border}`, background: T.white }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <button onClick={() => window.history.back()} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 0, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.text }}>←</button>
-          <span style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-0.04em', color: T.text, lineHeight: 1 }}>Glow <span style={{ color: '#C93500' }}>Up</span><span style={{ color: '#FFD6F9' }}>.</span></span>
+          <GlowUpLogo />
         </div>
         <NavMenu />
       </div>
