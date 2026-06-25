@@ -270,10 +270,11 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
     try {
       const current = activeProgram.phase_postponed_days || {}
       const phaseNum = currentPhase.phase_number
-      const updated = { ...current, [phaseNum]: (current[phaseNum] || 0) + 7 }
-      await supabase.from('user_programs').update({
+      const updated = { ...current, [String(phaseNum)]: (current[String(phaseNum)] || 0) + 7 }
+      const { error } = await supabase.from('user_programs').update({
         phase_postponed_days: updated,
       }).eq('id', activeProgram.id)
+      if (error) { console.error('Postpone phase error:', error); setPostponing(false); return }
       onAdvanced()
     } catch (err) {
       console.error('Postpone phase error:', err)
