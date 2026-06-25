@@ -4679,12 +4679,14 @@ export default function GlowUpCalendar({ session }) {
         supabase.from('treatments').select('*').eq('user_id', userId),
         supabase.from('custom_treatment_types').select('*').eq('user_id', userId),
         supabase.from('user_programs').select('*').eq('user_id', userId).eq('status', 'active').maybeSingle(),
+        supabase.from('user_programs').select('id, started_at, status_detail').eq('user_id', userId).eq('status', 'completed'),
       ])
       const getValue = (r) => r.status === 'fulfilled' ? (r.value?.data ?? null) : null
-      const [rp, profileRR, pr, ep, sp, tr, ct, up] = results.map(getValue)
+      const [rp, profileRR, pr, ep, sp, tr, ct, up, cp] = results.map(getValue)
 
       // Active program
       setActiveProgram(up || null)
+      setCompletedPrograms(cp || [])
       setOnboardingDone(!!(up || (rp && rp.length > 0)))
 
       // Routine periods — convert snake_case from DB to camelCase
@@ -4789,6 +4791,7 @@ export default function GlowUpCalendar({ session }) {
   const [surveyDismissed, setSurveyDismissed] = useState(false)
   const [surveySubmitted, setSurveySubmitted] = useState(false)
   const [betaTester,    setBetaTester]    = useState(false)
+  const [completedPrograms, setCompletedPrograms] = useState([])
   const [recoveryRoutines, setRecoveryRoutines] = useState({})
   const [skinType, setSkinType] = useState('')
   const [menuProfile, setMenuProfile] = useState(null)
@@ -5555,11 +5558,15 @@ export default function GlowUpCalendar({ session }) {
 
       {/* Beta survey soft banner — shows after completing first phase of any program, min 7 days active */}
       {!surveySubmitted && !surveyDismissed && betaTester && (() => {
-        if (!activeProgram) return false
-        const daysActive = activeProgram.started_at
-          ? Math.floor((now - new Date(activeProgram.started_at + 'T00:00:00')) / 86400000)
-          : 0
-        return activeProgram.current_phase_number > 1 && daysActive >= 7
+        // Trigger if active program is past phase 1 and 7+ days in
+        if (activeProgram && activeProgram.current_phase_number > 1) {
+          const daysActive = activeProgram.started_at
+            ? Math.floor((now - new Date(activeProgram.started_at + 'T00:00:00')) / 86400000)
+            : 0
+          if (daysActive >= 7) return true
+        }
+        // Also trigger if any program has been graduated
+        return completedPrograms.some(p => p.status_detail === 'graduated')
       })() && (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, padding: '10px 14px', background: T.pink, border: `1px solid ${T.pinkDeep}`, marginBottom: 12, flexWrap: 'wrap' }}>
           <div style={{ fontSize: 12, color: T.pinkDeep, fontWeight: 500 }}>
