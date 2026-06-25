@@ -5558,14 +5558,9 @@ export default function GlowUpCalendar({ session }) {
 
       {/* Beta survey soft banner — shows after completing first phase of any program, min 7 days active */}
       {!surveySubmitted && !surveyDismissed && betaTester && (() => {
-        // Trigger if active program is past phase 1 and 7+ days in
-        if (activeProgram && activeProgram.current_phase_number > 1) {
-          const daysActive = activeProgram.started_at
-            ? Math.floor((now - new Date(activeProgram.started_at + 'T00:00:00')) / 86400000)
-            : 0
-          if (daysActive >= 7) return true
-        }
-        // Also trigger if any program has been graduated
+        // Trigger if active program has completed at least one phase
+        if (activeProgram && activeProgram.current_phase_number > 1) return true
+        // Or if any program has been graduated
         return completedPrograms.some(p => p.status_detail === 'graduated')
       })() && (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, padding: '10px 14px', background: T.pink, border: `1px solid ${T.pinkDeep}`, marginBottom: 12, flexWrap: 'wrap' }}>
