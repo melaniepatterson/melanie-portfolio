@@ -4494,7 +4494,7 @@ function SideMenu({ session, menuProfile, onClose, onHistory, onLibrary, onSignO
           ))}
         </div>
 
-        {/* Footer — sign out */}
+        {/* Footer — sign out + legal */}
         <div style={{ padding: '12px 20px', borderTop: `0.5px solid ${T.border}` }}>
           <button onClick={onSignOut} style={{
             display: 'flex', alignItems: 'center', gap: 12, width: '100%',
@@ -4504,6 +4504,10 @@ function SideMenu({ session, menuProfile, onClose, onHistory, onLibrary, onSignO
             <span style={{ fontSize: 16, width: 20, textAlign: 'center' }}>→</span>
             Sign out
           </button>
+          <div style={{ display: 'flex', gap: 16, paddingTop: 8, borderTop: `0.5px solid ${T.border}` }}>
+            <a href="/privacy" style={{ fontSize: 10, color: T.textLight, textDecoration: 'none', letterSpacing: '0.04em' }}>Privacy Policy</a>
+            <a href="/privacy#cookies" style={{ fontSize: 10, color: T.textLight, textDecoration: 'none', letterSpacing: '0.04em' }}>Cookie Policy</a>
+          </div>
         </div>
       </div>
     </>
