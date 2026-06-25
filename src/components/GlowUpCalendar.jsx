@@ -5562,6 +5562,7 @@ export default function GlowUpCalendar({ session }) {
         <BetaSurvey
           session={session}
           betaTester={betaTester}
+          alreadySubmitted={surveySubmitted}
           onClose={() => setShowSurvey(false)}
           onSubmitted={() => { setShowSurvey(false); setSurveySubmitted(true) }}
         />

@@ -549,6 +549,12 @@ export default function Profile({ session }) {
           </a>
         </div>
 
+        {/* Second save button at bottom */}
+        <button onClick={handleSave} disabled={saving}
+          style={{ width: '100%', padding: '12px', borderRadius: 0, border: 'none', background: saved ? '#4ADE80' : T.pinkDeep, color: saved ? '#14532D' : T.white, fontSize: 13, fontWeight: 600, cursor: saving ? 'default' : 'pointer', opacity: saving ? 0.7 : 1, transition: 'background 0.2s', fontFamily: 'inherit', marginBottom: 16 }}>
+          {saved ? '✓ Saved' : saving ? 'Saving...' : 'Save profile'}
+        </button>
+
         {/* Danger zone */}
         <div style={{ borderTop: `0.5px solid ${T.border}`, paddingTop: 16, marginBottom: 16 }}>
           <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 10 }}>
