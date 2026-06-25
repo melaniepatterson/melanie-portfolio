@@ -268,13 +268,22 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
   async function postponePhase() {
     setPostponing(true)
     try {
-      const current = activeProgram.phase_postponed_days || {}
-      const phaseNum = currentPhase.phase_number
-      const updated = { ...current, [String(phaseNum)]: (current[String(phaseNum)] || 0) + 7 }
+      // Fetch current value fresh from DB — don't trust potentially stale React state
+      const { data, error: fetchErr } = await supabase
+        .from('user_programs')
+        .select('phase_postponed_days')
+        .eq('id', activeProgram.id)
+        .single()
+      if (fetchErr) throw fetchErr
+
+      const current = data?.phase_postponed_days || {}
+      const phaseKey = String(currentPhase.phase_number)
+      const updated = { ...current, [phaseKey]: (current[phaseKey] || 0) + 7 }
+
       const { error } = await supabase.from('user_programs').update({
         phase_postponed_days: updated,
       }).eq('id', activeProgram.id)
-      if (error) { console.error('Postpone phase error:', error); setPostponing(false); return }
+      if (error) throw error
       onAdvanced()
     } catch (err) {
       console.error('Postpone phase error:', err)
