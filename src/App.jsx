@@ -17,6 +17,8 @@ import Auth from './components/Auth'
 import Profile from './components/Profile'
 import RoutineHistory from './components/RoutineHistory'
 import ProductsPage from './components/ProductsPage'
+import CookieNotice from './components/CookieNotice'
+import PrivacyPolicy from './components/PrivacyPolicy'
 import { supabase } from './lib/supabase'
 
 function Layout() {
@@ -62,6 +64,9 @@ function Layout() {
 
   if (isRoutine && session === undefined) return <GlowUpLoader />
   if (isRoutine && !session) return <Auth />
+
+  // Privacy policy — no auth required
+  if (location.pathname === "/privacy") return <PrivacyPolicy />
 
   // Profile page — full screen, no nav/logo/footer chrome
   if (location.pathname === "/routine/profile") return <Profile session={session} />
@@ -111,6 +116,7 @@ function Layout() {
         </footer>
       </div>
     </div>
+    <CookieNotice />
   );
 }
 
