@@ -3918,7 +3918,7 @@ function generateICS({ routineHistory, treatments, allTypes, products, settings,
   const getAM = dow => amMode === 'same' ? (amTime || '07:00') : (amTimes?.[dow] || '07:00')
   const getPM = dow => pmMode === 'same' ? (pmTime || '22:30') : (pmTimes?.[dow] || '22:30')
 
-  const lines = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//GlowUp Calendar//EN','CALSCALE:GREGORIAN','METHOD:PUBLISH']
+  const lines = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Glow Up//EN','CALSCALE:GREGORIAN','METHOD:PUBLISH']
   // Sequence number — increments each export so calendar apps update existing events
   const seqNum = Math.floor(Date.now() / 1000)
   const dtstamp = (() => { const n = new Date(); return `${n.getUTCFullYear()}${String(n.getUTCMonth()+1).padStart(2,'0')}${String(n.getUTCDate()).padStart(2,'0')}T${String(n.getUTCHours()).padStart(2,'0')}${String(n.getUTCMinutes()).padStart(2,'0')}${String(n.getUTCSeconds()).padStart(2,'0')}Z` })()

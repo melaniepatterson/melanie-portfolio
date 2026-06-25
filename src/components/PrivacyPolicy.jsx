@@ -39,7 +39,7 @@ export default function PrivacyPolicy() {
         {/* Header */}
         <div style={{ marginBottom: 40 }}>
           <a href="/routine" style={{ fontSize: 12, color: T.textMuted, textDecoration: 'none', display: 'inline-block', marginBottom: 24 }}>
-            ← Back to GlowUp
+            ← Back to Glow Up
           </a>
           <div style={{ fontSize: 9, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 10 }}>
             Legal
@@ -77,7 +77,7 @@ export default function PrivacyPolicy() {
 
           <Section title="How we use your data">
             <Ul items={[
-              'To provide and improve the GlowUp app',
+              'To provide and improve the Glow Up app',
               'To send you authentication emails (magic links)',
               'To personalise your experience based on skin type and program progress',
               'To read beta feedback if you\u2019ve opted in and submitted a survey',
@@ -104,7 +104,7 @@ export default function PrivacyPolicy() {
           </Section>
 
           <Section title="Children">
-            <P>GlowUp is not directed at children under 13. We don't knowingly collect data from children.</P>
+            <P>Glow Up is not directed at children under 13. We don't knowingly collect data from children.</P>
           </Section>
 
           <Section title="Changes to this policy">

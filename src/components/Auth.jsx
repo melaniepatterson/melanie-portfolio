@@ -130,7 +130,7 @@ export default function Auth() {
         {/* Logo / wordmark */}
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
           <div style={{ fontSize: 22, fontWeight: 700, color: T.text, letterSpacing: '-0.02em' }}>
-            GlowUp
+            Glow Up
           </div>
           <div style={{ fontSize: 12, color: T.textMuted, marginTop: 4 }}>
             Your skincare routine, organized.
@@ -174,7 +174,7 @@ export default function Auth() {
                 You're almost in
               </div>
               <div style={{ fontSize: 13, color: T.textMuted, marginBottom: 20, lineHeight: 1.5 }}>
-                GlowUp is in private beta. Add yourself to the waitlist and we'll reach out when your spot is ready.
+                Glow Up is in private beta. Add yourself to the waitlist and we'll reach out when your spot is ready.
               </div>
 
               <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 12, padding: '10px 12px', background: T.creamDark, borderRadius: 8, border: `0.5px solid ${T.border}` }}>
@@ -281,7 +281,7 @@ export default function Auth() {
 
         {/* Footer */}
         <div style={{ textAlign: 'center', marginTop: 20, fontSize: 11, color: T.textLight }}>
-          Your data is never sold. <span style={{ margin: '0 6px' }}>·</span> GlowUp by melanie.studio
+          Your data is never sold. <span style={{ margin: '0 6px' }}>·</span> Glow Up by Melanie
         </div>
       </div>
     </div>

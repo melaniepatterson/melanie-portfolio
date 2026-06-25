@@ -33,7 +33,7 @@ export default function CookieNotice() {
       boxShadow: '0 -2px 12px rgba(0,0,0,0.06)',
     }}>
       <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.7, maxWidth: 620 }}>
-        GlowUp uses essential cookies to keep you signed in, and small bits of browser storage for functional preferences. No tracking, no advertising, no third-party cookies.{' '}
+        Glow Up uses essential cookies to keep you signed in, and small bits of browser storage for functional preferences. No tracking, no advertising, no third-party cookies.{' '}
         <a href="/privacy" style={{ color: T.pinkDeep, textDecoration: 'none', fontWeight: 500 }}>
           Privacy Policy
         </a>
