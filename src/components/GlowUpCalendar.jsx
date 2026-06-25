@@ -4634,7 +4634,11 @@ export default function GlowUpCalendar({ session }) {
   const [selector,      setSelector]      = useState(null)
   const [dayFlyout,     setDayFlyout]     = useState(null) // { key, date, tab: 'am'|'pm', dayType }
   const [toast,         setToast]         = useState(false)
-  const [showExport, setShowExport] = useState(() => new URLSearchParams(window.location.search).get('export') === '1')
+  const [showExport, setShowExport] = useState(() => {
+    const has = new URLSearchParams(window.location.search).get('export') === '1'
+    if (has) window.history.replaceState({}, '', window.location.pathname)
+    return has
+  })
   const [loading,       setLoading]       = useState(true)
 
 
@@ -4787,7 +4791,11 @@ export default function GlowUpCalendar({ session }) {
   const [showNotifications, setShowNotifications] = useState(false)
   const [treatmentWarning,  setTreatmentWarning]  = useState(null) // { key, date } pending selector
   const [showFeedback,  setShowFeedback]  = useState(false)
-  const [showSurvey,    setShowSurvey]    = useState(() => new URLSearchParams(window.location.search).get('survey') === '1')
+  const [showSurvey, setShowSurvey] = useState(() => {
+    const has = new URLSearchParams(window.location.search).get('survey') === '1'
+    if (has) window.history.replaceState({}, '', window.location.pathname)
+    return has
+  })
   const [surveyDismissed, setSurveyDismissed] = useState(false)
   const [surveySubmitted, setSurveySubmitted] = useState(false)
   const [betaTester,    setBetaTester]    = useState(false)
@@ -5556,12 +5564,13 @@ export default function GlowUpCalendar({ session }) {
         <span style={{ width: 6, height: 6, borderRadius: '50%', background: T.pinkDeep, display: 'inline-block', flexShrink: 0 }} />
       </div>
 
-      {/* Beta survey soft banner — shows after completing first phase of any program, min 7 days active */}
+      {/* Beta survey soft banner — shows after completing first phase of any program */}
       {!surveySubmitted && !surveyDismissed && betaTester && (() => {
-        // Trigger if active program has completed at least one phase
+        const phase = activeProgram?.current_phase_number
+        const graduated = completedPrograms.some(p => p.status_detail === 'graduated')
+        console.log('[Survey banner]', { surveySubmitted, surveyDismissed, betaTester, phase, graduated, activeProgram: !!activeProgram })
         if (activeProgram && activeProgram.current_phase_number > 1) return true
-        // Or if any program has been graduated
-        return completedPrograms.some(p => p.status_detail === 'graduated')
+        return graduated
       })() && (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, padding: '10px 14px', background: T.pink, border: `1px solid ${T.pinkDeep}`, marginBottom: 12, flexWrap: 'wrap' }}>
           <div style={{ fontSize: 12, color: T.pinkDeep, fontWeight: 500 }}>
