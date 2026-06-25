@@ -237,6 +237,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
   const pauseDays = (treatments && allTypes && elapsed >= 0)
     ? countTreatmentPauseDays(activeProgram.phase_started_at, todayKey, treatments, allTypes)
     : 0
+  console.log('[Phase timer]', { elapsed, pauseDays, effectiveDuration: baseDuration != null ? baseDuration + (phasePostponed[String(currentPhase.phase_number)] || 0) : null, treatmentKeys: Object.keys(treatments || {}), phaseOverrides })
   const effectiveElapsed = elapsed - pauseDays
 
   // Find the resume date — day after the last active treatment window ends
