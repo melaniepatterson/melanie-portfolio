@@ -4796,7 +4796,27 @@ export default function GlowUpCalendar({ session }) {
     if (has) window.history.replaceState({}, '', window.location.pathname)
     return has
   })
-  const [surveyDismissed, setSurveyDismissed] = useState(false)
+  const [surveyDismissed, setSurveyDismissed] = useState(() => {
+    try {
+      const until = localStorage.getItem('glowup_survey_snooze_until')
+      if (until && Date.now() < parseInt(until)) return true
+    } catch {}
+    return false
+  })
+
+  function handleSurveyDismiss() {
+    try {
+      const count = parseInt(localStorage.getItem('glowup_survey_dismiss_count') || '0') + 1
+      if (count >= 3) {
+        // Snooze for 7 days and reset counter
+        localStorage.setItem('glowup_survey_snooze_until', String(Date.now() + 7 * 24 * 60 * 60 * 1000))
+        localStorage.removeItem('glowup_survey_dismiss_count')
+      } else {
+        localStorage.setItem('glowup_survey_dismiss_count', String(count))
+      }
+    } catch {}
+    setSurveyDismissed(true)
+  }
   const [surveySubmitted, setSurveySubmitted] = useState(false)
   const [betaTester,    setBetaTester]    = useState(false)
   const [completedPrograms, setCompletedPrograms] = useState([])
@@ -5582,7 +5602,7 @@ export default function GlowUpCalendar({ session }) {
               style={{ padding: '5px 12px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 11, fontFamily: 'inherit', fontWeight: 600 }}>
               Share feedback
             </button>
-            <button onClick={() => setSurveyDismissed(true)}
+            <button onClick={() => handleSurveyDismiss()}
               style={{ padding: '5px 8px', borderRadius: 0, border: 'none', background: 'transparent', color: T.pinkDeep, cursor: 'pointer', fontSize: 16, lineHeight: 1, fontFamily: 'inherit' }}>
               ×
             </button>
@@ -5597,7 +5617,14 @@ export default function GlowUpCalendar({ session }) {
           betaTester={betaTester}
           alreadySubmitted={surveySubmitted}
           onClose={() => setShowSurvey(false)}
-          onSubmitted={() => { setShowSurvey(false); setSurveySubmitted(true) }}
+          onSubmitted={() => {
+            setShowSurvey(false)
+            setSurveySubmitted(true)
+            try {
+              localStorage.removeItem('glowup_survey_snooze_until')
+              localStorage.removeItem('glowup_survey_dismiss_count')
+            } catch {}
+          }}
         />
       )}
       {activeProgram && (
