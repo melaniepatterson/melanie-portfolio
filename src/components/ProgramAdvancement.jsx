@@ -227,6 +227,27 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
     ? countTreatmentPauseDays(activeProgram.phase_started_at, todayKey, treatments, allTypes)
     : 0
   const effectiveElapsed = elapsed - pauseDays
+
+  // Find the resume date — day after the last active treatment window ends
+  const resumeDate = (() => {
+    if (!pauseDays || !treatments) return null
+    let latest = null
+    for (const [tk, entries] of Object.entries(treatments)) {
+      for (const tv of (Array.isArray(entries) ? entries : [entries])) {
+        const td = new Date(tk + 'T00:00:00')
+        const post = tv.post ?? allTypes[tv.type]?.post ?? 3
+        const pre  = tv.pre  ?? allTypes[tv.type]?.pre  ?? 3
+        const windowStart = new Date(td); windowStart.setDate(windowStart.getDate() - pre)
+        const windowEnd   = new Date(td); windowEnd.setDate(windowEnd.getDate() + post)
+        if (todayLocal >= windowStart && todayLocal <= windowEnd) {
+          if (!latest || windowEnd > latest) latest = windowEnd
+        }
+      }
+    }
+    if (!latest) return null
+    const resume = new Date(latest); resume.setDate(resume.getDate() + 1)
+    return resume.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+  })()
   const ready = currentPhase.duration_days != null && effectiveElapsed >= currentPhase.duration_days
   const nextPhase = phases.find(p => p.phase_number === currentPhase.phase_number + 1)
   const isLinearProgram = program.slug !== 'basic-skincare'
@@ -453,7 +474,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
                 <span style={{ fontWeight: 400, color: T.textMuted }}> · Starts {fmtDate(phaseStart)}</span>
               ) : currentPhase.duration_days && (
                 pauseDays > 0 && effectiveElapsed <= elapsed
-                  ? <span style={{ fontWeight: 400, color: T.textMuted }}> · Day {Math.max(effectiveElapsed, 1)} of {currentPhase.duration_days} — paused</span>
+                  ? <span style={{ fontWeight: 400, color: T.textMuted }}> · Day {Math.max(effectiveElapsed, 1)} of {currentPhase.duration_days} — paused for treatment{resumeDate ? `, resumes ${resumeDate}` : ''}</span>
                   : <span style={{ fontWeight: 400, color: T.textMuted }}> · Day {Math.min(Math.max(effectiveElapsed, 0) + 1, currentPhase.duration_days)} of {currentPhase.duration_days}</span>
               )}
             </div>
@@ -471,11 +492,6 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
         {/* Expandable content */}
         {!collapsed && (
           <div style={{ width: '100%', minWidth: 0, boxSizing: 'border-box' }}>
-            {pauseDays > 0 && elapsed >= 0 && (
-              <div style={{ fontSize: 10, color: T.textMuted, marginTop: 6, fontStyle: 'italic' }}>
-                Paused {pauseDays} day{pauseDays === 1 ? '' : 's'} for a treatment — your timeline shifted to match
-              </div>
-            )}
 
             {/* Current phase description — hide for Phase 1 tretinoin since sandwich note covers it */}
             {program.slug !== 'basic-skincare' && currentPhase.description && !(currentPhase.phase_number === 1 && (/sandwich/i.test(currentPhase.name || '') || /sandwich/i.test(currentPhase.description || ''))) && (
