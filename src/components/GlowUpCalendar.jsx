@@ -4658,7 +4658,7 @@ export default function GlowUpCalendar({ session }) {
       setLoading(true)
       const results = await Promise.allSettled([
         supabase.from('routine_periods').select('*').eq('user_id', userId).order('start_date'),
-        supabase.from('profiles').select('recovery_routines, display_name, avatar_url, skin_type, timezone, survey_submitted_at').eq('id', userId).single(),
+        supabase.from('profiles').select('recovery_routines, display_name, avatar_url, skin_type, timezone, survey_submitted_at, beta_tester').eq('id', userId).single(),
         supabase.from('products').select('*').or(`is_catalog.eq.true,user_id.eq.${userId}`),
         supabase.from('extras_periods').select('*').eq('user_id', userId).order('start_date'),
         supabase.from('shower_periods').select('*').eq('user_id', userId).order('start_date'),
@@ -4698,6 +4698,7 @@ export default function GlowUpCalendar({ session }) {
       setSkinType(profileRR?.skin_type || '')
       if (profileRR?.timezone) setTimezone(profileRR.timezone)
       if (profileRR?.survey_submitted_at) setSurveySubmitted(true)
+      if (profileRR?.beta_tester) setBetaTester(true)
       catalogIds.current = new Set()
       ;(pr || []).forEach(p => {
         if (p.is_catalog) catalogIds.current.add(p.id)
@@ -4772,6 +4773,7 @@ export default function GlowUpCalendar({ session }) {
   const [showSurvey,    setShowSurvey]    = useState(() => new URLSearchParams(window.location.search).get('survey') === '1')
   const [surveyDismissed, setSurveyDismissed] = useState(false)
   const [surveySubmitted, setSurveySubmitted] = useState(false)
+  const [betaTester,    setBetaTester]    = useState(false)
   const [recoveryRoutines, setRecoveryRoutines] = useState({})
   const [skinType, setSkinType] = useState('')
   const [menuProfile, setMenuProfile] = useState(null)
@@ -5536,8 +5538,8 @@ export default function GlowUpCalendar({ session }) {
         <span style={{ width: 6, height: 6, borderRadius: '50%', background: T.pinkDeep, display: 'inline-block', flexShrink: 0 }} />
       </div>
 
-      {/* Beta survey soft banner — shows after first program phase completes */}
-      {!surveySubmitted && !surveyDismissed && activeProgram?.current_phase_number > 1 && (
+      {/* Beta survey soft banner — shows after first program phase completes, beta testers only */}
+      {!surveySubmitted && !surveyDismissed && activeProgram?.current_phase_number > 1 && betaTester && (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, padding: '10px 14px', background: T.pink, border: `1px solid ${T.pinkDeep}`, marginBottom: 12, flexWrap: 'wrap' }}>
           <div style={{ fontSize: 12, color: T.pinkDeep, fontWeight: 500 }}>
             You've completed your first phase 🎉 — we'd love to know what you think so far.

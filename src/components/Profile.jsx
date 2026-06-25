@@ -524,10 +524,12 @@ export default function Profile({ session }) {
               <strong style={{ color: T.text }}>I'm interested in being a beta tester</strong> — you may hear from us about new features, early previews, and occasional check-ins. No spam, ever.
             </div>
           </label>
-          <a href="/routine?survey=1"
-            style={{ fontSize: 12, color: T.pinkDeep, textDecoration: 'none', fontWeight: 500 }}>
-            Share feedback about the app →
-          </a>
+          {betaTester && (
+            <a href="/routine?survey=1"
+              style={{ fontSize: 12, color: T.pinkDeep, textDecoration: 'none', fontWeight: 500 }}>
+              Share feedback about the app →
+            </a>
+          )}
         </div>
 
         {/* Export */}
