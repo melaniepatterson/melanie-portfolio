@@ -4697,7 +4697,8 @@ export default function GlowUpCalendar({ session }) {
       if (profileRR) setMenuProfile({ display_name: profileRR.display_name, avatar_url: profileRR.avatar_url })
       setSkinType(profileRR?.skin_type || '')
       if (profileRR?.timezone) setTimezone(profileRR.timezone)
-      if (profileRR?.survey_submitted_at) setSurveySubmitted(true)
+      // Re-check survey status from DB each load so deletions are reflected
+      setSurveySubmitted(!!profileRR?.survey_submitted_at)
       if (profileRR?.beta_tester) setBetaTester(true)
       catalogIds.current = new Set()
       ;(pr || []).forEach(p => {
@@ -5538,8 +5539,14 @@ export default function GlowUpCalendar({ session }) {
         <span style={{ width: 6, height: 6, borderRadius: '50%', background: T.pinkDeep, display: 'inline-block', flexShrink: 0 }} />
       </div>
 
-      {/* Beta survey soft banner — shows after first program phase completes, beta testers only */}
-      {!surveySubmitted && !surveyDismissed && activeProgram?.current_phase_number > 1 && betaTester && (
+      {/* Beta survey soft banner — shows after completing first phase of any program, min 7 days active */}
+      {!surveySubmitted && !surveyDismissed && betaTester && (() => {
+        if (!activeProgram) return false
+        const daysActive = activeProgram.started_at
+          ? Math.floor((now - new Date(activeProgram.started_at + 'T00:00:00')) / 86400000)
+          : 0
+        return activeProgram.current_phase_number > 1 && daysActive >= 7
+      })() && (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, padding: '10px 14px', background: T.pink, border: `1px solid ${T.pinkDeep}`, marginBottom: 12, flexWrap: 'wrap' }}>
           <div style={{ fontSize: 12, color: T.pinkDeep, fontWeight: 500 }}>
             You've completed your first phase 🎉 — we'd love to know what you think so far.
