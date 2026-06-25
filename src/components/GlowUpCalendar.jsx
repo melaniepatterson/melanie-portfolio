@@ -30,7 +30,7 @@
  * ─────────────────────────────────────────────────────────────
  */
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Avatar from './Avatar'
 import { supabase } from '../lib/supabase'
 import GlowUpLoader from './GlowUpLoader'
@@ -5561,6 +5561,7 @@ export default function GlowUpCalendar({ session }) {
       {showSurvey && (
         <BetaSurvey
           session={session}
+          betaTester={betaTester}
           onClose={() => setShowSurvey(false)}
           onSubmitted={() => { setShowSurvey(false); setSurveySubmitted(true) }}
         />
@@ -5963,7 +5964,14 @@ export default function GlowUpCalendar({ session }) {
                 }}
                 onAddNew={(dateStr) => {
                   const [y,m,d] = dateStr.split('-').map(Number)
-                  setSelector({ key: dateStr, date: new Date(y,m-1,d) })
+                  const dt = new Date(y,m-1,d)
+                  const activePeriod = getActivePeriod(dt, routineHistory)
+                  const activeIngredients = getActiveIngredients(activePeriod)
+                  if (activeIngredients.length > 0) {
+                    setTreatmentWarning({ key: dateStr, date: dt })
+                  } else {
+                    setSelector({ key: dateStr, date: dt })
+                  }
                   setShowTreatments(false)
                 }}
               />

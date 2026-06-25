@@ -1,5 +1,5 @@
 // v2-stars-modal-fix
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 
 const T = {

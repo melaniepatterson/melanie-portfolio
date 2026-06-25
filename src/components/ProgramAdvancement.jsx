@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
-import { STEP_KEY_MAP, ACTIVE_STEP_KEYS, buildStepEntries, applyProgramPhase, countTreatmentPauseDays } from './programOptions'
+import { ACTIVE_STEP_KEYS, buildStepEntries, applyProgramPhase, countTreatmentPauseDays } from './programOptions'
 import ProgramOptionsChecklist, { toggleOption } from './ProgramOptionsChecklist'
 
 const T = {

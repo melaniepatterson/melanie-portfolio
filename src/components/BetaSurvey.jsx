@@ -42,7 +42,9 @@ function PillRow({ options, value, onChange }) {
   )
 }
 
-export default function BetaSurvey({ session, onClose, onSubmitted }) {
+export default function BetaSurvey({ session, onClose, onSubmitted, betaTester }) {
+  // Don't render if user isn't a beta tester
+  if (!betaTester) return null
   const [setupEase,       setSetupEase]       = useState(0)
   const [changedThinking, setChangedThinking] = useState('')
   const [missing,         setMissing]         = useState('')
