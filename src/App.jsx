@@ -74,49 +74,51 @@ function Layout() {
   if (location.pathname === "/routine/products") return <ProductsPage session={session} />
 
   return (
-    <div className="layout">
-      {!isHome && !isRoutine && <Nav isWork={isWork || isWorkDetail} />}
-      <Logo isWork={isWork || isWorkDetail} isHidden={isRoutine} />
-      <div className="page-wrapper" style={{
-        backgroundColor: isWork || isWorkDetail ? "#C93500" : "#FAF7F2",
-        ...(isRoutine && {
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight: '100vh',
-          overflowX: 'hidden',
-          maxWidth: '100vw',
-        })
-      }}>
-        <main className="content">
-          <PageTransition>
-            <Routes>
-              <Route path="/" element={<Hero />} />
-              <Route path="/portfolio" element={<Work />} />
-              <Route path="/portfolio/:slug" element={<WorkDetail />} />
-              <Route path="/about-contact" element={<AboutContact />} />
-              <Route path="*" element={<NotFound />} />
-              <Route path="/routine" element={<ErrorBoundary><GlowUpCalendar session={session} /></ErrorBoundary>} />
-              <Route path="/routine/profile" element={<ErrorBoundary><Profile session={session} /></ErrorBoundary>} />
-              <Route path="/routine/history" element={<ErrorBoundary><RoutineHistory session={session} /></ErrorBoundary>} />
-              <Route path="/routine/products" element={<ErrorBoundary><ProductsPage session={session} /></ErrorBoundary>} />
-            </Routes>
-          </PageTransition>
-        </main>
-        <footer style={{
-          marginTop: "auto",
-          padding: "1rem 2rem",
-          fontSize: "0.6rem",
-          letterSpacing: "0.1em",
-          opacity: 0.4,
-          color: isWork || isWorkDetail ? "#FAF7F2" : "#C93500",
-          pointerEvents: "none",
+    <>
+      <div className="layout">
+        {!isHome && !isRoutine && <Nav isWork={isWork || isWorkDetail} />}
+        <Logo isWork={isWork || isWorkDetail} isHidden={isRoutine} />
+        <div className="page-wrapper" style={{
+          backgroundColor: isWork || isWorkDetail ? "#C93500" : "#FAF7F2",
+          ...(isRoutine && {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minHeight: '100vh',
+            overflowX: 'hidden',
+            maxWidth: '100vw',
+          })
         }}>
-          © {new Date().getFullYear()} Melanie Patterson
-        </footer>
+          <main className="content">
+            <PageTransition>
+              <Routes>
+                <Route path="/" element={<Hero />} />
+                <Route path="/portfolio" element={<Work />} />
+                <Route path="/portfolio/:slug" element={<WorkDetail />} />
+                <Route path="/about-contact" element={<AboutContact />} />
+                <Route path="*" element={<NotFound />} />
+                <Route path="/routine" element={<ErrorBoundary><GlowUpCalendar session={session} /></ErrorBoundary>} />
+                <Route path="/routine/profile" element={<ErrorBoundary><Profile session={session} /></ErrorBoundary>} />
+                <Route path="/routine/history" element={<ErrorBoundary><RoutineHistory session={session} /></ErrorBoundary>} />
+                <Route path="/routine/products" element={<ErrorBoundary><ProductsPage session={session} /></ErrorBoundary>} />
+              </Routes>
+            </PageTransition>
+          </main>
+          <footer style={{
+            marginTop: "auto",
+            padding: "1rem 2rem",
+            fontSize: "0.6rem",
+            letterSpacing: "0.1em",
+            opacity: 0.4,
+            color: isWork || isWorkDetail ? "#FAF7F2" : "#C93500",
+            pointerEvents: "none",
+          }}>
+            © {new Date().getFullYear()} Melanie Patterson
+          </footer>
+        </div>
       </div>
-    </div>
-    <CookieNotice />
+      <CookieNotice />
+    </>
   );
 }
 
