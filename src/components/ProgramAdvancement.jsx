@@ -489,8 +489,8 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
                 <span style={{ fontWeight: 400, color: T.textMuted }}> · Starts {fmtDate(phaseStart)}</span>
               ) : currentPhase.duration_days && (
                 pauseDays > 0 && effectiveElapsed <= elapsed
-                  ? <span style={{ fontWeight: 400, color: T.textMuted }}> · Day {Math.max(effectiveElapsed, 1)} of {currentPhase.duration_days} — paused for treatment{resumeDate ? `, resumes ${resumeDate}` : ''}</span>
-                  : <span style={{ fontWeight: 400, color: T.textMuted }}> · Day {Math.min(Math.max(effectiveElapsed, 0) + 1, currentPhase.duration_days)} of {effectiveDuration}</span>
+                  ? <span style={{ fontWeight: 400, color: T.textMuted }}> · Day {Math.max(effectiveElapsed, 1)} of {effectiveDuration} — paused for treatment{resumeDate ? `, resumes ${resumeDate}` : ''}</span>
+                  : <span style={{ fontWeight: 400, color: T.textMuted }}> · Day {Math.min(Math.max(effectiveElapsed, 0) + 1, effectiveDuration)} of {effectiveDuration}</span>
               )}
             </div>
           </div>
