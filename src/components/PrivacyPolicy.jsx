@@ -6,9 +6,9 @@ const T = {
   pinkDeep: '#C93500',
 }
 
-function Section({ title, children }) {
+function Section({ title, children, id }) {
   return (
-    <div style={{ marginBottom: 32 }}>
+    <div id={id} style={{ marginBottom: 32 }}>
       <div style={{ fontSize: 11, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 8 }}>
         {title}
       </div>
@@ -69,7 +69,7 @@ export default function PrivacyPolicy() {
             ]} />
           </Section>
 
-          <Section title="Cookies and browser storage">
+          <Section title="Cookies and browser storage" id="cookies">
             <P><strong style={{ color: T.text }}>Authentication cookies</strong> — Set by Supabase to keep you signed in. Strictly necessary; no consent required under GDPR or UK GDPR.</P>
             <P><strong style={{ color: T.text }}>Local storage</strong> — We store small functional preferences in your browser: whether you've dismissed certain banners, and URL state for navigation. This data never leaves your device and isn't sent to any server.</P>
             <P>We don't use non-essential cookies, tracking cookies, or third-party cookies of any kind.</P>
