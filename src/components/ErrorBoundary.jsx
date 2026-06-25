@@ -59,19 +59,10 @@ function ErrorScreen({ error, onRetry, type = 'boundary' }) {
       )}
 
       <div style={{ display: 'flex', gap: 8 }}>
-        {onRetry && (
-          <button onClick={onRetry} style={{
-            padding: '10px 20px', borderRadius: 10, border: 'none',
-            background: T.pinkDeep, color: '#fff',
-            fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
-          }}>
-            Try again
-          </button>
-        )}
         <button onClick={() => window.location.reload()} style={{
           padding: '10px 20px', borderRadius: 10,
-          border: `0.5px solid ${T.border}`, background: 'transparent',
-          color: T.textMuted, fontSize: 13, cursor: 'pointer', fontFamily: 'inherit',
+          border: 'none', background: T.pinkDeep,
+          color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
         }}>
           Refresh page
         </button>
