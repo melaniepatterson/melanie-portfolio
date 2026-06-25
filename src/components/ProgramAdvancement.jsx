@@ -219,7 +219,10 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
   if (!currentPhase) return null
 
   const elapsed = daysSince(activeProgram.phase_started_at)
-  const todayKey = new Date().toISOString().split('T')[0]
+  // Use local midnight (same reference as daysSince) so pause day counting
+  // iterates exactly the same days that elapsed counts
+  const todayLocal = new Date(); todayLocal.setHours(0, 0, 0, 0)
+  const todayKey = `${todayLocal.getFullYear()}-${String(todayLocal.getMonth()+1).padStart(2,'0')}-${String(todayLocal.getDate()).padStart(2,'0')}`
   const pauseDays = (treatments && allTypes && elapsed >= 0)
     ? countTreatmentPauseDays(activeProgram.phase_started_at, todayKey, treatments, allTypes)
     : 0

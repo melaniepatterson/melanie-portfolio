@@ -129,14 +129,17 @@ export function countTreatmentPauseDays(phaseStartedAt, today, treatments, allTy
   if (start > end) return 0
 
   let count = 0
-  for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-    // The treatment day itself is not a "routine pause" — only the pre/post windows are
+  // Iterate only fully-completed days (same set as daysSince/elapsed counts)
+  // d < end (not <=) so today is excluded, matching Math.floor in daysSince
+  for (let d = new Date(start); d < end; d.setDate(d.getDate() + 1)) {
     let hit = false
     for (const [tk, entries] of Object.entries(treatments)) {
       for (const tv of (Array.isArray(entries) ? entries : [entries])) {
         const td = new Date(tk + 'T00:00:00')
-        const cfg = allTypes[tv.type] || { pre: 3, post: 3, pca: false }
+        const cfg = {
+          pre:  tv.pre  ?? allTypes[tv.type]?.pre  ?? 3,
+          post: tv.post ?? allTypes[tv.type]?.post ?? 3,
+        }
         const diff = Math.round((d - td) / 86400000)
         if ((diff >= -cfg.pre && diff <= -1) || (diff >= 1 && diff <= cfg.post)) { hit = true; break }
       }
