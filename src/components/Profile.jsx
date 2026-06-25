@@ -128,6 +128,7 @@ export default function Profile({ session }) {
   const [retinoidExp,   setRetinoidExp]   = useState('')
   const [climate,       setClimate]       = useState('')
   const [timezone,      setTimezone]      = useState(() => detectTimezone())
+  const [betaTester,    setBetaTester]    = useState(false)
   const [newsletterOptIn, setNewsletterOptIn] = useState(false)
   const [avatarUrl,     setAvatarUrl]     = useState(null)
   const [cropSrc,       setCropSrc]       = useState(null)
@@ -211,6 +212,7 @@ export default function Profile({ session }) {
           setAgeRange(data.age_range || '')
           setRetinoidExp(data.retinoid_experience || '')
           setTimezone(data.timezone || detectTimezone())
+          setBetaTester(data.beta_tester || false)
           setClimate(data.climate || '')
           if (data.avatar_url) setAvatarUrl(data.avatar_url)
           setNewsletterOptIn(data.newsletter_opt_in || false)
@@ -270,6 +272,7 @@ export default function Profile({ session }) {
       retinoid_experience: retinoidExp || null,
       climate:             climate || null,
       timezone:            timezone || null,
+      beta_tester:         betaTester,
       newsletter_opt_in:   newsletterOptIn,
       updated_at:          new Date().toISOString(),
     })
@@ -508,6 +511,24 @@ export default function Profile({ session }) {
           style={{ width: '100%', padding: '12px', borderRadius: 0, border: 'none', background: saved ? '#4ADE80' : T.pinkDeep, color: saved ? '#14532D' : T.white, fontSize: 13, fontWeight: 600, cursor: saving ? 'default' : 'pointer', opacity: saving ? 0.7 : 1, transition: 'background 0.2s', fontFamily: 'inherit', marginBottom: 16 }}>
           {saved ? '✓ Saved' : saving ? 'Saving...' : 'Save profile'}
         </button>
+
+        {/* Beta tester + feedback */}
+        <div style={{ borderTop: `0.5px solid ${T.border}`, paddingTop: 16, marginBottom: 16 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 10 }}>
+            Beta program
+          </div>
+          <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer', marginBottom: 14 }}>
+            <input type="checkbox" checked={betaTester} onChange={e => setBetaTester(e.target.checked)}
+              style={{ marginTop: 3, accentColor: T.pinkDeep, flexShrink: 0 }} />
+            <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.7 }}>
+              <strong style={{ color: T.text }}>I'm interested in being a beta tester</strong> — you may hear from us about new features, early previews, and occasional check-ins. No spam, ever.
+            </div>
+          </label>
+          <a href="/routine?survey=1"
+            style={{ fontSize: 12, color: T.pinkDeep, textDecoration: 'none', fontWeight: 500 }}>
+            Share feedback about the app →
+          </a>
+        </div>
 
         {/* Export */}
         <div style={{ borderTop: `0.5px solid ${T.border}`, paddingTop: 16, marginBottom: 16 }}>

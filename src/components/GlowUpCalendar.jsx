@@ -37,6 +37,7 @@ import GlowUpLoader from './GlowUpLoader'
 import { LoadError } from './ErrorBoundary'
 import Onboarding from './Onboarding'
 import ProgramAdvancement, { Phase2Picker } from './ProgramAdvancement'
+import BetaSurvey from './BetaSurvey'
 import { applyProgramPhase, buildStepEntries } from './programOptions'
 import { todayInTz, nowInTz, detectTimezone } from './timezone'
 
@@ -556,7 +557,11 @@ function getDayInfo(dt, treatments, allTypes, routineHistory) {
   for (const [tk, entries] of Object.entries(treatments)) {
     for (const tv of (entries || [])) {
       const td   = new Date(tk + 'T00:00:00')
-      const cfg  = allTypes[tv.type] || { pre: 3, post: 3, pca: false }
+      const cfg  = {
+        pre:  tv.pre  ?? allTypes[tv.type]?.pre  ?? 3,
+        post: tv.post ?? allTypes[tv.type]?.post ?? 3,
+        pca:  allTypes[tv.type]?.pca ?? false,
+      }
       const diff = Math.round((dt - td) / 86400000)
       if (diff >= -cfg.pre && diff <= -1)    return { status: 'pause',    isTreatment: false }
       if (diff >= 1 && diff <= cfg.post)     return { status: cfg.pca ? 'pca' : 'recovery', isTreatment: false, activeTreatmentType: tv.type }
@@ -4619,7 +4624,6 @@ export default function GlowUpCalendar({ session }) {
   const [loading,       setLoading]       = useState(true)
 
 
-  // ── Handle actions from history page ─────────────────────────────────────
   useEffect(() => {
     const action = sessionStorage.getItem('glowup-history-action')
     if (!action) return
@@ -4654,7 +4658,7 @@ export default function GlowUpCalendar({ session }) {
       setLoading(true)
       const results = await Promise.allSettled([
         supabase.from('routine_periods').select('*').eq('user_id', userId).order('start_date'),
-        supabase.from('profiles').select('recovery_routines, display_name, avatar_url, skin_type, timezone').eq('id', userId).single(),
+        supabase.from('profiles').select('recovery_routines, display_name, avatar_url, skin_type, timezone, survey_submitted_at').eq('id', userId).single(),
         supabase.from('products').select('*').or(`is_catalog.eq.true,user_id.eq.${userId}`),
         supabase.from('extras_periods').select('*').eq('user_id', userId).order('start_date'),
         supabase.from('shower_periods').select('*').eq('user_id', userId).order('start_date'),
@@ -4693,6 +4697,7 @@ export default function GlowUpCalendar({ session }) {
       if (profileRR) setMenuProfile({ display_name: profileRR.display_name, avatar_url: profileRR.avatar_url })
       setSkinType(profileRR?.skin_type || '')
       if (profileRR?.timezone) setTimezone(profileRR.timezone)
+      if (profileRR?.survey_submitted_at) setSurveySubmitted(true)
       catalogIds.current = new Set()
       ;(pr || []).forEach(p => {
         if (p.is_catalog) catalogIds.current.add(p.id)
@@ -4764,6 +4769,9 @@ export default function GlowUpCalendar({ session }) {
   const [showNotifications, setShowNotifications] = useState(false)
   const [treatmentWarning,  setTreatmentWarning]  = useState(null) // { key, date } pending selector
   const [showFeedback,  setShowFeedback]  = useState(false)
+  const [showSurvey,    setShowSurvey]    = useState(() => new URLSearchParams(window.location.search).get('survey') === '1')
+  const [surveyDismissed, setSurveyDismissed] = useState(false)
+  const [surveySubmitted, setSurveySubmitted] = useState(false)
   const [recoveryRoutines, setRecoveryRoutines] = useState({})
   const [skinType, setSkinType] = useState('')
   const [menuProfile, setMenuProfile] = useState(null)
@@ -5528,7 +5536,33 @@ export default function GlowUpCalendar({ session }) {
         <span style={{ width: 6, height: 6, borderRadius: '50%', background: T.pinkDeep, display: 'inline-block', flexShrink: 0 }} />
       </div>
 
-      {/* Active program status + advancement prompts */}
+      {/* Beta survey soft banner — shows after first program phase completes */}
+      {!surveySubmitted && !surveyDismissed && activeProgram?.current_phase_number > 1 && (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, padding: '10px 14px', background: T.pink, border: `1px solid ${T.pinkDeep}`, marginBottom: 12, flexWrap: 'wrap' }}>
+          <div style={{ fontSize: 12, color: T.pinkDeep, fontWeight: 500 }}>
+            You've completed your first phase 🎉 — we'd love to know what you think so far.
+          </div>
+          <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
+            <button onClick={() => setShowSurvey(true)}
+              style={{ padding: '5px 12px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 11, fontFamily: 'inherit', fontWeight: 600 }}>
+              Share feedback
+            </button>
+            <button onClick={() => setSurveyDismissed(true)}
+              style={{ padding: '5px 8px', borderRadius: 0, border: 'none', background: 'transparent', color: T.pinkDeep, cursor: 'pointer', fontSize: 16, lineHeight: 1, fontFamily: 'inherit' }}>
+              ×
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Beta survey modal */}
+      {showSurvey && (
+        <BetaSurvey
+          session={session}
+          onClose={() => setShowSurvey(false)}
+          onSubmitted={() => { setShowSurvey(false); setSurveySubmitted(true) }}
+        />
+      )}
       {activeProgram && (
         <div style={{ width: '100%', minWidth: 0, maxWidth: '100%', overflow: 'hidden', boxSizing: 'border-box' }}>
           <ProgramAdvancement
