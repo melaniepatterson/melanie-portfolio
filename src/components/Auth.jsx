@@ -28,6 +28,7 @@ export default function Auth() {
   const [email,     setEmail]     = useState('')
   const [skinType,  setSkinType]  = useState('')
   const [howHeard,  setHowHeard]  = useState('')
+  const [betaTester, setBetaTester] = useState(false)
   const [loading,   setLoading]   = useState(false)
   const [errorMsg,  setErrorMsg]  = useState('')
   const [alreadyOnList, setAlreadyOnList] = useState(false)
@@ -80,6 +81,7 @@ export default function Auth() {
         p_email: email,
         p_skin_type: skinType || null,
         p_how_heard: howHeard || null,
+        p_beta_tester: betaTester,
       })
       if (error) throw error
       console.log('join_waitlist returned:', result, typeof result)
@@ -214,6 +216,16 @@ export default function Auth() {
               {errorMsg && (
                 <div style={{ fontSize: 12, color: T.pinkDeep, marginBottom: 10 }}>{errorMsg}</div>
               )}
+
+              {/* Beta tester opt-in */}
+              <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer', marginBottom: 20, padding: '12px', background: T.creamDark, borderRadius: 8, border: `0.5px solid ${T.border}` }}>
+                <input type="checkbox" checked={betaTester} onChange={e => setBetaTester(e.target.checked)}
+                  style={{ marginTop: 3, accentColor: T.pinkDeep, flexShrink: 0 }} />
+                <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.7 }}>
+                  <strong style={{ color: T.text }}>I'd like to be a beta tester</strong> — I'm happy to give feedback, try new features early, and help shape the app. No spam, just occasional check-ins.
+                </div>
+              </label>
+
               <button type="submit" disabled={loading} style={btnStyle(true)}>
                 {loading ? 'Joining...' : 'Join the waitlist'}
               </button>
