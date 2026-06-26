@@ -301,7 +301,7 @@ export default function Profile({ session }) {
         <style>{`.glowup-profile-logo { display: flex } @media (max-width: 639px) { .glowup-profile-logo { display: none } }`}</style>
         {/* Logo row — desktop only */}
         <div className="glowup-profile-logo" style={{ alignItems: 'baseline', gap: 6, padding: '12px 20px 8px' }}>
-          <span style={{ fontSize: size || 20, fontWeight: 800, letterSpacing: '-0.04em', color: '#1A1A1A', lineHeight: 1, ...(style||{}) }}>Glow <span style={{ color: '#C93500' }}>Up</span><span style={{ color: '#FFD6F9' }}>.</span></span>
+          <span style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-0.04em', color: '#1A1A1A', lineHeight: 1,  }}>Glow <span style={{ color: '#C93500' }}>Up</span><span style={{ color: '#FFD6F9' }}>.</span></span>
           <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#C93500', display: 'inline-block', marginBottom: 2 }} />
         </div>
         {/* Nav row */}

@@ -15,7 +15,7 @@ export default function GlowUpLoader({ message = '' }) {
         fontSize: 28, fontWeight: 700, color: '#1C1917',
         letterSpacing: '-0.03em', marginBottom: 28,
       }}>
-        <span style={{ fontSize: 28, fontWeight: 800, letterSpacing: '-0.04em', color: '#1A1A1A', lineHeight: 1, ...(style||{}) }}>Glow <span style={{ color: '#C93500' }}>Up</span><span style={{ color: '#FFD6F9' }}>.</span></span>
+        <span style={{ fontSize: 28, fontWeight: 800, letterSpacing: '-0.04em', color: '#1A1A1A', lineHeight: 1,  }}>Glow <span style={{ color: '#C93500' }}>Up</span><span style={{ color: '#FFD6F9' }}>.</span></span>
       </div>
 
       {/* Animated stars */}
