@@ -3121,7 +3121,7 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
         </div>
         <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
           {flyout.isTreatment && (
-            <Btn onClick={onAddTreatment} style={{ fontSize: 11, padding: '4px 10px', whiteSpace: 'nowrap' }}>+ Add another</Btn>
+            <Btn onClick={onAddTreatment} style={{ fontSize: 11, padding: '4px 10px', whiteSpace: 'nowrap' }}>+ Add treatment</Btn>
           )}
           {flyout.isTreatment
             ? <Btn onClick={() => onAddTreatment(flyout.allTreatments?.[0]?._dbId)} style={{ fontSize: 11, padding: '4px 10px', whiteSpace: 'nowrap' }}>Edit treatment</Btn>
