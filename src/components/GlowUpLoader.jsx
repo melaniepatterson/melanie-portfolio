@@ -1,6 +1,6 @@
 // Branded load screen for GlowUp
 // Usage: <GlowUpLoader /> or <GlowUpLoader message="Loading your routine..." />
-import GlowUpLogo from './GlowUpLogo'
+import GlowUpLogo from './GlowUpWordmark'
 
 export default function GlowUpLoader({ message = '' }) {
   return (
