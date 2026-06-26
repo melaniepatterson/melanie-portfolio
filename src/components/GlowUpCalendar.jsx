@@ -3394,10 +3394,11 @@ function ProgramEnrollmentPreview({ program, onConfirm, onBack, timezone }) {
   )
 }
 
-function AddProgramPanel({ session, activeProgram, routinePeriod, skinType, timezone, onChanged }) {
+function AddProgramPanel({ session, activeProgram, activePrograms = [], routinePeriod, skinType, timezone, onChanged }) {
   const [loading, setLoading] = useState(true)
   const [library, setLibrary] = useState([])
   const [completionCounts, setCompletionCounts] = useState({})
+  const [activeProgramSlugs, setActiveProgramSlugs] = useState([]) // slugs of all active programs
   const [activeProgramDetails, setActiveProgramDetails] = useState(null)
   const [phase2Options, setPhase2Options] = useState([])
   const [endConfirm, setEndConfirm] = useState(false)
@@ -3410,7 +3411,7 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, skinType, time
   const [endFoundationConfirm, setEndFoundationConfirm] = useState(false)
   const [endingFoundation, setEndingFoundation] = useState(false)
 
-  useEffect(() => { load() }, [activeProgram?.id])
+  useEffect(() => { load() }, [activePrograms.map(p => p.id).join(',')])
 
   async function load() {
     setLoading(true)
@@ -3430,6 +3431,26 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, skinType, time
             setPhase2Options(opts || [])
           }
         }
+
+        // Load slugs of ALL active programs for incompatibility checking
+        if (activePrograms.length > 0) {
+          const { data: progs } = await supabase
+            .from('programs').select('slug').in('id', activePrograms.map(p => p.program_id))
+          setActiveProgramSlugs((progs || []).map(p => p.slug))
+        }
+
+        // Also show the library so compatible add-on programs can be enrolled
+        const { data: progs } = await supabase
+          .from('programs').select('*').eq('is_stackable', true).order('name')
+        setLibrary(progs || [])
+
+        const { data: completions } = await supabase
+          .from('user_programs').select('program_id, status_detail')
+          .eq('user_id', session.user.id).in('status', ['completed'])
+        const counts = {}
+        for (const c of (completions || [])) counts[c.program_id] = (counts[c.program_id] || 0) + 1
+        setCompletionCounts(counts)
+
       } else {
         setActiveProgramDetails(null)
         // Add-on programs only — basic-skincare is the foundation, not an add-on
@@ -3454,6 +3475,12 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, skinType, time
     } finally {
       setLoading(false)
     }
+  }
+
+  // Check if a program from the library is blocked by an active program
+  function incompatibleWith(program) {
+    const incompatible = program.incompatible_with || []
+    return activeProgramSlugs.find(slug => incompatible.includes(slug))
   }
 
   // ── Add more, anytime during Phase 2 (doesn't touch phase/dates) ──
@@ -3735,8 +3762,10 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, skinType, time
       ) : (
         library.map(program => {
           const completions = completionCounts[program.id] || 0
+          const blocker = incompatibleWith(program)
+          const isActive = activePrograms.some(p => p.program_id === program.id)
           return (
-            <div key={program.id} style={{ border: `1px solid ${T.border}`, borderRadius: 0, padding: '14px 16px', marginBottom: 10 }}>
+            <div key={program.id} style={{ border: `1px solid ${T.border}`, borderRadius: 0, padding: '14px 16px', marginBottom: 10, opacity: blocker || isActive ? 0.6 : 1 }}>
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: 4 }}>
                 <div style={{ fontSize: 14, fontWeight: 700, color: T.text }}>{program.name}</div>
                 {completions > 0 && (
@@ -3746,10 +3775,16 @@ function AddProgramPanel({ session, activeProgram, routinePeriod, skinType, time
                 )}
               </div>
               <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.6, marginBottom: 12 }}>{program.description}</div>
-              <button onClick={() => setPreviewingProgram(program)}
-                style={{ width: '100%', padding: '10px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
-                {completions > 0 ? 'Start again →' : 'Learn more & start →'}
-              </button>
+              {isActive ? (
+                <div style={{ fontSize: 11, color: T.textMuted, fontStyle: 'italic' }}>Currently active</div>
+              ) : blocker ? (
+                <div style={{ fontSize: 11, color: T.pinkDeep }}>Complete your current program before starting this one</div>
+              ) : (
+                <button onClick={() => setPreviewingProgram(program)}
+                  style={{ width: '100%', padding: '10px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
+                  {completions > 0 ? 'Start again →' : 'Learn more & start →'}
+                </button>
+              )}
             </div>
           )
         })
@@ -3843,6 +3878,7 @@ function NewRoutinePeriodPicker({ routineHistory, dailyHistory, showerHistory, p
             <AddProgramPanel
               session={session}
               activeProgram={activeProgram}
+              activePrograms={activePrograms}
               routinePeriod={getActivePeriod(now, routineHistory)}
               skinType={skinType}
               timezone={timezone}
@@ -4630,7 +4666,7 @@ export default function GlowUpCalendar({ session }) {
   const [showerHistory,  setShowerHistory]  = useState([])
   const [treatments,     setTreatments]     = useState({})
   const [customTypes,    setCustomTypes]    = useState({})
-  const [activeProgram,  setActiveProgram]  = useState(null)   // user_programs row or null
+  const [activePrograms, setActivePrograms] = useState([])  // all active user_programs rows
   const [onboardingDone, setOnboardingDone] = useState(null)   // null=loading, true/false
   const [reloadKey,      setReloadKey]      = useState(0)      // bump to retrigger loadAll
 
@@ -4692,16 +4728,16 @@ export default function GlowUpCalendar({ session }) {
         supabase.from('shower_periods').select('*').eq('user_id', userId).order('start_date'),
         supabase.from('treatments').select('*').eq('user_id', userId),
         supabase.from('custom_treatment_types').select('*').eq('user_id', userId),
-        supabase.from('user_programs').select('*').eq('user_id', userId).eq('status', 'active').maybeSingle(),
+        supabase.from('user_programs').select('*').eq('user_id', userId).eq('status', 'active'),
         supabase.from('user_programs').select('id, started_at, status_detail').eq('user_id', userId).eq('status', 'completed'),
       ])
       const getValue = (r) => r.status === 'fulfilled' ? (r.value?.data ?? null) : null
       const [rp, profileRR, pr, ep, sp, tr, ct, up, cp] = results.map(getValue)
 
       // Active program
-      setActiveProgram(up || null)
+      setActivePrograms(up || [])
       setCompletedPrograms(cp || [])
-      setOnboardingDone(!!(up || (rp && rp.length > 0)))
+      setOnboardingDone(!!(up?.length > 0 || (rp && rp.length > 0)))
 
       // Routine periods — convert snake_case from DB to camelCase
       setRoutineHistory((rp || []).map(p => ({
@@ -5586,6 +5622,9 @@ export default function GlowUpCalendar({ session }) {
   )
   if (loading) return <GlowUpLoader message="Loading your routine..." />
 
+  // Convenience alias — first active program (for backwards-compat code that only needs one)
+  const activeProgram = activePrograms[0] || null
+
   // Show onboarding for new users who have no routine and no active program
   if (onboardingDone === false) return (
     <Onboarding
@@ -5679,11 +5718,12 @@ export default function GlowUpCalendar({ session }) {
           }}
         />
       )}
-      {activeProgram && (
-        <div style={{ width: '100%', minWidth: 0, maxWidth: '100%', overflow: 'hidden', boxSizing: 'border-box' }}>
+      {/* Active program banners — one per active program */}
+      {activePrograms.map(prog => (
+        <div key={prog.id} style={{ width: '100%', minWidth: 0, maxWidth: '100%', overflow: 'hidden', boxSizing: 'border-box' }}>
           <ProgramAdvancement
             session={session}
-            activeProgram={activeProgram}
+            activeProgram={prog}
             routinePeriod={getActivePeriod(now, routineHistory)}
             treatments={treatments}
             allTypes={allTypes}
@@ -5691,7 +5731,7 @@ export default function GlowUpCalendar({ session }) {
             onAdvanced={() => setReloadKey(k => k + 1)}
           />
         </div>
-      )}
+      ))}
 
       {/* Toast — always in flow at top, small so it doesn't displace much */}
       {toast && (
