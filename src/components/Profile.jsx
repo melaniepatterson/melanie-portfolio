@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import GlowUpLogo from './GlowUpWordmark'
+import GlowUpLogo from './GlowUpWordmark.js'
 import { supabase } from '../lib/supabase'
 import Avatar from './Avatar'
 import CropModal from './CropModal'

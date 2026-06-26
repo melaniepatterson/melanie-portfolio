@@ -26,7 +26,7 @@
  *
  * USAGE
  *   import GlowUpCalendar from './components/GlowUpCalendar'
-import GlowUpLogo from './GlowUpWordmark'
+import GlowUpLogo from './GlowUpWordmark.js'
  *   <GlowUpCalendar />
  * ─────────────────────────────────────────────────────────────
  */
