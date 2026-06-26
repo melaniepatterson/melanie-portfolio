@@ -26,7 +26,7 @@ function ErrorScreen({ error, onRetry, type = 'boundary' }) {
     }}>
       {/* Wordmark */}
       <div style={{ fontSize: 22, fontWeight: 700, color: T.text, letterSpacing: '-0.02em', marginBottom: 32 }}>
-        Glow<span style={{ color: T.pinkDeep }}>Up</span>
+        Glow Up.
       </div>
 
       {/* Sad star */}
