@@ -84,7 +84,6 @@ export default function Auth() {
         p_beta_tester: betaTester,
       })
       if (error) throw error
-      console.log('join_waitlist returned:', result, typeof result)
       // 0 = already existed, 1 = newly added
       setAlreadyOnList(result === 0 || result === '0')
       setScreen('joined')
