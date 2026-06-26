@@ -1,6 +1,5 @@
 // v2-stars-modal-fix
 import { useState, useEffect, useRef } from 'react'
-import GlowUpLogo from './GlowUpWordmark'
 import { supabase } from '../lib/supabase'
 
 const T = {
@@ -1742,7 +1741,7 @@ export default function ProductsPage({ session }) {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px 10px' }}>
           <style>{`.glowup-prodlogo { display: flex } @media (max-width: 639px) { .glowup-prodlogo { display: none } }`}</style>
           <a href="/routine" className="glowup-prodlogo" style={{ alignItems: 'baseline', gap: 6, textDecoration: 'none' }}>
-            <GlowUpLogo />
+            <span style={{ fontSize: size || 20, fontWeight: 800, letterSpacing: '-0.04em', color: '#1A1A1A', lineHeight: 1, ...(style||{}) }}>Glow <span style={{ color: '#C93500' }}>Up</span><span style={{ color: '#FFD6F9' }}>.</span></span>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: T.pinkDeep, display: 'inline-block', marginBottom: 2 }} />
           </a>
           <div className="glowup-prodlogo" style={{ flex: 1 }} />
