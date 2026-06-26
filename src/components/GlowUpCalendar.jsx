@@ -5584,7 +5584,7 @@ export default function GlowUpCalendar({ session }) {
 
       {/* Glow Up logo — desktop only */}
       <div className="glowup-cal-logo" style={{ alignItems: 'center', justifyContent: 'center', gap: 6, marginBottom: 12 }}>
-        <span style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.04em', color: '#1A1A1A', lineHeight: 1,  }}>Glow <span style={{ color: '#C93500' }}>Up</span><span style={{ color: '#FFD6F9' }}>.</span></span>
+        <span className="glowup-cal-logo" style={{ fontSize: 22, fontWeight: 800, letterSpacing: "-0.04em", color: "#1A1A1A", lineHeight: 1 }}>Glow <span style={{ color: "#C93500" }}>Up</span><span style={{ color: "#FFD6F9" }}>.</span></span>
         <span style={{ width: 6, height: 6, borderRadius: '50%', background: T.pinkDeep, display: 'inline-block', flexShrink: 0 }} />
       </div>
 
