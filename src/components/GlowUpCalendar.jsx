@@ -4813,6 +4813,9 @@ export default function GlowUpCalendar({ session }) {
     } catch {}
     return false
   })
+  const [programNudgeDismissed, setProgramNudgeDismissed] = useState(() => {
+    try { return !!localStorage.getItem('glowup_program_nudge_dismissed') } catch { return false }
+  })
 
   function handleSurveyDismiss() {
     try {
@@ -5013,6 +5016,20 @@ export default function GlowUpCalendar({ session }) {
   async function deletePeriod(startDate) {
     const period = routineHistory.find(p => p.startDate === startDate)
     if (period?._dbId) {
+      // If this period has tret frequency history, merge it into the previous period
+      // so calendar accuracy is preserved for past dates
+      if (period.tretFrequencyHistory?.length > 0) {
+        const sorted = [...routineHistory].sort((a, b) => a.startDate.localeCompare(b.startDate))
+        const idx = sorted.findIndex(p => p._dbId === period._dbId)
+        const prev = sorted[idx - 1]
+        if (prev?._dbId) {
+          const merged = [...(period.tretFrequencyHistory || []), ...(prev.tretFrequencyHistory || [])]
+            .sort((a, b) => a.start_date.localeCompare(b.start_date))
+          await supabase.from('routine_periods')
+            .update({ tret_frequency_history: merged })
+            .eq('id', prev._dbId)
+        }
+      }
       await supabase.from('routine_periods').delete().eq('id', period._dbId)
       setRoutineHistory(h => h.filter(p => p._dbId !== period._dbId))
     } else {
@@ -5594,7 +5611,32 @@ export default function GlowUpCalendar({ session }) {
         <span style={{ width: 6, height: 6, borderRadius: '50%', background: T.pinkDeep, display: 'inline-block', flexShrink: 0 }} />
       </div>
 
-      {/* Beta survey soft banner — shows after completing first phase of any program */}
+      {/* Program nudge — for users who built their routine manually and have never enrolled in a program */}
+      {!activeProgram && !programNudgeDismissed && routineHistory.length > 0 && completedPrograms.length === 0 && (() => {
+        const firstRoutine = [...routineHistory].sort((a, b) => a.startDate.localeCompare(b.startDate))[0]
+        const daysUsing = firstRoutine
+          ? Math.floor((now - new Date(firstRoutine.startDate + 'T00:00:00')) / 86400000)
+          : 0
+        return daysUsing >= 7
+      })() && (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, padding: '10px 14px', background: T.creamDark, border: `1px solid ${T.border}`, marginBottom: 12, flexWrap: 'wrap' }}>
+          <div style={{ fontSize: 12, color: T.textMuted, fontWeight: 500 }}>
+            Ready to level up your routine? Try a guided program — Basic Skincare or Tretinoin Onboarding.
+          </div>
+          <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
+            <button onClick={() => { setPanel('new'); setProgramNudgeDismissed(true); try { localStorage.setItem('glowup_program_nudge_dismissed', '1') } catch {} }}
+              style={{ padding: '5px 12px', borderRadius: 0, border: `1px solid ${T.border}`, background: T.text, color: '#fff', cursor: 'pointer', fontSize: 11, fontFamily: 'inherit', fontWeight: 600 }}>
+              Explore programs
+            </button>
+            <button onClick={() => { setProgramNudgeDismissed(true); try { localStorage.setItem('glowup_program_nudge_dismissed', '1') } catch {} }}
+              style={{ padding: '5px 8px', borderRadius: 0, border: 'none', background: 'transparent', color: T.textMuted, cursor: 'pointer', fontSize: 16, lineHeight: 1, fontFamily: 'inherit' }}>
+              ×
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Beta survey soft banner */}
       {!surveySubmitted && !surveyDismissed && betaTester && (() => {
         const graduated = completedPrograms.some(p => p.status_detail === 'graduated')
         if (graduated) return true
