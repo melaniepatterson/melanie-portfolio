@@ -5651,7 +5651,7 @@ export default function GlowUpCalendar({ session }) {
       </div>
 
       {/* Program nudge — for users who built their routine manually and have never enrolled in a program */}
-      {!activeProgram && !programNudgeDismissed && routineHistory.length > 0 && completedPrograms.length === 0 && (() => {
+      {activePrograms.length === 0 && !programNudgeDismissed && routineHistory.length > 0 && completedPrograms.length === 0 && (() => {
         const firstRoutine = [...routineHistory].sort((a, b) => a.startDate.localeCompare(b.startDate))[0]
         const daysUsing = firstRoutine
           ? Math.floor((now - new Date(firstRoutine.startDate + 'T00:00:00')) / 86400000)
@@ -5677,10 +5677,10 @@ export default function GlowUpCalendar({ session }) {
 
       {/* Beta survey soft banner */}
       {!surveySubmitted && !surveyDismissed && betaTester && (() => {
-        const graduated = completedPrograms.some(p => p.status_detail === 'graduated')
-        if (graduated) return true
-        if (activeProgram && activeProgram.current_phase_number > 1) return true
-        return false
+        // Trigger if ANY active program has completed at least one phase
+        if (activePrograms.some(p => p.current_phase_number > 1)) return true
+        // Or if any program has been graduated
+        return completedPrograms.some(p => p.status_detail === 'graduated')
       })() && (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, padding: '10px 14px', background: T.pink, border: `1px solid ${T.pinkDeep}`, marginBottom: 12, flexWrap: 'wrap' }}>
           <div style={{ fontSize: 12, color: T.pinkDeep, fontWeight: 500 }}>
