@@ -3120,7 +3120,13 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
           {MONTHS[date.getMonth()]} {date.getDate()}
         </div>
         <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
-          <Btn onClick={onAddTreatment} style={{ fontSize: 11, padding: '4px 10px', whiteSpace: 'nowrap' }}>{flyout.isTreatment ? 'Edit treatment' : '+ Add treatment'}</Btn>
+          {flyout.isTreatment && (
+            <Btn onClick={onAddTreatment} style={{ fontSize: 11, padding: '4px 10px', whiteSpace: 'nowrap' }}>+ Add another</Btn>
+          )}
+          {flyout.isTreatment
+            ? <Btn onClick={() => onAddTreatment(flyout.allTreatments?.[0]?._dbId)} style={{ fontSize: 11, padding: '4px 10px', whiteSpace: 'nowrap' }}>Edit treatment</Btn>
+            : <Btn onClick={onAddTreatment} style={{ fontSize: 11, padding: '4px 10px', whiteSpace: 'nowrap' }}>+ Add treatment</Btn>
+          }
           <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 16, color: T.textMuted, padding: '0 4px', lineHeight: 1 }}>×</button>
         </div>
       </div>
@@ -5795,14 +5801,14 @@ export default function GlowUpCalendar({ session }) {
                   allTypes={allTypes}
                   onClose={() => setDayFlyout(null)}
                   onTabChange={(t) => setDayFlyout(f => ({ ...f, tab: t }))}
-                  onAddTreatment={() => {
+                  onAddTreatment={(editingDbId) => {
                     const activePeriod = getActivePeriod(dayFlyout.date, routineHistory)
                     const activeIngredients = getActiveIngredients(activePeriod)
-                    if (activeIngredients.length > 0) {
+                    if (activeIngredients.length > 0 && !editingDbId) {
                       setTreatmentWarning({ key: dayFlyout.key, date: dayFlyout.date })
                       setDayFlyout(null)
                     } else {
-                      setSelector({ key: dayFlyout.key, date: dayFlyout.date })
+                      setSelector({ key: dayFlyout.key, date: dayFlyout.date, ...(editingDbId && { editingDbId }) })
                       setDayFlyout(null)
                     }
                   }}
