@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import GlowUpLogo from './GlowUpWordmark.js'
+import GlowUpLogo from './GlowUpWordmark'
 import { supabase } from '../lib/supabase'
 
 const T = {
