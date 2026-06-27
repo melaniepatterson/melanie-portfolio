@@ -316,6 +316,21 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
       ...(isGraduation && { status: 'completed', completed_at: today, status_detail: 'graduated' }),
     }).eq('id', activeProgram.id)
 
+    // AHA/BHA program — update bha_frequency on the active routine period
+    if (program.slug === 'aha-bha-onboarding' && !isGraduation) {
+      const { data: periods } = await supabase
+        .from('routine_periods')
+        .select('id, start_date, end_date')
+        .eq('user_id', session.user.id)
+        .order('start_date', { ascending: false })
+      const activePeriod = (periods || []).find(p => p.start_date <= today && (!p.end_date || p.end_date >= today))
+      if (activePeriod?.id) {
+        await supabase.from('routine_periods')
+          .update({ bha_frequency: nextPhase.phase_number })
+          .eq('id', activePeriod.id)
+      }
+    }
+
     await supabase.from('user_program_phase_history').insert({
       user_program_id: activeProgram.id,
       from_phase: currentPhase.phase_number,
@@ -418,6 +433,20 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
         completed_at: today,
         status_detail: 'graduated',
       }).eq('id', activeProgram.id)
+
+      // AHA/BHA program graduated — keep bha_enabled but freeze frequency at 3
+      // (user continues at maintenance pace independently)
+      if (program.slug === 'aha-bha-onboarding') {
+        const { data: periods } = await supabase
+          .from('routine_periods').select('id, start_date, end_date')
+          .eq('user_id', session.user.id).order('start_date', { ascending: false })
+        const activePeriod = (periods || []).find(p => p.start_date <= today && (!p.end_date || p.end_date >= today))
+        if (activePeriod?.id) {
+          await supabase.from('routine_periods')
+            .update({ bha_frequency: 3 })
+            .eq('id', activePeriod.id)
+        }
+      }
 
       await supabase.from('user_program_phase_history').insert({
         user_program_id: activeProgram.id,

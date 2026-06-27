@@ -540,6 +540,21 @@ function getTretBhaStatus(dt, period) {
 }
 
 
+// Standalone AHA/BHA schedule for users in the AHA/BHA Onboarding program
+// (without tret — on tret nights bha is handled inside getTretBhaStatus)
+// Phase 1 (freq 1): Saturday only
+// Phase 2 (freq 2): Tuesday + Saturday
+// Phase 3 (freq 3): Monday + Wednesday + Saturday
+function getBhaStatus(dt, period) {
+  if (!period?.bhaEnabled || period?.tretEnabled) return null
+  const freq = period.bhaFrequency || 1
+  const dow  = dt.getDay() // 0 = Sunday
+  if (freq === 1 && dow === 6) return 'bha'
+  if (freq === 2 && (dow === 2 || dow === 6)) return 'bha'
+  if (freq >= 3 && (dow === 1 || dow === 3 || dow === 6)) return 'bha'
+  return null
+}
+
 function getDayInfo(dt, treatments, allTypes, routineHistory) {
   const key = dateKey(dt)
 
@@ -571,6 +586,8 @@ function getDayInfo(dt, treatments, allTypes, routineHistory) {
   const period  = getActivePeriod(dt, routineHistory)
   const tretBha = getTretBhaStatus(dt, period)
   if (tretBha && tretBha !== 'rest') return { status: tretBha, isTreatment: false }
+  const bha = getBhaStatus(dt, period)
+  if (bha) return { status: bha, isTreatment: false }
   return { status: 'none', isTreatment: false }
 }
 
@@ -3584,6 +3601,16 @@ function AddProgramPanel({ session, activeProgram, activePrograms = [], routineP
         }
       }
 
+      // AHA/BHA program — enable BHA tracking on the active routine period
+      if (program.slug === 'aha-bha-onboarding') {
+        const activePeriod = routineHistory.find(p => p.startDate <= today && (!p.endDate || p.endDate >= today))
+        if (activePeriod?._dbId) {
+          await supabase.from('routine_periods')
+            .update({ bha_enabled: true, bha_frequency: 1 })
+            .eq('id', activePeriod._dbId)
+        }
+      }
+
       // Load phase 1 for this program
       const { data: ph } = await supabase
         .from('program_phases').select('*').eq('program_id', program.id).order('phase_number')
@@ -3954,12 +3981,14 @@ function generateICS({ routineHistory, treatments, allTypes, products, settings,
     else if (info.status === 'pca' || info.status === 'recovery') nightType = 'recovery'
     else if (info.status === 'pause') nightType = 'pause'
     else if (info.status === 'tret') nightType = 'main'
+    else if (info.status === 'bha')  nightType = 'main'
     else nightType = 'off'
 
     const rawLabel = info.isTreatment ? (allTypes[info.status]?.label || info.status) : ''
     const statusLabel = info.isTreatment
       ? (rawLabel.charAt(0).toUpperCase() + rawLabel.slice(1).toLowerCase())
       : info.status === 'tret' ? `${period?.activeName ? (period.activeName.charAt(0).toUpperCase() + period.activeName.slice(1)) : 'Tretinoin'} night`
+      : info.status === 'bha'  ? 'AHA/BHA night'
       : info.status === 'pause' ? 'Pre-treatment pause'
       : (info.status === 'pca' || info.status === 'recovery') ? 'Recovery'
       : null
@@ -4724,6 +4753,8 @@ export default function GlowUpCalendar({ session }) {
         tretStartDate:   p.tret_start_date,
         tretFrequencyHistory: p.tret_frequency_history || [],
         secondaryActives:p.secondary_actives || [],
+        bhaEnabled:      p.bha_enabled || false,
+        bhaFrequency:    p.bha_frequency || 1,
         products:        p.products || {},
         steps:           p.steps || null,
         _dbId:           p.id,
@@ -5427,6 +5458,7 @@ export default function GlowUpCalendar({ session }) {
       if (s === 'pca')      return <Badge key="p" colorKey="recovery"      label="Recovery" />
       if (s === 'recovery') return <Badge key="p" colorKey="recovery"      label="Recovery" />
       if (s === 'tret') { const an = period?.activeName || 'tretinoin'; return <Badge key="p" colorKey="tret" label={an.charAt(0).toUpperCase() + an.slice(1)} /> }
+      if (s === 'bha')  return <Badge key="bha" colorKey="bha" label="AHA/BHA" />
       if (!showAllBadges) return null
       // Tier 3 — extras: show first active PM item's label
       const ep = getActiveDailyPeriod(dt, dailyHistory)
