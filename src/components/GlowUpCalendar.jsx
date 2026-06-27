@@ -3477,10 +3477,16 @@ function AddProgramPanel({ session, activeProgram, activePrograms = [], routineP
     }
   }
 
-  // Check if a program from the library is blocked by an active program
+  // Check if a candidate program is blocked by any active program
+  // Checks both directions: candidate's own list AND active programs' lists
   function incompatibleWith(program) {
-    const incompatible = program.incompatible_with || []
-    return activeProgramSlugs.find(slug => incompatible.includes(slug))
+    const candidateSlug = program.slug
+    const candidateIncompatible = program.incompatible_with || []
+    return activeProgramSlugs.find(activeSlug =>
+      candidateIncompatible.includes(activeSlug) ||
+      // Also check if the active program lists this candidate as incompatible
+      (library.find(p => p.slug === activeSlug)?.incompatible_with || []).includes(candidateSlug)
+    )
   }
 
   // ── Add more, anytime during Phase 2 (doesn't touch phase/dates) ──
@@ -3567,6 +3573,16 @@ function AddProgramPanel({ session, activeProgram, activePrograms = [], routineP
     setStarting(program.id)
     try {
       const today = chosenStartDate || todayInTz(timezone)
+
+      // Server-side incompatibility check — don't trust UI alone
+      if (program.incompatible_with?.length > 0 && activeProgramSlugs.length > 0) {
+        const conflict = activeProgramSlugs.find(s => program.incompatible_with.includes(s))
+        if (conflict) {
+          alert(`You need to complete your current program before starting ${program.name}.`)
+          setStarting(null)
+          return
+        }
+      }
 
       // Load phase 1 for this program
       const { data: ph } = await supabase
