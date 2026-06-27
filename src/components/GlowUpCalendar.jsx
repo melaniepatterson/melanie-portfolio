@@ -3690,50 +3690,9 @@ function AddProgramPanel({ session, activeProgram, activePrograms = [], routineP
         </div>
       )
     }
-
-    return (
-      <div style={{ padding: '18px 18px' }}>
-        <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 4 }}>You're already in a program</div>
-        <div style={{ fontSize: 12, color: T.textMuted, marginBottom: 16, lineHeight: 1.6 }}>
-          You can only run one structured program at a time, so it's clear what your skin is responding to.
-        </div>
-
-        <div style={{ background: T.cream, border: `1px solid ${T.border}`, borderRadius: 0, padding: '14px 16px', marginBottom: 16 }}>
-          <div style={{ fontSize: 9, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 4 }}>
-            {program.name}
-          </div>
-          <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>
-            {currentPhase ? `Phase ${currentPhase.phase_number} of ${phases.length} — ${currentPhase.name}` : 'In progress'}
-          </div>
-        </div>
-
-        {!endConfirm ? (
-          <button onClick={() => setEndConfirm(true)}
-            style={{ width: '100%', padding: '11px', borderRadius: 0, border: `1px solid ${T.pinkDeep}`, background: 'transparent', color: T.pinkDeep, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit' }}>
-            Done with this program
-          </button>
-        ) : (
-          <div style={{ border: `1px solid ${T.border}`, borderRadius: 0, padding: '14px 16px', maxWidth: '100%', overflow: 'hidden' }}>
-            <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.7, marginBottom: 14, wordBreak: 'break-word' }}>
-              This stops tracking progress for {program.name}. Anything already added to your routine stays — you can adjust it manually anytime. You can restart this program later if you want to pick it back up.
-            </div>
-            <div style={{ display: 'flex', gap: 8 }}>
-              <button onClick={() => setEndConfirm(false)} disabled={ending}
-                style={{ flex: 1, padding: '10px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
-                Cancel
-              </button>
-              <button onClick={endProgram} disabled={ending}
-                style={{ flex: 1, padding: '10px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
-                {ending ? 'Saving…' : 'Done with this program'}
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-    )
   }
 
-  // ── NO ACTIVE PROGRAM — show library or preview ─────────────
+  // ── PROGRAM LIBRARY — show all programs, mark active/incompatible ─────────────
   if (previewingProgram) {
     return (
       <ProgramEnrollmentPreview
