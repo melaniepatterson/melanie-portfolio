@@ -112,7 +112,7 @@ export default function PrivacyPolicy() {
           </Section>
 
           <Section title="Contact">
-            <P>Questions? Email <strong style={{ color: T.text }}>hello@melanie.studio</strong> — update this address before going public.</P>
+            <P>Questions? Email <a href="mailto:hello@melanie.studio?subject=Glow%20Up%20%E2%80%94%20Privacy%3A%20" style={{ color: T.pinkDeep }}><strong style={{ color: T.text }}>hello@melanie.studio</strong></a> — update this address before going public.</P>
           </Section>
 
         </div>
