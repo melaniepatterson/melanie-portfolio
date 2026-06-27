@@ -112,7 +112,7 @@ export default function PrivacyPolicy() {
           </Section>
 
           <Section title="Contact">
-            <P>Questions? Email <strong style={{ color: T.text }}>hello@glowupapp.co</strong> — update this address before going public.</P>
+            <P>Questions? Email <strong style={{ color: T.text }}>hello@melanie.studio</strong> — update this address before going public.</P>
           </Section>
 
         </div>
