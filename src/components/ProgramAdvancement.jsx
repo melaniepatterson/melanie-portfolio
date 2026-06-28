@@ -387,33 +387,58 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
   }
 
   // ── Phase 1 -> Phase 2 ─────────────────────────────────────
-  async function advanceToPhase2(chosenOptions) {
+  async function advanceToPhase2(chosenOptions, bhaDay = null) {
     const today = new Date().toISOString().split('T')[0]
     const realChoices = chosenOptions.filter(o => !o.is_skip_option)
+    const hasExfoliant = realChoices.some(o => o.step_key === 'exfoliant')
+    const nonBhaChoices = realChoices.filter(o => o.step_key !== 'exfoliant')
 
-    // Add each chosen step to routine_periods.steps
-    if (realChoices.length && routinePeriod?._dbId) {
+    // Add non-exfoliant steps to routine_periods.steps
+    if (nonBhaChoices.length && routinePeriod?._dbId) {
       const currentSteps = routinePeriod.steps || { am: [], pm: [], off: [] }
-      const { am: amAdds, pm: pmAdds } = buildStepEntries(realChoices)
+      const { am: amAdds, pm: pmAdds } = buildStepEntries(nonBhaChoices)
       const newSteps = {
         am:  [...(currentSteps.am  || []), ...amAdds],
         pm:  [...(currentSteps.pm  || []), ...pmAdds],
         off: [...(currentSteps.off || currentSteps.pm || []), ...pmAdds.map(s => ({ ...s, id: s.id.replace('pm_', 'off_') }))],
       }
-
       await supabase
         .from('routine_periods')
         .update({ steps: newSteps, updated_at: new Date().toISOString() })
         .eq('id', routinePeriod._dbId)
     }
 
-    // Record each selection (including skip, if that's what was chosen)
-    for (const opt of chosenOptions) {
+    // Record selections (non-bha)
+    for (const opt of chosenOptions.filter(o => o.step_key !== 'exfoliant')) {
       await supabase.from('user_program_phase_selections').insert({
         user_program_id: activeProgram.id,
         phase_id: currentPhase.id,
         selected_option_id: opt.id,
       })
+    }
+
+    // Enroll in AHA/BHA Onboarding if exfoliant was chosen
+    if (hasExfoliant) {
+      const { data: bhaProg, error: bhaErr } = await supabase
+        .from('programs').select('id').eq('slug', 'aha-bha-onboarding').single()
+      console.log('[AHA/BHA PA enroll]', bhaProg, bhaErr)
+      if (bhaProg) {
+        const { error: insertErr } = await supabase.from('user_programs').insert({
+          user_id: session.user.id,
+          program_id: bhaProg.id,
+          started_at: today,
+          current_phase_number: 1,
+          phase_started_at: today,
+          status: 'active',
+          phase_duration_overrides: null,
+        })
+        console.log('[AHA/BHA PA insert]', insertErr)
+        if (!insertErr && routinePeriod?._dbId) {
+          await supabase.from('routine_periods')
+            .update({ bha_enabled: true, bha_frequency: 1, bha_start_day: bhaDay ?? 6 })
+            .eq('id', routinePeriod._dbId)
+        }
+      }
     }
 
     // Advance phase
