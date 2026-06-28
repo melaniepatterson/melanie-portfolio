@@ -3603,11 +3603,10 @@ function AddProgramPanel({ session, activeProgram, activePrograms = [], routineP
 
       // AHA/BHA program — enable BHA tracking on the active routine period
       if (program.slug === 'aha-bha-onboarding') {
-        const activePeriod = routineHistory.find(p => p.startDate <= today && (!p.endDate || p.endDate >= today))
-        if (activePeriod?._dbId) {
+        if (routinePeriod?._dbId) {
           await supabase.from('routine_periods')
             .update({ bha_enabled: true, bha_frequency: 1 })
-            .eq('id', activePeriod._dbId)
+            .eq('id', routinePeriod._dbId)
         }
       }
 
