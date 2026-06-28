@@ -51,7 +51,7 @@ export function Phase2Picker({ options, onChoose, onClose, skinType, alreadyAdde
           ))}
         </div>
         <div style={{ fontSize: 10, color: T.textMuted, marginBottom: 20, lineHeight: 1.6 }}>
-          Phase 1 → {DAYS[bhaDay]} only · Phase 2 → {DAYS[bhaDay]} + {DAYS[(bhaDay + 3) % 7]} · Phase 3 → {DAYS[bhaDay]} + {DAYS[(bhaDay + 2) % 7]} + {DAYS[(bhaDay + 4) % 7]}
+          Phase 1 → {DAYS[bhaDay]} only · Phase 2 → {DAYS[bhaDay]} + {DAYS[(bhaDay + 3) % 7]} · Maintenance → {DAYS[bhaDay]} + {DAYS[(bhaDay + 2) % 7]} + {DAYS[(bhaDay + 4) % 7]}
         </div>
         <button disabled={saving} onClick={async () => {
           setSaving(true)
