@@ -26,7 +26,9 @@ export const SKIN_TYPE_NOTES = {
 // Step keys that introduce a new active ingredient — only one
 // can be selected at a time so the user isn't ramping multiple
 // actives simultaneously.
-export const ACTIVE_STEP_KEYS = new Set(['vitamin_c', 'exfoliant'])
+// Exfoliant is the only truly "introduce slowly, one at a time" active in Phase 2.
+// Vitamin C can run alongside AHA/BHA (morning Vit C + evening AHA/BHA is standard).
+export const ACTIVE_STEP_KEYS = new Set(['exfoliant'])
 
 // Applies a program phase's step config (program_phase_steps rows for
 // 'main'/active-night steps) to a routine period. Used by linear
