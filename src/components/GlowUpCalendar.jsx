@@ -3567,11 +3567,11 @@ function AddProgramPanel({ session, activeProgram, activePrograms = [], routineP
     // If exfoliant was selected, enroll in AHA/BHA Onboarding program
     if (hasExfoliant) {
       const today = todayInTz(timezone)
-      // Find the AHA/BHA program
-      const { data: bhaProg } = await supabase
+      const { data: bhaProg, error: bhaProgErr } = await supabase
         .from('programs').select('id').eq('slug', 'aha-bha-onboarding').single()
+      console.log('[AHA/BHA enroll] program lookup:', bhaProg, bhaProgErr)
       if (bhaProg) {
-        await supabase.from('user_programs').insert({
+        const { error: insertErr } = await supabase.from('user_programs').insert({
           user_id: session.user.id,
           program_id: bhaProg.id,
           started_at: today,
@@ -3580,8 +3580,8 @@ function AddProgramPanel({ session, activeProgram, activePrograms = [], routineP
           status: 'active',
           phase_duration_overrides: null,
         })
-        // Enable BHA tracking on the routine period
-        if (routinePeriod?._dbId) {
+        console.log('[AHA/BHA enroll] insert error:', insertErr)
+        if (!insertErr && routinePeriod?._dbId) {
           await supabase.from('routine_periods')
             .update({ bha_enabled: true, bha_frequency: 1, bha_start_day: bhaDay ?? 6 })
             .eq('id', routinePeriod._dbId)
