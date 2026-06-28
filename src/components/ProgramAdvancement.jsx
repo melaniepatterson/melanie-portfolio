@@ -27,6 +27,43 @@ function daysSince(dateStr) {
 export function Phase2Picker({ options, onChoose, onClose, skinType, alreadyAdded = new Set() }) {
   const [selected, setSelected] = useState(new Set())
   const [saving, setSaving] = useState(false)
+  const [bhaStep, setBhaStep] = useState(false) // show AHA/BHA day picker after confirming
+  const [bhaDay, setBhaDay] = useState(6)       // default Saturday
+  const [chosenItems, setChosenItems] = useState([])
+
+  const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
+
+  if (bhaStep) return (
+    <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+      <div onClick={e => e.stopPropagation()} style={{ background: T.white, border: `1px solid ${T.border}`, borderRadius: 0, width: '100%', maxWidth: 460, padding: '28px 24px' }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>AHA/BHA Onboarding</div>
+        <h3 style={{ fontSize: 18, fontWeight: 800, color: T.text, letterSpacing: '-0.03em', margin: '0 0 8px' }}>One more step</h3>
+        <p style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.7, margin: '0 0 20px' }}>
+          AHA/BHA needs a slow ramp-up to avoid irritation — we'll track it through the AHA/BHA Onboarding program. Pick which night works best for you and we'll handle the rest.
+        </p>
+        <div style={{ fontSize: 11, color: T.textLight, marginBottom: 8 }}>Your exfoliation night</div>
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
+          {DAYS.map((d, i) => (
+            <button key={i} onClick={() => setBhaDay(i)}
+              style={{ padding: '6px 12px', borderRadius: 0, border: `1px solid ${bhaDay === i ? T.text : T.border}`, background: bhaDay === i ? T.text : 'transparent', color: bhaDay === i ? '#fff' : T.textMuted, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
+              {d}
+            </button>
+          ))}
+        </div>
+        <div style={{ fontSize: 10, color: T.textMuted, marginBottom: 20, lineHeight: 1.6 }}>
+          Phase 1 → {DAYS[bhaDay]} only · Phase 2 → {DAYS[bhaDay]} + {DAYS[(bhaDay + 3) % 7]} · Phase 3 → {DAYS[bhaDay]} + {DAYS[(bhaDay + 2) % 7]} + {DAYS[(bhaDay + 4) % 7]}
+        </div>
+        <button disabled={saving} onClick={async () => {
+          setSaving(true)
+          await onChoose(chosenItems, bhaDay)
+          setSaving(false)
+        }}
+          style={{ width: '100%', padding: '12px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 600 }}>
+          {saving ? 'Starting…' : 'Start AHA/BHA Onboarding'}
+        </button>
+      </div>
+    </div>
+  )
 
   return (
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
@@ -50,7 +87,7 @@ export function Phase2Picker({ options, onChoose, onClose, skinType, alreadyAdde
           options={options}
           selected={selected}
           onToggle={opt => {
-            if (alreadyAdded.has(opt.step_key)) return // can't re-add
+            if (alreadyAdded.has(opt.step_key)) return
             setSelected(prev => toggleOption(prev, opt, options))
           }}
           skinType={skinType}
@@ -60,10 +97,17 @@ export function Phase2Picker({ options, onChoose, onClose, skinType, alreadyAdde
         <button
           disabled={selected.size === 0 || saving}
           onClick={async () => {
-            setSaving(true)
             const chosen = options.filter(o => selected.has(o.id))
-            await onChoose(chosen)
-            setSaving(false)
+            const hasExfoliant = chosen.some(o => o.step_key === 'exfoliant')
+            if (hasExfoliant) {
+              // Route exfoliant through AHA/BHA Onboarding
+              setChosenItems(chosen)
+              setBhaStep(true)
+            } else {
+              setSaving(true)
+              await onChoose(chosen, null)
+              setSaving(false)
+            }
           }}
           style={{ width: '100%', padding: '12px', borderRadius: 0, border: 'none', background: selected.size > 0 ? T.pinkDeep : T.border, color: '#fff', cursor: selected.size > 0 ? 'pointer' : 'default', fontSize: 13, fontFamily: 'inherit', fontWeight: 600, marginTop: 12 }}>
           {saving ? 'Saving…' : (() => {

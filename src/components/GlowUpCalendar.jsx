@@ -3535,31 +3535,58 @@ function AddProgramPanel({ session, activeProgram, activePrograms = [], routineP
   }
 
   // ── Add more, anytime during Phase 2 (doesn't touch phase/dates) ──
-  async function addStepsNow(chosenOptions) {
+  async function addStepsNow(chosenOptions, bhaDay = null) {
     const realChoices = chosenOptions.filter(o => !o.is_skip_option)
+    const hasExfoliant = realChoices.some(o => o.step_key === 'exfoliant')
+    // Non-exfoliant steps get added to routine normally
+    const nonBhaChoices = realChoices.filter(o => o.step_key !== 'exfoliant')
     const phase2 = activeProgramDetails?.phases.find(p => p.phase_number === 2)
 
-    if (realChoices.length && routinePeriod?._dbId) {
+    if (nonBhaChoices.length && routinePeriod?._dbId) {
       const currentSteps = routinePeriod.steps || { am: [], pm: [], off: [] }
-      const { am: amAdds, pm: pmAdds } = buildStepEntries(realChoices)
+      const { am: amAdds, pm: pmAdds } = buildStepEntries(nonBhaChoices)
       const newSteps = {
         am:  [...(currentSteps.am  || []), ...amAdds],
         pm:  [...(currentSteps.pm  || []), ...pmAdds],
         off: [...(currentSteps.off || currentSteps.pm || []), ...pmAdds.map(s => ({ ...s, id: s.id.replace('pm_', 'off_') }))],
       }
-
       await supabase
         .from('routine_periods')
         .update({ steps: newSteps, updated_at: new Date().toISOString() })
         .eq('id', routinePeriod._dbId)
     }
 
-    for (const opt of realChoices) {
+    for (const opt of nonBhaChoices) {
       await supabase.from('user_program_phase_selections').insert({
         user_program_id: activeProgram.id,
         phase_id: phase2?.id || activeProgram.id,
         selected_option_id: opt.id,
       })
+    }
+
+    // If exfoliant was selected, enroll in AHA/BHA Onboarding program
+    if (hasExfoliant) {
+      const today = todayInTz(timezone)
+      // Find the AHA/BHA program
+      const { data: bhaProg } = await supabase
+        .from('programs').select('id').eq('slug', 'aha-bha-onboarding').single()
+      if (bhaProg) {
+        await supabase.from('user_programs').insert({
+          user_id: session.user.id,
+          program_id: bhaProg.id,
+          started_at: today,
+          current_phase_number: 1,
+          phase_started_at: today,
+          status: 'active',
+          phase_duration_overrides: null,
+        })
+        // Enable BHA tracking on the routine period
+        if (routinePeriod?._dbId) {
+          await supabase.from('routine_periods')
+            .update({ bha_enabled: true, bha_frequency: 1, bha_start_day: bhaDay ?? 6 })
+            .eq('id', routinePeriod._dbId)
+        }
+      }
     }
 
     setShowAddMore(false)
