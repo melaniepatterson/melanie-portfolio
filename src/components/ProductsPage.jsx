@@ -953,7 +953,7 @@ function getBrandColor(brand, id) {
 
 function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, isWhatWeUsing, userRoutineNames, upd, onAddToLibrary, onRemoveFromLibrary, onSaveUserProductData, onMarkFinished }) {
   const [finishConfetti, setFinishConfetti] = useState(false)
-  const [finishCount, setFinishCount] = useState(p.finish_count || 0)
+  const [finishCount, setFinishCount] = useState(upd?.finish_count || p.finish_count || 0)
 
   async function handleMarkFinished() {
     setFinishConfetti(true)
@@ -1128,7 +1128,7 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
                 ? <>
                     <button onClick={handleMarkFinished}
                       style={{ flex: 1, padding: '9px', borderRadius: 0, border: '0.5px solid ' + T.pinkDeep, background: finishConfetti ? T.pink : 'transparent', color: T.pinkDeep, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 500, transition: 'background 0.3s' }}>
-                      {finishConfetti ? '\u2713 Finished!' : finishCount > 0 ? `Mark as finished (${finishCount}\u00d7)` : 'Mark as finished'}
+                      {finishConfetti ? '✓ Finished!' : finishCount > 0 ? `Mark as finished (${finishCount}×)` : 'Mark as finished'}
                     </button>
                     <button onClick={() => { onRemoveFromLibrary(p.id); onClose() }}
                       style={{ padding: '9px 14px', borderRadius: 0, border: '0.5px solid ' + T.border, background: 'transparent', color: T.textMuted, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
@@ -1450,11 +1450,11 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 11, fontWeight: 500, color: T.text, lineHeight: 1.4, marginBottom: 1 }}>{p.name}</div>
                     {p.brand && <div style={{ fontSize: 10, color: T.textMuted }}>{p.brand}</div>}
-                    {p.finish_count > 0 && (
+                    {p.finish_count > 0 || (userProductData||{})[p.id]?.finish_count > 0 ? (
                       <div style={{ fontSize: 9, color: T.pinkDeep, marginTop: 3, fontWeight: 600 }}>
-                        Finished {p.finish_count}×
+                        Finished {((userProductData||{})[p.id]?.finish_count || p.finish_count)}×
                       </div>
-                    )}
+                    ) : null}
                   </div>
                   {/* URL pills — always at bottom, stacked full width */}
                   {(p.purchaseUrl || p.direct_url) && (
@@ -1781,19 +1781,23 @@ export default function ProductsPage({ session }) {
 
   async function markFinished(product) {
     if (!product.id || !session?.user?.id) return
-    // Increment finish_count on the product
-    const newCount = (product.finish_count || 0) + 1
-    await supabase.from('products')
-      .update({ finish_count: newCount })
-      .eq('id', product.id)
-    // Log to product_finishes
+    const userId = session.user.id
+    const existing = userProductData[product.id] || {}
+    const newCount = (existing.finish_count || 0) + 1
+
+    // Store in user_product_data — works for catalog AND personal products
+    await supabase.from('user_product_data')
+      .upsert({ user_id: userId, product_id: product.id, ...existing, finish_count: newCount }, { onConflict: 'user_id,product_id' })
+
+    // Log each finish event
     await supabase.from('product_finishes').insert({
-      user_id: session.user.id,
+      user_id: userId,
       product_id: product.id,
       finished_at: new Date().toISOString().split('T')[0],
     })
+
     // Update local state
-    setProducts(prev => ({
+    setUserProductData(prev => ({
       ...prev,
       [product.id]: { ...prev[product.id], finish_count: newCount }
     }))
