@@ -1125,10 +1125,16 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
           <div style={{ display: 'flex', gap: 8, marginTop: 16, flexWrap: 'wrap' }}>
             {isCatalog ? (
               upd?.in_library
-                ? <button onClick={() => { onRemoveFromLibrary(p.id); onClose() }}
-                    style={{ flex: 1, padding: '9px', borderRadius: 0, border: '0.5px solid ' + T.border, background: 'transparent', color: T.textMuted, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
-                    Remove from my products
-                  </button>
+                ? <>
+                    <button onClick={handleMarkFinished}
+                      style={{ flex: 1, padding: '9px', borderRadius: 0, border: '0.5px solid ' + T.pinkDeep, background: finishConfetti ? T.pink : 'transparent', color: T.pinkDeep, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 500, transition: 'background 0.3s' }}>
+                      {finishConfetti ? '\u2713 Finished!' : finishCount > 0 ? `Mark as finished (${finishCount}\u00d7)` : 'Mark as finished'}
+                    </button>
+                    <button onClick={() => { onRemoveFromLibrary(p.id); onClose() }}
+                      style={{ padding: '9px 14px', borderRadius: 0, border: '0.5px solid ' + T.border, background: 'transparent', color: T.textMuted, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
+                      Remove
+                    </button>
+                  </>
                 : <button onClick={() => { onAddToLibrary(p); onClose() }}
                     style={{ flex: 1, padding: '9px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 500 }}>
                     + Add to my products
