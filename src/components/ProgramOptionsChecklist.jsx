@@ -72,7 +72,7 @@ export default function ProgramOptionsChecklist({ options, selected, onToggle, s
       {skipOption && (
         <button onClick={() => onToggle(skipOption)}
           style={{
-            width: '100%', textAlign: 'left', display: 'block', marginTop: 12, marginBottom: 8,
+            width: '100%', textAlign: 'left', display: 'block', marginTop: 8, marginBottom: 8,
             padding: '14px 16px', borderRadius: 0, cursor: 'pointer', fontFamily: 'inherit',
             border: `1px solid ${selected.has(skipOption.id) ? T.text : T.border}`,
             background: selected.has(skipOption.id) ? T.text : 'transparent',
