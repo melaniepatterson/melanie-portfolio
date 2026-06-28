@@ -69,12 +69,6 @@ export default function ProgramOptionsChecklist({ options, selected, onToggle, s
         )
       })}
 
-      {hasActiveTaken && (
-        <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.6, padding: '8px 0 4px', fontStyle: 'italic' }}>
-          We limit new ingredients like this to one at a time, so it's clear what your skin is responding to. You can add another later.
-        </div>
-      )}
-
       {skipOption && (
         <button onClick={() => onToggle(skipOption)}
           style={{
