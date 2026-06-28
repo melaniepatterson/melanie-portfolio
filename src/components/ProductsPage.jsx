@@ -1,5 +1,6 @@
 // v2-stars-modal-fix
 import { useState, useEffect, useRef } from 'react'
+import GlowUpLogo from './GlowUpLogo'
 import { supabase } from '../lib/supabase'
 
 const T = {
@@ -950,7 +951,16 @@ function getBrandColor(brand, id) {
   return BRAND_COLORS[hash % BRAND_COLORS.length]
 }
 
-function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, isWhatWeUsing, userRoutineNames, upd, onAddToLibrary, onRemoveFromLibrary, onSaveUserProductData }) {
+function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, isWhatWeUsing, userRoutineNames, upd, onAddToLibrary, onRemoveFromLibrary, onSaveUserProductData, onMarkFinished }) {
+  const [finishConfetti, setFinishConfetti] = useState(false)
+  const [finishCount, setFinishCount] = useState(p.finish_count || 0)
+
+  async function handleMarkFinished() {
+    setFinishConfetti(true)
+    setFinishCount(c => c + 1)
+    setTimeout(() => setFinishConfetti(false), 2500)
+    if (onMarkFinished) await onMarkFinished(p)
+  }
   if (!p) return null
   const isCatalog = p._isCatalog && !p._isLinked
   const cat = p.catalog_product_id ? (catalogProducts || {})[p.catalog_product_id] : null
@@ -1129,6 +1139,10 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
                   style={{ flex: 1, padding: '9px', borderRadius: 0, border: '0.5px solid ' + T.border, background: T.creamDark, color: T.text, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 500 }}>
                   Edit
                 </button>
+                <button onClick={handleMarkFinished}
+                  style={{ flex: 1, padding: '9px', borderRadius: 0, border: '0.5px solid ' + T.pinkDeep, background: finishConfetti ? T.pink : 'transparent', color: T.pinkDeep, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 500, transition: 'background 0.3s' }}>
+                  {finishConfetti ? '✓ Finished!' : finishCount > 0 ? `Mark as finished (${finishCount}×)` : 'Mark as finished'}
+                </button>
                 <button onClick={() => { if (window.confirm('Delete ' + p.name + '?')) { onDelete(p); onClose() } }}
                   style={{ padding: '9px 14px', borderRadius: 0, border: '0.5px solid ' + T.border, background: 'transparent', color: T.textLight, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
                   Delete
@@ -1138,6 +1152,25 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
           </div>
         </div>
         </div>
+
+        {/* Confetti burst on finish */}
+        {finishConfetti && (
+          <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden', borderRadius: 0 }}>
+            {Array.from({ length: 24 }).map((_, i) => (
+              <div key={i} style={{
+                position: 'absolute',
+                left: `${20 + Math.random() * 60}%`,
+                top: `${10 + Math.random() * 40}%`,
+                width: 6, height: 6,
+                borderRadius: Math.random() > 0.5 ? '50%' : 0,
+                background: ['#FFD6F9','#C93500','#1A1A1A','#FAF7F2'][i % 4],
+                animation: `confettiFall ${0.8 + Math.random() * 1.2}s ease-out forwards`,
+                transform: `rotate(${Math.random() * 360}deg)`,
+              }} />
+            ))}
+            <style>{`@keyframes confettiFall { to { transform: translateY(120px) rotate(720deg); opacity: 0; } }`}</style>
+          </div>
+        )}
       </div>
     </div>
   )
@@ -1145,7 +1178,7 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
 
 
 // ─── PRODUCT LIBRARY ─────────────────────────────────────────
-function ProductLibrary({ products, catalogProducts, userProductData, activeRoutineNames, userRoutineNames, onEdit, onAdd, onDelete, onAddToLibrary, onRemoveFromLibrary, onSaveUserProductData }) {
+function ProductLibrary({ products, catalogProducts, userProductData, activeRoutineNames, userRoutineNames, onEdit, onAdd, onDelete, onAddToLibrary, onRemoveFromLibrary, onSaveUserProductData, onMarkFinished }) {
   const [libTab,        setLibTab]        = useState('all')
   const [filterCats,    setFilterCats]    = useState([])
   const [filterFlags,   setFilterFlags]   = useState([])
@@ -1411,6 +1444,11 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 11, fontWeight: 500, color: T.text, lineHeight: 1.4, marginBottom: 1 }}>{p.name}</div>
                     {p.brand && <div style={{ fontSize: 10, color: T.textMuted }}>{p.brand}</div>}
+                    {p.finish_count > 0 && (
+                      <div style={{ fontSize: 9, color: T.pinkDeep, marginTop: 3, fontWeight: 600 }}>
+                        Finished {p.finish_count}×
+                      </div>
+                    )}
                   </div>
                   {/* URL pills — always at bottom, stacked full width */}
                   {(p.purchaseUrl || p.direct_url) && (
@@ -1450,6 +1488,7 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
           onAddToLibrary={onAddToLibrary}
           onRemoveFromLibrary={onRemoveFromLibrary}
           onSaveUserProductData={onSaveUserProductData}
+          onMarkFinished={onMarkFinished}
         />
       )}
     </div>
@@ -1494,6 +1533,7 @@ export default function ProductsPage({ session }) {
             id: p.id, name: p.name, brand: p.brand, category: p.category,
             imageUrl: p.image_url, purchaseUrl: p.purchase_url,
             bdsCompliant: p.bds_compliant, currentlyUsing: p.currently_using,
+            finish_count: p.finish_count || 0,
             applicationArea: p.application_area || {},
             effectivenessAvg: p.effectiveness_avg || 0,
             tags: (p.tags || []).map(t => t ? t.charAt(0).toUpperCase() + t.slice(1) : t),
@@ -1733,6 +1773,26 @@ export default function ProductsPage({ session }) {
     })
   }
 
+  async function markFinished(product) {
+    if (!product.id || !session?.user?.id) return
+    // Increment finish_count on the product
+    const newCount = (product.finish_count || 0) + 1
+    await supabase.from('products')
+      .update({ finish_count: newCount })
+      .eq('id', product.id)
+    // Log to product_finishes
+    await supabase.from('product_finishes').insert({
+      user_id: session.user.id,
+      product_id: product.id,
+      finished_at: new Date().toISOString().split('T')[0],
+    })
+    // Update local state
+    setProducts(prev => ({
+      ...prev,
+      [product.id]: { ...prev[product.id], finish_count: newCount }
+    }))
+  }
+
   return (
     <div style={{ fontFamily: 'inherit', minHeight: '100vh', background: T.cream, paddingBottom: 40 }}>
       {/* ── App header ──────────────────────────────────────────── */}
@@ -1741,7 +1801,7 @@ export default function ProductsPage({ session }) {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px 10px' }}>
           <style>{`.glowup-prodlogo { display: flex } @media (max-width: 639px) { .glowup-prodlogo { display: none } }`}</style>
           <a href="/routine" className="glowup-prodlogo" style={{ alignItems: 'baseline', gap: 6, textDecoration: 'none' }}>
-            <span style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-0.04em', color: '#1A1A1A', lineHeight: 1,  }}>Glow <span style={{ color: '#C93500' }}>Up</span><span style={{ color: '#FFD6F9' }}>.</span></span>
+            <GlowUpLogo />
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: T.pinkDeep, display: 'inline-block', marginBottom: 2 }} />
           </a>
           <div className="glowup-prodlogo" style={{ flex: 1 }} />
@@ -1787,6 +1847,7 @@ export default function ProductsPage({ session }) {
               onAddToLibrary={addToLibrary}
               onRemoveFromLibrary={removeFromLibrary}
               onSaveUserProductData={saveUserProductData}
+              onMarkFinished={markFinished}
             />
       }
     </div>
