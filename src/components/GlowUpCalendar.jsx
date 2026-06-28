@@ -547,11 +547,16 @@ function getTretBhaStatus(dt, period) {
 // Phase 3 (freq 3): Monday + Wednesday + Saturday
 function getBhaStatus(dt, period) {
   if (!period?.bhaEnabled || period?.tretEnabled) return null
-  const freq = period.bhaFrequency || 1
-  const dow  = dt.getDay() // 0 = Sunday
-  if (freq === 1 && dow === 6) return 'bha'
-  if (freq === 2 && (dow === 2 || dow === 6)) return 'bha'
-  if (freq >= 3 && (dow === 1 || dow === 3 || dow === 6)) return 'bha'
+  const freq     = period.bhaFrequency || 1
+  const startDay = period.bhaStartDay ?? 6
+  const dow      = dt.getDay()
+  const d1 = startDay % 7
+  const d2 = (startDay + 3) % 7
+  const d3 = (startDay + 2) % 7
+  const d4 = (startDay + 4) % 7
+  if (freq === 1 && dow === d1) return 'bha'
+  if (freq === 2 && (dow === d1 || dow === d2)) return 'bha'
+  if (freq >= 3 && (dow === d1 || dow === d3 || dow === d4)) return 'bha'
   return null
 }
 
@@ -3274,8 +3279,12 @@ function ProgramEnrollmentPreview({ program, onConfirm, onBack, timezone }) {
   ]
 
   const isLinear = program.slug === 'tretinoin-onboarding'
+  const isBha    = program.slug === 'aha-bha-onboarding'
   const [pace, setPace] = useState('recommended')
+  const [bhaDay, setBhaDay] = useState(6) // default Saturday
   const selectedTier = PACE_TIERS.find(t => t.id === pace)
+
+  const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
 
   useEffect(() => {
     supabase.from('program_phases').select('*').eq('program_id', program.id).order('phase_number')
@@ -3391,6 +3400,25 @@ function ProgramEnrollmentPreview({ program, onConfirm, onBack, timezone }) {
           </div>
           <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)}
             style={{ width: '100%', boxSizing: 'border-box', fontSize: 12, padding: '6px 2px', border: 'none', borderBottom: `1px solid ${T.text}`, borderRadius: 0, background: 'transparent', color: T.text, fontFamily: 'inherit', outline: 'none', marginBottom: 14 }} />
+
+          {/* AHA/BHA day picker */}
+          {isBha && (
+            <div style={{ marginBottom: 14 }}>
+              <div style={{ fontSize: 11, color: T.textLight, marginBottom: 6 }}>Which day works best for your first exfoliation night?</div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                {DAYS.map((d, i) => (
+                  <button key={i} onClick={() => setBhaDay(i)}
+                    style={{ padding: '5px 10px', borderRadius: 0, border: `1px solid ${bhaDay === i ? T.text : T.border}`, background: bhaDay === i ? T.text : 'transparent', color: bhaDay === i ? '#fff' : T.textMuted, cursor: 'pointer', fontSize: 11, fontFamily: 'inherit' }}>
+                    {d.slice(0, 3)}
+                  </button>
+                ))}
+              </div>
+              <div style={{ fontSize: 10, color: T.textMuted, marginTop: 6, lineHeight: 1.6 }}>
+                Phase 1 → {DAYS[bhaDay]} · Phase 2 → {DAYS[bhaDay]} + {DAYS[(bhaDay + 3) % 7]} · Phase 3 → {DAYS[bhaDay]} + {DAYS[(bhaDay + 2) % 7]} + {DAYS[(bhaDay + 4) % 7]}
+              </div>
+            </div>
+          )}
+
           <div style={{ display: 'flex', gap: 8 }}>
             <button onClick={onBack} disabled={confirming}
               style={{ flex: 1, padding: '11px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
@@ -3398,7 +3426,7 @@ function ProgramEnrollmentPreview({ program, onConfirm, onBack, timezone }) {
             </button>
             <button onClick={async () => {
               setConfirming(true)
-              await onConfirm(startDate, isLinear ? selectedTier?.durations : null)
+              await onConfirm(startDate, isLinear ? selectedTier?.durations : null, isBha ? bhaDay : null)
               setConfirming(false)
             }} disabled={confirming}
               style={{ flex: 2, padding: '11px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
@@ -3586,7 +3614,7 @@ function AddProgramPanel({ session, activeProgram, activePrograms = [], routineP
     }
   }
 
-  async function startProgram(program, chosenStartDate, phaseDurations) {
+  async function startProgram(program, chosenStartDate, phaseDurations, bhaDay) {
     setStarting(program.id)
     try {
       const today = chosenStartDate || todayInTz(timezone)
@@ -3605,7 +3633,7 @@ function AddProgramPanel({ session, activeProgram, activePrograms = [], routineP
       if (program.slug === 'aha-bha-onboarding') {
         if (routinePeriod?._dbId) {
           await supabase.from('routine_periods')
-            .update({ bha_enabled: true, bha_frequency: 1 })
+            .update({ bha_enabled: true, bha_frequency: 1, bha_start_day: bhaDay ?? 6 })
             .eq('id', routinePeriod._dbId)
         }
       }
@@ -3741,8 +3769,8 @@ function AddProgramPanel({ session, activeProgram, activePrograms = [], routineP
         program={previewingProgram}
         timezone={timezone}
         onBack={() => setPreviewingProgram(null)}
-        onConfirm={async (startDate, phaseDurations) => {
-          await startProgram(previewingProgram, startDate, phaseDurations)
+        onConfirm={async (startDate, phaseDurations, bhaDay) => {
+          await startProgram(previewingProgram, startDate, phaseDurations, bhaDay)
           setPreviewingProgram(null)
         }}
       />
@@ -4754,6 +4782,7 @@ export default function GlowUpCalendar({ session }) {
         secondaryActives:p.secondary_actives || [],
         bhaEnabled:      p.bha_enabled || false,
         bhaFrequency:    p.bha_frequency || 1,
+        bhaStartDay:     p.bha_start_day ?? 6,
         products:        p.products || {},
         steps:           p.steps || null,
         _dbId:           p.id,
