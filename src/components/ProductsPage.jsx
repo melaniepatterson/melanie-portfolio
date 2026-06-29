@@ -1,6 +1,6 @@
 // v2-stars-modal-fix
 import { useState, useEffect, useRef } from 'react'
-import GlowUpLogo from './GlowUpWordmark'
+import GlowUpLogo from './GlowUpLogo'
 import { supabase } from '../lib/supabase'
 
 const T = {
@@ -962,6 +962,14 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
     if (onMarkFinished) await onMarkFinished(p)
   }
   if (!p) return null
+  // Merge user-specific data (upd) into p so date/PAO fields work for catalog products
+  const merged = {
+    ...p,
+    opened_at:    upd?.opened_at    || p.opened_at    || null,
+    purchased_at: upd?.purchased_at || p.purchased_at || null,
+    expires_at:   upd?.expiry_date  || p.expires_at   || null,
+    pao_months:   upd?.pao_months   || p.pao_months   || null,
+  }
   const isCatalog = p._isCatalog && !p._isLinked
   const cat = p.catalog_product_id ? (catalogProducts || {})[p.catalog_product_id] : null
   const purchaseUrl = p.purchaseUrl || cat?.purchaseUrl
@@ -1058,11 +1066,11 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
           {p.ingredients && <IngredientsAccordion ingredients={p.ingredients} />}
 
           {/* PAO + dates */}
-          {(p.pao_months || p.opened_at || p.expires_at || p.purchased_at) && (() => {
+          {(merged.pao_months || merged.opened_at || merged.expires_at || merged.purchased_at) && (() => {
             const fmt = (d) => new Date(d + 'T00:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
-            const computedExpiry = (!p.expires_at && p.opened_at && p.pao_months)
-              ? (() => { const d = new Date(p.opened_at + 'T00:00:00'); d.setMonth(d.getMonth() + Number(p.pao_months)); return d })()
-              : p.expires_at ? new Date(p.expires_at + 'T00:00:00') : null
+            const computedExpiry = (!merged.expires_at && merged.opened_at && merged.pao_months)
+              ? (() => { const d = new Date(merged.opened_at + 'T00:00:00'); d.setMonth(d.getMonth() + Number(merged.pao_months)); return d })()
+              : merged.expires_at ? new Date(merged.expires_at + 'T00:00:00') : null
             const today = new Date(); today.setHours(0,0,0,0)
             const daysLeft = computedExpiry ? Math.round((computedExpiry - today) / 86400000) : null
             const isExpired = daysLeft !== null && daysLeft < 0
@@ -1071,7 +1079,7 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
             return (
               <div style={{ marginBottom: 12 }}>
                 {/* PAO / expiry line */}
-                {(p.opened_at || p.expires_at) && (
+                {(merged.opened_at || merged.expires_at) && (
                   <div style={{
                     display: 'flex', alignItems: 'center', gap: 8,
                     padding: '8px 10px', marginBottom: 6, borderRadius: 0,
@@ -1080,10 +1088,10 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
                   }}>
                     <span style={{ fontSize: 14 }}>{isExpired ? '⚠️' : expiringSoon ? '⏳' : '🗓'}</span>
                     <div>
-                      {p.opened_at && (
+                      {merged.opened_at && (
                         <div style={{ fontSize: 12, color: T.text, fontWeight: 500 }}>
-                          Opened {fmt(p.opened_at)}
-                          {p.pao_months && <span style={{ color: T.textMuted, fontWeight: 400 }}> · {p.pao_months}mo PAO</span>}
+                          Opened {fmt(merged.opened_at)}
+                          {merged.pao_months && <span style={{ color: T.textMuted, fontWeight: 400 }}> · {merged.pao_months}mo PAO</span>}
                         </div>
                       )}
                       {computedExpiry && (
@@ -1099,9 +1107,9 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
                   </div>
                 )}
                 {/* Purchased */}
-                {p.purchased_at && (
+                {merged.purchased_at && (
                   <div style={{ fontSize: 11, color: T.textMuted }}>
-                    Purchased {fmt(p.purchased_at)}
+                    Purchased {fmt(merged.purchased_at)}
                   </div>
                 )}
               </div>
@@ -1508,8 +1516,10 @@ export default function ProductsPage({ session }) {
   const [userProductData, setUserProductData] = useState({}) // keyed by product_id
   const [editingProduct, setEditingProduct] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [activeRoutineNames, setActiveRoutineNames] = useState(new Set())  // curator's, BDS-gated — drives badge
-  const [userRoutineNames, setUserRoutineNames] = useState(new Set())        // current user's — drives filter
+  const [activeTab, setActiveTab] = useState('library') // library | history
+  const [finishHistory, setFinishHistory] = useState([])
+  const [activeRoutineNames, setActiveRoutineNames] = useState(new Set())
+  const [userRoutineNames, setUserRoutineNames] = useState(new Set())
   const userId = session?.user?.id
   const CURATOR_ID = '27fbf9cd-5cfe-4032-9594-398e96fd0ccf'
 
@@ -1662,6 +1672,14 @@ export default function ProductsPage({ session }) {
         }
       }
       setLoading(false)
+
+      // Load finish history
+      const { data: finishes } = await supabase
+        .from('product_finishes')
+        .select('id, product_id, finished_at, notes')
+        .eq('user_id', userId)
+        .order('finished_at', { ascending: false })
+      setFinishHistory(finishes || [])
     }
     load()
   }, [userId])
@@ -1823,10 +1841,16 @@ export default function ProductsPage({ session }) {
             <NavMenu />
           </div>
         </div>
-        {/* Page title row — no back arrow, logo is the nav */}
-        <div style={{ padding: '0 20px 12px' }}>
-          <span style={{ fontSize: 13, fontWeight: 600, color: T.text }}>Product library</span>
-          <span style={{ fontSize: 12, color: T.textMuted, marginLeft: 6 }}>({Object.keys(products).length + Object.keys(catalogProducts).length})</span>
+        {/* Page title row with tabs */}
+        <div style={{ padding: '0 20px 0' }}>
+          <div style={{ display: 'flex', gap: 20, borderBottom: `1px solid ${T.border}` }}>
+            {[['library', 'My Products'], ['history', 'Finish History']].map(([key, label]) => (
+              <button key={key} onClick={() => setActiveTab(key)}
+                style={{ padding: '8px 0', border: 'none', background: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 12, fontWeight: activeTab === key ? 700 : 400, color: activeTab === key ? T.text : T.textMuted, borderBottom: `2px solid ${activeTab === key ? T.text : 'transparent'}`, marginBottom: -1 }}>
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -1845,6 +1869,28 @@ export default function ProductsPage({ session }) {
 
       {loading
         ? <div style={{ padding: '40px 20px', fontSize: 13, color: T.textMuted, textAlign: 'center' }}>Loading your products...</div>
+        : activeTab === 'history'
+        ? <div style={{ padding: '20px' }}>
+            {finishHistory.length === 0
+              ? <div style={{ fontSize: 13, color: T.textMuted, fontStyle: 'italic', textAlign: 'center', padding: '40px 0' }}>No finishes yet — mark a product as finished to see your history here.</div>
+              : finishHistory.map(f => {
+                  const allProds = { ...products, ...Object.fromEntries(Object.entries(catalogProducts)) }
+                  const prod = allProds[f.product_id]
+                  return (
+                    <div key={f.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 0', borderBottom: `0.5px solid ${T.border}` }}>
+                      <div style={{ fontSize: 20 }}>✓</div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>{prod?.name || 'Unknown product'}</div>
+                        {prod?.brand && <div style={{ fontSize: 11, color: T.textMuted }}>{prod.brand}</div>}
+                      </div>
+                      <div style={{ fontSize: 11, color: T.textMuted, whiteSpace: 'nowrap' }}>
+                        {new Date(f.finished_at + 'T00:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                      </div>
+                    </div>
+                  )
+                })
+            }
+          </div>
         : <ProductLibrary
               products={products}
               catalogProducts={catalogProducts}

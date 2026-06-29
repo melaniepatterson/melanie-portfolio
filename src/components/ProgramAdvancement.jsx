@@ -421,7 +421,6 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
     if (hasExfoliant) {
       const { data: bhaProg, error: bhaErr } = await supabase
         .from('programs').select('id').eq('slug', 'aha-bha-onboarding').single()
-      console.log('[AHA/BHA PA enroll]', bhaProg, bhaErr)
       if (bhaProg) {
         const { error: insertErr } = await supabase.from('user_programs').insert({
           user_id: session.user.id,
@@ -432,7 +431,6 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
           status: 'active',
           phase_duration_overrides: null,
         })
-        console.log('[AHA/BHA PA insert]', insertErr)
         if (!insertErr && routinePeriod?._dbId) {
           await supabase.from('routine_periods')
             .update({ bha_enabled: true, bha_frequency: 1, bha_start_day: bhaDay ?? 6 })

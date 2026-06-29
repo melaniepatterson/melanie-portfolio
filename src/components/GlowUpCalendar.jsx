@@ -3569,7 +3569,6 @@ function AddProgramPanel({ session, activeProgram, activePrograms = [], routineP
       const today = todayInTz(timezone)
       const { data: bhaProg, error: bhaProgErr } = await supabase
         .from('programs').select('id').eq('slug', 'aha-bha-onboarding').single()
-      console.log('[AHA/BHA enroll] program lookup:', bhaProg, bhaProgErr)
       if (bhaProg) {
         const { error: insertErr } = await supabase.from('user_programs').insert({
           user_id: session.user.id,
@@ -3580,7 +3579,6 @@ function AddProgramPanel({ session, activeProgram, activePrograms = [], routineP
           status: 'active',
           phase_duration_overrides: null,
         })
-        console.log('[AHA/BHA enroll] insert error:', insertErr)
         if (!insertErr && routinePeriod?._dbId) {
           await supabase.from('routine_periods')
             .update({ bha_enabled: true, bha_frequency: 1, bha_start_day: bhaDay ?? 6 })

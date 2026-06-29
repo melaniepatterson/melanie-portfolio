@@ -56,6 +56,40 @@ function StepList({ steps, tod }) {
 function Phase2StartScreen({ phase2, phase1Steps, phase2Options, skinType, onBack, onConfirm }) {
   const [selected, setSelected] = useState(new Set())
   const [saving, setSaving] = useState(false)
+  const [bhaStep, setBhaStep] = useState(false)
+  const [bhaDay, setBhaDay] = useState(6)
+  const [chosenItems, setChosenItems] = useState([])
+  const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
+
+  if (bhaStep) return (
+    <div style={{ maxWidth: 480, margin: '0 auto', padding: '48px 24px' }}>
+      <div style={{ fontSize: 11, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>AHA/BHA Onboarding</div>
+      <h2 style={{ fontSize: 24, fontWeight: 800, color: T.text, letterSpacing: '-0.03em', margin: '0 0 8px' }}>One more step</h2>
+      <p style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.7, margin: '0 0 20px' }}>
+        AHA/BHA needs a slow ramp-up to avoid irritation — we'll track it through the AHA/BHA Onboarding program. Pick which night works best and we'll handle the rest.
+      </p>
+      <div style={{ fontSize: 11, color: T.textLight, marginBottom: 8 }}>Your exfoliation night</div>
+      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
+        {DAYS.map((d, i) => (
+          <button key={i} onClick={() => setBhaDay(i)}
+            style={{ padding: '6px 12px', borderRadius: 0, border: `1px solid ${bhaDay === i ? T.text : T.border}`, background: bhaDay === i ? T.text : 'transparent', color: bhaDay === i ? '#fff' : T.textMuted, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
+            {d}
+          </button>
+        ))}
+      </div>
+      <div style={{ fontSize: 10, color: T.textMuted, marginBottom: 24, lineHeight: 1.6 }}>
+        Phase 1 → {DAYS[bhaDay]} only · Phase 2 → {DAYS[bhaDay]} + {DAYS[(bhaDay + 3) % 7]} · Maintenance → {DAYS[bhaDay]} + {DAYS[(bhaDay + 2) % 7]} + {DAYS[(bhaDay + 4) % 7]}
+      </div>
+      <button disabled={saving} onClick={async () => {
+        setSaving(true)
+        await onConfirm(chosenItems, bhaDay)
+        setSaving(false)
+      }}
+        style={{ width: '100%', padding: '12px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 600 }}>
+        {saving ? 'Starting…' : 'Start AHA/BHA Onboarding'}
+      </button>
+    </div>
+  )
 
   return (
     <div style={{ maxWidth: 480, margin: '0 auto', padding: '48px 24px' }}>
@@ -92,10 +126,16 @@ function Phase2StartScreen({ phase2, phase1Steps, phase2Options, skinType, onBac
       <button
         disabled={selected.size === 0 || saving}
         onClick={async () => {
-          setSaving(true)
           const chosen = phase2Options.filter(o => selected.has(o.id))
-          await onConfirm(chosen)
-          setSaving(false)
+          const hasExfoliant = chosen.some(o => o.step_key === 'exfoliant' && !o.is_skip_option)
+          if (hasExfoliant) {
+            setChosenItems(chosen)
+            setBhaStep(true)
+          } else {
+            setSaving(true)
+            await onConfirm(chosen, null)
+            setSaving(false)
+          }
         }}
         style={{ width: '100%', padding: '12px', borderRadius: 0, border: 'none', background: selected.size > 0 ? T.pinkDeep : T.border, color: '#fff', cursor: selected.size > 0 ? 'pointer' : 'default', fontSize: 13, fontFamily: 'inherit', fontWeight: 600, marginTop: 16 }}>
         {saving ? 'Setting up…' : (() => {
@@ -236,11 +276,13 @@ export default function Onboarding({ session, onEnrolled, onSkipToBuilder }) {
 
   // For users who already do the basics in real life — enroll directly
   // into Phase 2, with Phase 1 steps as baseline plus their chosen additions.
-  async function enrollAtPhase2(chosenOptions) {
+  async function enrollAtPhase2(chosenOptions, bhaDay = null) {
     setScreen('enrolling')
     try {
       const today = new Date().toISOString().split('T')[0]
       const phase2 = phases.find(p => p.phase_number === 2)
+      const hasExfoliant = chosenOptions.some(o => o.step_key === 'exfoliant' && !o.is_skip_option)
+      const nonBhaChoices = chosenOptions.filter(o => o.step_key !== 'exfoliant' || o.is_skip_option)
 
       function buildSteps(tod) {
         return phase1Steps
@@ -256,7 +298,7 @@ export default function Onboarding({ session, onEnrolled, onSkipToBuilder }) {
           }))
       }
 
-      const { am: amAdds, pm: pmAdds } = buildStepEntries(chosenOptions)
+      const { am: amAdds, pm: pmAdds } = buildStepEntries(nonBhaChoices)
       const baseAm = buildSteps('am')
       const basePm = buildSteps('pm')
       const mergedAm = [...baseAm, ...amAdds]
@@ -278,24 +320,43 @@ export default function Onboarding({ session, onEnrolled, onSkipToBuilder }) {
         .single()
       if (progErr) throw progErr
 
-      // 2. Create routine period: Phase 1 baseline + chosen Phase 2 additions
-      const { error: routineErr } = await supabase
+      // 2. Create routine period
+      const { data: rp, error: routineErr } = await supabase
         .from('routine_periods')
         .insert({
           user_id:    session.user.id,
           start_date: today,
           end_date:   null,
           steps: { am: mergedAm, pm: mergedPm, off: mergedOff },
+          ...(hasExfoliant && { bha_enabled: true, bha_frequency: 1, bha_start_day: bhaDay ?? 6 }),
         })
+        .select()
+        .single()
       if (routineErr) throw routineErr
 
-      // 3. Record selections
-      for (const opt of chosenOptions) {
+      // 3. Record non-bha selections
+      for (const opt of nonBhaChoices.filter(o => !o.is_skip_option)) {
         await supabase.from('user_program_phase_selections').insert({
           user_program_id: up.id,
           phase_id: phase2.id,
           selected_option_id: opt.id,
         })
+      }
+
+      // 4. Enroll in AHA/BHA Onboarding if exfoliant was chosen
+      if (hasExfoliant) {
+        const { data: bhaProg } = await supabase
+          .from('programs').select('id').eq('slug', 'aha-bha-onboarding').single()
+        if (bhaProg) {
+          await supabase.from('user_programs').insert({
+            user_id: session.user.id,
+            program_id: bhaProg.id,
+            started_at: today,
+            current_phase_number: 1,
+            phase_started_at: today,
+            status: 'active',
+          })
+        }
       }
 
       onEnrolled()
