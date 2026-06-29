@@ -607,7 +607,7 @@ function isMassageDay(dt, info, period) {
 function Badge({ colorKey, label }) {
   const c = T[colorKey] || T.custom
   return (
-    <span style={{ fontSize: 9, fontWeight: 600, padding: '2px 5px', borderRadius: 0, background: c.bg, color: c.text, border: `0.5px solid ${c.border}`, display: 'inline-block', lineHeight: 1.5, whiteSpace: 'nowrap', overflow: 'hidden', maxWidth: '100%', textOverflow: 'ellipsis', letterSpacing: '0.02em' }}>
+    <span style={{ fontSize: 'clamp(7px, 1.5vw, 9px)', fontWeight: 600, padding: '1px 4px', borderRadius: 0, background: c.bg, color: c.text, border: `0.5px solid ${c.border}`, display: 'inline-block', lineHeight: 1.5, whiteSpace: 'nowrap', maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', letterSpacing: '0.02em' }}>
       {label}
     </span>
   )
@@ -3013,7 +3013,7 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
         <div key={stepKey}>
           <div
             onClick={() => period && setOpenStepKey(isThisOpen ? null : stepKey)}
-            style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '7px 0', borderBottom: `0.5px solid ${T.border}`, cursor: period ? 'pointer' : 'default', opacity: product ? 1 : 0.45, position: 'relative' }}
+            style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 0', borderBottom: `0.5px solid ${T.border}`, cursor: period ? 'pointer' : 'default', opacity: product ? 1 : 0.45, position: 'relative', minHeight: 44 }}
           >
             <div style={{ width: 8, height: 8, borderRadius: '50%', background: dotColor, flexShrink: 0 }} />
             <div style={{ flex: 1 }}>
@@ -3735,7 +3735,7 @@ function AddProgramPanel({ session, activeProgram, activePrograms = [], routineP
               {program.name}
             </div>
             <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>
-              {currentPhase ? `Phase ${currentPhase.phase_number} of ${phases.length} — ${currentPhase.name}` : 'In progress'}
+              {currentPhase ? `Phase ${currentPhase.phase_number} of ${phases.filter(p => p.duration_days != null).length} — ${currentPhase.name}` : 'In progress'}
             </div>
           </div>
 
@@ -3803,7 +3803,7 @@ function AddProgramPanel({ session, activeProgram, activePrograms = [], routineP
   }
 
   return (
-    <div style={{ padding: '18px 18px' }}>
+    <div style={{ padding: '18px 18px', overflowY: 'auto', maxHeight: 'calc(100vh - 120px)', WebkitOverflowScrolling: 'touch' }}>
       <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 4 }}>Add a program</div>
       <div style={{ fontSize: 12, color: T.textMuted, marginBottom: 16, lineHeight: 1.6 }}>
         Programs guide you through introducing something new — pacing it out in phases so you can tell what your skin is responding to. Your current routine stays as your baseline.
@@ -3917,6 +3917,7 @@ function NewRoutinePeriodPicker({ routineHistory, dailyHistory, showerHistory, p
         </button>
         <div style={{ padding: '0' }}>
           {chosen === 'skincare' && (
+            <div style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 140px)', WebkitOverflowScrolling: 'touch' }}>
             <RoutinePeriodForm
               initial={{ ...getActivePeriod(now, routineHistory), startDate: '' }}
               onSave={onSaveNew}
@@ -3927,6 +3928,7 @@ function NewRoutinePeriodPicker({ routineHistory, dailyHistory, showerHistory, p
               onSaveProduct={onSaveProduct}
               onEditConflict={onEditConflictRoutine}
             />
+            </div>
           )}
           {chosen === 'program' && (
             <AddProgramPanel
@@ -5542,7 +5544,7 @@ export default function GlowUpCalendar({ session }) {
         {/* AM half */}
         <div
           onClick={e => { e.stopPropagation(); isOpen && dayFlyout?.tab === 'am' ? setDayFlyout(null) : openDayFlyout(key, dt, 'am') }}
-          style={{ flex: 1, background: isOpen && dayFlyout?.tab === 'am' ? T.pink : cellBg, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '3px 4px', cursor: 'pointer', borderBottom: `0.5px solid ${isOpen ? T.pinkDeep : cellBorder}`, gap: 2, overflow: 'hidden', transition: 'background 0.15s' }}
+          style={{ flex: 1, background: isOpen && dayFlyout?.tab === 'am' ? T.pink : cellBg, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '3px 4px', cursor: 'pointer', borderBottom: `0.5px solid ${isOpen ? T.pinkDeep : cellBorder}`, gap: 2, overflow: 'visible', transition: 'background 0.15s', position: 'relative', zIndex: 1 }}
         >
           <div style={{ fontSize: 9, fontWeight: 600, color: isOpen && dayFlyout?.tab === 'am' ? T.pinkDeep : dateColor, opacity: 0.8, letterSpacing: '0.04em' }}>AM</div>
           {amBadges}
@@ -5550,7 +5552,7 @@ export default function GlowUpCalendar({ session }) {
         {/* PM half */}
         <div
           onClick={e => { e.stopPropagation(); isOpen && dayFlyout?.tab === 'pm' ? setDayFlyout(null) : openDayFlyout(key, dt, 'pm') }}
-          style={{ flex: 1, background: isOpen && dayFlyout?.tab === 'pm' ? T.pink : cellBg, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '3px 4px', cursor: 'pointer', gap: 2, overflow: 'hidden', borderRadius: 0, transition: 'background 0.15s' }}
+          style={{ flex: 1, background: isOpen && dayFlyout?.tab === 'pm' ? T.pink : cellBg, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '3px 4px', cursor: 'pointer', gap: 2, overflow: 'visible', borderRadius: 0, transition: 'background 0.15s', position: 'relative', zIndex: 1 }}
         >
           <div style={{ fontSize: 9, fontWeight: 600, color: isOpen && dayFlyout?.tab === 'pm' ? T.pinkDeep : dateColor, opacity: 0.8, letterSpacing: '0.04em' }}>PM</div>
           {pmBadges}
@@ -5799,6 +5801,15 @@ export default function GlowUpCalendar({ session }) {
           Copied — paste into any Notion page
         </div>
       )}
+
+      {/* Logo */}
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 10 }}>
+        <a href="/routine" style={{ textDecoration: 'none', display: 'flex', alignItems: 'baseline', gap: 1 }}>
+          <span style={{ fontFamily: 'inherit', fontSize: 22, fontWeight: 800, color: '#1A1A1A', letterSpacing: '-0.03em' }}>Glow </span>
+          <span style={{ fontFamily: 'inherit', fontSize: 22, fontWeight: 800, color: '#C93500', letterSpacing: '-0.03em' }}>Up</span>
+          <span style={{ fontFamily: 'inherit', fontSize: 22, fontWeight: 800, color: '#FFD6F9', letterSpacing: '-0.03em' }}>.</span>
+        </a>
+      </div>
 
       {/* Month/year with flanking nav arrows — fixed-width center keeps arrows static */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 6 }}>

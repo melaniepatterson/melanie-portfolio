@@ -597,13 +597,13 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
                   : <span style={{ fontWeight: 400, color: T.textMuted }}> · Day {Math.min(Math.max(effectiveElapsed, 0) + 1, effectiveDuration)} of {effectiveDuration}</span>
               )}
             </div>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
-            {effectiveDuration && !collapsed && (
-              <div style={{ width: 80, height: 4, background: T.creamDark, borderRadius: 0, overflow: 'hidden' }}>
-                <div style={{ width: `${phaseProgress}%`, height: '100%', background: T.pinkDeep }} />
+            {effectiveDuration && (
+              <div style={{ width: '100%', height: 3, background: T.creamDark, borderRadius: 0, overflow: 'hidden', marginTop: 6 }}>
+                <div style={{ width: `${phaseProgress}%`, height: '100%', background: T.pinkDeep, transition: 'width 0.3s' }} />
               </div>
             )}
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
             <span style={{ fontSize: 10, color: T.textMuted, transition: 'transform 0.15s', display: 'inline-block', transform: collapsed ? 'rotate(0deg)' : 'rotate(180deg)' }}>▼</span>
           </div>
         </button>
