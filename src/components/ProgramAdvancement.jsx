@@ -583,6 +583,14 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
         {/* Header row — always visible */}
         <button onClick={toggleCollapsed}
           style={{ width: '100%', minWidth: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, background: 'transparent', border: 'none', padding: 0, cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left', boxSizing: 'border-box' }}>
+          <style>{`
+            .gu-progress-inline { display: flex; }
+            .gu-progress-below  { display: none; }
+            @media (max-width: 639px) {
+              .gu-progress-inline { display: none; }
+              .gu-progress-below  { display: block; }
+            }
+          `}</style>
           <div style={{ minWidth: 0, flex: 1, overflow: 'hidden' }}>
             <div style={{ fontSize: 9, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 2 }}>
               {program.name}
@@ -597,13 +605,20 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
                   : <span style={{ fontWeight: 400, color: T.textMuted }}> · Day {Math.min(Math.max(effectiveElapsed, 0) + 1, effectiveDuration)} of {effectiveDuration}</span>
               )}
             </div>
+            {/* Mobile only — progress bar below text */}
             {effectiveDuration && (
-              <div style={{ width: '100%', height: 3, background: T.creamDark, borderRadius: 0, overflow: 'hidden', marginTop: 6 }}>
+              <div className="gu-progress-below" style={{ width: '100%', height: 3, background: T.creamDark, borderRadius: 0, overflow: 'hidden', marginTop: 6 }}>
                 <div style={{ width: `${phaseProgress}%`, height: '100%', background: T.pinkDeep, transition: 'width 0.3s' }} />
               </div>
             )}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
+            {/* Desktop only — progress bar inline */}
+            {effectiveDuration && (
+              <div className="gu-progress-inline" style={{ width: 80, height: 4, background: T.creamDark, borderRadius: 0, overflow: 'hidden', alignItems: 'center' }}>
+                <div style={{ width: `${phaseProgress}%`, height: '100%', background: T.pinkDeep, transition: 'width 0.3s' }} />
+              </div>
+            )}
             <span style={{ fontSize: 10, color: T.textMuted, transition: 'transform 0.15s', display: 'inline-block', transform: collapsed ? 'rotate(0deg)' : 'rotate(180deg)' }}>▼</span>
           </div>
         </button>
