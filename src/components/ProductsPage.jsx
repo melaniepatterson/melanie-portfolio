@@ -982,6 +982,7 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
 
   return (
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
+      <button onClick={onClose} style={{ position: 'fixed', top: 16, right: 16, zIndex: 1010, width: 32, height: 32, borderRadius: 0, border: 'none', background: 'rgba(255,255,255,0.9)', color: '#1A1A1A', cursor: 'pointer', fontSize: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1, backdropFilter: 'blur(4px)' }}>×</button>
       <div onClick={e => e.stopPropagation()} style={{
         background: T.white, borderRadius: 0, width: '100%', maxWidth: 760,
         height: 'min(85vh, 680px)',
@@ -999,8 +1000,7 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
 
         {/* ── Right: scrollable content — overflow hidden at flex level so accordion never resizes modal */}
         <div style={{ flex: 1, minWidth: 0, minHeight: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', position: 'relative' }}>
-          <button onClick={onClose} style={{ position: 'absolute', top: 12, right: 12, zIndex: 30, width: 28, height: 28, borderRadius: 0, border: 'none', background: T.creamDark, color: T.text, cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>×</button>
-          <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', overflowX: 'hidden', WebkitOverflowScrolling: 'touch', padding: '20px 44px 28px 16px', position: 'relative' }}>
+          <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', overflowX: 'hidden', WebkitOverflowScrolling: 'touch', padding: '20px 16px 28px', position: 'relative' }}>
 
           {/* Name + brand */}
           <div style={{ paddingRight: 38, marginBottom: 8 }}>
