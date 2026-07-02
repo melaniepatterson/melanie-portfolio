@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
+import GlowUpLogo from './GlowUpWordmark'
+import SideMenu from './SideMenu'
 import { supabase } from '../lib/supabase'
 import Avatar from './Avatar'
 import CropModal from './CropModal'
@@ -16,40 +18,7 @@ const T = {
   pinkDeep: '#C93500',
 }
 
-function NavMenu() {
-  const [open, setOpen] = useState(false)
-  const links = [
-    { label: 'Calendar',           href: '/routine' },
-    { label: 'Routine history',    href: '/routine' },
-    { label: 'Product library',    href: '/routine/products' },
-    { label: 'Account & settings', href: '/routine/profile' },
-  ]
-  return (
-    <div style={{ position: 'relative' }}>
-      <button onClick={() => setOpen(s => !s)}
-        style={{ border: `0.5px solid ${open ? T.pinkDeep : T.border}`, background: open ? T.pink : 'transparent', borderRadius: 0, padding: '5px 10px', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', justifyContent: 'center', width: 36, height: 32 }}>
-        <span style={{ display: 'block', width: 14, height: 1.5, background: T.text }} />
-        <span style={{ display: 'block', width: 14, height: 1.5, background: T.text }} />
-        <span style={{ display: 'block', width: 14, height: 1.5, background: T.text }} />
-      </button>
-      {open && (
-        <>
-          <div onClick={() => setOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 200 }} />
-          <div style={{ position: 'absolute', top: '100%', right: 0, marginTop: 4, background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 0, zIndex: 201, minWidth: 180, boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}>
-            {links.map(l => (
-              <a key={l.label} href={l.href}
-                style={{ display: 'block', padding: '11px 16px', fontSize: 13, color: T.text, textDecoration: 'none', borderBottom: `0.5px solid ${T.border}` }}
-                onMouseEnter={e => e.currentTarget.style.background = T.cream}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
-                {l.label}
-              </a>
-            ))}
-          </div>
-        </>
-      )}
-    </div>
-  )
-}
+
 
 const SUPABASE_URL = 'https://brcjhshptisevcndqavz.supabase.co'
 
@@ -301,7 +270,7 @@ export default function Profile({ session }) {
         <style>{`.glowup-profile-logo { display: flex } @media (max-width: 639px) { .glowup-profile-logo { display: none } }`}</style>
         {/* Logo row — desktop only */}
         <div className="glowup-profile-logo" style={{ alignItems: 'baseline', gap: 6, padding: '12px 20px 8px' }}>
-          <span style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-0.04em', color: '#1A1A1A', lineHeight: 1,  }}>Glow <span style={{ color: '#C93500' }}>Up</span><span style={{ color: '#FFD6F9' }}>.</span></span>
+          <GlowUpLogo />
           <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#C93500', display: 'inline-block', marginBottom: 2 }} />
         </div>
         {/* Nav row */}
@@ -313,7 +282,13 @@ export default function Profile({ session }) {
             </button>
             <div style={{ fontSize: 15, fontWeight: 600, color: T.text }}>Account & settings</div>
           </div>
-          <NavMenu />
+          <button onClick={() => setShowMenu(true)}
+            style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 0, padding: '5px 10px', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', justifyContent: 'center', width: 36, height: 32 }}>
+            <span style={{ display: 'block', width: 14, height: 1.5, background: T.text }} />
+            <span style={{ display: 'block', width: 14, height: 1.5, background: T.text }} />
+            <span style={{ display: 'block', width: 14, height: 1.5, background: T.text }} />
+          </button>
+          {showMenu && <SideMenu session={session} onClose={() => setShowMenu(false)} />}
         </div>
       </div>
 

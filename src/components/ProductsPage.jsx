@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from 'react'
 import GlowUpLogo from './GlowUpWordmark'
 import { supabase } from '../lib/supabase'
+import SideMenu from './SideMenu'
 
 const T = {
   pink:         '#FFD6F9',
@@ -191,41 +192,6 @@ const PRODUCT_CATEGORIES = [
 // Acronyms that should be fully uppercase in labels
 const UPPERCASE_WORDS = new Set(['spf', 'bha', 'aha', 'pha', 'bha/aha', 'aha/bha'])
 // Lightweight nav menu — same links as the calendar sidebar
-function NavMenu() {
-  const [open, setOpen] = useState(false)
-  const links = [
-    { label: 'Calendar',          href: '/routine' },
-    { label: 'Routine history',   href: '/routine' },
-    { label: 'Product library',   href: '/routine/products' },
-    { label: 'Account & settings', href: '/routine/profile' },
-  ]
-  return (
-    <div style={{ position: 'relative' }}>
-      <button onClick={() => setOpen(s => !s)}
-        style={{ border: `0.5px solid ${open ? T.pinkDeep : T.border}`, background: open ? T.pink : 'transparent', borderRadius: 0, padding: '5px 10px', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', justifyContent: 'center', width: 36, height: 32 }}>
-        <span style={{ display: 'block', width: 14, height: 1.5, background: T.text }} />
-        <span style={{ display: 'block', width: 14, height: 1.5, background: T.text }} />
-        <span style={{ display: 'block', width: 14, height: 1.5, background: T.text }} />
-      </button>
-      {open && (
-        <>
-          <div onClick={() => setOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 200 }} />
-          <div style={{ position: 'absolute', top: '100%', right: 0, marginTop: 4, background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 0, zIndex: 201, minWidth: 180, boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}>
-            {links.map(l => (
-              <a key={l.label} href={l.href}
-                style={{ display: 'block', padding: '11px 16px', fontSize: 13, color: T.text, textDecoration: 'none', borderBottom: `0.5px solid ${T.border}` }}
-                onMouseEnter={e => e.currentTarget.style.background = T.cream}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
-                {l.label}
-              </a>
-            ))}
-          </div>
-        </>
-      )}
-    </div>
-  )
-}
-
 function formatCatLabel(cat) {
   return cat.split(' ').map(w =>
     UPPERCASE_WORDS.has(w.toLowerCase()) ? w.toUpperCase() : w.charAt(0).toUpperCase() + w.slice(1)
@@ -982,10 +948,7 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
 
   return (
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
-      
-      <div style={{ position: 'relative' }}>
-        <button onClick={onClose} style={{ position: 'absolute', top: -24, right: -24, zIndex: 1010, width: 28, height: 28, borderRadius: 0, border: 'none', background: 'transparent', color: '#fff', cursor: 'pointer', fontSize: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1, fontWeight: 300 }}>×</button>
-        <div onClick={e => e.stopPropagation()} style={{
+      <div onClick={e => e.stopPropagation()} style={{
         background: T.white, borderRadius: 0, width: '100%', maxWidth: 760,
         height: 'min(85vh, 680px)',
         display: 'flex', overflow: 'hidden', position: 'relative',
@@ -1002,7 +965,10 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
 
         {/* ── Right: scrollable content — overflow hidden at flex level so accordion never resizes modal */}
         <div style={{ flex: 1, minWidth: 0, minHeight: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', position: 'relative' }}>
-          <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', overflowX: 'hidden', WebkitOverflowScrolling: 'touch', padding: '20px 16px 28px', position: 'relative' }}>
+          {/* × — sticky top right, always visible */}
+          <button onClick={onClose} style={{ position: 'absolute', top: 12, right: 12, zIndex: 20, width: 28, height: 28, borderRadius: 0, border: 'none', background: T.creamDark, color: T.text, cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>×</button>
+          <button onClick={onClose} style={{ position: 'absolute', top: 12, right: 12, zIndex: 30, width: 28, height: 28, borderRadius: 0, border: 'none', background: T.creamDark, color: T.text, cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>×</button>
+          <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', overflowX: 'hidden', WebkitOverflowScrolling: 'touch', padding: '20px 44px 28px 16px', position: 'relative' }}>
 
           {/* Name + brand */}
           <div style={{ paddingRight: 38, marginBottom: 8 }}>
@@ -1136,7 +1102,6 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
             <style>{`@keyframes confettiFall { to { transform: translateY(120px) rotate(720deg); opacity: 0; } }`}</style>
           </div>
         )}
-      </div>
       </div>
     </div>
   )
@@ -1470,6 +1435,7 @@ export default function ProductsPage({ session }) {
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('library') // library | history
   const [finishHistory, setFinishHistory] = useState([])
+  const [showMenu, setShowMenu] = useState(false)
   const [activeRoutineNames, setActiveRoutineNames] = useState(new Set())
   const [userRoutineNames, setUserRoutineNames] = useState(new Set())
   const userId = session?.user?.id
@@ -1790,7 +1756,13 @@ export default function ProductsPage({ session }) {
               style={{ border: 'none', background: T.pinkDeep, color: '#fff', borderRadius: 0, padding: '7px 16px', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 500, whiteSpace: 'nowrap' }}>
               + Add new product
             </button>
-            <NavMenu />
+            <button onClick={() => setShowMenu(true)}
+              style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 0, padding: '5px 10px', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', justifyContent: 'center', width: 36, height: 32 }}>
+              <span style={{ display: 'block', width: 14, height: 1.5, background: T.text }} />
+              <span style={{ display: 'block', width: 14, height: 1.5, background: T.text }} />
+              <span style={{ display: 'block', width: 14, height: 1.5, background: T.text }} />
+            </button>
+            {showMenu && <SideMenu session={session} onClose={() => setShowMenu(false)} />}
           </div>
         </div>
         {/* Page title row with tabs */}
