@@ -31,7 +31,6 @@
  */
 
 import { useState, useEffect, useRef } from 'react'
-import Avatar from './Avatar'
 import { supabase } from '../lib/supabase'
 import GlowUpLoader from './GlowUpLoader'
 import { LoadError } from './ErrorBoundary'
@@ -40,6 +39,7 @@ import ProgramAdvancement, { Phase2Picker } from './ProgramAdvancement'
 import BetaSurvey from './BetaSurvey'
 import { applyProgramPhase, buildStepEntries } from './programOptions'
 import { todayInTz, nowInTz, detectTimezone } from './timezone'
+import SideMenu from './SideMenu'
 
 // ─── DESIGN TOKENS ───────────────────────────────────────────
 const T = {
@@ -4517,103 +4517,6 @@ function FeedbackPanel({ onClose }) {
 }
 
 // ─── SIDE MENU ────────────────────────────────────────────────
-function SideMenu({ session, menuProfile, onClose, onHistory, onLibrary, onSignOut, onFeedback }) {
-  const email = session?.user?.email || ''
-  // Use pre-loaded profile from parent — no fetch, no flash
-  const displayName = menuProfile?.display_name || email.split('@')[0]
-  const avatarUrl   = menuProfile?.avatar_url || null
-  // Preload avatar image so Avatar never flashes initials before image
-  const [imageReady, setImageReady] = useState(!avatarUrl)
-  useEffect(() => {
-    if (!avatarUrl) { setImageReady(true); return }
-    const img = new Image()
-    img.onload = () => setImageReady(true)
-    img.onerror = () => setImageReady(true)
-    img.src = avatarUrl
-  }, [avatarUrl])
-  const avatarReady = menuProfile !== null && imageReady
-  const menuItems = [
-    { label: 'Routine history',   icon: '📋', action: onHistory },
-    { label: 'Product library',   icon: '🧴', action: onLibrary },
-    { label: 'Account & settings', icon: '👤', action: () => { window.location.href = '/routine/profile' } },
-    { label: 'Send feedback',     icon: '💬', action: onFeedback },
-  ]
-
-  return (
-    <>
-      {/* Backdrop */}
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.2)', zIndex: 200 }} />
-      {/* Drawer */}
-      <div style={{
-        position: 'fixed', top: 0, right: 0, bottom: 0, width: 260,
-        background: T.white, borderLeft: `0.5px solid ${T.border}`,
-        zIndex: 201, display: 'flex', flexDirection: 'column',
-        fontFamily: 'inherit', boxShadow: '-4px 0 24px rgba(0,0,0,0.08)',
-      }}>
-        {/* Header — avatar + name */}
-        <div style={{ padding: '20px 20px 16px', borderBottom: `0.5px solid ${T.border}` }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              {/* Avatar — blank circle until image is preloaded to avoid any flash */}
-              {!avatarReady ? (
-                <div style={{ width: 44, height: 44, borderRadius: '50%', background: T.creamDark, flexShrink: 0 }} />
-              ) : (
-                <Avatar
-                  avatarUrl={avatarUrl}
-                  displayName={displayName}
-                  email={email}
-                  size={44}
-                />
-              )}
-              {/* Name — only show once ready */}
-              <div style={{ minWidth: 0 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {avatarReady ? displayName : ''}
-                </div>
-              </div>
-            </div>
-            <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 20, color: T.textMuted, padding: '0 2px', lineHeight: 1, flexShrink: 0 }}>×</button>
-          </div>
-        </div>
-
-        {/* Menu items */}
-        <div style={{ flex: 1, padding: '8px 0', overflowY: 'auto' }}>
-          {menuItems.map(({ label, icon, action }) => (
-            <button key={label} onClick={() => { action(); onClose() }} style={{
-              display: 'flex', alignItems: 'center', gap: 12, width: '100%',
-              padding: '12px 20px', border: 'none', background: 'transparent',
-              cursor: 'pointer', textAlign: 'left', fontSize: 13, color: T.text,
-              borderBottom: `0.5px solid ${T.border}`,
-            }}
-              onMouseEnter={e => e.currentTarget.style.background = T.creamDark}
-              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-            >
-              <span style={{ fontSize: 16, width: 20, textAlign: 'center' }}>{icon}</span>
-              {label}
-            </button>
-          ))}
-        </div>
-
-        {/* Footer — sign out + legal */}
-        <div style={{ padding: '12px 20px', borderTop: `0.5px solid ${T.border}`, flexShrink: 0 }}>
-          <button onClick={onSignOut} style={{
-            display: 'flex', alignItems: 'center', gap: 12, width: '100%',
-            padding: '10px 0', border: 'none', background: 'transparent',
-            cursor: 'pointer', fontSize: 13, color: T.textLight, textAlign: 'left',
-          }}>
-            <span style={{ fontSize: 16, width: 20, textAlign: 'center' }}>→</span>
-            Sign out
-          </button>
-          <div style={{ display: 'flex', gap: 16, paddingTop: 8, borderTop: `0.5px solid ${T.border}` }}>
-            <a href="/privacy" style={{ fontSize: 10, color: T.textLight, textDecoration: 'none', letterSpacing: '0.04em' }}>Privacy Policy</a>
-            <a href="/privacy#cookies" style={{ fontSize: 10, color: T.textLight, textDecoration: 'none', letterSpacing: '0.04em' }}>Cookie Policy</a>
-          </div>
-        </div>
-      </div>
-    </>
-  )
-}
-
 // Returns list of active ingredient names currently in the routine
 // Used to warn users when adding a treatment that will pause those actives
 function getActiveIngredients(routinePeriod) {
@@ -5981,11 +5884,7 @@ export default function GlowUpCalendar({ session }) {
       {showMenu && (
         <SideMenu
           session={session}
-          menuProfile={menuProfile}
           onClose={() => setShowMenu(false)}
-          onHistory={() => { setPanel(p => p === 'history' ? null : 'history'); setEditingPeriod(null); setDayFlyout(null) }}
-          onLibrary={() => { window.location.href = '/routine/products' }}
-          onSignOut={handleSignOut}
           onFeedback={() => { setShowFeedback(true); setShowMenu(false) }}
         />
       )}
