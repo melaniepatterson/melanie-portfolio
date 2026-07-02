@@ -1,6 +1,6 @@
 // v2-stars-modal-fix
 import { useState, useEffect, useRef } from 'react'
-import GlowUpLogo from './GlowUpLogo'
+import GlowUpLogo from './GlowUpWordmark'
 import { supabase } from '../lib/supabase'
 
 const T = {
