@@ -39,7 +39,7 @@ export default function SideMenu({ session, onClose, onFeedback }) {
     { label: 'Routine history',   icon: '📋', href: '/routine/history' },
     { label: 'Product library',   icon: '🧴', href: '/routine/library' },
     { label: 'Account & settings',icon: '👤', href: '/routine/profile' },
-    ...(onFeedback ? [{ label: 'Send feedback', icon: '💬', action: onFeedback }] : []),
+    { label: 'Send feedback', icon: '💬', action: onFeedback || (() => { window.location.href = '/routine?feedback=1' }) },
   ]
 
   async function signOut() {

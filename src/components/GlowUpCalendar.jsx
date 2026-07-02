@@ -4897,7 +4897,11 @@ export default function GlowUpCalendar({ session }) {
   const [showMenu,          setShowMenu]          = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
   const [treatmentWarning,  setTreatmentWarning]  = useState(null) // { key, date } pending selector
-  const [showFeedback,  setShowFeedback]  = useState(false)
+  const [showFeedback,  setShowFeedback]  = useState(() => {
+    const has = new URLSearchParams(window.location.search).get('feedback') === '1'
+    if (has) window.history.replaceState({}, '', window.location.pathname)
+    return has
+  })
   const [showSurvey, setShowSurvey] = useState(() => {
     const has = new URLSearchParams(window.location.search).get('survey') === '1'
     if (has) window.history.replaceState({}, '', window.location.pathname)
