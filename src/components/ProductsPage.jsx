@@ -982,8 +982,10 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
 
   return (
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
-      <button onClick={onClose} style={{ position: 'fixed', top: 16, right: 16, zIndex: 1010, width: 32, height: 32, borderRadius: 0, border: 'none', background: 'rgba(255,255,255,0.9)', color: '#1A1A1A', cursor: 'pointer', fontSize: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1, backdropFilter: 'blur(4px)' }}>×</button>
-      <div onClick={e => e.stopPropagation()} style={{
+      
+      <div style={{ position: 'relative' }}>
+        <button onClick={onClose} style={{ position: 'absolute', top: -14, right: -14, zIndex: 1010, width: 28, height: 28, borderRadius: 0, border: 'none', background: '#fff', color: '#1A1A1A', cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1, boxShadow: '0 1px 4px rgba(0,0,0,0.15)' }}>×</button>
+        <div onClick={e => e.stopPropagation()} style={{
         background: T.white, borderRadius: 0, width: '100%', maxWidth: 760,
         height: 'min(85vh, 680px)',
         display: 'flex', overflow: 'hidden', position: 'relative',
