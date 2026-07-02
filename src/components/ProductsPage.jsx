@@ -950,7 +950,7 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
       {/* X — floats above modal card, outside it */}
       <div style={{ position: 'relative', width: '100%', maxWidth: 760, height: 'min(85vh, 680px)' }}>
-        <button onClick={onClose} style={{ position: 'absolute', top: -12, right: -12, zIndex: 1010, width: 28, height: 28, borderRadius: '50%', border: 'none', background: '#fff', color: '#1A1A1A', cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1, boxShadow: '0 1px 6px rgba(0,0,0,0.2)' }}>×</button>
+        <button onClick={onClose} style={{ position: 'absolute', top: -12, right: -12, zIndex: 1010, width: 28, height: 28, borderRadius: 0, border: `1px solid ${T.border}`, background: T.white, color: T.text, cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>×</button>
         <div onClick={e => e.stopPropagation()} style={{
           background: T.white, borderRadius: 0, width: '100%',
           height: '100%',
