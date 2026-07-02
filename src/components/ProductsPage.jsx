@@ -999,8 +999,6 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
 
         {/* ── Right: scrollable content — overflow hidden at flex level so accordion never resizes modal */}
         <div style={{ flex: 1, minWidth: 0, minHeight: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', position: 'relative' }}>
-          {/* × — outside scroll container so it never scrolls away */}
-          <button onClick={onClose} style={{ position: 'absolute', top: 12, right: 12, zIndex: 30, width: 28, height: 28, borderRadius: 0, border: 'none', background: T.creamDark, color: T.text, cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>×</button>
           <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', overflowX: 'hidden', WebkitOverflowScrolling: 'touch', padding: '20px 44px 28px 16px', position: 'relative' }}>
 
           {/* Name + brand */}
