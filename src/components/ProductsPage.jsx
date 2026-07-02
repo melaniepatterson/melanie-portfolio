@@ -984,7 +984,7 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
       
       <div style={{ position: 'relative' }}>
-        <button onClick={onClose} style={{ position: 'absolute', top: -14, right: -14, zIndex: 1010, width: 28, height: 28, borderRadius: 0, border: 'none', background: '#fff', color: '#1A1A1A', cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1, boxShadow: '0 1px 4px rgba(0,0,0,0.15)' }}>×</button>
+        <button onClick={onClose} style={{ position: 'absolute', top: -40, right: -40, zIndex: 1010, width: 28, height: 28, borderRadius: 0, border: 'none', background: '#fff', color: '#1A1A1A', cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1, boxShadow: '0 1px 4px rgba(0,0,0,0.15)' }}>×</button>
         <div onClick={e => e.stopPropagation()} style={{
         background: T.white, borderRadius: 0, width: '100%', maxWidth: 760,
         height: 'min(85vh, 680px)',
