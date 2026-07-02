@@ -999,6 +999,7 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
 
         {/* ── Right: scrollable content — overflow hidden at flex level so accordion never resizes modal */}
         <div style={{ flex: 1, minWidth: 0, minHeight: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+          <button onClick={onClose} style={{ position: 'absolute', top: 12, right: 12, zIndex: 30, width: 28, height: 28, borderRadius: 0, border: 'none', background: T.creamDark, color: T.text, cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>×</button>
           <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', overflowX: 'hidden', WebkitOverflowScrolling: 'touch', padding: '20px 44px 28px 16px', position: 'relative' }}>
 
           {/* Name + brand */}
@@ -1062,32 +1063,7 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
           {/* Ingredients — collapsible accordion */}
           {p.ingredients && <IngredientsAccordion ingredients={p.ingredients} />}
 
-          {/* PAO + dates */}
-          {(merged.pao_months || merged.opened_at || merged.expires_at || merged.purchased_at) && (() => {
-            const fmt = (d) => new Date(d + 'T00:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
-            const computedExpiry = (!merged.expires_at && merged.opened_at && merged.pao_months)
-              ? (() => { const d = new Date(merged.opened_at + 'T00:00:00'); d.setMonth(d.getMonth() + Number(merged.pao_months)); return d })()
-              : merged.expires_at ? new Date(merged.expires_at + 'T00:00:00') : null
-            const today = new Date(); today.setHours(0,0,0,0)
-            const daysLeft = computedExpiry ? Math.round((computedExpiry - today) / 86400000) : null
-            const isExpired = daysLeft !== null && daysLeft < 0
-            const expiringSoon = daysLeft !== null && daysLeft >= 0 && daysLeft <= 30
 
-            return (
-              <div style={{ marginBottom: 12, fontSize: 11, color: T.textMuted, lineHeight: 1.8 }}>
-                {merged.purchased_at && <div>Purchased {fmt(merged.purchased_at)}</div>}
-                {merged.opened_at && <div>Opened {fmt(merged.opened_at)}{merged.pao_months ? ` · ${merged.pao_months}mo PAO` : ''}</div>}
-                {computedExpiry && (
-                  <div style={{ color: isExpired ? '#DC2626' : expiringSoon ? '#92400E' : T.textMuted, fontWeight: isExpired || expiringSoon ? 600 : 400 }}>
-                    {isExpired
-                      ? `Expired ${fmt(computedExpiry.toISOString().split('T')[0])} (${Math.abs(daysLeft)}d ago)`
-                      : daysLeft === 0 ? 'Expires today'
-                      : `Expires ${fmt(computedExpiry.toISOString().split('T')[0])}${expiringSoon ? ` (${daysLeft}d left)` : ''}`}
-                  </div>
-                )}
-              </div>
-            )
-          })()}
 
           {/* Personal data form */}
           {(isCatalog ? upd?.in_library : true) && (
