@@ -106,6 +106,7 @@ export default function Profile({ session }) {
   const [loading,       setLoading]       = useState(true)
   const [saving,        setSaving]        = useState(false)
   const [saved,         setSaved]         = useState(false)
+  const [showMenu,      setShowMenu]      = useState(false)
   const fileInputRef = useRef(null)
 
   const userId = session?.user?.id

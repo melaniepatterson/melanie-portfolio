@@ -5802,15 +5802,6 @@ export default function GlowUpCalendar({ session }) {
         </div>
       )}
 
-      {/* Logo */}
-      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 10 }}>
-        <a href="/routine" style={{ textDecoration: 'none', display: 'flex', alignItems: 'baseline', gap: 1 }}>
-          <span style={{ fontFamily: 'inherit', fontSize: 22, fontWeight: 800, color: '#1A1A1A', letterSpacing: '-0.03em' }}>Glow </span>
-          <span style={{ fontFamily: 'inherit', fontSize: 22, fontWeight: 800, color: '#C93500', letterSpacing: '-0.03em' }}>Up</span>
-          <span style={{ fontFamily: 'inherit', fontSize: 22, fontWeight: 800, color: '#FFD6F9', letterSpacing: '-0.03em' }}>.</span>
-        </a>
-      </div>
-
       {/* Month/year with flanking nav arrows — fixed-width center keeps arrows static */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 6 }}>
         <button onClick={prevMonth} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 0, padding: '5px 20px', cursor: 'pointer', fontSize: 15, color: T.text, flexShrink: 0 }}>←</button>

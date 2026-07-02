@@ -948,11 +948,14 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
 
   return (
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
-      <div onClick={e => e.stopPropagation()} style={{
-        background: T.white, borderRadius: 0, width: '100%', maxWidth: 760,
-        height: 'min(85vh, 680px)',
-        display: 'flex', overflow: 'hidden', position: 'relative',
-      }}>
+      {/* X — floats above modal card, outside it */}
+      <div style={{ position: 'relative', width: '100%', maxWidth: 760, height: 'min(85vh, 680px)' }}>
+        <button onClick={onClose} style={{ position: 'absolute', top: -12, right: -12, zIndex: 1010, width: 28, height: 28, borderRadius: '50%', border: 'none', background: '#fff', color: '#1A1A1A', cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1, boxShadow: '0 1px 6px rgba(0,0,0,0.2)' }}>×</button>
+        <div onClick={e => e.stopPropagation()} style={{
+          background: T.white, borderRadius: 0, width: '100%',
+          height: '100%',
+          display: 'flex', overflow: 'hidden', position: 'relative',
+        }}>
 
         {/* ── Left: portrait image ─────────────────────────── */}
         {img && (
@@ -963,12 +966,9 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
           </div>
         )}
 
-        {/* ── Right: scrollable content — overflow hidden at flex level so accordion never resizes modal */}
+        {/* ── Right: scrollable content ─────────────────────────── */}
         <div style={{ flex: 1, minWidth: 0, minHeight: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', position: 'relative' }}>
-          {/* × — sticky top right, always visible */}
-          <button onClick={onClose} style={{ position: 'absolute', top: 12, right: 12, zIndex: 20, width: 28, height: 28, borderRadius: 0, border: 'none', background: T.creamDark, color: T.text, cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>×</button>
-          <button onClick={onClose} style={{ position: 'absolute', top: 12, right: 12, zIndex: 30, width: 28, height: 28, borderRadius: 0, border: 'none', background: T.creamDark, color: T.text, cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>×</button>
-          <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', overflowX: 'hidden', WebkitOverflowScrolling: 'touch', padding: '20px 44px 28px 16px', position: 'relative' }}>
+          <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', overflowX: 'hidden', WebkitOverflowScrolling: 'touch', padding: '20px 16px 28px', position: 'relative' }}>
 
           {/* Name + brand */}
           <div style={{ paddingRight: 38, marginBottom: 8 }}>
@@ -1102,6 +1102,7 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
             <style>{`@keyframes confettiFall { to { transform: translateY(120px) rotate(720deg); opacity: 0; } }`}</style>
           </div>
         )}
+      </div>
       </div>
     </div>
   )
