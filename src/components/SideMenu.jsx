@@ -37,7 +37,7 @@ export default function SideMenu({ session, onClose, onFeedback }) {
   const menuItems = [
     { label: 'Calendar',          icon: '📅', href: '/routine' },
     { label: 'Routine history',   icon: '📋', href: '/routine/history' },
-    { label: 'Product library',   icon: '🧴', href: '/routine/library' },
+    { label: 'Product library',   icon: '🧴', href: '/routine/products' },
     { label: 'Account & settings',icon: '👤', href: '/routine/profile' },
     { label: 'Send feedback', icon: '💬', action: onFeedback || (() => { window.location.href = '/routine?feedback=1' }) },
   ]
