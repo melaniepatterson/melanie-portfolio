@@ -1,6 +1,6 @@
 // v2-stars-modal-fix
 import { useState, useEffect, useRef } from 'react'
-import GlowUpLogo from './GlowUpWordmark'
+import GlowUpLogo from './GlowUpLogo'
 import { supabase } from '../lib/supabase'
 
 const T = {
@@ -842,9 +842,9 @@ function PersonalDataForm({ productId, isCatalog, upd, product, onSaveUpd, onClo
         />
       </div>
 
-      {/* Effectiveness + Buy again */}
-      <div style={{ display: 'flex', gap: 12, marginBottom: 12, alignItems: 'flex-start' }}>
-        <div style={{ flex: 1 }}>
+      {/* Effectiveness + Buy again — stacked on mobile */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 12 }}>
+        <div>
           <label style={labelStyle}>My rating</label>
           <div style={{ paddingTop: 4 }}>
             <StarRating value={effectiveness} onChange={v => setEff(effectiveness === v ? 0 : v)} size={20} />
@@ -856,7 +856,7 @@ function PersonalDataForm({ productId, isCatalog, upd, product, onSaveUpd, onClo
             {[['Yes', true], ['No', false], ['—', null]].map(([label, val]) => (
               <button key={label} onClick={() => setBuyAgain(buyAgain === val ? null : val)}
                 style={{
-                  padding: '4px 10px', borderRadius: 0, fontSize: 11,
+                  padding: '6px 14px', borderRadius: 0, fontSize: 11,
                   cursor: 'pointer', fontFamily: 'inherit',
                   border: `0.5px solid ${T.border}`,
                   background: buyAgain === val ? T.pinkDeep : T.cream,
@@ -998,11 +998,10 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
         )}
 
         {/* ── Right: scrollable content — overflow hidden at flex level so accordion never resizes modal */}
-        <div style={{ flex: 1, minWidth: 0, minHeight: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ flex: 1, minWidth: 0, minHeight: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+          {/* × — sticky top right, always visible */}
+          <button onClick={onClose} style={{ position: 'absolute', top: 12, right: 12, zIndex: 20, width: 28, height: 28, borderRadius: 0, border: 'none', background: T.creamDark, color: T.text, cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>×</button>
           <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', overflowX: 'hidden', WebkitOverflowScrolling: 'touch', padding: '20px 16px 28px', position: 'relative' }}>
-
-          {/* × — top right */}
-          <button onClick={onClose} style={{ position: 'absolute', top: 12, right: 12, zIndex: 10, width: 28, height: 28, borderRadius: 0, border: 'none', background: T.creamDark, color: T.text, cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>×</button>
 
           {/* Name + brand */}
           <div style={{ paddingRight: 38, marginBottom: 8 }}>
@@ -1077,39 +1076,15 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
             const expiringSoon = daysLeft !== null && daysLeft >= 0 && daysLeft <= 30
 
             return (
-              <div style={{ marginBottom: 12 }}>
-                {/* PAO / expiry line */}
-                {(merged.opened_at || merged.expires_at) && (
-                  <div style={{
-                    display: 'flex', alignItems: 'center', gap: 8,
-                    padding: '8px 10px', marginBottom: 6, borderRadius: 0,
-                    background: isExpired ? '#FEF2F2' : expiringSoon ? '#FFFBEB' : T.creamDark,
-                    border: `0.5px solid ${isExpired ? '#FCA5A5' : expiringSoon ? '#FCD34D' : T.border}`,
-                  }}>
-                    <span style={{ fontSize: 14 }}>{isExpired ? '⚠️' : expiringSoon ? '⏳' : '🗓'}</span>
-                    <div>
-                      {merged.opened_at && (
-                        <div style={{ fontSize: 12, color: T.text, fontWeight: 500 }}>
-                          Opened {fmt(merged.opened_at)}
-                          {merged.pao_months && <span style={{ color: T.textMuted, fontWeight: 400 }}> · {merged.pao_months}mo PAO</span>}
-                        </div>
-                      )}
-                      {computedExpiry && (
-                        <div style={{ fontSize: 11, color: isExpired ? '#DC2626' : expiringSoon ? '#92400E' : T.textMuted }}>
-                          {isExpired
-                            ? `Expired ${fmt(computedExpiry.toISOString().split('T')[0])} (${Math.abs(daysLeft)}d ago)`
-                            : daysLeft === 0
-                            ? 'Expires today'
-                            : `Expires ${fmt(computedExpiry.toISOString().split('T')[0])} (${daysLeft}d left)`}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-                {/* Purchased */}
-                {merged.purchased_at && (
-                  <div style={{ fontSize: 11, color: T.textMuted }}>
-                    Purchased {fmt(merged.purchased_at)}
+              <div style={{ marginBottom: 12, fontSize: 11, color: T.textMuted, lineHeight: 1.8 }}>
+                {merged.purchased_at && <div>Purchased {fmt(merged.purchased_at)}</div>}
+                {merged.opened_at && <div>Opened {fmt(merged.opened_at)}{merged.pao_months ? ` · ${merged.pao_months}mo PAO` : ''}</div>}
+                {computedExpiry && (
+                  <div style={{ color: isExpired ? '#DC2626' : expiringSoon ? '#92400E' : T.textMuted, fontWeight: isExpired || expiringSoon ? 600 : 400 }}>
+                    {isExpired
+                      ? `Expired ${fmt(computedExpiry.toISOString().split('T')[0])} (${Math.abs(daysLeft)}d ago)`
+                      : daysLeft === 0 ? 'Expires today'
+                      : `Expires ${fmt(computedExpiry.toISOString().split('T')[0])}${expiringSoon ? ` (${daysLeft}d left)` : ''}`}
                   </div>
                 )}
               </div>
