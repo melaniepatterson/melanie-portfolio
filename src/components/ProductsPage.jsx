@@ -1137,6 +1137,7 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
           </div>
         )}
       </div>
+      </div>
     </div>
   )
 }
