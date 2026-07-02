@@ -1746,7 +1746,7 @@ export default function ProductsPage({ session }) {
       <div style={{ background: T.white, borderBottom: '0.5px solid ' + T.border }}>
         {/* Logo row — logo links back to calendar */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px 10px' }}>
-          <style>{`.glowup-prodlogo { display: flex } @media (max-width: 639px) { .glowup-prodlogo { display: none } }`}</style>
+          <style>{`.glowup-prodlogo { display: flex }`}</style>
           <a href="/routine" className="glowup-prodlogo" style={{ alignItems: 'baseline', gap: 6, textDecoration: 'none' }}>
             <GlowUpLogo />
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: T.pinkDeep, display: 'inline-block', marginBottom: 2 }} />
