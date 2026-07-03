@@ -2932,92 +2932,68 @@ const AM_STEPS = [
 
 
 // ─── MANAGE STEPS ────────────────────────────────────────────
-// Collapsible section at bottom of flyout for adding/removing steps
-function ManageSteps({ period, tab, session, onUpdated }) {
-  const [open, setOpen] = useState(false)
-  const [saving, setSaving] = useState(null)
+// Library at bottom of flyout — greyed out steps with + to add,
+// × on active steps to remove back to library. No page refresh.
+const MULTI_STEP_KEYS = new Set(['watery_serum', 'treatment_serum', 'essence', 'toner', 'eye_cream'])
 
+function ManageSteps({ period, tab, onUpdateSteps }) {
   if (!period?._dbId) return null
 
-  // Which steps are currently in this tab
-  const currentSteps = (period.steps?.[tab] || [])
-  const currentKeys  = new Set(currentSteps.map(s => s.categoryKey))
+  const currentSteps = period.steps?.[tab] || []
 
-  // All categories valid for this tab
-  const dayType = tab === 'am' ? 'am' : 'pm'
+  // Which categories are valid for this tab
+  // AM: dayTypes.am; PM: dayTypes.main or dayTypes.off
   const available = Object.entries(INGREDIENT_CATEGORIES)
-    .filter(([, cat]) => cat.dayTypes[dayType])
+    .filter(([, cat]) => tab === 'am' ? cat.dayTypes.am : (cat.dayTypes.main || cat.dayTypes.off))
     .sort((a, b) => a[1].order - b[1].order)
 
-  async function toggleStep(key, label) {
-    setSaving(key)
+  // Steps in library = not in routine, OR multiples-allowed categories
+  const currentKeys = currentSteps.map(s => s.categoryKey)
+  const librarySteps = available.filter(([key]) =>
+    !currentKeys.includes(key) || MULTI_STEP_KEYS.has(key)
+  )
+
+  if (librarySteps.length === 0) return null
+
+  function addStep(key, label) {
     const steps = JSON.parse(JSON.stringify(period.steps || { am: [], pm: [], off: [] }))
-    const list = steps[tab] || []
-
-    if (currentKeys.has(key)) {
-      // Remove
-      steps[tab] = list.filter(s => s.categoryKey !== key)
-      // Keep off in sync for PM
-      if (tab === 'pm' && steps.off) {
-        steps.off = steps.off.filter(s => s.categoryKey !== key)
-      }
-    } else {
-      // Add — insert in correct order
-      const newStep = { id: `${tab}_${key}`, categoryKey: key, label, optional: true, enabled: true }
-      const cats    = INGREDIENT_CATEGORIES
-      list.push(newStep)
-      list.sort((a, b) => (cats[a.categoryKey]?.order ?? 99) - (cats[b.categoryKey]?.order ?? 99))
-      steps[tab] = list
-      // Mirror to off for PM additions
-      if (tab === 'pm') {
-        const offList = steps.off || []
-        if (!offList.find(s => s.categoryKey === key)) {
-          offList.push({ id: `off_${key}`, categoryKey: key, label, optional: true, enabled: true })
-          offList.sort((a, b) => (cats[a.categoryKey]?.order ?? 99) - (cats[b.categoryKey]?.order ?? 99))
-          steps.off = offList
-        }
-      }
+    const cats  = INGREDIENT_CATEGORIES
+    const uid   = `${tab}_${key}_${Date.now()}`
+    const newStep = { id: uid, categoryKey: key, label, optional: true, enabled: true }
+    const list  = steps[tab] || []
+    list.push(newStep)
+    list.sort((a, b) => (cats[a.categoryKey]?.order ?? 99) - (cats[b.categoryKey]?.order ?? 99))
+    steps[tab] = list
+    if (tab === 'pm') {
+      const offList = steps.off || []
+      offList.push({ id: `off_${key}_${Date.now()}`, categoryKey: key, label, optional: true, enabled: true })
+      offList.sort((a, b) => (cats[a.categoryKey]?.order ?? 99) - (cats[b.categoryKey]?.order ?? 99))
+      steps.off = offList
     }
-
-    await supabase.from('routine_periods')
-      .update({ steps, updated_at: new Date().toISOString() })
-      .eq('id', period._dbId)
-    setSaving(null)
-    onUpdated?.()
+    onUpdateSteps?.(period._dbId, steps)
   }
 
   return (
-    <div style={{ marginTop: 16, borderTop: `0.5px solid ${T.border}`, paddingTop: 12 }}>
-      <button onClick={() => setOpen(o => !o)}
-        style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit', fontSize: 11, color: T.textMuted, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-        <span style={{ fontSize: 14, lineHeight: 1 }}>{open ? '−' : '+'}</span>
-        Manage steps
-      </button>
-
-      {open && (
-        <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 2 }}>
-          {available.map(([key, cat]) => {
-            const isIn   = currentKeys.has(key)
-            const isSaving = saving === key
-            return (
-              <div key={key} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '7px 0', borderBottom: `0.5px solid ${T.border}`, opacity: isSaving ? 0.5 : 1 }}>
-                <span style={{ fontSize: 12, color: isIn ? T.text : T.textMuted }}>{cat.label}</span>
-                <button
-                  disabled={isSaving}
-                  onClick={() => toggleStep(key, cat.label)}
-                  style={{ width: 24, height: 24, borderRadius: 0, border: `0.5px solid ${isIn ? T.pinkDeep : T.border}`, background: isIn ? T.pinkDeep : 'transparent', color: isIn ? '#fff' : T.textMuted, cursor: 'pointer', fontSize: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1, flexShrink: 0 }}>
-                  {isIn ? '−' : '+'}
-                </button>
-              </div>
-            )
-          })}
-        </div>
-      )}
+    <div style={{ marginTop: 12, borderTop: `0.5px solid ${T.border}`, paddingTop: 10 }}>
+      <div style={{ fontSize: 9, fontWeight: 700, color: T.textLight, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 8 }}>
+        Add to routine
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+        {librarySteps.map(([key, cat]) => (
+          <div key={key} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 0', borderBottom: `0.5px solid ${T.border}` }}>
+            <span style={{ fontSize: 11, color: T.textMuted }}>{cat.label}</span>
+            <button onClick={() => addStep(key, cat.label)}
+              style={{ fontSize: 11, color: T.pinkDeep, background: 'none', border: 'none', cursor: 'pointer', padding: '0 2px', fontFamily: 'inherit', fontWeight: 600, lineHeight: 1 }}>
+              + Add
+            </button>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
 
-function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allTypes, onClose, onAddTreatment, onTabChange, onEditDaily, onEditShower, onUpdatePeriodProducts, onUpdatePeriodSteps, onAddProduct, recoveryRoutines, onUpdateRecoveryProducts, onUpdateRecoverySteps, onUpdateShowerItemProduct, onUpdateDailyItemProduct, session, onReload }) {
+function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allTypes, onClose, onAddTreatment, onTabChange, onEditDaily, onEditShower, onUpdatePeriodProducts, onUpdatePeriodSteps, onAddProduct, recoveryRoutines, onUpdateRecoveryProducts, onUpdateRecoverySteps, onUpdateShowerItemProduct, onUpdateDailyItemProduct, session, onReload, onUpdateSteps }) {
   const [massageOpen, setMassageOpen] = useState(false)
   const tab = flyout.tab  // always read from parent — no local drift
   const [openStepKey, setOpenStepKey] = useState(null)
@@ -3105,8 +3081,20 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
             <div style={{ flex: 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flex: 1 }}>
                 <div style={{ fontSize: 12, fontWeight: 500, color: T.text }}>{step.label}</div>
-                {step.optional && !product && period && (
-                  <button onClick={e => { e.stopPropagation(); onUpdatePeriodSteps?.(period.startDate, stepKey, false) }} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 14, padding: '0 2px', lineHeight: 1, flexShrink: 0 }} title="Hide this step">×</button>
+                {step.optional && period && (
+                  <button onClick={e => {
+                    e.stopPropagation()
+                    if (onUpdateSteps) {
+                      // Remove this specific step instance by id
+                      const steps = JSON.parse(JSON.stringify(period.steps || { am: [], pm: [], off: [] }))
+                      steps.am  = (steps.am  || []).filter(s => s.id !== step.id)
+                      steps.pm  = (steps.pm  || []).filter(s => s.id !== step.id)
+                      steps.off = (steps.off || []).filter(s => s.id !== step.id && s.id !== step.id.replace(/^(am|pm)_/, 'off_'))
+                      onUpdateSteps(period._dbId, steps)
+                    } else {
+                      onUpdatePeriodSteps?.(period.startDate, stepKey, false)
+                    }
+                  }} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 14, padding: '0 2px', lineHeight: 1, flexShrink: 0 }} title="Remove this step">×</button>
                 )}
               </div>
               {product ? (
@@ -3324,8 +3312,7 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
             <ManageSteps
               period={period}
               tab={tab}
-              session={session}
-              onUpdated={() => { onReload?.() }}
+              onUpdateSteps={onUpdateSteps}
             />
           )}
         </>
@@ -5297,6 +5284,16 @@ export default function GlowUpCalendar({ session }) {
   }
 
   // Assigns a product to a specific step in a specific routine period
+  // Updates steps without full reload — used by ManageSteps and renderSteps × button
+  async function updatePeriodStepsInline(dbId, newSteps) {
+    await supabase.from('routine_periods')
+      .update({ steps: newSteps, updated_at: new Date().toISOString() })
+      .eq('id', dbId)
+    setRoutineHistory(prev => prev.map(p =>
+      p._dbId === dbId ? { ...p, steps: newSteps } : p
+    ))
+  }
+
   async function updatePeriodProducts(periodStartDate, stepKey, productId) {
     if (!periodStartDate) return
     setRoutineHistory(h => h.map(p => {
@@ -5967,6 +5964,7 @@ export default function GlowUpCalendar({ session }) {
                   onUpdateDailyItemProduct={updateDailyItemProduct}
                   session={session}
                   onReload={() => setReloadKey(k => k + 1)}
+                  onUpdateSteps={updatePeriodStepsInline}
                 />
               </div>
             </div>
