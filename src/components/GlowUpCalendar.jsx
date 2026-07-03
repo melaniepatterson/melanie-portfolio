@@ -2931,7 +2931,93 @@ const AM_STEPS = [
 
 
 
-function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allTypes, onClose, onAddTreatment, onTabChange, onEditDaily, onEditShower, onUpdatePeriodProducts, onUpdatePeriodSteps, onAddProduct, recoveryRoutines, onUpdateRecoveryProducts, onUpdateRecoverySteps, onUpdateShowerItemProduct, onUpdateDailyItemProduct }) {
+// ─── MANAGE STEPS ────────────────────────────────────────────
+// Collapsible section at bottom of flyout for adding/removing steps
+function ManageSteps({ period, tab, session, onUpdated }) {
+  const [open, setOpen] = useState(false)
+  const [saving, setSaving] = useState(null)
+
+  if (!period?._dbId) return null
+
+  // Which steps are currently in this tab
+  const currentSteps = (period.steps?.[tab] || [])
+  const currentKeys  = new Set(currentSteps.map(s => s.categoryKey))
+
+  // All categories valid for this tab
+  const dayType = tab === 'am' ? 'am' : 'pm'
+  const available = Object.entries(INGREDIENT_CATEGORIES)
+    .filter(([, cat]) => cat.dayTypes[dayType])
+    .sort((a, b) => a[1].order - b[1].order)
+
+  async function toggleStep(key, label) {
+    setSaving(key)
+    const steps = JSON.parse(JSON.stringify(period.steps || { am: [], pm: [], off: [] }))
+    const list = steps[tab] || []
+
+    if (currentKeys.has(key)) {
+      // Remove
+      steps[tab] = list.filter(s => s.categoryKey !== key)
+      // Keep off in sync for PM
+      if (tab === 'pm' && steps.off) {
+        steps.off = steps.off.filter(s => s.categoryKey !== key)
+      }
+    } else {
+      // Add — insert in correct order
+      const newStep = { id: `${tab}_${key}`, categoryKey: key, label, optional: true, enabled: true }
+      const cats    = INGREDIENT_CATEGORIES
+      list.push(newStep)
+      list.sort((a, b) => (cats[a.categoryKey]?.order ?? 99) - (cats[b.categoryKey]?.order ?? 99))
+      steps[tab] = list
+      // Mirror to off for PM additions
+      if (tab === 'pm') {
+        const offList = steps.off || []
+        if (!offList.find(s => s.categoryKey === key)) {
+          offList.push({ id: `off_${key}`, categoryKey: key, label, optional: true, enabled: true })
+          offList.sort((a, b) => (cats[a.categoryKey]?.order ?? 99) - (cats[b.categoryKey]?.order ?? 99))
+          steps.off = offList
+        }
+      }
+    }
+
+    await supabase.from('routine_periods')
+      .update({ steps, updated_at: new Date().toISOString() })
+      .eq('id', period._dbId)
+    setSaving(null)
+    onUpdated?.()
+  }
+
+  return (
+    <div style={{ marginTop: 16, borderTop: `0.5px solid ${T.border}`, paddingTop: 12 }}>
+      <button onClick={() => setOpen(o => !o)}
+        style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit', fontSize: 11, color: T.textMuted, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+        <span style={{ fontSize: 14, lineHeight: 1 }}>{open ? '−' : '+'}</span>
+        Manage steps
+      </button>
+
+      {open && (
+        <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {available.map(([key, cat]) => {
+            const isIn   = currentKeys.has(key)
+            const isSaving = saving === key
+            return (
+              <div key={key} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '7px 0', borderBottom: `0.5px solid ${T.border}`, opacity: isSaving ? 0.5 : 1 }}>
+                <span style={{ fontSize: 12, color: isIn ? T.text : T.textMuted }}>{cat.label}</span>
+                <button
+                  disabled={isSaving}
+                  onClick={() => toggleStep(key, cat.label)}
+                  style={{ width: 24, height: 24, borderRadius: 0, border: `0.5px solid ${isIn ? T.pinkDeep : T.border}`, background: isIn ? T.pinkDeep : 'transparent', color: isIn ? '#fff' : T.textMuted, cursor: 'pointer', fontSize: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1, flexShrink: 0 }}>
+                  {isIn ? '−' : '+'}
+                </button>
+              </div>
+            )
+          })}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allTypes, onClose, onAddTreatment, onTabChange, onEditDaily, onEditShower, onUpdatePeriodProducts, onUpdatePeriodSteps, onAddProduct, recoveryRoutines, onUpdateRecoveryProducts, onUpdateRecoverySteps, onUpdateShowerItemProduct, onUpdateDailyItemProduct, session, onReload }) {
   const [massageOpen, setMassageOpen] = useState(false)
   const tab = flyout.tab  // always read from parent — no local drift
   const [openStepKey, setOpenStepKey] = useState(null)
@@ -3232,6 +3318,16 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
             </div>
           )}
           {tab === 'pm' && renderSteps(pmSteps, dayType === 'tret' ? '#A78BFA' : T.orange, nightType)}
+
+          {/* ── Manage steps ── */}
+          {period && !isTreatment && (
+            <ManageSteps
+              period={period}
+              tab={tab}
+              session={session}
+              onUpdated={() => { onReload?.() }}
+            />
+          )}
         </>
       )}
     </div>
@@ -5869,6 +5965,8 @@ export default function GlowUpCalendar({ session }) {
                   onUpdateRecoverySteps={updateRecoverySteps}
                   onUpdateShowerItemProduct={updateShowerItemProduct}
                   onUpdateDailyItemProduct={updateDailyItemProduct}
+                  session={session}
+                  onReload={() => setReloadKey(k => k + 1)}
                 />
               </div>
             </div>
