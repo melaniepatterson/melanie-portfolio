@@ -4805,11 +4805,7 @@ export default function GlowUpCalendar({ session }) {
     if (has) window.history.replaceState({}, '', window.location.pathname)
     return has
   })
-  const [showSurvey, setShowSurvey] = useState(() => {
-    const has = new URLSearchParams(window.location.search).get('survey') === '1'
-    if (has) window.history.replaceState({}, '', window.location.pathname)
-    return has
-  })
+  const [showSurvey, setShowSurvey] = useState(false)
   const [surveyDismissed, setSurveyDismissed] = useState(() => {
     try {
       const until = localStorage.getItem('glowup_survey_snooze_until')

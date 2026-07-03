@@ -19,6 +19,7 @@ import RoutineHistory from './components/RoutineHistory'
 import ProductsPage from './components/ProductsPage'
 import CookieNotice from './components/CookieNotice'
 import PrivacyPolicy from './components/PrivacyPolicy'
+import BetaSurvey from './components/BetaSurvey'
 import { supabase } from './lib/supabase'
 
 function Layout() {
@@ -29,12 +30,37 @@ function Layout() {
   const isRoutine = location.pathname.startsWith("/routine");
 
   const [session, setSession] = useState(undefined)
+  const [showSurvey, setShowSurvey] = useState(false)
+  const [surveySubmitted, setSurveySubmitted] = useState(false)
+  const [betaTester, setBetaTester] = useState(false)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => setSession(session))
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => setSession(session))
     return () => subscription.unsubscribe()
   }, [])
+
+  // Check ?survey=1 param — open modal over whatever page is current
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('survey') === '1') {
+      window.history.replaceState({}, '', window.location.pathname)
+      setShowSurvey(true)
+    }
+  }, [location.search])
+
+  // Load beta tester + survey status when session is available
+  useEffect(() => {
+    if (!session?.user?.id) return
+    supabase.from('profiles').select('beta_tester, survey_submitted_at')
+      .eq('id', session.user.id).single()
+      .then(({ data }) => {
+        if (data) {
+          setBetaTester(data.beta_tester || false)
+          setSurveySubmitted(!!data.survey_submitted_at)
+        }
+      })
+  }, [session?.user?.id])
 
   useEffect(() => {
     if ('scrollRestoration' in window.history) {
@@ -118,6 +144,15 @@ function Layout() {
         </div>
       </div>
       <CookieNotice />
+      {showSurvey && session && betaTester && (
+        <BetaSurvey
+          session={session}
+          onClose={() => setShowSurvey(false)}
+          onSubmitted={() => { setSurveySubmitted(true); setShowSurvey(false) }}
+          betaTester={betaTester}
+          alreadySubmitted={surveySubmitted}
+        />
+      )}
     </>
   );
 }
