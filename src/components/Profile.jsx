@@ -504,7 +504,7 @@ export default function Profile({ session }) {
             </div>
           </label>
           {savedBetaTester && (
-            <a href="/routine?survey=1"
+            <a href="/routine/profile?survey=1"
               style={{ fontSize: 12, color: T.pinkDeep, textDecoration: 'none', fontWeight: 500 }}>
               Share feedback about the app →
             </a>
