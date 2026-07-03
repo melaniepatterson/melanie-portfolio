@@ -58,6 +58,11 @@ function Layout() {
         if (data) {
           setBetaTester(data.beta_tester || false)
           setSurveySubmitted(!!data.survey_submitted_at)
+          // Also open survey if param was set before profile loaded
+          if (data.beta_tester && new URLSearchParams(window.location.search).get('survey') === '1') {
+            window.history.replaceState({}, '', window.location.pathname)
+            setShowSurvey(true)
+          }
         }
       })
   }, [session?.user?.id])
@@ -144,7 +149,7 @@ function Layout() {
         </div>
       </div>
       <CookieNotice />
-      {showSurvey && session && betaTester && (
+      {showSurvey && session && (
         <BetaSurvey
           session={session}
           onClose={() => setShowSurvey(false)}

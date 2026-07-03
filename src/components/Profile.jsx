@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import GlowUpLogo from './GlowUpWordmark'
 import SideMenu from './SideMenu'
 import { supabase } from '../lib/supabase'
@@ -88,6 +89,7 @@ function PillButton({ active, onClick, children, sub }) {
 }
 
 export default function Profile({ session }) {
+  const navigate = useNavigate()
   const [displayName,   setDisplayName]   = useState('')
   const [skinType,      setSkinType]      = useState('')
   const [skinGoals,     setSkinGoals]     = useState([])
@@ -504,10 +506,10 @@ export default function Profile({ session }) {
             </div>
           </label>
           {savedBetaTester && (
-            <a href="/routine/profile?survey=1"
-              style={{ fontSize: 12, color: T.pinkDeep, textDecoration: 'none', fontWeight: 500 }}>
+            <button onClick={() => navigate('/routine/profile?survey=1')}
+              style={{ fontSize: 12, color: T.pinkDeep, fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit' }}>
               Share feedback about the app →
-            </a>
+            </button>
           )}
         </div>
 
