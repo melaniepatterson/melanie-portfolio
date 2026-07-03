@@ -100,7 +100,7 @@ function Layout() {
   if (location.pathname === "/privacy") return <PrivacyPolicy />
 
   // Profile page — full screen, no nav/logo/footer chrome
-  if (location.pathname === "/routine/profile") return <Profile session={session} />
+  if (location.pathname === "/routine/profile") return <Profile session={session} onOpenSurvey={() => setShowSurvey(true)} />
   if (location.pathname === "/routine/history") return <RoutineHistory session={session} />
   if (location.pathname === "/routine/products") return <ProductsPage session={session} />
 

@@ -88,7 +88,7 @@ function PillButton({ active, onClick, children, sub }) {
   )
 }
 
-export default function Profile({ session }) {
+export default function Profile({ session, onOpenSurvey }) {
   const navigate = useNavigate()
   const [displayName,   setDisplayName]   = useState('')
   const [skinType,      setSkinType]      = useState('')
@@ -505,8 +505,8 @@ export default function Profile({ session }) {
               <strong style={{ color: T.text }}>I'm interested in being a beta tester</strong> — you may hear from us about new features, early previews, and occasional check-ins. No spam, ever.
             </div>
           </label>
-          {savedBetaTester && (
-            <button onClick={() => navigate('/routine/profile?survey=1')}
+          {savedBetaTester && onOpenSurvey && (
+            <button onClick={onOpenSurvey}
               style={{ fontSize: 12, color: T.pinkDeep, fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit' }}>
               Share feedback about the app →
             </button>
