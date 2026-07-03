@@ -5,6 +5,7 @@ import SideMenu from './SideMenu'
 import { supabase } from '../lib/supabase'
 import Avatar from './Avatar'
 import CropModal from './CropModal'
+import BetaSurvey from './BetaSurvey'
 import { detectTimezone, TIMEZONE_OPTIONS } from './timezone'
 
 const T = {
@@ -90,6 +91,7 @@ function PillButton({ active, onClick, children, sub }) {
 
 export default function Profile({ session, onOpenSurvey }) {
   const navigate = useNavigate()
+  const [showSurvey, setShowSurvey] = useState(false)
   const [displayName,   setDisplayName]   = useState('')
   const [skinType,      setSkinType]      = useState('')
   const [skinGoals,     setSkinGoals]     = useState([])
@@ -263,6 +265,7 @@ export default function Profile({ session, onOpenSurvey }) {
   )
 
   return (
+    <>
     <div style={{ fontFamily: 'inherit', minHeight: '100vh', background: T.cream, padding: '0 0 60px' }}>
       {cropSrc && (
         <CropModal imageSrc={cropSrc} onConfirm={handleCropConfirm} onCancel={handleCropCancel} uploading={uploading} />
@@ -505,8 +508,8 @@ export default function Profile({ session, onOpenSurvey }) {
               <strong style={{ color: T.text }}>I'm interested in being a beta tester</strong> — you may hear from us about new features, early previews, and occasional check-ins. No spam, ever.
             </div>
           </label>
-          {savedBetaTester && onOpenSurvey && (
-            <button onClick={onOpenSurvey}
+          {savedBetaTester && (
+            <button onClick={() => setShowSurvey(true)}
               style={{ fontSize: 12, color: T.pinkDeep, fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit' }}>
               Share feedback about the app →
             </button>
@@ -614,5 +617,15 @@ export default function Profile({ session, onOpenSurvey }) {
         </button>
       </div>
     </div>
+    {showSurvey && (
+      <BetaSurvey
+        session={session}
+        onClose={() => setShowSurvey(false)}
+        onSubmitted={() => setShowSurvey(false)}
+        betaTester={true}
+        alreadySubmitted={false}
+      />
+    )}
+    </>
   )
 }
