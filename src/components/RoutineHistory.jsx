@@ -187,10 +187,28 @@ export default function RoutineHistory({ session }) {
                         </div>
                       </div>
                       <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.7 }}>
-                        {p.activeName ? p.activeName.charAt(0).toUpperCase() + p.activeName.slice(1) : 'Retinoid'}: {p.tretEnabled ? p.tretFrequency : 'off'}
-                        {(p.secondaryActives||[]).filter(sa => sa.enabled).length > 0 && (
-                          <span> · {p.secondaryActives.filter(sa => sa.enabled).map(sa => sa.key).join(', ')}</span>
-                        )}
+                        {(() => {
+                          const steps = p.steps
+                          if (steps) {
+                            const amSteps = (steps.am || []).map(s => s.label).filter(Boolean)
+                            const pmSteps = (steps.pm || []).map(s => s.label).filter(Boolean)
+                            return (
+                              <>
+                                {amSteps.length > 0 && <div>AM: {amSteps.join(' · ')}</div>}
+                                {pmSteps.length > 0 && <div>PM: {pmSteps.join(' · ')}</div>}
+                                {p.bhaEnabled && <div>AHA/BHA: {p.bhaFrequency}× per week</div>}
+                                {p.tretEnabled && <div>{p.activeName ? p.activeName.charAt(0).toUpperCase() + p.activeName.slice(1) : 'Tretinoin'}: {p.tretFrequency}</div>}
+                              </>
+                            )
+                          }
+                          // Fallback for older periods without steps object
+                          return (
+                            <div>{p.tretEnabled
+                              ? `${p.activeName ? p.activeName.charAt(0).toUpperCase() + p.activeName.slice(1) : 'Tretinoin'}: ${p.tretFrequency}`
+                              : 'Basic routine'
+                            }</div>
+                          )
+                        })()}
                       </div>
                       <Timestamps p={p} />
                     </div>
