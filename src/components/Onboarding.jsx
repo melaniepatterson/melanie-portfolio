@@ -2,20 +2,8 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { buildStepEntries } from './programOptions'
 import ProgramOptionsChecklist, { toggleOption } from './ProgramOptionsChecklist'
+import T from './theme'
 
-const T = {
-  bg:        '#FAF7F2',
-  white:     '#FFFFFF',
-  cream:     '#FAF7F2',
-  creamDark: '#F0EBE3',
-  border:    '#E7E0D8',
-  text:      '#1C1917',
-  textMuted: '#78716C',
-  textLight: '#A8A29E',
-  pink:      '#FFD6F9',
-  pinkDeep:  '#C93500',
-  orange:    '#FF6B35',
-}
 
 // ─── STEP INDICATOR ──────────────────────────────────────────
 function StepDot({ active, done }) {

@@ -7,18 +7,8 @@ import Avatar from './Avatar'
 import CropModal from './CropModal'
 import BetaSurvey from './BetaSurvey'
 import { detectTimezone, TIMEZONE_OPTIONS } from './timezone'
+import T from './theme'
 
-const T = {
-  white:    '#FFFFFF',
-  cream:    '#FAF7F2',
-  creamDark:'#F3EDE4',
-  border:   '#E7E0D8',
-  text:     '#1C1917',
-  textMuted:'#78716C',
-  textLight:'#A8A29E',
-  pink:     '#FFD6F9',
-  pinkDeep: '#C93500',
-}
 
 
 

@@ -2,19 +2,8 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { ACTIVE_STEP_KEYS, buildStepEntries, applyProgramPhase, countTreatmentPauseDays } from './programOptions'
 import ProgramOptionsChecklist, { toggleOption } from './ProgramOptionsChecklist'
+import T from './theme'
 
-const T = {
-  bg:        '#FAF7F2',
-  white:     '#FFFFFF',
-  cream:     '#FAF7F2',
-  creamDark: '#F0EBE3',
-  border:    '#E7E0D8',
-  text:      '#1C1917',
-  textMuted: '#78716C',
-  textLight: '#A8A29E',
-  pink:      '#FFD6F9',
-  pinkDeep:  '#C93500',
-}
 
 function daysSince(dateStr) {
   const then = new Date(dateStr + 'T00:00:00')

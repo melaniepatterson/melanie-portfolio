@@ -1,12 +1,8 @@
 import { useState, useEffect } from 'react'
 import Avatar from './Avatar'
 import { supabase } from '../lib/supabase'
+import T from './theme'
 
-const T = {
-  white: '#FFFFFF', cream: '#FAF7F2', creamDark: '#F0EBE3',
-  border: '#E7E0D8', text: '#1C1917', textMuted: '#78716C', textLight: '#A8A29E',
-  pinkDeep: '#C93500', pink: '#FFD6F9',
-}
 
 export default function SideMenu({ session, onClose, onFeedback }) {
   const email = session?.user?.email || ''

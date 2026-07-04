@@ -1,17 +1,7 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabase'
+import T from './theme'
 
-const T = {
-  white:    '#FFFFFF',
-  cream:    '#FAF7F2',
-  creamDark:'#F3EDE4',
-  border:   '#E7E0D8',
-  text:     '#1C1917',
-  textMuted:'#78716C',
-  textLight:'#A8A29E',
-  pink:     '#FFD6F9',
-  pinkDeep: '#C93500',
-}
 
 const SKIN_TYPES = ['Dry', 'Oily', 'Combination', 'Normal', 'Sensitive', 'Not sure yet']
 const HOW_HEARD  = ['Instagram', 'TikTok', 'Word of mouth', 'Melanie\'s portfolio', 'Twitter / X', 'Other']

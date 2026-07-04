@@ -2,12 +2,8 @@ import React, { useState, useEffect } from 'react'
 import GlowUpLogo from './GlowUpWordmark'
 import SideMenu from './SideMenu'
 import { supabase } from '../lib/supabase'
+import T from './theme'
 
-const T = {
-  white: '#FFFFFF', cream: '#FAF7F2', creamDark: '#F3EDE4',
-  border: '#E7E0D8', text: '#1C1917', textMuted: '#78716C',
-  textLight: '#A8A29E', pink: '#FFD6F9', pinkDeep: '#C93500', orange: '#F97316',
-}
 
 const TOOLTIP_TEXT = "Add a new routine when your approach is changing — it preserves your history and lets you track what you used before. Edit when you're correcting a mistake. Think of each routine as a chapter."
 

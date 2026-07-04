@@ -3,32 +3,8 @@ import { useState, useEffect, useRef } from 'react'
 import GlowUpLogo from './GlowUpWordmark'
 import { supabase } from '../lib/supabase'
 import SideMenu from './SideMenu'
+import T from './theme'
 
-const T = {
-  pink:         '#FFD6F9',
-  pinkDeep:     '#C93500',
-  orange:       '#F97316',
-  orangeLight:  '#FED7AA',
-  cream:        '#FAF7F2',
-  creamDark:    '#F0EBE3',
-  text:         '#1C1917',
-  textMuted:    '#78716C',
-  textLight:    '#A8A29E',
-  border:       '#E7E0D8',
-  white:        '#FFFFFF',
-  tret:         { bg: '#EDE9FE', border: '#A78BFA', text: '#5B21B6' },
-  bha:          { bg: '#DCFCE7', border: '#4ADE80', text: '#166534' },
-  pause:        { bg: '#FEF3C7', border: '#FCD34D', text: '#92400E' },
-  recovery:     { bg: '#FFE4E6', border: '#FB7185', text: '#9F1239' },
-  microneedling: { bg: '#FED7AA', border: '#FB923C', text: '#9A3412' },
-  massage:      { bg: '#E0F2FE', border: '#38BDF8', text: '#0C4A6E' },
-  hairTreatment:      { bg: '#DCFCE7', border: '#4ADE80', text: '#166534' },
-  peel:         { bg: '#FFE4E6', border: '#FB7185', text: '#9F1239' },
-  electrolysis: { bg: '#EDE9FE', border: '#A78BFA', text: '#5B21B6' },
-  facial:       { bg: '#DCFCE7', border: '#4ADE80', text: '#166534' },
-  microderm:    { bg: '#E0F2FE', border: '#38BDF8', text: '#0C4A6E' },
-  custom:       { bg: '#FFE4E6', border: '#FB7185', text: '#9F1239' },
-}
 
 const PRODUCT_FLAGS = [
   { key: 'black_owned',       label: 'Black-owned',       bg: '#1a1a1a', color: '#fff'    },
