@@ -44,8 +44,8 @@ import SideMenu from './SideMenu'
 // ─── DESIGN TOKENS ───────────────────────────────────────────
 const T = {
   pink:         '#FFD6F9',
-  pinkDeep:     '#F472B6',
-  orange:       '#FB923C',
+  pinkDeep:     '#C93500',
+  orange:       '#F97316',
   orangeLight:  '#FED7AA',
   cream:        '#FAF7F2',
   creamDark:    '#F0EBE3',

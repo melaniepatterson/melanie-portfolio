@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase'
 
 const T = {
   white: '#FFFFFF', cream: '#FAF7F2', creamDark: '#F0EBE3',
-  border: '#E8E2DA', text: '#1A1A1A', textMuted: '#6B6560', textLight: '#9B9590',
+  border: '#E7E0D8', text: '#1C1917', textMuted: '#78716C', textLight: '#A8A29E',
   pinkDeep: '#C93500', pink: '#FFD6F9',
 }
 
