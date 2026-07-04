@@ -215,7 +215,7 @@ const INGREDIENT_CATEGORIES = {
     productCategories: ['micellar water', 'cleansing water'],
   },
   oil_cleanser: {
-    label: 'Oil / balm cleanser', order: 2,
+    label: 'Cleansing balm / oil', order: 2,
     dayTypes: { am: false, main: true, off: true, recovery: true, pause: true },
     optional: true,
     forms: ['Cleansing oil', 'Cleansing balm', 'Cleansing butter', 'Other'],
@@ -289,7 +289,7 @@ const INGREDIENT_CATEGORIES = {
     ingredientCategories: ['benzoyl_peroxide', 'azelaic_acid', 'bha', 'aha'],
   },
   eye_cream: {
-    label: 'Eye cream', order: 10,
+    label: 'Eye cream / treatment', order: 10,
     dayTypes: { am: true, main: true, off: true, recovery: true, pause: true },
     optional: true,
     forms: ['Eye cream', 'Eye gel', 'Eye serum', 'Other'],
@@ -2936,18 +2936,15 @@ const AM_STEPS = [
 // × on active steps to remove back to library. No page refresh.
 const MULTI_STEP_KEYS = new Set(['watery_serum', 'treatment_serum', 'essence', 'toner', 'eye_cream'])
 
-function ManageSteps({ period, tab, onUpdateSteps }) {
+function ManageSteps({ period, tab, onUpdateSteps, skinType }) {
+  const [open, setOpen] = useState(false)
   if (!period?._dbId) return null
 
+  const isOilySkin = skinType === 'oily' || skinType === 'combination'
   const currentSteps = period.steps?.[tab] || []
-
-  // Which categories are valid for this tab
-  // AM: dayTypes.am; PM: dayTypes.main or dayTypes.off
   const available = Object.entries(INGREDIENT_CATEGORIES)
     .filter(([, cat]) => tab === 'am' ? cat.dayTypes.am : (cat.dayTypes.main || cat.dayTypes.off))
     .sort((a, b) => a[1].order - b[1].order)
-
-  // Steps in library = not in routine, OR multiples-allowed categories
   const currentKeys = currentSteps.map(s => s.categoryKey)
   const librarySteps = available.filter(([key]) =>
     !currentKeys.includes(key) || MULTI_STEP_KEYS.has(key)
@@ -2975,25 +2972,36 @@ function ManageSteps({ period, tab, onUpdateSteps }) {
 
   return (
     <div style={{ marginTop: 12, borderTop: `0.5px solid ${T.border}`, paddingTop: 10 }}>
-      <div style={{ fontSize: 9, fontWeight: 700, color: T.textLight, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 8 }}>
+      <button onClick={() => setOpen(o => !o)}
+        style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit', fontSize: 9, fontWeight: 700, color: T.textLight, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
         Add to routine
-      </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-        {librarySteps.map(([key, cat]) => (
-          <div key={key} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 0', borderBottom: `0.5px solid ${T.border}` }}>
-            <span style={{ fontSize: 11, color: T.textMuted }}>{cat.label}</span>
-            <button onClick={() => addStep(key, cat.label)}
-              style={{ fontSize: 11, color: T.pinkDeep, background: 'none', border: 'none', cursor: 'pointer', padding: '0 2px', fontFamily: 'inherit', fontWeight: 600, lineHeight: 1 }}>
-              + Add
-            </button>
-          </div>
-        ))}
-      </div>
+        <span style={{ fontSize: 7, display: 'inline-block', transition: 'transform 0.15s', transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }}>▼</span>
+      </button>
+      {open && (
+        <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 1 }}>
+          {librarySteps.map(([key, cat]) => (
+            <div key={key} style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, padding: '6px 0', borderBottom: `0.5px solid ${T.border}` }}>
+              <div>
+                <span style={{ fontSize: 11, color: T.textMuted }}>{cat.label}</span>
+                {key === 'occlusive' && isOilySkin && (
+                  <div style={{ fontSize: 10, color: T.textLight, fontStyle: 'italic', marginTop: 1 }}>
+                    Use with caution on oily or acne-prone skin
+                  </div>
+                )}
+              </div>
+              <button onClick={() => addStep(key, cat.label)}
+                style={{ fontSize: 11, color: T.pinkDeep, background: 'none', border: 'none', cursor: 'pointer', padding: '0 2px', fontFamily: 'inherit', fontWeight: 600, lineHeight: 1, flexShrink: 0 }}>
+                + Add
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
 
-function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allTypes, onClose, onAddTreatment, onTabChange, onEditDaily, onEditShower, onUpdatePeriodProducts, onUpdatePeriodSteps, onAddProduct, recoveryRoutines, onUpdateRecoveryProducts, onUpdateRecoverySteps, onUpdateShowerItemProduct, onUpdateDailyItemProduct, session, onReload, onUpdateSteps }) {
+function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allTypes, onClose, onAddTreatment, onTabChange, onEditDaily, onEditShower, onUpdatePeriodProducts, onUpdatePeriodSteps, onAddProduct, recoveryRoutines, onUpdateRecoveryProducts, onUpdateRecoverySteps, onUpdateShowerItemProduct, onUpdateDailyItemProduct, session, onReload, onUpdateSteps, skinType }) {
   const [massageOpen, setMassageOpen] = useState(false)
   const tab = flyout.tab  // always read from parent — no local drift
   const [openStepKey, setOpenStepKey] = useState(null)
@@ -3313,6 +3321,7 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
               period={period}
               tab={tab}
               onUpdateSteps={onUpdateSteps}
+              skinType={skinType}
             />
           )}
         </>
@@ -5965,6 +5974,7 @@ export default function GlowUpCalendar({ session }) {
                   session={session}
                   onReload={() => setReloadKey(k => k + 1)}
                   onUpdateSteps={updatePeriodStepsInline}
+                  skinType={skinType}
                 />
               </div>
             </div>
