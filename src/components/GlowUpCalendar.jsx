@@ -5346,7 +5346,7 @@ export default function GlowUpCalendar({ session }) {
       onRetry={() => { setLoadError(null); setLoading(true) }}
     />
   )
-  if (loading) return <GlowUpLoader message="Loading your routine..." />
+  if (loading) return <GlowUpLoader />
 
   // Convenience alias — first active program (for backwards-compat code that only needs one)
   const activeProgram = activePrograms[0] || null

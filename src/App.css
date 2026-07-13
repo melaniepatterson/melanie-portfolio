@@ -98,3 +98,32 @@ button:hover .split-char {
   font-family: 'TAN - Sometimes';
   src: local('TAN - Sometimes'), url(./fonts/tan_-_sometimes-webfont.woff) format('woff'), url(./fonts/tan_-_sometimes-webfont.woff2) format('woff2');
 }
+
+@font-face {
+  font-family: 'Naskle';
+  src: local('Naskle'), url(./fonts/Naskle-Regular.woff) format('woff'), url(./fonts/Naskle-Regular.woff2) format('woff2');
+}
+
+@font-face {
+  font-family: 'DM Sans';
+  src: local('DM Sans'), url(./fonts/DMSans-VariableFont_opsz,wght.ttf) format('truetype');
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'DM Sans';
+  src: local('DM Sans'), url(./fonts/DMSans-Italic-VariableFont_opsz,wght.ttf) format('truetype');
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Fraunces';
+  src: local('Fraunces'), url(./fonts/Fraunces-VariableFont_SOFT,WONK,opsz,wght.ttf) format('truetype');
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Fraunces';
+  src: local('Fraunces'), url(./fonts/Fraunces-Italic-VariableFont_SOFT,WONK,opsz,wght.ttf) format('truetype');
+  font-style: italic;
+}
