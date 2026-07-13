@@ -1,13 +1,5 @@
 import { ACTIVE_STEP_KEYS, SKIN_TYPE_NOTES } from './programOptions'
-
-const T = {
-  white:     '#FFFFFF',
-  border:    '#DDD8D0',
-  text:      '#1A1A1A',
-  textMuted: '#6B6560',
-  pinkDeep:  '#C93500',
-  cream:     '#F5F0EB',
-}
+import T from './theme'
 
 // Renders the checkbox list of program_phase_options with:
 // - multi-select via toggling a Set

@@ -103,6 +103,7 @@ function Layout() {
   if (location.pathname === "/routine/profile") return (
     <>
       <Profile session={session} onOpenSurvey={() => setShowSurvey(true)} />
+      <CookieNotice variant="glowup" />
       {showSurvey && session && (
         <BetaSurvey
           session={session}
@@ -114,8 +115,18 @@ function Layout() {
       )}
     </>
   )
-  if (location.pathname === "/routine/history") return <RoutineHistory session={session} />
-  if (location.pathname === "/routine/products") return <ProductsPage session={session} />
+  if (location.pathname === "/routine/history") return (
+    <>
+      <RoutineHistory session={session} />
+      <CookieNotice variant="glowup" />
+    </>
+  )
+  if (location.pathname === "/routine/products") return (
+    <>
+      <ProductsPage session={session} />
+      <CookieNotice variant="glowup" />
+    </>
+  )
 
   return (
     <>
@@ -161,7 +172,7 @@ function Layout() {
           </footer>
         </div>
       </div>
-      <CookieNotice />
+      <CookieNotice variant={isRoutine ? 'glowup' : 'portfolio'} />
       {showSurvey && session && (
         <BetaSurvey
           session={session}

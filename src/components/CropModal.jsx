@@ -1,17 +1,6 @@
 import { useState, useCallback } from 'react'
 import Cropper from 'react-easy-crop'
-
-const T = {
-  white:    '#FFFFFF',
-  cream:    '#FAF7F2',
-  creamDark:'#F3EDE4',
-  border:   '#E7E0D8',
-  text:     '#1C1917',
-  textMuted:'#78716C',
-  textLight:'#A8A29E',
-  pink:     '#FFD6F9',
-  pinkDeep: '#C93500',
-}
+import T from './theme'
 
 // Extract the cropped region from the image using canvas, return as WebP blob
 async function getCroppedWebP(imageSrc, pixelCrop, quality = 0.85) {

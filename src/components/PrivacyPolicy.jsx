@@ -1,10 +1,4 @@
-const T = {
-  cream:    '#FAF7F2',
-  border:   '#DDD8D0',
-  text:     '#1A1A1A',
-  textMuted:'#6B6560',
-  pinkDeep: '#C93500',
-}
+import T from './theme'
 
 function Section({ title, children, id }) {
   return (
