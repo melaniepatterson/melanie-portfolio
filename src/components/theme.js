@@ -1,6 +1,17 @@
 // ─── GlowUp Design Tokens ────────────────────────────────────
 // Single source of truth for all colors, typography, and spacing.
 // Import this file in every component: import T from './theme'
+//
+// Phase 1 update log (see handoff doc Section 13.5):
+// - orange corrected to finalized value; olive split into UI vs logo
+// - added full dark palette (darkPink/Blue/Green/Yellow/Orange/Olive)
+// - added pinkDeep — used throughout the codebase but was never a real token
+// - added orangeLight — used in GlowUpCalendar's "cycle starts" day picker
+// - added Naskle + Fraunces Light Italic font families
+// - radius.input changed from 0px to plain pill, no underline, per finalized spec
+// - added radius.banner for the survey/program banner (38px)
+// - all treatment types now share one orange badge color (laser, dermaplaning,
+//   botox, led, microneedling_home, hydrafacial added to match existing types)
 
 const T = {
   // ── Brand colors ─────────────────────────────────────────────
@@ -8,8 +19,23 @@ const T = {
   blue:    '#98AAF8',   // periwinkle — actives badges, focus rings
   green:   '#7BE3A5',   // mint — tretinoin badges
   yellow:  '#F5C222',   // yellow — pause badges
-  orange:  '#E95800',   // orange — treatment badges, warning buttons
-  olive:   '#92881F',   // olive — logo color only
+  orange:  '#F07040',   // orange — treatment badges, warning buttons
+  olive:   '#BDB62E',   // olive — UI accent (default day color, etc.)
+  logoOlive: '#92881F', // olive — wordmark/logo only, do not use elsewhere
+
+  // ── Dark variants ────────────────────────────────────────────
+  // Used for PM halves of the day flyout, and anywhere a solid-color
+  // fill needs cream text on top instead of darkText.
+  darkPink:   '#A82070',
+  darkBlue:   '#3348C0',
+  darkGreen:  '#197A3C',
+  darkYellow: '#8A5C00',
+  darkOrange: '#9E4008',
+  darkOlive:  '#656018',
+
+  // ── Extra accent tints ───────────────────────────────────────
+  pinkDeep:    '#C93500',   // deep accent — CTAs, error text, active states (used everywhere, formalizing it here)
+  orangeLight: '#FEE9D5',   // light orange tint — day-of-week pickers, light fills needing an orange accent
 
   // ── Neutrals ─────────────────────────────────────────────────
   white:      '#FFFFFF',       // inputs, text areas, max contrast surfaces
@@ -37,20 +63,33 @@ const T = {
   // Pause — yellow
   pause:    { bg: '#FEF5CC', border: '#F5C222', text: '#6B4800' },
   // Treatments (facial, peel, microderm, etc.) — orange
-  treatment:    { bg: '#FEE9D5', border: '#E95800', text: '#6B2500' },
-  microneedling:{ bg: '#FEE9D5', border: '#E95800', text: '#6B2500' },
-  massage:      { bg: '#FEE9D5', border: '#E95800', text: '#6B2500' },
-  hairTreatment:{ bg: '#FEE9D5', border: '#E95800', text: '#6B2500' },
-  peel:         { bg: '#FEE9D5', border: '#E95800', text: '#6B2500' },
-  electrolysis: { bg: '#FEE9D5', border: '#E95800', text: '#6B2500' },
-  facial:       { bg: '#FEE9D5', border: '#E95800', text: '#6B2500' },
-  microderm:    { bg: '#FEE9D5', border: '#E95800', text: '#6B2500' },
-  custom:       { bg: '#FEE9D5', border: '#E95800', text: '#6B2500' },
+  treatment:    { bg: '#FEE9D5', border: '#F07040', text: '#6B2500' },
+  microneedling:{ bg: '#FEE9D5', border: '#F07040', text: '#6B2500' },
+  massage:      { bg: '#FEE9D5', border: '#F07040', text: '#6B2500' },
+  hairTreatment:{ bg: '#FEE9D5', border: '#F07040', text: '#6B2500' },
+  peel:         { bg: '#FEE9D5', border: '#F07040', text: '#6B2500' },
+  electrolysis: { bg: '#FEE9D5', border: '#F07040', text: '#6B2500' },
+  facial:       { bg: '#FEE9D5', border: '#F07040', text: '#6B2500' },
+  microderm:    { bg: '#FEE9D5', border: '#F07040', text: '#6B2500' },
+  custom:       { bg: '#FEE9D5', border: '#F07040', text: '#6B2500' },
+  // Remaining treatment types — all treatments share the same orange
+  // badge color, no per-type distinction needed. Closes the punch-list
+  // item from Section 13.5 ("six of eleven treatment types have no
+  // calendar cell color").
+  laser:              { bg: '#FEE9D5', border: '#F07040', text: '#6B2500' },
+  dermaplaning:       { bg: '#FEE9D5', border: '#F07040', text: '#6B2500' },
+  botox:              { bg: '#FEE9D5', border: '#F07040', text: '#6B2500' },
+  led:                { bg: '#FEE9D5', border: '#F07040', text: '#6B2500' },
+  microneedling_home: { bg: '#FEE9D5', border: '#F07040', text: '#6B2500' },
+  hydrafacial:        { bg: '#FEE9D5', border: '#F07040', text: '#6B2500' },
   // Recovery — pink
   recovery: { bg: '#FCE9F5', border: '#ED6FBB', text: '#7B1852' },
 
   // ── Typography ───────────────────────────────────────────────
-  fontFamily: "'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+  fontFamily:      "'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+  fontFamilyDisplay: "'Naskle', 'DM Sans', sans-serif",              // wordmark, hero headings
+  fontFamilyAccent: "'Fraunces', serif",                              // editorial accents — pair with italic weight below
+  fontStyleAccent:  "italic",                                        // Fraunces Light Italic — use with fontFamilyAccent
 
   fontSize: {
     xs:      '11px',   // 0.6875rem — uppercase section labels only (600 weight)
@@ -75,7 +114,8 @@ const T = {
     pill:   '9999px',  // buttons, badges, tags, chips
     card:   '8px',     // cards, program banner, settings sections
     modal:  '12px',    // modals, flyouts, drawers
-    input:  '0px',     // inputs — underline style only
+    input:  '9999px',  // inputs — pill shape, no underline (was 0px)
+    banner: '38px',    // survey / program status banner
   },
 
   // ── Button sizes ─────────────────────────────────────────────
