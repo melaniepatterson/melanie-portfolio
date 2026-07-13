@@ -1,7 +1,8 @@
 /**
  * GlowUpCalendar.jsx
  * ─────────────────────────────────────────────────────────────
- * Melanie's glow-up routine + treatment calendar.
+ * Melanie's glow-up routine + treatment calendar. Fully Supabase-backed
+ * (Postgres + Auth) — all data loads and persists via `supabase.from(...)`.
  *
  * ARCHITECTURE
  *   - routineHistory: array of routine periods, each with a startDate.
@@ -11,18 +12,8 @@
  *   - treatments: one-off treatment events (peels, electrolysis, etc.)
  *   - customTypes: user-defined treatment type definitions
  *
- * LOCALSTORAGE KEYS
- *   'glowup-routine-history'  — routine periods array
- *   'glowup-treatments'       — treatment events object
- *   'glowup-custom-types'     — custom treatment types object (user-added only; base types hardcoded)
- *   'glowup-daily-routine'    — daily routine periods array (brow routine etc.)
- *
- * SUPABASE UPGRADE PATH
- *   Replace localStorage useState initializers with useEffect fetches,
- *   and swap persistence useEffects for Supabase upsert calls.
- *
  * STYLING
- *   All colors live in the T object. Swap for your site tokens.
+ *   All colors live in the T object, imported from ./theme.
  *
  * USAGE
  *   import GlowUpCalendar from './components/GlowUpCalendar'
@@ -5139,7 +5130,11 @@ export default function GlowUpCalendar({ session }) {
       // Tier 1 — AM treatment
       if (info.isTreatment && treatmentTimeOfDay === 'am') {
         const count = info.allTreatments?.length || 1
-        if (count > 1) return <Badge key="t" colorKey={s} label={`${count} treatments`} />
+        if (count > 1) {
+          const names = [...new Set((info.allTreatments || []).map(t => allTypes[t.type]?.label || t.type))]
+            .map(n => n.charAt(0).toUpperCase() + n.slice(1).toLowerCase())
+          return <Badge key="t" colorKey={s} label={names.join(', ')} />
+        }
         return (() => { const lbl = allTypes[s]?.label || s; return <Badge key="t" colorKey={s} label={lbl.charAt(0).toUpperCase() + lbl.slice(1).toLowerCase()} /> })()
       }
       // Recovery AM
@@ -5177,7 +5172,11 @@ export default function GlowUpCalendar({ session }) {
     const pmBadge = (() => {
       if (info.isTreatment) {
         const count = info.allTreatments?.length || 1
-        if (count > 1) return <Badge key="t" colorKey={s} label={`${count} treatments`} />
+        if (count > 1) {
+          const names = [...new Set((info.allTreatments || []).map(t => allTypes[t.type]?.label || t.type))]
+            .map(n => n.charAt(0).toUpperCase() + n.slice(1).toLowerCase())
+          return <Badge key="t" colorKey={s} label={names.join(', ')} />
+        }
         if (treatmentTimeOfDay === 'pm')
           return (() => { const lbl = allTypes[s]?.label || s; return <Badge key="t" colorKey={s} label={lbl.charAt(0).toUpperCase() + lbl.slice(1).toLowerCase()} /> })()
         return <Badge key="r" colorKey="recovery" label="Recovery" />
