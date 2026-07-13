@@ -41,6 +41,7 @@ import { applyProgramPhase, buildStepEntries } from './programOptions'
 import { todayInTz, nowInTz, detectTimezone } from './timezone'
 import SideMenu from './SideMenu'
 import T from './theme'
+import ProductForm from './shared/ProductForm'
 
 // ─── DESIGN TOKENS ───────────────────────────────────────────
 
@@ -300,31 +301,6 @@ const INGREDIENT_CATEGORIES = {
     productCategories: ['spf', 'sunscreen', 'sun protection'],
   },
 }
-
-// ─── PRODUCT INGREDIENT TAXONOMY ─────────────────────────────
-// Separate from steps — used to tag products for conflict detection
-const PRODUCT_INGREDIENT_CATEGORIES = {
-  vitamin_c:       { label: 'Vitamin C',          forms: ['L-ascorbic acid (most potent)','Ascorbyl glucoside (stable)','Sodium ascorbyl phosphate','Ascorbyl tetraisopalmitate (oil-soluble)','Vitamin C powder (mix-in)','Other vitamin C derivative'] },
-  niacinamide:     { label: 'Niacinamide',         forms: ['Niacinamide serum','Niacinamide toner','Other'] },
-  hyaluronic_acid: { label: 'Hyaluronic acid',     forms: ['Low molecular weight','High molecular weight','Multi-weight blend','Other'] },
-  peptides:        { label: 'Peptides',             forms: ['Matrixyl','Argireline','Copper peptides','Other peptides'] },
-  retinoid:        { label: 'Retinoid',             forms: ['Tretinoin (prescription)','Adapalene','Retinol','Retinaldehyde','Tazarotene','Other retinoid'] },
-  aha:             { label: 'AHA',                  forms: ['Glycolic acid','Lactic acid','Mandelic acid','Citric acid','Other AHA'] },
-  bha:             { label: 'BHA',                  forms: ['Salicylic acid (leave-on)','Salicylic acid (rinse-off)','Betaine salicylate','Other BHA'] },
-  pha:             { label: 'PHA',                  forms: ['Gluconolactone','Lactobionic acid','Other PHA'] },
-  azelaic_acid:    { label: 'Azelaic acid',         forms: ['10% or under (OTC)','15-20% (prescription)','Other'] },
-  benzoyl_peroxide:{ label: 'Benzoyl peroxide',     forms: ['2.5%','5%','10%'] },
-  tranexamic_acid: { label: 'Tranexamic acid',      forms: ['Tranexamic acid serum','Other'] },
-  alpha_arbutin:   { label: 'Alpha arbutin',        forms: ['Alpha arbutin serum','Other'] },
-  kojic_acid:      { label: 'Kojic acid',           forms: ['Kojic acid serum','Other'] },
-  bakuchiol:       { label: 'Bakuchiol',            forms: ['Bakuchiol serum','Other'] },
-  centella:        { label: 'Centella / Cica',      forms: ['Centella serum','Cica cream','Madecassoside serum','Other'] },
-  snail_mucin:     { label: 'Snail mucin',          forms: ['Snail mucin essence','Snail mucin serum','Other'] },
-  antioxidant:     { label: 'Antioxidant',          forms: ['Resveratrol','Coenzyme Q10','Vitamin E','Ferulic acid','Other antioxidant'] },
-  ceramide:        { label: 'Ceramide',             forms: ['Ceramide serum','Ceramide moisturizer','Other'] },
-  squalane:        { label: 'Squalane',             forms: ['100% squalane','Squalane blend','Other'] },
-}
-
 
 
 
@@ -963,7 +939,8 @@ function CurrentRoutineSummary({ steps }) {
   )
 }
 
-function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = false, lockStartDate = false, allPeriods = [], onEditConflict, products = {}, onSaveProduct }) {
+function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = false, lockStartDate = false, allPeriods = [], onEditConflict, products = {}, onSaveProduct, userId }) {
+  const catalogProducts = Object.fromEntries(Object.entries(products).filter(([, p]) => p._isCatalog))
   const [form, setForm] = useState({ ...DEFAULT_PERIOD, ...initial, products: initial?.products || {} })
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
   const setProductAssignment = (stepKey, productId) => setForm(f => ({ ...f, products: { ...(f.products||{}), [stepKey]: productId } }))
@@ -1170,6 +1147,7 @@ function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = false, lo
                         onSave={(p) => { onSaveProduct?.(p); setProductAssignment(step.key, p.id); setAddingProd(false) }}
                         onCancel={() => setAddingProd(false)}
                         userId={userId}
+                        catalogProducts={catalogProducts}
                       />
                     ) : (
                       <ProductPicker
@@ -1702,7 +1680,8 @@ function DraggableItem({ item, index, total, onRemove, isDragging, onDragStart, 
 }
 
 // DailyEditor — add/remove/reorder extras items, set start/end date
-function DailyEditor({ initial, onSave, onCancel, lockStartDate = false, allPeriods = [], onEditConflict, products = {}, onSaveProduct }) {
+function DailyEditor({ initial, onSave, onCancel, lockStartDate = false, allPeriods = [], onEditConflict, products = {}, onSaveProduct, userId }) {
+  const catalogProducts = Object.fromEntries(Object.entries(products).filter(([, p]) => p._isCatalog))
   const [startDate,    setStartDate]    = useState(initial?.startDate    || '')
   const [endDate,      setEndDate]      = useState(initial?.endDate      || '')
   const [items, setItems] = useState(initial?.items || [])
@@ -1838,6 +1817,8 @@ function DailyEditor({ initial, onSave, onCancel, lockStartDate = false, allPeri
                     <ProductForm
                       onSave={(p) => { onSaveProduct?.(p); setItems(it => it.map((x,idx) => idx===i ? {...x,productId:p.id,_addingProduct:false} : x)) }}
                       onCancel={() => setItems(it => it.map((x,idx) => idx===i ? {...x,_addingProduct:false} : x))}
+                      userId={userId}
+                      catalogProducts={catalogProducts}
                     />
                   )}
                 </div>
@@ -2005,13 +1986,6 @@ function DailySection({ dt, dailyHistory, onEditDaily, tab, products, onUpdateDa
 // Maps routine step keys to human-readable categories for filtering
 
 
-const PRODUCT_CATEGORIES = [
-  'cleanser', 'cleansing oil / balm', 'toner', 'essence',
-  'serum', 'moisturizer', 'spf', 'eye cream',
-  'bha', 'azelaic acid', 'tretinoin',
-  'body wash', 'body treatment', 'haircare', 'hair growth', 'boosts', 'other'
-]
-
 // Star rating display helper
 function StarRating({ value, onChange, size = 12 }) {
   const path = 'M12,2 L14.35,9.24 L21.51,8.91 L15.80,13.24 L17.88,20.09 L12,16 L6.12,20.09 L8.20,13.24 L2.49,8.91 L9.65,9.24 Z'
@@ -2029,27 +2003,6 @@ function StarRating({ value, onChange, size = 12 }) {
         </svg>
       ))}
     </div>
-  )
-}
-
-// ProductForm — add or edit a product
-
-
-// ─── PAO ICON ────────────────────────────────────────────────
-const PAO_OPTIONS = [3, 6, 9, 12, 18, 24, 36]
-
-function PaoIcon({ months, size = 20 }) {
-  if (!months) return null
-  const s = Math.round(size)
-  return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 2, verticalAlign: 'middle' }}>
-      <svg width={s} height={s} viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="4" y="8" width="12" height="9" rx="1" stroke="currentColor" strokeWidth="1.3"/>
-        <path d="M4 8V6.5C4 5.67 6.69 5 10 5s6 .67 6 1.5V8" stroke="currentColor" strokeWidth="1.3"/>
-        <path d="M7 5.2L6 3.5M13 5.2L14 3.5" stroke="currentColor" strokeWidth="1" strokeLinecap="round"/>
-      </svg>
-      <span style={{ fontSize: Math.max(8, Math.round(s * 0.5)), fontWeight: 700, lineHeight: 1 }}>{months}M</span>
-    </span>
   )
 }
 
@@ -2090,281 +2043,6 @@ function ProductFlagBadges({ product, max }) {
 }
 
 
-// ─── PRODUCT IMAGE UPLOAD (inline) ────────────────────────────────────────
-const PRODUCT_IMAGES_URL = 'https://brcjhshptisevcndqavz.supabase.co/storage/v1/object/public/product-images/'
-
-async function imageToWebP(file, maxDim = 600, quality = 0.88) {
-  return new Promise((resolve, reject) => {
-    const img = new Image()
-    const url = URL.createObjectURL(file)
-    img.onload = () => {
-      URL.revokeObjectURL(url)
-      const scale = Math.min(1, maxDim / Math.max(img.width, img.height))
-      const w = Math.round(img.width * scale)
-      const h = Math.round(img.height * scale)
-      const canvas = document.createElement('canvas')
-      canvas.width = w; canvas.height = h
-      canvas.getContext('2d').drawImage(img, 0, 0, w, h)
-      canvas.toBlob(b => b ? resolve(b) : reject(new Error('toBlob failed')), 'image/webp', quality)
-    }
-    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('load failed')) }
-    img.src = url
-  })
-}
-
-function CalProductImageUpload({ value, onChange, userId, productName }) {
-  const [uploading, setUploading] = useState(false)
-  const [preview, setPreview]     = useState(value || null)
-  const ref = useRef(null)
-
-  useEffect(() => { setPreview(value || null) }, [value])
-
-  async function handleFile(e) {
-    const file = e.target.files?.[0]
-    if (!file || !file.type.startsWith('image/')) return
-    if (file.size > 10 * 1024 * 1024) { alert('Image must be under 10MB'); return }
-    setUploading(true)
-    try {
-      const webp = await imageToWebP(file)
-      const slug = (productName || 'product').toLowerCase().replace(/[^a-z0-9]/g, '-').slice(0, 40)
-      const path = `${userId || 'anon'}/${slug}-${Date.now()}.webp`
-      const { error } = await supabase.storage
-        .from('product-images')
-        .upload(path, webp, { upsert: true, contentType: 'image/webp' })
-      if (error) throw error
-      const publicUrl = PRODUCT_IMAGES_URL + path
-      setPreview(publicUrl)
-      onChange(publicUrl)
-    } catch (err) {
-      console.error('Upload failed:', err)
-      alert('Upload failed — try again')
-    } finally {
-      setUploading(false)
-      e.target.value = ''
-    }
-  }
-
-  return (
-    <div>
-      {preview && (
-        <div style={{ position: 'relative', marginBottom: 6, height: 100, borderRadius: 0, overflow: 'hidden', border: `0.5px solid ${T.border}` }}>
-          <img src={preview} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          <button onClick={() => { setPreview(null); onChange('') }}
-            style={{ position: 'absolute', top: 4, right: 4, background: 'rgba(0,0,0,0.5)', border: 'none', borderRadius: '50%', width: 20, height: 20, color: '#fff', cursor: 'pointer', fontSize: 12, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
-        </div>
-      )}
-      <button onClick={() => ref.current?.click()} disabled={uploading}
-        style={{ width: '100%', padding: '6px 10px', borderRadius: 0, border: `0.5px solid ${T.border}`, background: T.creamDark, color: T.textMuted, fontSize: 11, cursor: uploading ? 'default' : 'pointer', fontFamily: 'inherit' }}>
-        {uploading ? 'Uploading...' : preview ? '↑ Replace image' : '↑ Upload image'}
-      </button>
-      <input ref={ref} type="file" accept="image/*" onChange={handleFile} style={{ display: 'none' }} />
-    </div>
-  )
-}
-
-function ProductForm({ initial, onSave, onCancel, userId }) {
-  const [form, setForm] = useState({
-    name: '', brand: '', category: 'cleanser',
-    imageUrl: '', purchaseUrl: '',
-    bdsCompliant: true, tags: [],
-    effectiveness: 0, buyAgain: null, notes: '',
-    ingredient_category: '', ingredient_form: '',
-    black_owned: false, indigenous_owned: false, poc_owned: false, woman_owned: false,
-    lgbtq_owned: false, cruelty_free: false, vegan: false, certified_organic: false, fair_trade: false,
-    clean_formula: false, science_backed: false, is_prescription: false,
-    purchased_at: '', opened_at: '', expires_at: '', pao_months: null,
-    ...initial
-  })
-  const [tagInput, setTagInput] = useState('')
-  const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
-
-  function addTag() {
-    const raw = tagInput.trim()
-    if (!raw) return
-    const t = raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase()
-    if (form.tags.map(x => x.toLowerCase()).includes(t.toLowerCase())) return
-    set('tags', [...form.tags, t])
-    setTagInput('')
-  }
-
-  function removeTag(t) { set('tags', form.tags.filter(x => x !== t)) }
-
-  return (
-    <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 0, padding: '14px 16px', marginBottom: 10 }}>
-      <div style={{ fontSize: 13, fontWeight: 500, color: T.text, marginBottom: 12 }}>
-        {initial?.id ? 'Edit product' : 'Add product'}
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 8 }}>
-        <div><FieldLabel>Product name</FieldLabel><TextInput value={form.name} onChange={e => set('name', e.target.value)} placeholder="e.g. Blueberry Cleanser" width="100%" /></div>
-        <div><FieldLabel>Brand</FieldLabel><TextInput value={form.brand} onChange={e => set('brand', e.target.value)} placeholder="e.g. Glow Recipe" width="100%" /></div>
-      </div>
-
-      <div style={{ marginBottom: 8 }}>
-        <FieldLabel>Category</FieldLabel>
-        <select value={form.category} onChange={e => set('category', e.target.value)} style={{ fontSize: 12, padding: '5px 8px', border: `0.5px solid ${T.border}`, borderRadius: 0, background: T.cream, color: T.text, width: '100%' }}>
-          {PRODUCT_CATEGORIES.map(c => <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>)}
-        </select>
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 8 }}>
-        <div>
-          <FieldLabel>Product image</FieldLabel>
-          <CalProductImageUpload
-            value={form.imageUrl}
-            onChange={url => set('imageUrl', url)}
-            userId={userId}
-            productName={form.name}
-          />
-        </div>
-        <div><FieldLabel>Purchase URL</FieldLabel><TextInput value={form.purchaseUrl} onChange={e => set('purchaseUrl', e.target.value)} placeholder="https://..." width="100%" /></div>
-      </div>
-
-      <div style={{ marginBottom: 8 }}>
-        <FieldLabel>Where do you use this? (select all that apply)</FieldLabel>
-        <div style={{ display: 'flex', gap: 6 }}>
-          {['Face', 'Body', 'Hair'].map(area => {
-            const key = area.toLowerCase()
-            const active = !!(form.applicationArea?.[key])
-            return (
-              <button key={key} onClick={() => set('applicationArea', { ...(form.applicationArea || {}), [key]: !active })}
-                style={{ fontSize: 11, padding: '4px 12px', borderRadius: 0, cursor: 'pointer', border: `0.5px solid ${active ? T.pinkDeep : T.border}`, background: active ? T.pink : 'transparent', color: active ? T.text : T.textMuted, fontWeight: active ? 600 : 400 }}>
-                {area}
-              </button>
-            )
-          })}
-        </div>
-      </div>
-
-
-
-      {/* Purchase & expiry tracking */}
-      <div style={{ borderTop: `0.5px solid ${T.border}`, paddingTop: 12, marginBottom: 10 }}>
-        <FieldLabel>Purchase & expiry <span style={{ fontWeight: 400, color: T.textLight }}>(optional)</span></FieldLabel>
-      </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 10 }}>
-        <div>
-          <FieldLabel>Purchased</FieldLabel>
-          <input type="date" value={form.purchased_at || ''} onChange={e => set('purchased_at', e.target.value)}
-            style={{ width: '100%', fontSize: 12, padding: '7px 10px', border: `0.5px solid ${T.border}`, borderRadius: 0, background: T.cream, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
-        </div>
-        <div>
-          <FieldLabel>Opened</FieldLabel>
-          <input type="date" value={form.opened_at || ''} onChange={e => set('opened_at', e.target.value)}
-            style={{ width: '100%', fontSize: 12, padding: '7px 10px', border: `0.5px solid ${T.border}`, borderRadius: 0, background: T.cream, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
-        </div>
-        <div>
-          <FieldLabel>Expires</FieldLabel>
-          <input type="date" value={form.expires_at || ''} onChange={e => set('expires_at', e.target.value)}
-            style={{ width: '100%', fontSize: 12, padding: '7px 10px', border: `0.5px solid ${T.border}`, borderRadius: 0, background: T.cream, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
-        </div>
-        <div>
-          <FieldLabel>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-              <PaoIcon months={form.pao_months} size={14} />
-              PAO
-              <InfoTooltip text="Period After Opening — how long the product is good for once opened. Look for the open jar symbol on packaging." />
-            </span>
-          </FieldLabel>
-          <select value={form.pao_months || ''} onChange={e => set('pao_months', e.target.value ? Number(e.target.value) : null)}
-            style={{ width: '100%', fontSize: 12, padding: '7px 10px', border: `0.5px solid ${T.border}`, borderRadius: 0, background: T.cream, color: form.pao_months ? T.text : T.textMuted, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }}>
-            <option value="">— Select PAO —</option>
-            {PAO_OPTIONS.map(m => <option key={m} value={m}>{m} months</option>)}
-          </select>
-        </div>
-      </div>
-      {form.opened_at && form.pao_months && (
-        <div style={{ fontSize: 11, color: T.textMuted, fontStyle: 'italic', marginBottom: 10 }}>
-          Use by: {new Date(new Date(form.opened_at).setMonth(new Date(form.opened_at).getMonth() + form.pao_months)).toLocaleDateString()}
-        </div>
-      )}
-
-      {/* Ownership & ethics */}
-      <div style={{ borderTop: `0.5px solid ${T.border}`, paddingTop: 12, marginBottom: 8 }}>
-        <FieldLabel>Ownership & ethics</FieldLabel>
-      </div>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 12 }}>
-        {[
-          { key: 'black_owned',       label: 'Black-owned'       },
-          { key: 'indigenous_owned',  label: 'Indigenous-owned'  },
-          { key: 'poc_owned',         label: 'POC-owned'         },
-          { key: 'woman_owned',       label: 'Woman-owned'       },
-          { key: 'lgbtq_owned',       label: 'LGBTQ+-owned'      },
-          { key: 'cruelty_free',      label: 'Cruelty-free'      },
-          { key: 'vegan',             label: 'Vegan'             },
-          { key: 'certified_organic', label: 'Certified organic' },
-          { key: 'fair_trade',        label: 'Fair trade'        },
-          { key: 'is_prescription',   label: '℞ Prescription'    },
-          { key: 'clean_formula',     label: 'Clean formula'     },
-          { key: 'science_backed',    label: 'Science-backed'    },
-        ].map(({ key, label }) => (
-          <button key={key} type="button" onClick={() => set(key, !form[key])} style={{
-            padding: '5px 12px', borderRadius: 0, fontSize: 11, cursor: 'pointer',
-            border: `0.5px solid ${form[key] ? T.pinkDeep : T.border}`,
-            background: form[key] ? T.pink : 'transparent',
-            color: T.text, fontFamily: 'inherit',
-          }}>{label}</button>
-        ))}
-      </div>
-
-      <div style={{ marginBottom: 8 }}>
-        <FieldLabel>Effectiveness</FieldLabel>
-        <StarRating value={form.effectiveness} onChange={v => set('effectiveness', v)} size={18} />
-      </div>
-
-      <div style={{ marginBottom: 8 }}>
-        <FieldLabel>Tags (fragrance free, silicone free, etc.)</FieldLabel>
-        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 6 }}>
-          {form.tags.map(t => (
-            <span key={t} style={{ fontSize: 11, padding: '2px 8px', borderRadius: 0, background: T.pink, color: T.text, border: `0.5px solid ${T.pinkDeep}`, cursor: 'pointer' }} onClick={() => removeTag(t)}>
-              {t} ×
-            </span>
-          ))}
-        </div>
-        <div style={{ display: 'flex', gap: 6 }}>
-          <TextInput value={tagInput} onChange={e => setTagInput(e.target.value)} placeholder="e.g. fragrance free" width={150} />
-          <Btn variant="secondary" onClick={addTag}>Add</Btn>
-        </div>
-      </div>
-
-      <div style={{ marginBottom: 10 }}>
-        <FieldLabel>Ingredient category <span style={{ fontWeight: 400, color: T.textLight }}>(optional — enables conflict detection)</span></FieldLabel>
-        <select
-          value={form.ingredient_category || ''}
-          onChange={e => set('ingredient_category', e.target.value)}
-          style={{ width: '100%', fontSize: 12, padding: '8px 10px', border: `0.5px solid ${T.border}`, borderRadius: 0, background: T.cream, color: form.ingredient_category ? T.text : T.textMuted, fontFamily: 'inherit', marginBottom: 8, outline: 'none', boxSizing: 'border-box' }}
-        >
-          <option value="">— Select ingredient category —</option>
-          {Object.entries(PRODUCT_INGREDIENT_CATEGORIES).map(([key, cat]) => (
-            <option key={key} value={key}>{cat.label}</option>
-          ))}
-        </select>
-        {form.ingredient_category && PRODUCT_INGREDIENT_CATEGORIES[form.ingredient_category]?.forms?.length > 0 && (<>
-          <FieldLabel>Ingredient form <span style={{ fontWeight: 400, color: T.textLight }}>(optional)</span></FieldLabel>
-          <select
-            value={form.ingredient_form || ''}
-            onChange={e => set('ingredient_form', e.target.value)}
-            style={{ width: '100%', fontSize: 12, padding: '8px 10px', border: `0.5px solid ${T.border}`, borderRadius: 0, background: T.cream, color: form.ingredient_form ? T.text : T.textMuted, fontFamily: 'inherit', marginBottom: 8, outline: 'none', boxSizing: 'border-box' }}
-          >
-            <option value="">— Select form —</option>
-            {PRODUCT_INGREDIENT_CATEGORIES[form.ingredient_category].forms.map(f => (
-              <option key={f} value={f}>{f}</option>
-            ))}
-          </select>
-        </>)}
-      </div>
-      <div style={{ marginBottom: 10 }}>
-        <FieldLabel>Notes</FieldLabel>
-        <textarea value={form.notes} onChange={e => set('notes', e.target.value)} placeholder="Any notes..." style={{ width: '100%', fontSize: 12, padding: '5px 8px', border: `0.5px solid ${T.border}`, borderRadius: 0, background: T.cream, color: T.text, resize: 'vertical', minHeight: 60, fontFamily: 'inherit' }} />
-      </div>
-
-      <div style={{ display: 'flex', gap: 8, borderTop: `0.5px solid ${T.border}`, paddingTop: 10 }}>
-        <Btn variant="primary" onClick={() => form.name && onSave({ ...form, id: form.id || uid() })} disabled={!form.name}>Save product</Btn>
-        <Btn onClick={onCancel}>Cancel</Btn>
-      </div>
-    </div>
-  )
-}
 
 // ProductPicker — shown when clicking a step in the flyout
 // Lets user pick from existing products or add a new one
@@ -2638,7 +2316,8 @@ function DraggableShowerItem({ item, index, onRemove, onFreqChange, onWeekStartC
 }
 
 // ShowerEditor — add/remove/reorder shower items with frequency settings
-function ShowerEditor({ initial, onSave, onCancel, allPeriods = [], onEditConflict, products = {}, onSaveProduct }) {
+function ShowerEditor({ initial, onSave, onCancel, allPeriods = [], onEditConflict, products = {}, onSaveProduct, userId }) {
+  const catalogProducts = Object.fromEntries(Object.entries(products).filter(([, p]) => p._isCatalog))
   const [startDate,    setStartDate]    = useState(initial?.startDate    || '')
   const [endDate,      setEndDate]      = useState(initial?.endDate      || '')
   const [items, setItems] = useState(initial?.items || [])
@@ -2744,6 +2423,8 @@ function ShowerEditor({ initial, onSave, onCancel, allPeriods = [], onEditConfli
                     <ProductForm
                       onSave={(p) => { onSaveProduct?.(p); setItems(it => it.map((x,idx) => idx===i ? {...x,productId:p.id,_linkedProduct:p.name,_addingProduct:false} : x)) }}
                       onCancel={() => setItems(it => it.map((x,idx) => idx===i ? {...x,_addingProduct:false} : x))}
+                      userId={userId}
+                      catalogProducts={catalogProducts}
                     />
                   )}
                 </div>
@@ -2978,6 +2659,8 @@ function ManageSteps({ period, tab, onUpdateSteps, skinType }) {
 }
 
 function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allTypes, onClose, onAddTreatment, onTabChange, onEditDaily, onEditShower, onUpdatePeriodProducts, onUpdatePeriodSteps, onAddProduct, recoveryRoutines, onUpdateRecoveryProducts, onUpdateRecoverySteps, onUpdateShowerItemProduct, onUpdateDailyItemProduct, session, onReload, onUpdateSteps, skinType }) {
+  const userId = session?.user?.id
+  const catalogProducts = Object.fromEntries(Object.entries(products).filter(([, p]) => p._isCatalog))
   const [massageOpen, setMassageOpen] = useState(false)
   const tab = flyout.tab  // always read from parent — no local drift
   const [openStepKey, setOpenStepKey] = useState(null)
@@ -3108,6 +2791,8 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
               <ProductForm
                 onSave={(p) => { onAddProduct(p); setAddingProduct(false) }}
                 onCancel={() => setAddingProduct(false)}
+                userId={userId}
+                catalogProducts={catalogProducts}
               />
             ) : (
               <ProductPicker
@@ -3915,7 +3600,8 @@ function AddProgramPanel({ session, activeProgram, activePrograms = [], routineP
   )
 }
 
-function NewRoutinePeriodPicker({ routineHistory, dailyHistory, showerHistory, products, onSaveNew, onSaveDaily, onSaveShower, onCancel, onSaveProduct, onEditConflictRoutine, now, session, activeProgram, activePrograms, skinType, timezone, onProgramChanged }) {
+function NewRoutinePeriodPicker({ routineHistory, dailyHistory, showerHistory, products, onSaveNew, onSaveDaily, onSaveShower, onCancel, onSaveProduct, onEditConflictRoutine, onEditConflictDaily, onEditConflictShower, now, session, activeProgram, activePrograms, skinType, timezone, onProgramChanged }) {
+  const userId = session?.user?.id
   const [chosen, setChosen] = useState(null)
 
   const primaryOptions = [
@@ -3995,6 +3681,7 @@ function NewRoutinePeriodPicker({ routineHistory, dailyHistory, showerHistory, p
               products={products}
               onSaveProduct={onSaveProduct}
               onEditConflict={onEditConflictRoutine}
+              userId={userId}
             />
             </div>
           )}
@@ -4015,9 +3702,10 @@ function NewRoutinePeriodPicker({ routineHistory, dailyHistory, showerHistory, p
               onSave={onSaveDaily}
               onCancel={onCancel}
               allPeriods={dailyHistory}
-              onEditConflict={(p) => openDailyEditor(p)}
+              onEditConflict={onEditConflictDaily}
               products={products}
               onSaveProduct={onSaveProduct}
+              userId={userId}
             />
           )}
           {chosen === 'shower' && (
@@ -4026,7 +3714,10 @@ function NewRoutinePeriodPicker({ routineHistory, dailyHistory, showerHistory, p
               onSave={onSaveShower}
               onCancel={onCancel}
               allPeriods={showerHistory}
-              onEditConflict={(p) => openShowerEditor(p)}
+              onEditConflict={onEditConflictShower}
+              products={products}
+              onSaveProduct={onSaveProduct}
+              userId={userId}
             />
           )}
         </div>
@@ -4175,7 +3866,7 @@ function TimeGrid({ label, mode, setMode, times, setTimes, singleTime, setSingle
 }
 
 // ─── EXPORT PANEL ─────────────────────────────────────────────
-function ExportPanel({ routineHistory, treatments, allTypes, products, dailyHistory, showerHistory, onClose, onNotion }) {
+function ExportPanel({ routineHistory, treatments, allTypes, products, dailyHistory, showerHistory, onClose, onNotion, timezone }) {
   const [format, setFormat]     = useState('separate')
   const [daysAhead, setDaysAhead] = useState(30)
   const [amMode, setAmMode]     = useState('same')
@@ -4325,7 +4016,7 @@ function RecoveryRoutineEditor({ typeKey, typeLabel, steps, products, allProduct
                   currentProductId={assignedProductId}
                   products={allProducts}
                   categoryKey={step.categoryKey}
-                  onSelect={(stepKey, productId) => { onProductSelect(stepKey, productId); setOpenStepKey(null) }}
+                  onSelect={(productId) => { onProductSelect(step.id, productId); setOpenStepKey(null) }}
                   onAddNew={() => {}}
                   onClose={() => setOpenStepKey(null)}
                 />
@@ -4690,6 +4381,7 @@ export default function GlowUpCalendar({ session }) {
 
   const [routineHistory, setRoutineHistory] = useState([])
   const [products,       setProducts]       = useState({})
+  const catalogProducts = Object.fromEntries(Object.entries(products).filter(([, p]) => p._isCatalog))
   const catalogIds = useRef(new Set())
   const [dailyHistory,   setDailyHistory]   = useState([])
   const [showerHistory,  setShowerHistory]  = useState([])
@@ -5251,7 +4943,7 @@ export default function GlowUpCalendar({ session }) {
     setDailyHistory(h => h.map(p => {
       if (p.id !== periodId) return p
       const newItems = p.items.map(it => it.id === itemId ? { ...it, productId: productId || null } : it)
-      if (p._dbId) supabase.from('daily_periods').update({ items: newItems }).eq('id', p._dbId)
+      if (p._dbId) supabase.from('extras_periods').update({ items: newItems }).eq('id', p._dbId)
       return { ...p, items: newItems }
     }))
   }
@@ -6043,7 +5735,7 @@ export default function GlowUpCalendar({ session }) {
 
             {/* Setup form */}
             {panel === 'setup' && !editingPeriod && (
-              <RoutinePeriodForm initial={{}} onSave={saveNewPeriod} onCancel={() => setPanel(null)} isFirst={true} allPeriods={routineHistory} products={products} onSaveProduct={saveProduct} />
+              <RoutinePeriodForm initial={{}} onSave={saveNewPeriod} onCancel={() => setPanel(null)} isFirst={true} allPeriods={routineHistory} products={products} onSaveProduct={saveProduct} userId={userId} />
             )}
 
             {/* New routine period — tabbed form */}
@@ -6059,6 +5751,8 @@ export default function GlowUpCalendar({ session }) {
                 onCancel={() => setPanel(null)}
                 onSaveProduct={saveProduct}
                 onEditConflictRoutine={(p) => { setEditingPeriod(p); setPanel(null) }}
+                onEditConflictDaily={openDailyEditor}
+                onEditConflictShower={openShowerEditor}
                 now={now}
                 session={session}
                 activeProgram={activeProgram}
@@ -6080,6 +5774,7 @@ export default function GlowUpCalendar({ session }) {
                 products={products}
                 onSaveProduct={saveProduct}
                 onEditConflict={(p) => setEditingPeriod(p)}
+                userId={userId}
               />
             )}
 
@@ -6093,6 +5788,7 @@ export default function GlowUpCalendar({ session }) {
                 onEditConflict={(p) => setEditingShower(p)}
                 products={products}
                 onSaveProduct={saveProduct}
+                userId={userId}
               />
             )}
 
@@ -6106,6 +5802,7 @@ export default function GlowUpCalendar({ session }) {
                 onEditConflict={(p) => setEditingDaily(p)}
                 products={products}
                 onSaveProduct={saveProduct}
+                userId={userId}
               />
             )}
 
@@ -6133,6 +5830,8 @@ export default function GlowUpCalendar({ session }) {
                 initial={editingProduct === 'new' ? undefined : editingProduct}
                 onSave={saveProduct}
                 onCancel={() => setEditingProduct(null)}
+                userId={userId}
+                catalogProducts={catalogProducts}
               />
             )}
 
@@ -6192,6 +5891,7 @@ export default function GlowUpCalendar({ session }) {
                 showerHistory={showerHistory}
                 onClose={() => setShowExport(false)}
                 onNotion={exportNotion}
+                timezone={timezone}
               />
             )}
 

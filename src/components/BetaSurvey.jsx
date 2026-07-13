@@ -33,22 +33,6 @@ function PillRow({ options, value, onChange }) {
 }
 
 export default function BetaSurvey({ session, onClose, onSubmitted, betaTester, alreadySubmitted }) {
-  if (!betaTester) return null
-
-  // Already submitted — show thank you instead of form
-  if (alreadySubmitted) return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-      <div style={{ background: T.white, border: `1px solid ${T.border}`, borderRadius: 0, width: '100%', maxWidth: 420, padding: '36px 28px', textAlign: 'center' }}>
-        <div style={{ fontSize: 32, marginBottom: 12 }}>💌</div>
-        <div style={{ fontSize: 18, fontWeight: 700, color: T.text, marginBottom: 8 }}>You've already shared feedback</div>
-        <div style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.7, marginBottom: 24 }}>Thank you — your response is in and we've read it. We'll be in touch if we have follow-up questions.</div>
-        <button onClick={onClose}
-          style={{ padding: '10px 24px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
-          Close
-        </button>
-      </div>
-    </div>
-  )
   const [setupEase,       setSetupEase]       = useState(0)
   const [changedThinking, setChangedThinking] = useState('')
   const [missing,         setMissing]         = useState('')
@@ -85,6 +69,23 @@ export default function BetaSurvey({ session, onClose, onSubmitted, betaTester, 
     setSubmitting(false)
     onSubmitted()
   }
+
+  if (!betaTester) return null
+
+  // Already submitted — show thank you instead of form
+  if (alreadySubmitted) return (
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+      <div style={{ background: T.white, border: `1px solid ${T.border}`, borderRadius: 0, width: '100%', maxWidth: 420, padding: '36px 28px', textAlign: 'center' }}>
+        <div style={{ fontSize: 32, marginBottom: 12 }}>💌</div>
+        <div style={{ fontSize: 18, fontWeight: 700, color: T.text, marginBottom: 8 }}>You've already shared feedback</div>
+        <div style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.7, marginBottom: 24 }}>Thank you — your response is in and we've read it. We'll be in touch if we have follow-up questions.</div>
+        <button onClick={onClose}
+          style={{ padding: '10px 24px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
+          Close
+        </button>
+      </div>
+    </div>
+  )
 
   return (
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
