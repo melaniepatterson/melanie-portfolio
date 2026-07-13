@@ -20,14 +20,13 @@ function Btn({ children, onClick, style, variant = 'default' }) {
 
 function InfoTooltip({ text }) {
   const [pos, setPos] = useState(null)
-  const ref = { current: null }
   function show(e) {
     const r = e.currentTarget.getBoundingClientRect()
     setPos({ top: r.top - 8, left: r.left + r.width / 2 })
   }
   return (
     <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', marginLeft: 4 }}>
-      <span ref={el => ref.current = el} onMouseEnter={show} onMouseLeave={() => setPos(null)}
+      <span onMouseEnter={show} onMouseLeave={() => setPos(null)}
         onTouchStart={e => { e.stopPropagation(); pos ? setPos(null) : show(e) }}
         style={{ width: 14, height: 14, borderRadius: '50%', background: T.border, color: T.textMuted, fontSize: 9, fontWeight: 700, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'default', userSelect: 'none' }}>i</span>
       {pos && (

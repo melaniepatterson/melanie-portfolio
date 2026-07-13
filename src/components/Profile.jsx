@@ -148,7 +148,7 @@ export default function Profile({ session, onOpenSurvey }) {
     try {
       const { data: sessionData } = await supabase.auth.getSession()
       const token = sessionData?.session?.access_token
-      const res = await fetch('https://brcjhshptisevcndqavz.supabase.co/functions/v1/delete-account', {
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/delete-account`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` },
       })

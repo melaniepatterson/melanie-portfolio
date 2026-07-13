@@ -539,13 +539,6 @@ function getDayInfo(dt, treatments, allTypes, routineHistory) {
   return { status: 'none', isTreatment: false }
 }
 
-function isMassageDay(dt, info, period) {
-  if (!period?.massageEnabled) return false
-  if (info.isTreatment || ['pause','pca','recovery'].includes(info.status)) return false
-  return period.massageDays.includes(dt.getDay())
-}
-
-
 // ─── UI PRIMITIVES ───────────────────────────────────────────
 function Badge({ colorKey, label }) {
   const c = T[colorKey] || T.custom
@@ -5107,7 +5100,6 @@ export default function GlowUpCalendar({ session }) {
     const info    = getDayInfo(dt, treatments, allTypes, routineHistory)
     const period  = getActivePeriod(dt, routineHistory)
     const isToday = dt.getTime() === now.getTime()
-    const massage = isMassageDay(dt, info, period)
     const s       = info.status
     const hasRoutinePeriod = !!getActivePeriod(dt, routineHistory)
     // Days with no routine period get plain white; active routine days get a subtle tint

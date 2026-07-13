@@ -610,7 +610,7 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
                 top: `${10 + Math.random() * 40}%`,
                 width: 6, height: 6,
                 borderRadius: Math.random() > 0.5 ? '50%' : 0,
-                background: ['#FFD6F9','#C93500','#1A1A1A','#FAF7F2'][i % 4],
+                background: [T.pink, T.blue, T.green, T.yellow, T.orange][i % 5],
                 animation: `confettiFall ${0.8 + Math.random() * 1.2}s ease-out forwards`,
                 transform: `rotate(${Math.random() * 360}deg)`,
               }} />
@@ -637,7 +637,12 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
   const [sortBy,        setSortBy]        = useState('routine')
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [filterSheetOpen, setFilterSheetOpen] = useState(false)
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 640
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 640)
+  useEffect(() => {
+    function onResize() { setIsMobile(window.innerWidth < 640) }
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
 
   // Stable random order — generated once per session, routine products always float first
   const shuffleKeys = useRef(new Map())
@@ -706,8 +711,6 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
       if (sortBy === 'brand') return (a.brand||'').localeCompare(b.brand||'')
       return (a.name||'').localeCompare(b.name||'')
     })
-
-  const isCatalogCard = p => !!(p._isCatalog || p.is_catalog) && !(userProductData||{})[p.id]?.in_library
 
   function FilterSection({ title, children, defaultOpen = true }) {
     const [open, setOpen] = useState(defaultOpen)
@@ -1023,7 +1026,6 @@ export default function ProductsPage({ session }) {
       }
 
       // Fetch curator's active routine for badge
-      const CURATOR_ID = '27fbf9cd-5cfe-4032-9594-398e96fd0ccf'
       const { data: routinePeriods } = await supabase
         .from('routine_periods')
         .select('products')
