@@ -36,6 +36,7 @@ import ProductForm from './shared/ProductForm'
 import GlowUpLogo from './GlowUpWordmark'
 import { useConfirm, useAlert } from './shared/useConfirm'
 import Btn from './shared/Btn'
+import AccentWord from './shared/AccentWord'
 
 // ─── DESIGN TOKENS ───────────────────────────────────────────
 
@@ -546,7 +547,7 @@ function getDayInfo(dt, treatments, allTypes, routineHistory) {
 function Badge({ colorKey, label }) {
   const c = T[colorKey] || T.custom
   return (
-    <span style={{ fontSize: 'clamp(7px, 1.5vw, 9px)', fontWeight: 600, padding: '1px 4px', borderRadius: 0, background: c.bg, color: c.text, border: `0.5px solid ${c.border}`, display: 'inline-block', lineHeight: 1.5, whiteSpace: 'nowrap', maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', letterSpacing: '0.02em' }}>
+    <span style={{ fontSize: 'clamp(7px, 1.5vw, 9px)', fontWeight: 600, padding: '1px 6px', borderRadius: T.radius.pill, background: c.bg, color: c.text, border: `0.5px solid ${c.border}`, display: 'inline-block', lineHeight: 1.5, whiteSpace: 'nowrap', maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', letterSpacing: '0.02em' }}>
       {label}
     </span>
   )
@@ -4585,11 +4586,8 @@ export default function GlowUpCalendar({ session }) {
   const [editFromHistory, setEditFromHistory] = useState(false)
   const [dailyFromHistory, setDailyFromHistory] = useState(false)
   const [showerFromHistory, setShowerFromHistory] = useState(false)
-  const [showAllBadges, setShowAllBadges] = useState(() => localStorage.getItem('glowup-show-all-badges') === 'true')
 
   // Persistence
-  // Persist badge toggle
-  useEffect(() => { localStorage.setItem('glowup-show-all-badges', showAllBadges) }, [showAllBadges])
   // Persist calendar month/year
   useEffect(() => { localStorage.setItem('glowup-calendar-month', month); localStorage.setItem('glowup-calendar-year', year) }, [month, year])
 
@@ -5103,20 +5101,37 @@ export default function GlowUpCalendar({ session }) {
     const isToday = dt.getTime() === now.getTime()
     const s       = info.status
     const hasRoutinePeriod = !!getActivePeriod(dt, routineHistory)
-    // Days with no routine period get plain white; active routine days get a subtle tint
-    let cellBg = hasRoutinePeriod ? '#FAF5FF' : T.white
-    let cellBorder = hasRoutinePeriod ? '#E9D8FD' : T.border
-    if      (info.isTreatment && T[s])              { cellBg = T[s].bg;       cellBorder = T[s].border       }
-    else if (s === 'pause')                         { cellBg = T.pause.bg;    cellBorder = T.pause.border    }
-    else if (s === 'pca' || s === 'recovery')       { cellBg = T.recovery.bg; cellBorder = T.recovery.border }
-    else if (s === 'tret')                          { cellBg = T.tret.bg;     cellBorder = T.tret.border     }
-    else if (s === 'bha')                           { cellBg = T.bha.bg;      cellBorder = T.bha.border      }
 
-    // Date row label
-    const dateColor = isToday ? T.pinkDeep : (info.isTreatment && T[s] ? T[s].text : s === 'pause' ? T.pause.text : (s === 'pca' || s === 'recovery') ? T.recovery.text : s === 'tret' ? T.tret.text : s === 'bha' ? T.bha.text : T.textMuted)
-
-    // Determine treatment time of day (default am for backward compat)
+    // Determine treatment time of day (default am for backward compat) —
+    // computed before cell coloring below so per-half color can use it.
     const treatmentTimeOfDay = info.isTreatment ? (info.allTreatments?.[0]?.timeOfDay || 'am') : null
+
+    // Each half colors for its own status. On a treatment day, only the
+    // half the treatment actually happened in shows the treatment color —
+    // the other half shows recovery starting that same day. Matches the
+    // AM/PM badge logic just below, which already does this per-half.
+    const amStatusKey = info.isTreatment ? (treatmentTimeOfDay === 'am' ? s : 'recovery') : s
+    const pmStatusKey = info.isTreatment ? (treatmentTimeOfDay === 'pm' ? s : 'recovery') : s
+
+    function colorsForStatus(statusKey) {
+      const key = statusKey === 'pca' ? 'recovery' : statusKey
+      return key && T[key] ? T[key] : null
+    }
+
+    // Days with no routine period get plain white; active routine days get a subtle tint
+    const baseBg     = hasRoutinePeriod ? '#FAF5FF' : T.white
+    const baseBorder = hasRoutinePeriod ? '#E9D8FD' : T.border
+
+    const amColors = colorsForStatus(amStatusKey)
+    const pmColors = colorsForStatus(pmStatusKey)
+    const amCellBg     = amColors?.bg     ?? baseBg
+    const amCellBorder = amColors?.border ?? baseBorder
+    const pmCellBg     = pmColors?.bg     ?? baseBg
+    const pmCellBorder = pmColors?.border ?? baseBorder
+    // Outer cell border / date-row color — prefer whichever half is
+    // actually colored, so a plain day keeps the neutral border.
+    const cellBorder = amColors ? amCellBorder : pmCellBorder
+    const dateColor = isToday ? T.pinkDeep : (amColors?.text || pmColors?.text || T.textMuted)
 
     // AM badge — tier system, single badge
     const amBadge = (() => {
@@ -5134,25 +5149,6 @@ export default function GlowUpCalendar({ session }) {
       if (s === 'pca' || s === 'recovery')
         return <Badge key="r" colorKey="recovery" label="Recovery" />
 
-      if (!showAllBadges) {
-        // Tier 1 still: massage is now an extra — skip if not showing all
-        return null
-      }
-      // Tier 3 — extras: first active AM item
-      const epAM = getActiveDailyPeriod(dt, dailyHistory)
-      if (epAM) {
-        const firstAMExtra = (epAM.items || []).find(item => {
-          const tod = item.timeOfDay || 'both'
-          return isShowerItemActive(dt, item, epAM.startDate) && (tod === 'am' || tod === 'both')
-        })
-        if (firstAMExtra) {
-          const rawE = firstAMExtra.label.split('(')[0].split('/')[0].trim()
-          const short = rawE.charAt(0).toUpperCase() + rawE.slice(1)
-          return <Badge key="e" colorKey="pause" label={short.length > 12 ? short.slice(0,11)+'…' : short} />
-        }
-      }
-      // Tier 4 — shower badges deactivated (shower time varies)
-      // if (spAM && ...) return <Badge ... label="Shower" />
       return null
     })()
     const amBadges = amBadge ? [amBadge] : []
@@ -5160,8 +5156,6 @@ export default function GlowUpCalendar({ session }) {
     // PM badge — tier system, single badge per half
     // T1: vitamin A / no actives / recovery (always)
     // T2: secondary actives (always)
-    // T3: extras today (only if showAllBadges)
-    // T4: shower items today (only if showAllBadges)
     const pmBadge = (() => {
       if (info.isTreatment) {
         const count = info.allTreatments?.length || 1
@@ -5179,21 +5173,6 @@ export default function GlowUpCalendar({ session }) {
       if (s === 'recovery') return <Badge key="p" colorKey="recovery"      label="Recovery" />
       if (s === 'tret') { const an = period?.activeName || 'tretinoin'; return <Badge key="p" colorKey="tret" label={an.charAt(0).toUpperCase() + an.slice(1)} /> }
       if (s === 'bha')  return <Badge key="bha" colorKey="bha" label="AHA/BHA" />
-      if (!showAllBadges) return null
-      // Tier 3 — extras: show first active PM item's label
-      const ep = getActiveDailyPeriod(dt, dailyHistory)
-      if (ep) {
-        const firstPMExtra = (ep.items || []).find(item => {
-          const tod = item.timeOfDay || 'both'
-          return isShowerItemActive(dt, item, ep.startDate) && (tod === 'pm' || tod === 'both')
-        })
-        if (firstPMExtra) {
-          const rawE = firstPMExtra.label.split('(')[0].split('/')[0].trim()
-          const short = rawE.charAt(0).toUpperCase() + rawE.slice(1)
-          return <Badge key="e" colorKey="pause" label={short.length > 12 ? short.slice(0,11)+'…' : short} />
-        }
-      }
-      // Tier 4 — shower badges deactivated
       return null
     })()
     const pmBadges = pmBadge ? [pmBadge] : []
@@ -5203,23 +5182,23 @@ export default function GlowUpCalendar({ session }) {
     cells.push(
       <div key={key} style={{ position: 'relative', borderRadius: 0, border: `0.5px solid ${isOpen ? T.pinkDeep : cellBorder}`, outline: isToday ? `2px solid ${T.pinkDeep}` : 'none', outlineOffset: -1, display: 'flex', flexDirection: 'column', zIndex: isOpen ? 100 : 1, minHeight: '88px' }}>
         {/* Date row */}
-        <div style={{ padding: '3px 6px', background: T.white, borderBottom: `0.5px solid ${isOpen ? T.pinkDeep : cellBorder}`, fontSize: 11, fontWeight: 600, color: isOpen ? T.pinkDeep : dateColor, textAlign: 'center', borderRadius: 0 }}>
+        <div style={{ padding: '3px 6px', background: T.white, borderBottom: `0.5px solid ${isOpen ? T.pinkDeep : amCellBorder}`, fontSize: 11, fontWeight: 600, color: isOpen ? T.pinkDeep : dateColor, textAlign: 'center', borderRadius: 0 }}>
           {d}
         </div>
         {/* AM half */}
         <div
           onClick={e => { e.stopPropagation(); isOpen && dayFlyout?.tab === 'am' ? setDayFlyout(null) : openDayFlyout(key, dt, 'am') }}
-          style={{ flex: 1, background: isOpen && dayFlyout?.tab === 'am' ? T.pink : cellBg, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '3px 4px', cursor: 'pointer', borderBottom: `0.5px solid ${isOpen ? T.pinkDeep : cellBorder}`, gap: 2, overflow: 'visible', transition: 'background 0.15s', position: 'relative', zIndex: 1 }}
+          style={{ flex: 1, background: isOpen && dayFlyout?.tab === 'am' ? T.pink : amCellBg, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '3px 4px', cursor: 'pointer', borderBottom: `0.5px solid ${isOpen ? T.pinkDeep : pmCellBorder}`, gap: 2, overflow: 'visible', transition: 'background 0.15s', position: 'relative', zIndex: 1 }}
         >
-          <div style={{ fontSize: 9, fontWeight: 600, color: isOpen && dayFlyout?.tab === 'am' ? T.pinkDeep : dateColor, opacity: 0.8, letterSpacing: '0.04em' }}>AM</div>
+          <div style={{ fontSize: 9, fontWeight: 600, color: isOpen && dayFlyout?.tab === 'am' ? T.pinkDeep : (amColors?.text || T.textMuted), opacity: 0.8, letterSpacing: '0.04em' }}>AM</div>
           {amBadges}
         </div>
         {/* PM half */}
         <div
           onClick={e => { e.stopPropagation(); isOpen && dayFlyout?.tab === 'pm' ? setDayFlyout(null) : openDayFlyout(key, dt, 'pm') }}
-          style={{ flex: 1, background: isOpen && dayFlyout?.tab === 'pm' ? T.pink : cellBg, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '3px 4px', cursor: 'pointer', gap: 2, overflow: 'visible', borderRadius: 0, transition: 'background 0.15s', position: 'relative', zIndex: 1 }}
+          style={{ flex: 1, background: isOpen && dayFlyout?.tab === 'pm' ? T.pink : pmCellBg, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '3px 4px', cursor: 'pointer', gap: 2, overflow: 'visible', borderRadius: 0, transition: 'background 0.15s', position: 'relative', zIndex: 1 }}
         >
-          <div style={{ fontSize: 9, fontWeight: 600, color: isOpen && dayFlyout?.tab === 'pm' ? T.pinkDeep : dateColor, opacity: 0.8, letterSpacing: '0.04em' }}>PM</div>
+          <div style={{ fontSize: 9, fontWeight: 600, color: isOpen && dayFlyout?.tab === 'pm' ? T.pinkDeep : (pmColors?.text || T.textMuted), opacity: 0.8, letterSpacing: '0.04em' }}>PM</div>
           {pmBadges}
         </div>
       </div>
@@ -5373,7 +5352,7 @@ export default function GlowUpCalendar({ session }) {
 
       {/* Glow Up logo — desktop only */}
       <div className="glowup-cal-logo" style={{ alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
-        <GlowUpLogo size={22} />
+        <GlowUpLogo size={32} />
       </div>
 
       {/* Program nudge — for users who built their routine manually and have never enrolled in a program */}
@@ -5468,28 +5447,30 @@ export default function GlowUpCalendar({ session }) {
 
       {/* Month/year with flanking nav arrows — fixed-width center keeps arrows static */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 6 }}>
-        <button onClick={prevMonth} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 0, padding: '5px 20px', cursor: 'pointer', fontSize: 15, color: T.text, flexShrink: 0 }}>←</button>
+        <button onClick={prevMonth} aria-label="Previous month" style={{ border: 'none', background: 'transparent', padding: '5px 20px', cursor: 'pointer', fontSize: 18, color: T.text, flexShrink: 0 }}>←</button>
         <div style={{ width: 260, textAlign: 'center' }}>
-          <div style={{ fontSize: 'clamp(28px, 6vw, 42px)', fontWeight: 700, color: T.text, lineHeight: 1.1, letterSpacing: '-0.02em' }}>{MONTHS[month]}</div>
+          <div style={{ fontFamily: T.fontFamilyAccent, fontStyle: T.fontStyleAccent, fontSize: 'clamp(28px, 6vw, 42px)', fontWeight: 500, color: T.text, lineHeight: 1.1 }}>{MONTHS[month]}</div>
           <div style={{ fontSize: 'clamp(13px, 2.5vw, 18px)', color: T.textMuted, fontWeight: 400, marginTop: 2 }}>{year}</div>
         </div>
-        <button onClick={nextMonth} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 0, padding: '5px 20px', cursor: 'pointer', fontSize: 15, color: T.text, flexShrink: 0 }}>→</button>
+        <button onClick={nextMonth} aria-label="Next month" style={{ border: 'none', background: 'transparent', padding: '5px 20px', cursor: 'pointer', fontSize: 18, color: T.text, flexShrink: 0 }}>→</button>
       </div>
 
       {/* Header — always visible, never moves */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, gap: 8 }}>
         {/* Left — primary actions */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-          <Btn variant={['update','setup'].includes(panel) ? 'active' : 'primary'} style={{ fontSize: 11, padding: '5px 10px' }} onClick={() => { setPanel(p => ['update','setup'].includes(p) ? null : (hasRoutine ? 'update' : 'setup')); setEditingPeriod(null); setDayFlyout(null) }}>Build your routine</Btn>
-          <Btn variant={showTreatments ? 'active' : 'default'} style={{ fontSize: 11, padding: '5px 10px' }} onClick={() => { setShowTreatments(s => !s); setDayFlyout(null) }}>My treatments</Btn>
+          <Btn variant={['update','setup'].includes(panel) ? 'active' : 'primary'} onClick={() => { setPanel(p => ['update','setup'].includes(p) ? null : (hasRoutine ? 'update' : 'setup')); setEditingPeriod(null); setDayFlyout(null) }}>
+            + Build your <AccentWord>routine</AccentWord>
+          </Btn>
+          <Btn variant={showTreatments ? 'active' : 'secondary'} onClick={() => { setShowTreatments(s => !s); setDayFlyout(null) }}>My treatments</Btn>
           {(month !== now.getMonth() || year !== now.getFullYear()) && (
-            <button onClick={() => { setMonth(now.getMonth()); setYear(now.getFullYear()) }} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 0, padding: '5px 10px', cursor: 'pointer', fontSize: 11, color: T.textMuted, fontFamily: 'inherit' }}>Today</button>
+            <Btn variant="ghost" onClick={() => { setMonth(now.getMonth()); setYear(now.getFullYear()) }}>Today</Btn>
           )}
         </div>
         {/* Right — bell + hamburger */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <button onClick={() => setShowNotifications(s => !s)} aria-label="Notifications"
-            style={{ position: 'relative', border: `0.5px solid ${showNotifications ? T.pinkDeep : T.border}`, background: showNotifications ? T.pink : 'transparent', borderRadius: 0, padding: '5px 10px', cursor: 'pointer', fontSize: 15, lineHeight: 1, width: 36, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            style={{ position: 'relative', border: `0.5px solid ${showNotifications ? T.pinkDeep : T.border}`, background: showNotifications ? T.pink : 'transparent', borderRadius: T.radius.pill, padding: '5px 10px', cursor: 'pointer', fontSize: 15, lineHeight: 1, width: 36, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             🔔
             {unreadCount > 0 && (
               <span style={{ position: 'absolute', top: 2, right: 2, width: 14, height: 14, borderRadius: '50%', background: T.pinkDeep, color: '#fff', fontSize: 8, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>
@@ -5498,7 +5479,7 @@ export default function GlowUpCalendar({ session }) {
             )}
           </button>
           <button onClick={() => setShowMenu(s => !s)} aria-label="Menu"
-            style={{ border: `0.5px solid ${showMenu ? T.pinkDeep : T.border}`, background: showMenu ? T.pink : 'transparent', borderRadius: 0, padding: '5px 10px', cursor: 'pointer', color: T.text, fontSize: 16, lineHeight: 1, display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', justifyContent: 'center', width: 36, height: 32 }}>
+            style={{ border: `0.5px solid ${showMenu ? T.pinkDeep : T.border}`, background: showMenu ? T.pink : 'transparent', borderRadius: T.radius.pill, padding: '5px 10px', cursor: 'pointer', color: T.text, fontSize: 16, lineHeight: 1, display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', justifyContent: 'center', width: 36, height: 32 }}>
             <span style={{ display: 'block', width: 14, height: 1.5, background: T.text, borderRadius: 0 }} />
             <span style={{ display: 'block', width: 14, height: 1.5, background: T.text, borderRadius: 0 }} />
             <span style={{ display: 'block', width: 14, height: 1.5, background: T.text, borderRadius: 0 }} />
@@ -5649,28 +5630,6 @@ export default function GlowUpCalendar({ session }) {
           onFeedback={() => { setShowFeedback(true); setShowMenu(false) }}
         />
       )}
-
-      {/* Badge toggle row */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, marginTop: -4, justifyContent: 'flex-end' }}>
-        <span style={{ fontSize: 11, color: T.textMuted }}>Calendar badges:</span>
-        <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}>
-          <div
-            onClick={() => setShowAllBadges(s => !s)}
-            style={{
-              width: 36, height: 20, borderRadius: 0, cursor: 'pointer',
-              background: showAllBadges ? T.pinkDeep : T.border,
-              position: 'relative', transition: 'background 0.2s', flexShrink: 0,
-            }}
-          >
-            <div style={{
-              position: 'absolute', top: 2, left: showAllBadges ? 18 : 2,
-              width: 16, height: 16, borderRadius: '50%', background: T.white,
-              transition: 'left 0.2s', boxShadow: '0 1px 3px rgba(0,0,0,0.15)',
-            }} />
-          </div>
-          <span style={{ fontSize: 11, color: T.textMuted }}>{showAllBadges ? 'All badges' : 'Actives only'}</span>
-        </label>
-      </div>
 
       {/* Hint — above day headers */}
       <p style={{ fontSize: 11, color: T.textLight, marginBottom: 6 }}>
