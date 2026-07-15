@@ -4,20 +4,12 @@ import SideMenu from './SideMenu'
 import { supabase } from '../lib/supabase'
 import T from './theme'
 import { useConfirm } from './shared/useConfirm'
+import Btn from './shared/Btn'
 
 
 const TOOLTIP_TEXT = "Add a new routine when your approach is changing — it preserves your history and lets you track what you used before. Edit when you're correcting a mistake. Think of each routine as a chapter."
 
 
-function Btn({ children, onClick, style, variant = 'default' }) {
-  const base = { border: 'none', borderRadius: 0, cursor: 'pointer', fontSize: 11, padding: '4px 10px', fontFamily: 'inherit' }
-  const variants = {
-    default:  { background: T.creamDark, color: T.text, border: `0.5px solid ${T.border}` },
-    primary:  { background: T.pinkDeep, color: '#fff' },
-    danger:   { background: 'transparent', color: '#9F1239', border: `0.5px solid #FECDD3` },
-  }
-  return <button onClick={onClick} style={{ ...base, ...variants[variant], ...style }}>{children}</button>
-}
 
 function InfoTooltip({ text }) {
   const [pos, setPos] = useState(null)

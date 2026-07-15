@@ -127,3 +127,80 @@ button:hover .split-char {
   src: local('Fraunces'), url(./fonts/Fraunces-Italic-VariableFont_SOFT,WONK,opsz,wght.ttf) format('truetype');
   font-style: italic;
 }
+
+/* ─── GlowUp buttons — see STYLES — BUTTONS spec ──────────────────────── */
+.gu-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: background 150ms ease, border-color 150ms ease, color 150ms ease, box-shadow 150ms ease;
+  white-space: nowrap;
+  outline: none;
+}
+.gu-btn:disabled {
+  cursor: default;
+  transition: opacity 400ms ease;
+}
+
+/* Sizes */
+.gu-btn-compact  { height: 32px; padding: 6px 14px; font-size: 12px; }
+.gu-btn-standard { height: 44px; padding: 10px 20px; font-size: 14px; }
+.gu-btn-large    { height: 52px; padding: 14px 24px; font-size: 16px; }
+
+/* Primary — the one main action on a screen */
+.gu-btn-primary {
+  background: #0F2F2B;
+  color: #fff;
+}
+.gu-btn-primary:hover:not(:disabled)  { background: #2D5E57; }
+.gu-btn-primary:active:not(:disabled) { background: #071A18; transition-duration: 80ms; }
+.gu-btn-primary:focus-visible { box-shadow: 0 0 0 3px #98AAF8; }
+.gu-btn-primary:disabled { background: #0F2F2B; opacity: 0.5; }
+
+/* Secondary — a supporting action alongside a primary */
+.gu-btn-secondary {
+  background: transparent;
+  border-color: #0F2F2B;
+  color: #0F2F2B;
+}
+.gu-btn-secondary:hover:not(:disabled)  { border-color: #2D5E57; color: #2D5E57; }
+.gu-btn-secondary:active:not(:disabled) { border-color: #071A18; color: #071A18; transition-duration: 80ms; }
+.gu-btn-secondary:focus-visible { box-shadow: 0 0 0 3px #98AAF8; }
+.gu-btn-secondary:disabled { border-color: #0F2F2B; color: #0F2F2B; opacity: 0.5; }
+
+/* Ghost — low-priority actions, shouldn't draw the eye */
+.gu-btn-ghost {
+  background: transparent;
+  border-color: transparent;
+  color: #0F2F2B;
+}
+.gu-btn-ghost:hover:not(:disabled)  { color: #2D5E57; text-decoration: underline; }
+.gu-btn-ghost:active:not(:disabled) { color: #071A18; text-decoration: underline; transition-duration: 80ms; }
+.gu-btn-ghost:focus-visible { box-shadow: 0 0 0 3px #98AAF8; }
+.gu-btn-ghost:disabled { color: #0F2F2B; opacity: 0.5; }
+
+/* Danger — destructive actions, always confirm before use */
+.gu-btn-danger {
+  background: transparent;
+  border-color: #E95800;
+  color: #E95800;
+}
+.gu-btn-danger:hover:not(:disabled)  { border-color: #B84400; color: #B84400; background: #FEE9D5; }
+.gu-btn-danger:active:not(:disabled) { background: #E95800; border-color: #E95800; color: #fff; transition-duration: 80ms; }
+.gu-btn-danger:focus-visible { box-shadow: 0 0 0 3px #98AAF8; }
+.gu-btn-danger:disabled { border-color: #0F2F2B; color: #0F2F2B; opacity: 0.5; }
+
+/* Active — selected/toggled state for chip-like buttons (day pickers, tabs).
+   Not part of the destructive/primary/secondary/ghost spec — kept for the
+   toggle-button pattern used elsewhere in the app. */
+.gu-btn-active {
+  background: #ED6FBB;
+  border-color: #C93500;
+  color: #0F2F2B;
+}
+.gu-btn-active:disabled { opacity: 0.5; }

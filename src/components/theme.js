@@ -50,10 +50,13 @@ const T = {
   textLight: 'rgba(15, 47, 43, 0.50)',     // tertiary, placeholders — 50%
 
   // ── Button states ────────────────────────────────────────────
+  // See STYLES — BUTTONS spec (2026-07) — supersedes the destructive
+  // colors in the original handoff doc Section 5 (#F07040 → #E95800).
   btnHover:    '#2D5E57',   // primary hover (lighter than default)
   btnActive:   '#071A18',   // primary active/pressed (darker than default)
-  warnHover:   '#B84400',   // warning hover border + text
-  warnHoverBg: '#FEE9D5',   // warning hover background
+  warn:        '#E95800',   // destructive default — border + text
+  warnHover:   '#B84400',   // destructive hover border + text
+  warnHoverBg: '#FEE9D5',   // destructive hover background
 
   // ── Calendar badge colors ─────────────────────────────────────
   // Tretinoin — green

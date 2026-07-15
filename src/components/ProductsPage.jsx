@@ -6,6 +6,7 @@ import SideMenu from './SideMenu'
 import T from './theme'
 import ProductForm, { PRODUCT_CATEGORIES, formatCatLabel, PAO_OPTIONS } from './shared/ProductForm'
 import { useConfirm, useAlert } from './shared/useConfirm'
+import Btn from './shared/Btn'
 
 
 const PRODUCT_FLAGS = [
@@ -187,17 +188,6 @@ function TextInput({ value, onChange, placeholder, width = 140 }) {
   return <input type="text" value={value} onChange={onChange} placeholder={placeholder} style={{ width, fontSize: 12, padding: '5px 8px', border: `0.5px solid ${T.border}`, borderRadius: 6, background: T.cream, color: T.text }} />
 }
 
-function Btn({ onClick, children, variant = 'default', style: sx = {}, disabled = false }) {
-  const base = { padding: '6px 14px', borderRadius: 8, fontSize: 12, cursor: disabled ? 'default' : 'pointer', opacity: disabled ? 0.5 : 1 }
-  const variants = {
-    default:   { border: `0.5px solid ${T.border}`,   background: 'transparent', color: T.textMuted },
-    primary:   { border: `0.5px solid ${T.pinkDeep}`, background: T.pink,        color: T.text, fontWeight: 600 },
-    danger:    { border: '0.5px solid #FB7185',        background: 'transparent', color: '#9F1239' },
-    secondary: { border: `0.5px solid ${T.border}`,   background: T.creamDark,   color: T.text },
-    active:    { border: `0.5px solid ${T.pinkDeep}`, background: T.pink,        color: T.text },
-  }
-  return <button onClick={onClick} disabled={disabled} style={{ ...base, ...variants[variant], ...sx }}>{children}</button>
-}
 
 function ProductFlagBadges({ product, max }) {
   const active = PRODUCT_FLAGS.filter(f => product[f.key])
