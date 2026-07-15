@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabase'
 import T from './theme'
+import GlowUpLogo from './GlowUpWordmark'
 
 
 const SKIN_TYPES = ['Dry', 'Oily', 'Combination', 'Normal', 'Sensitive', 'Not sure yet']
@@ -118,9 +119,7 @@ export default function Auth() {
 
         {/* Logo / wordmark */}
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
-          <div style={{ fontSize: 22, fontWeight: 700, color: T.text, letterSpacing: '-0.02em' }}>
-            Glow Up
-          </div>
+          <GlowUpLogo size={22} style={{ display: 'inline-block' }} />
           <div style={{ fontSize: 12, color: T.textMuted, marginTop: 4 }}>
             Your skincare routine, organized.
           </div>

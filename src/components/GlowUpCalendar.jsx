@@ -33,6 +33,7 @@ import { todayInTz, nowInTz, detectTimezone } from './timezone'
 import SideMenu from './SideMenu'
 import T from './theme'
 import ProductForm from './shared/ProductForm'
+import GlowUpLogo from './GlowUpWordmark'
 
 // ─── DESIGN TOKENS ───────────────────────────────────────────
 
@@ -5371,9 +5372,8 @@ export default function GlowUpCalendar({ session }) {
       <style>{`html, body { overflow-x: hidden; } @keyframes slideDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } } @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } } @keyframes panelIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } } @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } } .glowup-cal-logo { display: flex } @media (max-width: 639px) { .glowup-cal-logo { display: none } }`}</style>
 
       {/* Glow Up logo — desktop only */}
-      <div className="glowup-cal-logo" style={{ alignItems: 'center', justifyContent: 'center', gap: 6, marginBottom: 12 }}>
-        <span className="glowup-cal-logo" style={{ fontSize: 22, fontWeight: 800, letterSpacing: "-0.04em", color: "#1A1A1A", lineHeight: 1 }}>Glow <span style={{ color: "#C93500" }}>Up</span><span style={{ color: "#FFD6F9" }}>.</span></span>
-        <span style={{ width: 6, height: 6, borderRadius: '50%', background: T.pinkDeep, display: 'inline-block', flexShrink: 0 }} />
+      <div className="glowup-cal-logo" style={{ alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+        <GlowUpLogo size={22} />
       </div>
 
       {/* Program nudge — for users who built their routine manually and have never enrolled in a program */}

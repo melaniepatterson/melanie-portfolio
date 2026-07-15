@@ -265,9 +265,8 @@ export default function Profile({ session, onOpenSurvey }) {
       <div style={{ background: T.white, borderBottom: `0.5px solid ${T.border}`, position: 'sticky', top: 0, zIndex: 10 }}>
         <style>{`.glowup-profile-logo { display: flex } @media (max-width: 639px) { .glowup-profile-logo { display: none } }`}</style>
         {/* Logo row — desktop only */}
-        <div className="glowup-profile-logo" style={{ alignItems: 'baseline', gap: 6, padding: '12px 20px 8px' }}>
+        <div className="glowup-profile-logo" style={{ alignItems: 'baseline', padding: '12px 20px 8px' }}>
           <GlowUpLogo />
-          <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#C93500', display: 'inline-block', marginBottom: 2 }} />
         </div>
         {/* Nav row */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 20px 14px' }}>

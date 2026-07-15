@@ -1,13 +1,20 @@
-// GlowUpLogo — single source of truth for the Glow Up. wordmark
-import React from "react"
+// GlowUpLogo — single source of truth for the Glow Up wordmark.
+// Naskle, all lowercase, per Section 5 of the design spec. GlowUpLoader.jsx
+// intentionally has its own larger, floating treatment for the full-bleed
+// loading screen — this component is for every other placement.
+import T from './theme'
 
-export default function GlowUpLogo({ size, style, className }) {
-  return React.createElement("span", {
-    className: className,
-    style: Object.assign({ fontSize: size || 20, fontWeight: 800, letterSpacing: "-0.04em", color: "#1A1A1A", lineHeight: 1 }, style || {})
-  },
-    "Glow ",
-    React.createElement("span", { style: { color: "#C93500" } }, "Up"),
-    React.createElement("span", { style: { color: "#FFD6F9" } }, ".")
+export default function GlowUpLogo({ size = 20, style, className }) {
+  return (
+    <span className={className} style={{
+      fontFamily: T.fontFamilyDisplay,
+      fontSize: size,
+      lineHeight: 1,
+      letterSpacing: '-0.01em',
+      color: T.text,
+      ...style,
+    }}>
+      glow up.
+    </span>
   )
 }
