@@ -8,6 +8,7 @@ import CropModal from './CropModal'
 import BetaSurvey from './BetaSurvey'
 import { detectTimezone, TIMEZONE_OPTIONS } from './timezone'
 import T from './theme'
+import { useAlert } from './shared/useConfirm'
 
 
 
@@ -81,6 +82,7 @@ function PillButton({ active, onClick, children, sub }) {
 
 export default function Profile({ session, onOpenSurvey }) {
   const navigate = useNavigate()
+  const [alertDialog, alertUser] = useAlert()
   const [showSurvey, setShowSurvey] = useState(false)
   const [displayName,   setDisplayName]   = useState('')
   const [skinType,      setSkinType]      = useState('')
@@ -187,11 +189,11 @@ export default function Profile({ session, onOpenSurvey }) {
       })
   }, [userId])
 
-  function handleAvatarUpload(e) {
+  async function handleAvatarUpload(e) {
     const file = e.target.files?.[0]
     if (!file || !userId) return
     if (!file.type.startsWith('image/')) return
-    if (file.size > 10 * 1024 * 1024) { alert('Photo must be under 10MB'); return }
+    if (file.size > 10 * 1024 * 1024) { await alertUser('Photo must be under 10MB'); return }
     setCropSrc(URL.createObjectURL(file))
     e.target.value = ''
   }
@@ -210,7 +212,7 @@ export default function Profile({ session, onOpenSurvey }) {
       setCropSrc(null)
     } catch (err) {
       console.error('Upload failed:', err)
-      alert('Upload failed — please try again')
+      await alertUser('Upload failed — please try again')
     } finally {
       setUploading(false)
     }
@@ -609,6 +611,7 @@ export default function Profile({ session, onOpenSurvey }) {
         alreadySubmitted={false}
       />
     )}
+    {alertDialog}
     </>
   )
 }

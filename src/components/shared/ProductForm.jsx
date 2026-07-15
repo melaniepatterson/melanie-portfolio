@@ -7,6 +7,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
 import T from '../theme'
+import { useAlert } from './useConfirm'
 
 export const PRODUCT_CATEGORIES = [
   'cleanser', 'cleansing oil / balm', 'toner', 'essence',
@@ -129,6 +130,7 @@ export async function imageToWebP(file, maxDim = 600, quality = 0.88) {
 }
 
 export function ProductImageUpload({ value, onChange, userId, productName }) {
+  const [alertDialog, alertUser] = useAlert()
   const [uploading, setUploading] = useState(false)
   const [preview, setPreview]     = useState(value || null)
   const ref = useRef(null)
@@ -138,7 +140,7 @@ export function ProductImageUpload({ value, onChange, userId, productName }) {
   async function handleFile(e) {
     const file = e.target.files?.[0]
     if (!file || !file.type.startsWith('image/')) return
-    if (file.size > 10 * 1024 * 1024) { alert('Image must be under 10MB'); return }
+    if (file.size > 10 * 1024 * 1024) { await alertUser('Image must be under 10MB'); return }
     setUploading(true)
     try {
       const webp = await imageToWebP(file)
@@ -153,7 +155,7 @@ export function ProductImageUpload({ value, onChange, userId, productName }) {
       onChange(publicUrl)
     } catch (err) {
       console.error('Upload failed:', err)
-      alert('Upload failed — please try again')
+      await alertUser('Upload failed — please try again')
     } finally {
       setUploading(false)
       e.target.value = ''
@@ -181,6 +183,7 @@ export function ProductImageUpload({ value, onChange, userId, productName }) {
         </button>
         <input ref={ref} type="file" accept="image/*" onChange={handleFile} style={{ display: 'none' }} />
       </div>
+      {alertDialog}
     </div>
   )
 }

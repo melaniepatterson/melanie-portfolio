@@ -5,6 +5,7 @@ import { supabase } from '../lib/supabase'
 import SideMenu from './SideMenu'
 import T from './theme'
 import ProductForm, { PRODUCT_CATEGORIES, formatCatLabel, PAO_OPTIONS } from './shared/ProductForm'
+import { useConfirm, useAlert } from './shared/useConfirm'
 
 
 const PRODUCT_FLAGS = [
@@ -434,6 +435,7 @@ function getBrandColor(brand, id) {
 }
 
 function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, isWhatWeUsing, userRoutineNames, upd, onAddToLibrary, onRemoveFromLibrary, onSaveUserProductData, onMarkFinished }) {
+  const [confirmDialog, confirm] = useConfirm()
   const [finishConfetti, setFinishConfetti] = useState(false)
   const [finishCount, setFinishCount] = useState(upd?.finish_count || p.finish_count || 0)
 
@@ -590,7 +592,7 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
                   style={{ flex: 1, padding: '9px', borderRadius: 0, border: '0.5px solid ' + T.pinkDeep, background: finishConfetti ? T.pink : 'transparent', color: T.pinkDeep, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 500, transition: 'background 0.3s' }}>
                   {finishConfetti ? '✓ Finished!' : finishCount > 0 ? `Mark as finished (${finishCount}×)` : 'Mark as finished'}
                 </button>
-                <button onClick={() => { if (window.confirm('Delete ' + p.name + '?')) { onDelete(p); onClose() } }}
+                <button onClick={async () => { if (await confirm({ title: `Delete ${p.name}?`, message: 'This cannot be undone.' })) { onDelete(p); onClose() } }}
                   style={{ padding: '9px 14px', borderRadius: 0, border: '0.5px solid ' + T.border, background: 'transparent', color: T.textLight, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
                   Delete
                 </button>
@@ -620,6 +622,7 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
         )}
       </div>
       </div>
+      {confirmDialog}
     </div>
   )
 }
@@ -948,6 +951,7 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
 
 // ─── PRODUCTS PAGE ────────────────────────────────────────────
 export default function ProductsPage({ session }) {
+  const [alertDialog, alertUser] = useAlert()
   const [products, setProducts] = useState({})
   const [catalogProducts, setCatalogProducts] = useState({})
   const [userProductData, setUserProductData] = useState({}) // keyed by product_id
@@ -1198,7 +1202,7 @@ export default function ProductsPage({ session }) {
         (p.brand || '').toLowerCase() === (product.brand || '').toLowerCase()
       )
       if (existingUser) {
-        alert(product.name + ' is already in your products.')
+        await alertUser(product.name + ' is already in your products.')
         return
       }
       row.id = crypto.randomUUID()
@@ -1349,6 +1353,7 @@ export default function ProductsPage({ session }) {
               onMarkFinished={markFinished}
             />
       }
+      {alertDialog}
     </div>
   )
 }

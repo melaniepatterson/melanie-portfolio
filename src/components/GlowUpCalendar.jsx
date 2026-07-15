@@ -34,6 +34,7 @@ import SideMenu from './SideMenu'
 import T from './theme'
 import ProductForm from './shared/ProductForm'
 import GlowUpLogo from './GlowUpWordmark'
+import { useConfirm, useAlert } from './shared/useConfirm'
 
 // ─── DESIGN TOKENS ───────────────────────────────────────────
 
@@ -1194,6 +1195,7 @@ function InfoTooltip({ text }) {
 }
 
 function RoutineHistoryPanel({ history, now, onClose, onEdit, onDelete, onAddNew, getActivePeriod, dailyHistory, onEditDaily, onDeleteDaily, showerHistory, onEditShower, onDeleteShower }) {
+  const [confirmDialog, confirm] = useConfirm()
   const sorted = [...history].sort((a, b) => b.startDate.localeCompare(a.startDate)).slice(0, 3)
   return (
     <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 0, padding: '16px 18px', marginBottom: 14 }}>
@@ -1232,7 +1234,7 @@ function RoutineHistoryPanel({ history, now, onClose, onEdit, onDelete, onAddNew
               </div>
               <div style={{ display: 'flex', gap: 4 }}>
                 <Btn onClick={() => onEdit(p)} style={{ padding: '3px 10px', fontSize: 11 }}>Edit</Btn>
-                <button onClick={() => { if (window.confirm('Delete this skincare routine period? This cannot be undone.')) onDelete(p.startDate) }} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 16, padding: '0 4px', lineHeight: 1 }}>×</button>
+                <button onClick={async () => { if (await confirm({ title: 'Delete this skincare routine period?', message: 'This cannot be undone.' })) onDelete(p.startDate) }} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 16, padding: '0 4px', lineHeight: 1 }}>×</button>
               </div>
             </div>
             <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.8 }}>
@@ -1287,7 +1289,7 @@ function RoutineHistoryPanel({ history, now, onClose, onEdit, onDelete, onAddNew
               </div>
               <div style={{ display: 'flex', gap: 4 }}>
                 <Btn onClick={() => onEditDaily(p)} style={{ padding: '3px 10px', fontSize: 11 }}>Edit</Btn>
-                <button onClick={() => { if (window.confirm('Delete this extras period? This cannot be undone.')) onDeleteDaily(p.id) }} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 16, padding: '0 4px', lineHeight: 1 }}>×</button>
+                <button onClick={async () => { if (await confirm({ title: 'Delete this extras period?', message: 'This cannot be undone.' })) onDeleteDaily(p.id) }} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 16, padding: '0 4px', lineHeight: 1 }}>×</button>
               </div>
             </div>
             <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.8 }}>
@@ -1330,7 +1332,7 @@ function RoutineHistoryPanel({ history, now, onClose, onEdit, onDelete, onAddNew
               </div>
               <div style={{ display: 'flex', gap: 4 }}>
                 <Btn onClick={() => onEditShower(p)} style={{ padding: '3px 10px', fontSize: 11 }}>Edit</Btn>
-                <button onClick={() => { if (window.confirm('Delete this shower routine period? This cannot be undone.')) onDeleteShower(p.id) }} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 16, padding: '0 4px', lineHeight: 1 }}>×</button>
+                <button onClick={async () => { if (await confirm({ title: 'Delete this shower routine period?', message: 'This cannot be undone.' })) onDeleteShower(p.id) }} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 16, padding: '0 4px', lineHeight: 1 }}>×</button>
               </div>
             </div>
             <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.8 }}>
@@ -1355,12 +1357,14 @@ function RoutineHistoryPanel({ history, now, onClose, onEdit, onDelete, onAddNew
           style={{ fontSize: 11, padding: '6px 16px', borderRadius: 0, border: `0.5px solid ${T.border}`, background: 'transparent', cursor: 'pointer', color: T.textMuted, fontFamily: 'inherit' }}
         >See full history →</button>
       </div>
+      {confirmDialog}
     </div>
   )
 }
 
 // ─── TREATMENT SELECTOR PANEL ────────────────────────────────
 function TreatmentSelectorPanel({ selector, treatments, allTypes, customTypes, setCustomTypes, onApply, onRemove, onClose, routineHistory, showerHistory, products }) {
+  const [confirmDialog, confirm] = useConfirm()
   const existingEntries = treatments[selector.key] || []
   // When editingDbId is set, we're editing a specific entry; otherwise adding new
   const editingEntry = selector.editingDbId ? existingEntries.find(e => e._dbId === selector.editingDbId) : null
@@ -1512,7 +1516,7 @@ function TreatmentSelectorPanel({ selector, treatments, allTypes, customTypes, s
         <Btn variant="primary" onClick={() => { if (selType && conflicts.length === 0) onApply(selType, false, timeOfDay, treatArea, customPre, customPost, dateKey) }} disabled={!selType || conflicts.length > 0}>Save</Btn>
         {conflicts.length > 0 && safeDate && <div style={{ fontSize: 11, color: '#166534', padding: '4px 0' }}>Move to {new Date(safeDate + 'T00:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })} to save.</div>}
         <Btn onClick={onClose}>Cancel</Btn>
-        {editingEntry && <Btn variant="danger" onClick={() => { if (window.confirm('Remove this treatment? This cannot be undone.')) onRemove(editingEntry._dbId) }}>Remove treatment</Btn>}
+        {editingEntry && <Btn variant="danger" onClick={async () => { if (await confirm({ title: 'Remove this treatment?', message: 'This cannot be undone.' })) onRemove(editingEntry._dbId) }}>Remove treatment</Btn>}
       </div>
       <SectionLabel>Add a new treatment type</SectionLabel>
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
@@ -1521,6 +1525,7 @@ function TreatmentSelectorPanel({ selector, treatments, allTypes, customTypes, s
         <div><FieldLabel>Days after — recovery period</FieldLabel><NumberInput value={newPost} onChange={e => setNewPost(+e.target.value)} /></div>
         <Btn variant="secondary" onClick={addCustomType}>Add</Btn>
       </div>
+      {confirmDialog}
     </div>
   )
 }
@@ -3178,6 +3183,7 @@ function ProgramEnrollmentPreview({ program, onConfirm, onBack, timezone }) {
 }
 
 function AddProgramPanel({ session, activeProgram, activePrograms = [], routinePeriod, skinType, timezone, onChanged }) {
+  const [alertDialog, alertUser] = useAlert()
   const [loading, setLoading] = useState(true)
   const [library, setLibrary] = useState([])
   const [completionCounts, setCompletionCounts] = useState({})
@@ -3386,7 +3392,7 @@ function AddProgramPanel({ session, activeProgram, activePrograms = [], routineP
       if (program.incompatible_with?.length > 0 && activeProgramSlugs.length > 0) {
         const conflict = activeProgramSlugs.find(s => program.incompatible_with.includes(s))
         if (conflict) {
-          alert(`You need to complete your current program before starting ${program.name}.`)
+          await alertUser(`You need to complete your current program before starting ${program.name}.`)
           setStarting(null)
           return
         }
@@ -3528,15 +3534,18 @@ function AddProgramPanel({ session, activeProgram, activePrograms = [], routineP
   // ── PROGRAM LIBRARY — show all programs, mark active/incompatible ─────────────
   if (previewingProgram) {
     return (
-      <ProgramEnrollmentPreview
-        program={previewingProgram}
-        timezone={timezone}
-        onBack={() => setPreviewingProgram(null)}
-        onConfirm={async (startDate, phaseDurations, bhaDay) => {
-          await startProgram(previewingProgram, startDate, phaseDurations, bhaDay)
-          setPreviewingProgram(null)
-        }}
-      />
+      <>
+        <ProgramEnrollmentPreview
+          program={previewingProgram}
+          timezone={timezone}
+          onBack={() => setPreviewingProgram(null)}
+          onConfirm={async (startDate, phaseDurations, bhaDay) => {
+            await startProgram(previewingProgram, startDate, phaseDurations, bhaDay)
+            setPreviewingProgram(null)
+          }}
+        />
+        {alertDialog}
+      </>
     )
   }
 
@@ -3581,6 +3590,7 @@ function AddProgramPanel({ session, activeProgram, activePrograms = [], routineP
           )
         })
       )}
+      {alertDialog}
     </div>
   )
 }
@@ -4354,6 +4364,7 @@ function computeNotifications({ products, treatments, allTypes, timezone }) {
 
 
 export default function GlowUpCalendar({ session }) {
+  const [confirmDialog, confirm] = useConfirm()
   const userId = session?.user?.id
 
   // timezone must be declared FIRST so all date computations below are correct.
@@ -5845,7 +5856,7 @@ export default function GlowUpCalendar({ session }) {
                   setShowTreatments(false)
                 }}
                 onRemove={async (dbId) => {
-                  if (window.confirm('Remove this treatment? This cannot be undone.')) {
+                  if (await confirm({ title: 'Remove this treatment?', message: 'This cannot be undone.' })) {
                     await removeTreatment(dbId)
                   }
                 }}
@@ -5907,7 +5918,7 @@ export default function GlowUpCalendar({ session }) {
         </>
       )}
 
-
+      {confirmDialog}
 
     </div>
   )

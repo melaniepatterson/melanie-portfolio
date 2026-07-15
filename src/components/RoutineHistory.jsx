@@ -3,6 +3,7 @@ import GlowUpLogo from './GlowUpWordmark'
 import SideMenu from './SideMenu'
 import { supabase } from '../lib/supabase'
 import T from './theme'
+import { useConfirm } from './shared/useConfirm'
 
 
 const TOOLTIP_TEXT = "Add a new routine when your approach is changing — it preserves your history and lets you track what you used before. Edit when you're correcting a mistake. Think of each routine as a chapter."
@@ -59,6 +60,7 @@ function navigate(type, data) {
 }
 
 export default function RoutineHistory({ session }) {
+  const [confirmDialog, confirm] = useConfirm()
   const [routineHistory, setRoutineHistory] = useState([])
   const [dailyHistory,   setDailyHistory]   = useState([])
   const [showerHistory,  setShowerHistory]  = useState([])
@@ -95,17 +97,17 @@ export default function RoutineHistory({ session }) {
   }, [userId])
 
   async function deleteSkincare(p) {
-    if (!window.confirm('Delete this skincare routine? This cannot be undone.')) return
+    if (!await confirm({ title: 'Delete this skincare routine?', message: 'This cannot be undone.' })) return
     if (p._dbId) await supabase.from('routine_periods').delete().eq('id', p._dbId)
     setRoutineHistory(h => h.filter(x => x._dbId !== p._dbId))
   }
   async function deleteDaily(p) {
-    if (!window.confirm('Delete this extras routine? This cannot be undone.')) return
+    if (!await confirm({ title: 'Delete this extras routine?', message: 'This cannot be undone.' })) return
     if (p.id) await supabase.from('extras_periods').delete().eq('id', p.id)
     setDailyHistory(h => h.filter(x => x.id !== p.id))
   }
   async function deleteShower(p) {
-    if (!window.confirm('Delete this shower routine? This cannot be undone.')) return
+    if (!await confirm({ title: 'Delete this shower routine?', message: 'This cannot be undone.' })) return
     if (p.id) await supabase.from('shower_periods').delete().eq('id', p.id)
     setShowerHistory(h => h.filter(x => x.id !== p.id))
   }
@@ -272,6 +274,7 @@ export default function RoutineHistory({ session }) {
           </>
         )}
       </div>
+      {confirmDialog}
     </div>
   )
 }
