@@ -850,7 +850,7 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
             const img = p.imageUrl || p.image_url
             return (
               <div key={p.id} onClick={() => setSelectedProduct(p)}
-                style={{ cursor: 'pointer', position: 'relative', background: T.white, display: 'flex', flexDirection: 'column' }}>
+                style={{ cursor: 'pointer', position: 'relative', background: T.white, display: 'flex', flexDirection: 'column', borderRadius: T.radius.card, overflow: 'hidden' }}>
                 {/* Portrait image — paddingBottom keeps 3:4 ratio consistent across all cards */}
                 <div style={{ position: 'relative', paddingBottom: '133.33%', overflow: 'hidden', background: getBrandColor(p.brand, p.id), flexShrink: 0 }}>
                   {img && (
@@ -861,16 +861,16 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
                   {/* Routine badges — top right */}
                   {(wwu || userUsing) && (
                     <div style={{ position: 'absolute', top: 6, right: 6, display: 'flex', flexDirection: 'column', gap: 3 }}>
-                      {wwu && <span style={{ fontSize: 8, background: T.pinkDeep, color: '#fff', borderRadius: 0, padding: '2px 6px', fontWeight: 700, whiteSpace: 'nowrap' }}>What we're using!</span>}
-                      {userUsing && <span style={{ fontSize: 8, background: 'rgba(255,255,255,0.93)', color: T.text, borderRadius: 0, padding: '2px 6px', fontWeight: 600, whiteSpace: 'nowrap', border: '0.5px solid ' + T.border }}>In my routine</span>}
+                      {wwu && <span style={{ fontSize: 8, background: T.pinkDeep, color: '#fff', borderRadius: T.radius.pill, padding: '2px 6px', fontWeight: 700, whiteSpace: 'nowrap' }}>What we're using!</span>}
+                      {userUsing && <span style={{ fontSize: 8, background: 'rgba(255,255,255,0.93)', color: T.text, borderRadius: T.radius.pill, padding: '2px 6px', fontWeight: 600, whiteSpace: 'nowrap', border: '0.5px solid ' + T.border }}>In my routine</span>}
                     </div>
                   )}
                 </div>
                 {/* Text — flex column so pills pin to bottom regardless of count */}
-                <div style={{ padding: '7px 8px 10px', background: T.white, flex: 1, display: 'flex', flexDirection: 'column' }}>
+                <div style={{ padding: '8px 8px 10px', background: T.white, flex: 1, display: 'flex', flexDirection: 'column' }}>
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 11, fontWeight: 500, color: T.text, lineHeight: 1.4, marginBottom: 1 }}>{p.name}</div>
-                    {p.brand && <div style={{ fontSize: 10, color: T.textMuted }}>{p.brand}</div>}
+                    <div style={{ fontSize: 12, fontWeight: 600, color: T.text, lineHeight: 1.4, marginBottom: 2 }}>{p.name}</div>
+                    {p.brand && <div style={{ fontSize: 11, color: T.textMuted }}>{p.brand}</div>}
                     {p.finish_count > 0 || (userProductData||{})[p.id]?.finish_count > 0 ? (
                       <div style={{ fontSize: 9, color: T.pinkDeep, marginTop: 3, fontWeight: 600 }}>
                         Finished {((userProductData||{})[p.id]?.finish_count || p.finish_count)}×

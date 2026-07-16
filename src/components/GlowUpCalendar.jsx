@@ -1210,46 +1210,52 @@ function RoutineHistoryPanel({ history, now, onClose, onEdit, onDelete, onAddNew
 
       {sorted.map((p, i) => {
         const freq = TRET_FREQUENCIES.find(f => f.key === p.tretFrequency)?.label || p.tretFrequency
+        const status = getPeriodStatus(p, now)
+        const isCurrent = status === 'current'
+        const title = status === 'current' ? `Current routine (as of ${fmtDate(p.startDate)})`
+          : status === 'upcoming' ? `Upcoming — starts ${fmtDate(p.startDate)}`
+          : `${fmtDate(p.startDate)} — ${p.endDate ? fmtDate(p.endDate) : '—'}`
         return (
-          <div key={p.startDate} style={{ borderTop: i > 0 ? `0.5px solid ${T.border}` : 'none', paddingTop: i > 0 ? 12 : 0, marginTop: i > 0 ? 12 : 0 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
-              <div>
-                <div style={{ fontSize: 12, fontWeight: 600, color: T.text }}>
-                  {(() => {
-                    const status = getPeriodStatus(p, now)
-                    if (status === 'current') return `Current routine (as of ${fmtDate(p.startDate)})`
-                    if (status === 'upcoming') return `Upcoming — starts ${fmtDate(p.startDate)}`
-                    return `${fmtDate(p.startDate)} — ${p.endDate ? fmtDate(p.endDate) : '—'}`
-                  })()}
-                </div>
-              </div>
-              <div style={{ display: 'flex', gap: 4 }}>
-                <Btn onClick={() => onEdit(p)} style={{ padding: '3px 10px', fontSize: 11 }}>Edit</Btn>
-                <button onClick={async () => { if (await confirm({ title: 'Delete this skincare routine period?', message: 'This cannot be undone.' })) onDelete(p.startDate) }} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 16, padding: '0 4px', lineHeight: 1 }}>×</button>
-              </div>
+          <div key={p.startDate} style={{
+            background: isCurrent ? T.olive : 'transparent',
+            border: isCurrent ? 'none' : `0.5px solid ${T.border}`,
+            borderRadius: T.radius.card, padding: '14px 16px',
+            marginTop: i > 0 ? 8 : 0,
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: T.text }}>{title}</div>
+              <button onClick={async () => { if (await confirm({ title: 'Delete this skincare routine period?', message: 'This cannot be undone.' })) onDelete(p.startDate) }}
+                style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: isCurrent ? 'rgba(15,47,43,0.5)' : T.textLight, fontSize: 16, padding: '0 2px', lineHeight: 1, flexShrink: 0 }}>×</button>
             </div>
-            <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.8 }}>
-              <span>{p.activeName ? (p.activeName.charAt(0).toUpperCase() + p.activeName.slice(1)) : 'Retinoid'}: {p.tretEnabled ? `${freq}, from ${fmtDate(p.tretStartDate)}` : 'off'}</span> &nbsp;·&nbsp;
-              <span>{
-                p.secondaryActives
-                  ? (() => {
-                      const enabled = p.secondaryActives.filter(sa => sa.enabled)
-                      if (!enabled.length) return 'No secondary actives'
-                      return enabled.map(sa => {
-                        const def = AVAILABLE_SECONDARY_ACTIVES.find(a => a.key === sa.key)
-                        return def?.label.split('/')[0].split('(')[0].trim() || sa.key
-                      }).join(', ')
-                    })()
-                  : `BHA: ${p.bhaEnabled ? 'on' : 'off'}`
-              }</span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10, marginTop: 4 }}>
+              <div style={{ fontSize: 12, color: isCurrent ? 'rgba(15,47,43,0.75)' : T.textMuted, lineHeight: 1.7 }}>
+                <span>{p.activeName ? (p.activeName.charAt(0).toUpperCase() + p.activeName.slice(1)) : 'Retinoid'}: {p.tretEnabled ? `${freq}, from ${fmtDate(p.tretStartDate)}` : 'off'}</span> &nbsp;·&nbsp;
+                <span>{
+                  p.secondaryActives
+                    ? (() => {
+                        const enabled = p.secondaryActives.filter(sa => sa.enabled)
+                        if (!enabled.length) return 'No secondary actives'
+                        return enabled.map(sa => {
+                          const def = AVAILABLE_SECONDARY_ACTIVES.find(a => a.key === sa.key)
+                          return def?.label.split('/')[0].split('(')[0].trim() || sa.key
+                        }).join(', ')
+                      })()
+                    : `BHA: ${p.bhaEnabled ? 'on' : 'off'}`
+                }</span>
+              </div>
+              <button onClick={() => onEdit(p)}
+                style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: isCurrent ? 'rgba(15,47,43,0.65)' : T.textMuted, fontSize: 12, fontWeight: 600, fontFamily: 'inherit', padding: 0, flexShrink: 0, whiteSpace: 'nowrap' }}>Edit</button>
             </div>
             {(p.updatedAt || p.createdAt) && (
-              <div style={{ fontSize: 10, color: T.textLight, marginTop: 5, fontStyle: 'italic', lineHeight: 1.6 }}>
-                {p.createdAt && <div>Created: {fmtDateTime(p.createdAt)}</div>}
-                {p.updatedAt && p.createdAt && p.updatedAt !== p.createdAt && (
-                  <div>Last edited: {fmtDateTime(p.updatedAt)}</div>
-                )}
-              </div>
+              <>
+                <div style={{ height: 0, borderTop: `0.5px solid ${isCurrent ? 'rgba(255,255,255,0.5)' : T.border}`, margin: '10px 0' }} />
+                <div style={{ fontSize: 10, color: isCurrent ? 'rgba(15,47,43,0.6)' : T.textLight, fontStyle: 'italic', lineHeight: 1.6 }}>
+                  {p.createdAt && <div>Created: {fmtDateTime(p.createdAt)}</div>}
+                  {p.updatedAt && p.createdAt && p.updatedAt !== p.createdAt && (
+                    <div>Last edited: {fmtDateTime(p.updatedAt)}</div>
+                  )}
+                </div>
+              </>
             )}
           </div>
         )
@@ -1267,35 +1273,45 @@ function RoutineHistoryPanel({ history, now, onClose, onEdit, onDelete, onAddNew
         {(!dailyHistory || dailyHistory.length === 0) && (
           <div style={{ fontSize: 12, color: T.textLight, fontStyle: 'italic' }}>No extras saved yet — add brow serums, eye patches, tools, and more.</div>
         )}
-        {[...(dailyHistory || [])].sort((a, b) => b.startDate.localeCompare(a.startDate)).slice(0, 3).map((p, i) => (
-          <div key={p.id} style={{ borderTop: i > 0 ? `0.5px solid ${T.border}` : 'none', paddingTop: i > 0 ? 12 : 0, marginTop: i > 0 ? 12 : 0 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: T.text }}>
-                {(() => {
-                    const status = getPeriodStatus(p, now)
-                    if (status === 'current') return `Current (as of ${fmtDate(p.startDate)})`
-                    if (status === 'upcoming') return `Upcoming — starts ${fmtDate(p.startDate)}`
-                    return `${fmtDate(p.startDate)} — ${p.endDate ? fmtDate(p.endDate) : '—'}`
-                  })()}
+        {[...(dailyHistory || [])].sort((a, b) => b.startDate.localeCompare(a.startDate)).slice(0, 3).map((p, i) => {
+          const status = getPeriodStatus(p, now)
+          const isCurrent = status === 'current'
+          const title = status === 'current' ? `Current (as of ${fmtDate(p.startDate)})`
+            : status === 'upcoming' ? `Upcoming — starts ${fmtDate(p.startDate)}`
+            : `${fmtDate(p.startDate)} — ${p.endDate ? fmtDate(p.endDate) : '—'}`
+          return (
+            <div key={p.id} style={{
+              background: isCurrent ? T.olive : 'transparent',
+              border: isCurrent ? 'none' : `0.5px solid ${T.border}`,
+              borderRadius: T.radius.card, padding: '14px 16px',
+              marginTop: i > 0 ? 8 : 0,
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: T.text }}>{title}</div>
+                <button onClick={async () => { if (await confirm({ title: 'Delete this extras period?', message: 'This cannot be undone.' })) onDeleteDaily(p.id) }}
+                  style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: isCurrent ? 'rgba(15,47,43,0.5)' : T.textLight, fontSize: 16, padding: '0 2px', lineHeight: 1, flexShrink: 0 }}>×</button>
               </div>
-              <div style={{ display: 'flex', gap: 4 }}>
-                <Btn onClick={() => onEditDaily(p)} style={{ padding: '3px 10px', fontSize: 11 }}>Edit</Btn>
-                <button onClick={async () => { if (await confirm({ title: 'Delete this extras period?', message: 'This cannot be undone.' })) onDeleteDaily(p.id) }} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 16, padding: '0 4px', lineHeight: 1 }}>×</button>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10, marginTop: 4 }}>
+                <div style={{ fontSize: 12, color: isCurrent ? 'rgba(15,47,43,0.75)' : T.textMuted, lineHeight: 1.7 }}>
+                  {p.items.map(it => it.label).join(' · ') || 'No items'}
+                </div>
+                <button onClick={() => onEditDaily(p)}
+                  style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: isCurrent ? 'rgba(15,47,43,0.65)' : T.textMuted, fontSize: 12, fontWeight: 600, fontFamily: 'inherit', padding: 0, flexShrink: 0, whiteSpace: 'nowrap' }}>Edit</button>
               </div>
+              {(p.updatedAt || p.createdAt) && (
+                <>
+                  <div style={{ height: 0, borderTop: `0.5px solid ${isCurrent ? 'rgba(255,255,255,0.5)' : T.border}`, margin: '10px 0' }} />
+                  <div style={{ fontSize: 10, color: isCurrent ? 'rgba(15,47,43,0.6)' : T.textLight, fontStyle: 'italic', lineHeight: 1.6 }}>
+                    {p.createdAt && <div>Created: {fmtDateTime(p.createdAt)}</div>}
+                    {p.updatedAt && p.createdAt && p.updatedAt !== p.createdAt && (
+                      <div>Last edited: {fmtDateTime(p.updatedAt)}</div>
+                    )}
+                  </div>
+                </>
+              )}
             </div>
-            <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.8 }}>
-              {p.items.map(it => it.label).join(' · ') || 'No items'}
-            </div>
-            {(p.updatedAt || p.createdAt) && (
-              <div style={{ fontSize: 10, color: T.textLight, marginTop: 4, fontStyle: 'italic' }}>
-                {p.createdAt && <div>Created: {fmtDateTime(p.createdAt)}</div>}
-                {p.updatedAt && p.createdAt && p.updatedAt !== p.createdAt && (
-                  <div>Last edited: {fmtDateTime(p.updatedAt)}</div>
-                )}
-              </div>
-            )}
-          </div>
-        ))}
+          )
+        })}
       </div>
 
       {/* Shower routine history */}
@@ -1310,35 +1326,45 @@ function RoutineHistoryPanel({ history, now, onClose, onEdit, onDelete, onAddNew
         {(!showerHistory || showerHistory.length === 0) && (
           <div style={{ fontSize: 12, color: T.textLight, fontStyle: 'italic' }}>No shower routine saved yet — add body washes, hair treatments, and more.</div>
         )}
-        {[...(showerHistory || [])].sort((a, b) => b.startDate.localeCompare(a.startDate)).slice(0, 3).map((p, i) => (
-          <div key={p.id} style={{ borderTop: i > 0 ? `0.5px solid ${T.border}` : 'none', paddingTop: i > 0 ? 12 : 0, marginTop: i > 0 ? 12 : 0 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: T.text }}>
-                {(() => {
-                    const status = getPeriodStatus(p, now)
-                    if (status === 'current') return `Current (as of ${fmtDate(p.startDate)})`
-                    if (status === 'upcoming') return `Upcoming — starts ${fmtDate(p.startDate)}`
-                    return `${fmtDate(p.startDate)} — ${p.endDate ? fmtDate(p.endDate) : '—'}`
-                  })()}
+        {[...(showerHistory || [])].sort((a, b) => b.startDate.localeCompare(a.startDate)).slice(0, 3).map((p, i) => {
+          const status = getPeriodStatus(p, now)
+          const isCurrent = status === 'current'
+          const title = status === 'current' ? `Current (as of ${fmtDate(p.startDate)})`
+            : status === 'upcoming' ? `Upcoming — starts ${fmtDate(p.startDate)}`
+            : `${fmtDate(p.startDate)} — ${p.endDate ? fmtDate(p.endDate) : '—'}`
+          return (
+            <div key={p.id} style={{
+              background: isCurrent ? T.olive : 'transparent',
+              border: isCurrent ? 'none' : `0.5px solid ${T.border}`,
+              borderRadius: T.radius.card, padding: '14px 16px',
+              marginTop: i > 0 ? 8 : 0,
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: T.text }}>{title}</div>
+                <button onClick={async () => { if (await confirm({ title: 'Delete this shower routine period?', message: 'This cannot be undone.' })) onDeleteShower(p.id) }}
+                  style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: isCurrent ? 'rgba(15,47,43,0.5)' : T.textLight, fontSize: 16, padding: '0 2px', lineHeight: 1, flexShrink: 0 }}>×</button>
               </div>
-              <div style={{ display: 'flex', gap: 4 }}>
-                <Btn onClick={() => onEditShower(p)} style={{ padding: '3px 10px', fontSize: 11 }}>Edit</Btn>
-                <button onClick={async () => { if (await confirm({ title: 'Delete this shower routine period?', message: 'This cannot be undone.' })) onDeleteShower(p.id) }} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 16, padding: '0 4px', lineHeight: 1 }}>×</button>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10, marginTop: 4 }}>
+                <div style={{ fontSize: 12, color: isCurrent ? 'rgba(15,47,43,0.75)' : T.textMuted, lineHeight: 1.7 }}>
+                  {(p.items || []).map(it => `${it.label} (${SHOWER_FREQUENCIES.find(f=>f.key===it.frequency)?.label||it.frequency})`).join(' · ') || 'No items'}
+                </div>
+                <button onClick={() => onEditShower(p)}
+                  style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: isCurrent ? 'rgba(15,47,43,0.65)' : T.textMuted, fontSize: 12, fontWeight: 600, fontFamily: 'inherit', padding: 0, flexShrink: 0, whiteSpace: 'nowrap' }}>Edit</button>
               </div>
+              {(p.updatedAt || p.createdAt) && (
+                <>
+                  <div style={{ height: 0, borderTop: `0.5px solid ${isCurrent ? 'rgba(255,255,255,0.5)' : T.border}`, margin: '10px 0' }} />
+                  <div style={{ fontSize: 10, color: isCurrent ? 'rgba(15,47,43,0.6)' : T.textLight, fontStyle: 'italic', lineHeight: 1.6 }}>
+                    {p.createdAt && <div>Created: {fmtDateTime(p.createdAt)}</div>}
+                    {p.updatedAt && p.createdAt && p.updatedAt !== p.createdAt && (
+                      <div>Last edited: {fmtDateTime(p.updatedAt)}</div>
+                    )}
+                  </div>
+                </>
+              )}
             </div>
-            <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.8 }}>
-              {(p.items || []).map(it => `${it.label} (${SHOWER_FREQUENCIES.find(f=>f.key===it.frequency)?.label||it.frequency})`).join(' · ') || 'No items'}
-            </div>
-            {(p.updatedAt || p.createdAt) && (
-              <div style={{ fontSize: 10, color: T.textLight, marginTop: 4, fontStyle: 'italic' }}>
-                {p.createdAt && <div>Created: {fmtDateTime(p.createdAt)}</div>}
-                {p.updatedAt && p.createdAt && p.updatedAt !== p.createdAt && (
-                  <div>Last edited: {fmtDateTime(p.updatedAt)}</div>
-                )}
-              </div>
-            )}
-          </div>
-        ))}
+          )
+        })}
       </div>
 
       {/* See full history */}
@@ -3539,24 +3565,28 @@ function AddProgramPanel({ session, activeProgram, activePrograms = [], routineP
           const blocker = incompatibleWith(program)
           const isActive = activePrograms.some(p => p.program_id === program.id)
           return (
-            <div key={program.id} style={{ border: `1px solid ${T.border}`, borderRadius: 0, padding: '14px 16px', marginBottom: 10, opacity: blocker || isActive ? 0.6 : 1 }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: 4 }}>
-                <div style={{ fontSize: 14, fontWeight: 700, color: T.text }}>{program.name}</div>
+            <div key={program.id} style={{ background: T.creamLight, border: `0.5px solid ${T.border}`, borderRadius: T.radius.card, padding: '16px 18px', marginBottom: 10, opacity: blocker || isActive ? 0.6 : 1 }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: 6 }}>
+                <div style={{ fontFamily: T.fontFamilyAccent, fontStyle: T.fontStyleAccent, fontSize: 13, fontWeight: 600, color: 'rgba(101, 96, 24, 0.5)', letterSpacing: '0.02em', textTransform: 'uppercase' }}>
+                  {program.name}
+                </div>
                 {completions > 0 && (
-                  <div style={{ fontSize: 10, color: T.textMuted, background: T.creamDark, border: `0.5px solid ${T.border}`, padding: '2px 8px', borderRadius: 0, flexShrink: 0, whiteSpace: 'nowrap' }}>
+                  <div style={{ fontSize: 10, color: T.textMuted, background: T.creamDark, border: `0.5px solid ${T.border}`, padding: '2px 8px', borderRadius: T.radius.pill, flexShrink: 0, whiteSpace: 'nowrap' }}>
                     {completions === 1 ? 'Completed once' : `Completed ${completions} times`}
                   </div>
                 )}
               </div>
-              <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.6, marginBottom: 12 }}>{program.description}</div>
+              <div style={{ fontSize: 14, color: T.text, lineHeight: 1.6, marginBottom: 14 }}>{program.description}</div>
               {isActive ? (
                 <div style={{ fontSize: 11, color: T.textMuted, fontStyle: 'italic' }}>Currently active</div>
               ) : blocker ? (
                 <div style={{ fontSize: 11, color: T.pinkDeep }}>Complete your current program before starting this one</div>
               ) : (
                 <button onClick={() => setPreviewingProgram(program)}
-                  style={{ width: '100%', padding: '10px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
-                  {completions > 0 ? 'Start again →' : 'Learn more & start →'}
+                  style={{ width: '100%', padding: '12px', borderRadius: T.radius.pill, border: 'none', background: T.cream, color: T.darkOlive, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 600, transition: 'background 150ms ease' }}
+                  onMouseEnter={e => { e.currentTarget.style.background = T.creamDark }}
+                  onMouseLeave={e => { e.currentTarget.style.background = T.cream }}>
+                  {completions > 0 ? <>Start <AccentWord>again</AccentWord></> : <>Learn <AccentWord>more</AccentWord> & start</>}
                 </button>
               )}
             </div>
@@ -4027,87 +4057,89 @@ function UpcomingTreatmentsPanel({ treatments, allTypes, routineHistory, onClose
     const isToday = key === dateKey(now)
     const entriesArr = Array.isArray(entries) ? entries : [entries]
     return (
-      <div key={key} style={{ padding: '10px 0', borderBottom: `0.5px solid ${T.border}`, opacity: isPast ? 0.55 : 1 }}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-          <div style={{ minWidth: 48, textAlign: 'center', padding: '4px 6px', borderRadius: 0, background: isToday ? T.pink : T.creamDark, border: `0.5px solid ${isToday ? T.pinkDeep : T.border}`, flexShrink: 0 }}>
-            <div style={{ fontSize: 9, fontWeight: 600, color: isToday ? T.pinkDeep : T.textMuted, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{dt.toLocaleString('default',{month:'short'})}</div>
-            <div style={{ fontSize: 18, fontWeight: 700, color: isToday ? T.pinkDeep : T.text, lineHeight: 1.1 }}>{dt.getDate()}</div>
-            <div style={{ fontSize: 9, color: T.textLight }}>{dt.getFullYear()}</div>
-          </div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            {isToday && <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 0, background: T.pink, color: T.pinkDeep, fontWeight: 600, display: 'inline-block', marginBottom: 6 }}>Today</span>}
-            {entriesArr.map(tv => {
-              const cfg = { pre: tv.pre ?? allTypes[tv.type]?.pre ?? 0, post: tv.post ?? allTypes[tv.type]?.post ?? 0 }
-              const typeLabel = allTypes[tv.type]?.label || tv.type
-              const areaLabel = tv.area ? ` · ${tv.area.charAt(0).toUpperCase()+tv.area.slice(1)}` : ''
-              const todLabel  = tv.timeOfDay === 'pm' ? 'Evening (PM)' : 'Morning (AM)'
-              return (
-                <div key={tv._dbId} style={{ marginBottom: 8, paddingBottom: 8, borderBottom: entriesArr.length > 1 ? `0.5px dashed ${T.border}` : 'none' }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 2 }}>{typeLabel}</div>
-                  <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 2 }}>
-                    {todLabel}{areaLabel}
-                    {cfg.pre > 0 && ` · ${cfg.pre} days pause before`}
-                    {cfg.post > 0 && ` · ${cfg.post} days recovery after`}
-                  </div>
-                  {isPast && (
-                    <div style={{ fontSize: 10, color: T.textLight, fontStyle: 'italic' }}>
-                      Recovery ended {(() => {
-                        const recEnd = new Date(dt); recEnd.setDate(recEnd.getDate() + cfg.post)
-                        const daysSince = Math.round((now - recEnd) / 86400000)
-                        return daysSince <= 0 ? 'today' : `${daysSince}d ago`
-                      })()}
-                    </div>
-                  )}
-                  {!isPast && cfg.pre > 0 && (() => {
-                    const pauseStart = new Date(dt); pauseStart.setDate(pauseStart.getDate() - cfg.pre)
-                    const daysUntilPause = Math.round((pauseStart - now) / 86400000)
-                    const daysUntil = Math.round((dt - now) / 86400000)
-                    return daysUntilPause <= 0 && daysUntil > 0 ? (
-                      <div style={{ fontSize: 10, color: '#92400E', background: '#FFFBEB', border: '0.5px solid #FCD34D', borderRadius: 0, padding: '2px 6px', display: 'inline-block', marginTop: 2 }}>
-                        Pause window active — {daysUntil} days until treatment
-                      </div>
-                    ) : daysUntilPause > 0 ? (
-                      <div style={{ fontSize: 10, color: T.textMuted, marginTop: 2 }}>
-                        Pause exfoliants & retinoids in {daysUntilPause} days · Treatment in {daysUntil} days
-                      </div>
-                    ) : null
-                  })()}
-                  {!isPast && (
-                    <div style={{ display: 'flex', gap: 4, marginTop: 4 }}>
-                      <Btn onClick={() => onEdit(key)} style={{ fontSize: 10, padding: '3px 8px' }}>Edit</Btn>
-                      {cfg.post > 0 && (
-                        <Btn onClick={() => setEditingRecovery(editingRecovery === tv._dbId ? null : tv._dbId)}
-                          style={{ fontSize: 10, padding: '3px 8px', background: editingRecovery === tv._dbId ? T.pink : undefined, borderColor: editingRecovery === tv._dbId ? T.pinkDeep : undefined }}>
-                          Set recovery routine
-                        </Btn>
-                      )}
-                      <button onClick={() => onRemove(tv._dbId)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 16, padding: '0 4px', lineHeight: 1 }}>×</button>
-                    </div>
-                  )}
-                  {editingRecovery === tv._dbId && (
-                    <div style={{ marginTop: 8 }}>
-                      <RecoveryRoutineEditor
-                        typeKey={tv.type}
-                        typeLabel={allTypes[tv.type]?.label || tv.type}
-                        steps={getRecoveryStepsForType(tv.type)}
-                        products={recoveryRoutines?.[tv.type]?.products || {}}
-                        allProducts={products}
-                        onStepToggle={(stepId, enabled) => { const steps = getRecoveryStepsForType(tv.type).map(s => s.id === stepId ? { ...s, enabled } : s); onUpdateRecoverySteps(tv.type, steps) }}
-                        onProductSelect={(stepKey, productId) => onUpdateRecoveryProducts(tv.type, stepKey, productId)}
-                        onClose={() => setEditingRecovery(null)}
-                      />
-                    </div>
-                  )}
+      <div key={key} style={{ marginBottom: 10 }}>
+        {entriesArr.map(tv => {
+          const cfg = { pre: tv.pre ?? allTypes[tv.type]?.pre ?? 0, post: tv.post ?? allTypes[tv.type]?.post ?? 0 }
+          const typeLabel = allTypes[tv.type]?.label || tv.type
+          const areaLabel = tv.area ? tv.area.charAt(0).toUpperCase()+tv.area.slice(1) : ''
+          const todLabel  = tv.timeOfDay === 'pm' ? 'Evening (PM)' : 'Morning (AM)'
+          const metaParts = [areaLabel, todLabel]
+          if (cfg.pre > 0) metaParts.push(`${cfg.pre} days pause before`)
+          if (cfg.post > 0) metaParts.push(`${cfg.post} days recovery after`)
+          return (
+            <div key={tv._dbId} style={{ background: T.orange, borderRadius: T.radius.card, padding: '16px 18px', marginBottom: 8, opacity: isPast ? 0.55 : 1 }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
+                {/* Circular date badge */}
+                <div style={{ width: 58, height: 58, borderRadius: '50%', background: T.creamLight, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <div style={{ fontSize: 9, fontWeight: 700, color: T.text, textTransform: 'uppercase', letterSpacing: '0.04em', lineHeight: 1.1 }}>{dt.toLocaleString('default',{month:'short'})}</div>
+                  <div style={{ fontSize: 20, fontWeight: 700, color: T.text, lineHeight: 1.1 }}>{dt.getDate()}</div>
                 </div>
-              )
-            })}
-            {!isPast && (
-              <button onClick={() => onAddNew(key)} style={{ fontSize: 10, color: T.textMuted, background: 'transparent', border: `0.5px dashed ${T.border}`, borderRadius: 0, padding: '3px 8px', cursor: 'pointer', fontFamily: 'inherit', marginTop: 2 }}>
-                + Add another treatment this day
-              </button>
-            )}
-          </div>
-        </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  {isToday && <span style={{ fontSize: 10, padding: '2px 10px', borderRadius: T.radius.pill, background: T.white, color: T.orange, fontWeight: 700, display: 'inline-block', marginBottom: 6 }}>Today</span>}
+                  <div style={{ fontSize: 18, fontWeight: 700, color: T.text, marginBottom: 3 }}>{typeLabel}</div>
+                  <div style={{ fontSize: 12, color: 'rgba(15,47,43,0.75)' }}>{metaParts.filter(Boolean).join(' · ')}</div>
+                </div>
+                {!isPast && (
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8, flexShrink: 0 }}>
+                    <button onClick={() => onRemove(tv._dbId)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: 'rgba(15,47,43,0.55)', fontSize: 18, padding: 0, lineHeight: 1 }}>×</button>
+                    <button onClick={() => onEdit(key)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: 'rgba(15,47,43,0.7)', fontSize: 12, fontWeight: 600, fontFamily: 'inherit', padding: 0, whiteSpace: 'nowrap' }}>Edit</button>
+                  </div>
+                )}
+              </div>
+
+              {isPast && (
+                <div style={{ fontSize: 11, color: 'rgba(15,47,43,0.6)', fontStyle: 'italic', marginTop: 10 }}>
+                  Recovery ended {(() => {
+                    const recEnd = new Date(dt); recEnd.setDate(recEnd.getDate() + cfg.post)
+                    const daysSince = Math.round((now - recEnd) / 86400000)
+                    return daysSince <= 0 ? 'today' : `${daysSince}d ago`
+                  })()}
+                </div>
+              )}
+              {!isPast && cfg.pre > 0 && (() => {
+                const pauseStart = new Date(dt); pauseStart.setDate(pauseStart.getDate() - cfg.pre)
+                const daysUntilPause = Math.round((pauseStart - now) / 86400000)
+                const daysUntil = Math.round((dt - now) / 86400000)
+                return daysUntilPause <= 0 && daysUntil > 0 ? (
+                  <div style={{ fontSize: 11, color: '#5A3A00', background: 'rgba(255,255,255,0.55)', borderRadius: T.radius.pill, padding: '3px 10px', display: 'inline-block', marginTop: 10 }}>
+                    Pause window active — {daysUntil} days until treatment
+                  </div>
+                ) : daysUntilPause > 0 ? (
+                  <div style={{ fontSize: 11, color: 'rgba(15,47,43,0.7)', marginTop: 10 }}>
+                    Pause exfoliants & retinoids in {daysUntilPause} days · Treatment in {daysUntil} days
+                  </div>
+                ) : null
+              })()}
+              {!isPast && cfg.post > 0 && (
+                <div style={{ marginTop: 10 }}>
+                  <button onClick={() => setEditingRecovery(editingRecovery === tv._dbId ? null : tv._dbId)}
+                    style={{ fontSize: 11, padding: '4px 12px', borderRadius: T.radius.pill, border: 'none', background: editingRecovery === tv._dbId ? T.text : 'rgba(255,255,255,0.55)', color: editingRecovery === tv._dbId ? '#fff' : T.text, cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}>
+                    Set recovery routine
+                  </button>
+                </div>
+              )}
+              {editingRecovery === tv._dbId && (
+                <div style={{ marginTop: 10 }}>
+                  <RecoveryRoutineEditor
+                    typeKey={tv.type}
+                    typeLabel={allTypes[tv.type]?.label || tv.type}
+                    steps={getRecoveryStepsForType(tv.type)}
+                    products={recoveryRoutines?.[tv.type]?.products || {}}
+                    allProducts={products}
+                    onStepToggle={(stepId, enabled) => { const steps = getRecoveryStepsForType(tv.type).map(s => s.id === stepId ? { ...s, enabled } : s); onUpdateRecoverySteps(tv.type, steps) }}
+                    onProductSelect={(stepKey, productId) => onUpdateRecoveryProducts(tv.type, stepKey, productId)}
+                    onClose={() => setEditingRecovery(null)}
+                  />
+                </div>
+              )}
+            </div>
+          )
+        })}
+        {!isPast && (
+          <button onClick={() => onAddNew(key)} style={{ fontSize: 10, color: T.textMuted, background: 'transparent', border: `0.5px dashed ${T.border}`, borderRadius: T.radius.card, padding: '5px 8px', cursor: 'pointer', fontFamily: 'inherit', width: '100%' }}>
+            + Add another treatment this day
+          </button>
+        )}
       </div>
     )
   }
