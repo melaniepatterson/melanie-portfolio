@@ -204,3 +204,22 @@ button:hover .split-char {
   color: #0F2F2B;
 }
 .gu-btn-active:disabled { opacity: 0.5; }
+
+/* ─── GlowUp form inputs — see STYLES — OTHER ATOMS spec ──────────────── */
+/* Pill shape, border all around. Default: text 100%, border 50%. Focused:
+   text 100%, border 100%. Placeholder: text 50%, border 50%. */
+.gu-input {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 14px;
+  padding: 12px 18px;
+  border-radius: 9999px;
+  border: 1px solid rgba(15, 47, 43, 0.5);
+  background: #fff;
+  color: #0F2F2B;
+  outline: none;
+  transition: border-color 150ms ease;
+}
+.gu-input:focus { border-color: #0F2F2B; }
+.gu-input::placeholder { color: rgba(15, 47, 43, 0.5); }

@@ -1,7 +1,17 @@
-// Shared Avatar component — photo if available, initial letter if not
-// Used in Profile page and SideMenu drawer
+// Shared Avatar component — photo if available, gradient initial if not.
+// Used in Profile page and SideMenu drawer.
+import T from './theme'
 
-export default function Avatar({ avatarUrl, displayName, email, size = 44, onClick, style = {} }) {
+const BRAND_COLORS = [T.pink, T.blue, T.green, T.yellow, T.orange]
+
+// Two colors picked once per session (module load) — every Avatar
+// instance shares the same gradient for the rest of the session.
+const shuffled = [...BRAND_COLORS].sort(() => Math.random() - 0.5)
+const [sessionColorA, sessionColorB] = shuffled
+
+export const AVATAR_SIZES = { large: 90, medium: 64, small: 32 }
+
+export default function Avatar({ avatarUrl, displayName, email, size = AVATAR_SIZES.medium, onClick, style = {} }) {
   const initial = (displayName || email || '?').charAt(0).toUpperCase()
 
   // Scale font relative to size
@@ -16,9 +26,9 @@ export default function Avatar({ avatarUrl, displayName, email, size = 44, onCli
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    border: '0.5px solid #E7E0D8',
+    border: `0.5px solid ${T.border}`,
     cursor: onClick ? 'pointer' : 'default',
-    background: avatarUrl ? 'transparent' : '#FFD6F9',
+    background: avatarUrl ? 'transparent' : `linear-gradient(135deg, ${sessionColorA}, ${sessionColorB})`,
     ...style,
   }
 
@@ -35,7 +45,7 @@ export default function Avatar({ avatarUrl, displayName, email, size = 44, onCli
         <span style={{
           fontSize,
           fontWeight: 700,
-          color: '#C93500',
+          color: T.white,
           lineHeight: 1,
           fontFamily: 'inherit',
           userSelect: 'none',

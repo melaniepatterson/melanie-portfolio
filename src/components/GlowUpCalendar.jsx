@@ -37,6 +37,7 @@ import GlowUpLogo from './GlowUpWordmark'
 import { useConfirm, useAlert } from './shared/useConfirm'
 import Btn from './shared/Btn'
 import AccentWord from './shared/AccentWord'
+import StarRating from './shared/StarRating'
 
 // ─── DESIGN TOKENS ───────────────────────────────────────────
 
@@ -547,7 +548,7 @@ function getDayInfo(dt, treatments, allTypes, routineHistory) {
 function Badge({ colorKey, label }) {
   const c = T[colorKey] || T.custom
   return (
-    <span style={{ fontSize: 'clamp(7px, 1.5vw, 9px)', fontWeight: 600, padding: '1px 6px', borderRadius: T.radius.pill, background: c.bg, color: c.text, border: `0.5px solid ${c.border}`, display: 'inline-block', lineHeight: 1.5, whiteSpace: 'nowrap', maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', letterSpacing: '0.02em' }}>
+    <span style={{ fontSize: 'clamp(7px, 1.5vw, 9px)', fontWeight: 600, padding: '1px 6px', borderRadius: T.radius.pill, background: T.white, color: c.text, border: 'none', display: 'inline-block', lineHeight: 1.5, whiteSpace: 'nowrap', maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', letterSpacing: '0.02em' }}>
       {label}
     </span>
   )
@@ -1967,24 +1968,6 @@ function DailySection({ dt, dailyHistory, onEditDaily, tab, products, onUpdateDa
 
 
 // Star rating display helper
-function StarRating({ value, onChange, size = 12 }) {
-  const path = 'M12,2 L14.35,9.24 L21.51,8.91 L15.80,13.24 L17.88,20.09 L12,16 L6.12,20.09 L8.20,13.24 L2.49,8.91 L9.65,9.24 Z'
-  return (
-    <div style={{ display: 'flex', gap: 3, alignItems: 'center' }}>
-      {[1,2,3,4,5].map(n => (
-        <svg key={n} width={size} height={size} viewBox="0 0 24 24"
-          onClick={onChange ? () => onChange(n) : undefined}
-          style={{ cursor: onChange ? 'pointer' : 'default', display: 'block', flexShrink: 0 }}>
-          <path d={path}
-            fill={n <= value ? '#000000' : 'none'}
-            stroke="#000000"
-            strokeWidth={n <= value ? 0 : 1}
-            strokeLinejoin="round" />
-        </svg>
-      ))}
-    </div>
-  )
-}
 
 // ─── PRODUCT FLAG BADGES ──────────────────────────────────────
 const PRODUCT_FLAGS = [
@@ -5087,7 +5070,7 @@ export default function GlowUpCalendar({ session }) {
   for (let i = 0; i < firstDow; i++) {
     const dayNum = prevMonthLastDay - firstDow + i + 1
     cells.push(
-      <div key={`prev${i}`} style={{ position: 'relative', borderRadius: 0, border: `0.5px solid ${T.border}`, display: 'flex', flexDirection: 'column', minHeight: '88px' }}>
+      <div key={`prev${i}`} style={{ position: 'relative', borderRadius: 8, border: `0.5px solid ${T.creamDark}`, background: 'rgba(253,248,240,0.75)', display: 'flex', flexDirection: 'column', minHeight: '88px' }}>
         <div style={{ fontSize: 10, color: T.textLight, padding: '3px 5px', fontWeight: 400, opacity: 0.5 }}>{dayNum}</div>
       </div>
     )
@@ -5100,7 +5083,6 @@ export default function GlowUpCalendar({ session }) {
     const period  = getActivePeriod(dt, routineHistory)
     const isToday = dt.getTime() === now.getTime()
     const s       = info.status
-    const hasRoutinePeriod = !!getActivePeriod(dt, routineHistory)
 
     // Determine treatment time of day (default am for backward compat) —
     // computed before cell coloring below so per-half color can use it.
@@ -5113,25 +5095,28 @@ export default function GlowUpCalendar({ session }) {
     const amStatusKey = info.isTreatment ? (treatmentTimeOfDay === 'am' ? s : 'recovery') : s
     const pmStatusKey = info.isTreatment ? (treatmentTimeOfDay === 'pm' ? s : 'recovery') : s
 
-    function colorsForStatus(statusKey) {
+    // Pause day cells use the solid brand yellow, not the lighter badge
+    // tint — the two diverge here per the calendar cell spec (every other
+    // status's cell fill matches its badge tint exactly).
+    const CELL_FILL_OVERRIDE = { pause: T.yellow }
+    function cellFillFor(statusKey) {
       const key = statusKey === 'pca' ? 'recovery' : statusKey
-      return key && T[key] ? T[key] : null
+      if (!key || !T[key]) return null
+      return { bg: CELL_FILL_OVERRIDE[key] || T[key].bg, text: T[key].text }
     }
 
-    // Days with no routine period get plain white; active routine days get a subtle tint
-    const baseBg     = hasRoutinePeriod ? '#FAF5FF' : T.white
-    const baseBorder = hasRoutinePeriod ? '#E9D8FD' : T.border
+    const amFill = cellFillFor(amStatusKey)
+    const pmFill = cellFillFor(pmStatusKey)
+    const amCellBg = amFill?.bg ?? T.white
+    const pmCellBg = pmFill?.bg ?? T.white
+    const dateColor = isToday ? T.text : (amFill?.text || pmFill?.text || T.textMuted)
 
-    const amColors = colorsForStatus(amStatusKey)
-    const pmColors = colorsForStatus(pmStatusKey)
-    const amCellBg     = amColors?.bg     ?? baseBg
-    const amCellBorder = amColors?.border ?? baseBorder
-    const pmCellBg     = pmColors?.bg     ?? baseBg
-    const pmCellBorder = pmColors?.border ?? baseBorder
-    // Outer cell border / date-row color — prefer whichever half is
-    // actually colored, so a plain day keeps the neutral border.
-    const cellBorder = amColors ? amCellBorder : pmCellBorder
-    const dateColor = isToday ? T.pinkDeep : (amColors?.text || pmColors?.text || T.textMuted)
+    // Dividers are fixed neutral colors regardless of status — only the
+    // Today cell overrides them with its own olive border/divider color.
+    const upperDivider = isToday ? T.olive : T.border
+    const lowerDivider = isToday ? T.olive : T.white
+    const cellBorder    = isToday ? T.olive : T.border
+    const cellBorderW    = isToday ? '1.5px' : '0.5px'
 
     // AM badge — tier system, single badge
     const amBadge = (() => {
@@ -5180,25 +5165,25 @@ export default function GlowUpCalendar({ session }) {
     const activePeriod = getActivePeriod(dt, routineHistory)
 
     cells.push(
-      <div key={key} style={{ position: 'relative', borderRadius: 0, border: `0.5px solid ${isOpen ? T.pinkDeep : cellBorder}`, outline: isToday ? `2px solid ${T.pinkDeep}` : 'none', outlineOffset: -1, display: 'flex', flexDirection: 'column', zIndex: isOpen ? 100 : 1, minHeight: '88px' }}>
+      <div key={key} style={{ position: 'relative', borderRadius: 8, overflow: 'hidden', border: `${isOpen ? '1px' : cellBorderW} solid ${isOpen ? T.text : cellBorder}`, display: 'flex', flexDirection: 'column', zIndex: isOpen ? 100 : 1, minHeight: '88px' }}>
         {/* Date row */}
-        <div style={{ padding: '3px 6px', background: T.white, borderBottom: `0.5px solid ${isOpen ? T.pinkDeep : amCellBorder}`, fontSize: 11, fontWeight: 600, color: isOpen ? T.pinkDeep : dateColor, textAlign: 'center', borderRadius: 0 }}>
+        <div style={{ padding: '3px 6px', background: T.white, borderBottom: `0.5px solid ${upperDivider}`, fontSize: 11, fontWeight: 600, color: isOpen ? T.text : dateColor, textAlign: 'center' }}>
           {d}
         </div>
         {/* AM half */}
         <div
           onClick={e => { e.stopPropagation(); isOpen && dayFlyout?.tab === 'am' ? setDayFlyout(null) : openDayFlyout(key, dt, 'am') }}
-          style={{ flex: 1, background: isOpen && dayFlyout?.tab === 'am' ? T.pink : amCellBg, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '3px 4px', cursor: 'pointer', borderBottom: `0.5px solid ${isOpen ? T.pinkDeep : pmCellBorder}`, gap: 2, overflow: 'visible', transition: 'background 0.15s', position: 'relative', zIndex: 1 }}
+          style={{ flex: 1, background: isOpen && dayFlyout?.tab === 'am' ? `linear-gradient(rgba(15,47,43,0.1), rgba(15,47,43,0.1)), ${amCellBg}` : amCellBg, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '3px 4px', cursor: 'pointer', borderBottom: `0.5px solid ${lowerDivider}`, gap: 2, overflow: 'visible', transition: 'background 0.15s', position: 'relative', zIndex: 1 }}
         >
-          <div style={{ fontSize: 9, fontWeight: 600, color: isOpen && dayFlyout?.tab === 'am' ? T.pinkDeep : (amColors?.text || T.textMuted), opacity: 0.8, letterSpacing: '0.04em' }}>AM</div>
+          <div style={{ fontSize: 9, fontWeight: 600, color: isOpen && dayFlyout?.tab === 'am' ? T.text : (amFill?.text || T.textMuted), opacity: 0.8, letterSpacing: '0.04em' }}>AM</div>
           {amBadges}
         </div>
         {/* PM half */}
         <div
           onClick={e => { e.stopPropagation(); isOpen && dayFlyout?.tab === 'pm' ? setDayFlyout(null) : openDayFlyout(key, dt, 'pm') }}
-          style={{ flex: 1, background: isOpen && dayFlyout?.tab === 'pm' ? T.pink : pmCellBg, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '3px 4px', cursor: 'pointer', gap: 2, overflow: 'visible', borderRadius: 0, transition: 'background 0.15s', position: 'relative', zIndex: 1 }}
+          style={{ flex: 1, background: isOpen && dayFlyout?.tab === 'pm' ? `linear-gradient(rgba(15,47,43,0.1), rgba(15,47,43,0.1)), ${pmCellBg}` : pmCellBg, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '3px 4px', cursor: 'pointer', gap: 2, overflow: 'visible', transition: 'background 0.15s', position: 'relative', zIndex: 1 }}
         >
-          <div style={{ fontSize: 9, fontWeight: 600, color: isOpen && dayFlyout?.tab === 'pm' ? T.pinkDeep : (pmColors?.text || T.textMuted), opacity: 0.8, letterSpacing: '0.04em' }}>PM</div>
+          <div style={{ fontSize: 9, fontWeight: 600, color: isOpen && dayFlyout?.tab === 'pm' ? T.text : (pmFill?.text || T.textMuted), opacity: 0.8, letterSpacing: '0.04em' }}>PM</div>
           {pmBadges}
         </div>
       </div>
@@ -5210,7 +5195,7 @@ export default function GlowUpCalendar({ session }) {
   const trailingCount = totalCells - firstDow - daysInMonth
   for (let i = 1; i <= trailingCount; i++) {
     cells.push(
-      <div key={`next${i}`} style={{ position: 'relative', borderRadius: 0, border: `0.5px solid ${T.border}`, display: 'flex', flexDirection: 'column', minHeight: '88px' }}>
+      <div key={`next${i}`} style={{ position: 'relative', borderRadius: 8, border: `0.5px solid ${T.creamDark}`, background: 'rgba(253,248,240,0.75)', display: 'flex', flexDirection: 'column', minHeight: '88px' }}>
         <div style={{ fontSize: 10, color: T.textLight, padding: '3px 5px', fontWeight: 400, opacity: 0.5 }}>{i}</div>
       </div>
     )

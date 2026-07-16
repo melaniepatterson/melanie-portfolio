@@ -8,6 +8,7 @@ import { useState, useRef, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
 import T from '../theme'
 import { useAlert } from './useConfirm'
+import StarRating from './StarRating'
 
 export const PRODUCT_CATEGORIES = [
   'cleanser', 'cleansing oil / balm', 'toner', 'essence',
@@ -71,24 +72,6 @@ function InfoTooltip({ text }) {
   )
 }
 
-function StarRating({ value, onChange, size = 12 }) {
-  const path = 'M12,2 L14.35,9.24 L21.51,8.91 L15.80,13.24 L17.88,20.09 L12,16 L6.12,20.09 L8.20,13.24 L2.49,8.91 L9.65,9.24 Z'
-  return (
-    <div style={{ display: 'flex', gap: 3, alignItems: 'center' }}>
-      {[1,2,3,4,5].map(n => (
-        <svg key={n} width={size} height={size} viewBox="0 0 24 24"
-          onClick={onChange ? () => onChange(n) : undefined}
-          style={{ cursor: onChange ? 'pointer' : 'default', display: 'block', flexShrink: 0 }}>
-          <path d={path}
-            fill={n <= value ? '#000000' : 'none'}
-            stroke="#000000"
-            strokeWidth={n <= value ? 0 : 1}
-            strokeLinejoin="round" />
-        </svg>
-      ))}
-    </div>
-  )
-}
 
 function PaoIcon({ months, size = 20 }) {
   if (!months) return null

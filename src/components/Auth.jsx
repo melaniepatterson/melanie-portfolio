@@ -87,12 +87,6 @@ export default function Auth() {
   }
 
   // ── Shared styles ─────────────────────────────────────────────────────────
-  const inputStyle = {
-    width: '100%', fontSize: 14, padding: '12px 14px',
-    border: `0.5px solid ${T.border}`, borderRadius: 10,
-    background: T.white, color: T.text, boxSizing: 'border-box',
-    outline: 'none', fontFamily: 'inherit',
-  }
   const btnStyle = (active = true) => ({
     width: '100%', padding: '13px', borderRadius: 10, border: 'none',
     background: active ? T.pinkDeep : T.creamDark,
@@ -144,7 +138,8 @@ export default function Auth() {
                 placeholder="your@email.com"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                style={{ ...inputStyle, marginBottom: 12 }}
+                className="gu-input"
+                style={{ marginBottom: 12 }}
               />
               {errorMsg && (
                 <div style={{ fontSize: 12, color: T.pinkDeep, marginBottom: 10 }}>{errorMsg}</div>
