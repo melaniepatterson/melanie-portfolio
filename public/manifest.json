@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "melanie.studio",
+  "name": "melanie.studio",
   "icons": [
     {
       "src": "melanie-studio-favicon.ico",
@@ -20,6 +20,6 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#C93500",
+  "background_color": "#FBF0DB"
 }

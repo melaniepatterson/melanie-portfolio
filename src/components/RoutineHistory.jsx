@@ -5,38 +5,14 @@ import { supabase } from '../lib/supabase'
 import T from './theme'
 import { useConfirm } from './shared/useConfirm'
 import Btn from './shared/Btn'
+import { fmtDate, fmtDateTime } from './dateFormat'
+import InfoTooltip from './shared/InfoTooltip'
 
 
 const TOOLTIP_TEXT = "Add a new routine when your approach is changing — it preserves your history and lets you track what you used before. Edit when you're correcting a mistake. Think of each routine as a chapter."
 
 
 
-function InfoTooltip({ text }) {
-  const [pos, setPos] = useState(null)
-  function show(e) {
-    const r = e.currentTarget.getBoundingClientRect()
-    setPos({ top: r.top - 8, left: r.left + r.width / 2 })
-  }
-  return (
-    <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', marginLeft: 4 }}>
-      <span onMouseEnter={show} onMouseLeave={() => setPos(null)}
-        onTouchStart={e => { e.stopPropagation(); pos ? setPos(null) : show(e) }}
-        style={{ width: 14, height: 14, borderRadius: '50%', background: T.border, color: T.textMuted, fontSize: 9, fontWeight: 700, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'default', userSelect: 'none' }}>i</span>
-      {pos && (
-        <span style={{ position: 'fixed', top: pos.top, left: Math.min(pos.left, window.innerWidth - 240), transform: 'translate(-50%, -100%)', background: T.text, color: '#fff', fontSize: 11, lineHeight: 1.5, padding: '8px 10px', borderRadius: 8, width: 220, zIndex: 9999, boxShadow: '0 4px 16px rgba(0,0,0,0.15)', pointerEvents: 'none' }}>
-          {text}
-          <span style={{ position: 'absolute', top: '100%', left: '50%', transform: 'translateX(-50%)', borderWidth: 4, borderStyle: 'solid', borderColor: `${T.text} transparent transparent transparent` }} />
-        </span>
-      )}
-    </span>
-  )
-}
-
-function fmtDate(d) { if (!d) return ''; const [y,m,dd] = d.split('-'); return `${m}/${dd}/${y}` }
-function fmtDateTime(iso) {
-  if (!iso) return ''
-  return new Date(iso).toLocaleString(undefined, { month:'2-digit', day:'2-digit', year:'numeric', hour:'numeric', minute:'2-digit', hour12:true })
-}
 function getPeriodLabel(p) {
   const today = new Date(); today.setHours(0,0,0,0)
   const start = new Date(p.startDate + 'T00:00:00')

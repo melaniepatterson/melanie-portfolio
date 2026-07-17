@@ -30,6 +30,7 @@ import ProgramAdvancement, { Phase2Picker } from './ProgramAdvancement'
 import BetaSurvey from './BetaSurvey'
 import { applyProgramPhase, buildStepEntries } from './programOptions'
 import { todayInTz, nowInTz, detectTimezone } from './timezone'
+import { fmtDate, fmtDateTime } from './dateFormat'
 import SideMenu from './SideMenu'
 import T from './theme'
 import ProductForm from './shared/ProductForm'
@@ -381,21 +382,6 @@ function getPeriodStatus(p, today) {
   return 'past'
 }
 
-function fmtDate(dateStr) {
-  if (!dateStr) return ''
-  const [y, m, d] = dateStr.split('-')
-  return `${m}/${d}/${y}`
-}
-
-function fmtDateTime(isoStr) {
-  if (!isoStr) return ''
-  const dt = new Date(isoStr)
-  return dt.toLocaleString(undefined, {
-    month: '2-digit', day: '2-digit', year: 'numeric',
-    hour: 'numeric', minute: '2-digit', hour12: true,
-  })
-}
-
 function dayBefore(dateStr) {
   const dt = new Date(dateStr + 'T00:00:00')
   dt.setDate(dt.getDate() - 1)
@@ -574,17 +560,6 @@ function NumberInput({ value, onChange, min = 0, max = 14, width = 60 }) {
 function DateInput({ value, onChange, disabled = false }) {
   return <input type="date" value={value} onChange={onChange} disabled={disabled} style={{ fontSize: 12, padding: '5px 2px', border: 'none', borderBottom: '1px solid #000000', borderRadius: 0, background: 'transparent', color: disabled ? T.textMuted : T.text, outline: 'none', cursor: disabled ? 'not-allowed' : 'auto' }} />
 }
-
-function Toggle({ checked, onChange, label }) {
-  return (
-    <label style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', borderRadius: 0, cursor: 'pointer', background: T.creamDark, border: `0.5px solid ${T.border}`, fontSize: 12, color: T.text, marginBottom: 6 }}>
-      <input type="checkbox" checked={checked} onChange={onChange} style={{ width: 14, height: 14, cursor: 'pointer', accentColor: T.pinkDeep }} />
-      {label}
-    </label>
-  )
-}
-
-
 
 // ─── CONFLICT MESSAGE ────────────────────────────────────────
 function ConflictMessage({ conflict, onEditConflict }) {
@@ -1153,228 +1128,6 @@ function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = false, lo
         </Btn>
         <Btn onClick={onCancel}>Cancel</Btn>
       </div>
-    </div>
-  )
-}
-
-// ─── ROUTINE HISTORY PANEL ───────────────────────────────────
-
-// ─── TOOLTIP ─────────────────────────────────────────────────
-function InfoTooltip({ text }) {
-  const [pos, setPos] = useState(null)
-  const ref = useRef(null)
-  function show() {
-    if (ref.current) {
-      const r = ref.current.getBoundingClientRect()
-      setPos({ top: r.top - 8, left: r.left + r.width / 2 })
-    }
-  }
-  return (
-    <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', marginLeft: 4 }}>
-      <span ref={ref} onMouseEnter={show} onMouseLeave={() => setPos(null)}
-        onTouchStart={e => { e.stopPropagation(); pos ? setPos(null) : show() }}
-        style={{ width: 14, height: 14, borderRadius: '50%', background: T.border, color: T.textMuted, fontSize: 9, fontWeight: 700, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'default', userSelect: 'none', flexShrink: 0 }}
-      >i</span>
-      {pos && (
-        <span style={{ position: 'fixed', top: pos.top, left: Math.min(pos.left, window.innerWidth - 240), transform: 'translate(-50%, -100%)', background: T.text, color: T.white, fontSize: 11, lineHeight: 1.5, padding: '8px 10px', borderRadius: 0, width: 220, zIndex: 9999, boxShadow: '0 4px 16px rgba(0,0,0,0.15)', pointerEvents: 'none' }}>
-          {text}
-          <span style={{ position: 'absolute', top: '100%', left: '50%', transform: 'translateX(-50%)', borderWidth: 4, borderStyle: 'solid', borderColor: `${T.text} transparent transparent transparent` }} />
-        </span>
-      )}
-    </span>
-  )
-}
-
-function RoutineHistoryPanel({ history, now, onClose, onEdit, onDelete, onAddNew, getActivePeriod, dailyHistory, onEditDaily, onDeleteDaily, showerHistory, onEditShower, onDeleteShower }) {
-  const [confirmDialog, confirm] = useConfirm()
-  const sorted = [...history].sort((a, b) => b.startDate.localeCompare(a.startDate)).slice(0, 3)
-  return (
-    <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 0, padding: '16px 18px', marginBottom: 14 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-        <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>Routine history</div>
-        <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 18, color: T.textMuted, padding: '0 2px', lineHeight: 1 }}>×</button>
-      </div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-        <div style={{ fontSize: 11, fontWeight: 600, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Skincare Routine</div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-          <Btn variant="primary" onClick={e => { e.stopPropagation(); onAddNew() }} style={{ padding: '3px 10px', fontSize: 11 }}>+ Start new routine</Btn>
-          <InfoTooltip text="Add a new routine when your approach is changing — it preserves your history and lets you track what you used before. Edit when you're correcting a mistake. Think of each routine as a chapter." />
-        </div>
-      </div>
-
-      {sorted.length === 0 && (
-        <div style={{ fontSize: 12, color: T.textMuted, background: T.creamDark, borderRadius: 0, padding: '12px 14px', lineHeight: 1.6 }}>
-          No skincare routine saved yet. Hit <strong>+ Start new routine</strong> to set up your first one.
-        </div>
-      )}
-
-      {sorted.map((p, i) => {
-        const freq = TRET_FREQUENCIES.find(f => f.key === p.tretFrequency)?.label || p.tretFrequency
-        const status = getPeriodStatus(p, now)
-        const isCurrent = status === 'current'
-        const title = status === 'current' ? `Current routine (as of ${fmtDate(p.startDate)})`
-          : status === 'upcoming' ? `Upcoming — starts ${fmtDate(p.startDate)}`
-          : `${fmtDate(p.startDate)} — ${p.endDate ? fmtDate(p.endDate) : '—'}`
-        return (
-          <div key={p.startDate} style={{
-            background: isCurrent ? T.olive : 'transparent',
-            border: isCurrent ? 'none' : `0.5px solid ${T.border}`,
-            borderRadius: T.radius.card, padding: '14px 16px',
-            marginTop: i > 0 ? 8 : 0,
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: T.text }}>{title}</div>
-              <button onClick={async () => { if (await confirm({ title: 'Delete this skincare routine period?', message: 'This cannot be undone.' })) onDelete(p.startDate) }}
-                style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: isCurrent ? 'rgba(15,47,43,0.5)' : T.textLight, fontSize: 16, padding: '0 2px', lineHeight: 1, flexShrink: 0 }}>×</button>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10, marginTop: 4 }}>
-              <div style={{ fontSize: 12, color: isCurrent ? 'rgba(15,47,43,0.75)' : T.textMuted, lineHeight: 1.7 }}>
-                <span>{p.activeName ? (p.activeName.charAt(0).toUpperCase() + p.activeName.slice(1)) : 'Retinoid'}: {p.tretEnabled ? `${freq}, from ${fmtDate(p.tretStartDate)}` : 'off'}</span> &nbsp;·&nbsp;
-                <span>{
-                  p.secondaryActives
-                    ? (() => {
-                        const enabled = p.secondaryActives.filter(sa => sa.enabled)
-                        if (!enabled.length) return 'No secondary actives'
-                        return enabled.map(sa => {
-                          const def = AVAILABLE_SECONDARY_ACTIVES.find(a => a.key === sa.key)
-                          return def?.label.split('/')[0].split('(')[0].trim() || sa.key
-                        }).join(', ')
-                      })()
-                    : `BHA: ${p.bhaEnabled ? 'on' : 'off'}`
-                }</span>
-              </div>
-              <button onClick={() => onEdit(p)}
-                style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: isCurrent ? 'rgba(15,47,43,0.65)' : T.textMuted, fontSize: 12, fontWeight: 600, fontFamily: 'inherit', padding: 0, flexShrink: 0, whiteSpace: 'nowrap' }}>Edit</button>
-            </div>
-            {(p.updatedAt || p.createdAt) && (
-              <>
-                <div style={{ height: 0, borderTop: `0.5px solid ${isCurrent ? 'rgba(255,255,255,0.5)' : T.border}`, margin: '10px 0' }} />
-                <div style={{ fontSize: 10, color: isCurrent ? 'rgba(15,47,43,0.6)' : T.textLight, fontStyle: 'italic', lineHeight: 1.6 }}>
-                  {p.createdAt && <div>Created: {fmtDateTime(p.createdAt)}</div>}
-                  {p.updatedAt && p.createdAt && p.updatedAt !== p.createdAt && (
-                    <div>Last edited: {fmtDateTime(p.updatedAt)}</div>
-                  )}
-                </div>
-              </>
-            )}
-          </div>
-        )
-      })}
-
-      {/* Daily routine history */}
-      <div style={{ borderTop: `0.5px solid ${T.border}`, marginTop: 16, paddingTop: 14 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-          <div style={{ fontSize: 11, fontWeight: 600, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Extras</div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            <Btn onClick={() => onEditDaily('new')} variant="primary" style={{ padding: '3px 10px', fontSize: 11 }}>+ Start new routine</Btn>
-            <InfoTooltip text="Add a new routine when your approach is changing — it preserves your history and lets you track what you used before. Edit when you're correcting a mistake. Think of each routine as a chapter." />
-          </div>
-        </div>
-        {(!dailyHistory || dailyHistory.length === 0) && (
-          <div style={{ fontSize: 12, color: T.textLight, fontStyle: 'italic' }}>No extras saved yet — add brow serums, eye patches, tools, and more.</div>
-        )}
-        {[...(dailyHistory || [])].sort((a, b) => b.startDate.localeCompare(a.startDate)).slice(0, 3).map((p, i) => {
-          const status = getPeriodStatus(p, now)
-          const isCurrent = status === 'current'
-          const title = status === 'current' ? `Current (as of ${fmtDate(p.startDate)})`
-            : status === 'upcoming' ? `Upcoming — starts ${fmtDate(p.startDate)}`
-            : `${fmtDate(p.startDate)} — ${p.endDate ? fmtDate(p.endDate) : '—'}`
-          return (
-            <div key={p.id} style={{
-              background: isCurrent ? T.olive : 'transparent',
-              border: isCurrent ? 'none' : `0.5px solid ${T.border}`,
-              borderRadius: T.radius.card, padding: '14px 16px',
-              marginTop: i > 0 ? 8 : 0,
-            }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <div style={{ fontSize: 13, fontWeight: 700, color: T.text }}>{title}</div>
-                <button onClick={async () => { if (await confirm({ title: 'Delete this extras period?', message: 'This cannot be undone.' })) onDeleteDaily(p.id) }}
-                  style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: isCurrent ? 'rgba(15,47,43,0.5)' : T.textLight, fontSize: 16, padding: '0 2px', lineHeight: 1, flexShrink: 0 }}>×</button>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10, marginTop: 4 }}>
-                <div style={{ fontSize: 12, color: isCurrent ? 'rgba(15,47,43,0.75)' : T.textMuted, lineHeight: 1.7 }}>
-                  {p.items.map(it => it.label).join(' · ') || 'No items'}
-                </div>
-                <button onClick={() => onEditDaily(p)}
-                  style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: isCurrent ? 'rgba(15,47,43,0.65)' : T.textMuted, fontSize: 12, fontWeight: 600, fontFamily: 'inherit', padding: 0, flexShrink: 0, whiteSpace: 'nowrap' }}>Edit</button>
-              </div>
-              {(p.updatedAt || p.createdAt) && (
-                <>
-                  <div style={{ height: 0, borderTop: `0.5px solid ${isCurrent ? 'rgba(255,255,255,0.5)' : T.border}`, margin: '10px 0' }} />
-                  <div style={{ fontSize: 10, color: isCurrent ? 'rgba(15,47,43,0.6)' : T.textLight, fontStyle: 'italic', lineHeight: 1.6 }}>
-                    {p.createdAt && <div>Created: {fmtDateTime(p.createdAt)}</div>}
-                    {p.updatedAt && p.createdAt && p.updatedAt !== p.createdAt && (
-                      <div>Last edited: {fmtDateTime(p.updatedAt)}</div>
-                    )}
-                  </div>
-                </>
-              )}
-            </div>
-          )
-        })}
-      </div>
-
-      {/* Shower routine history */}
-      <div style={{ borderTop: `0.5px solid ${T.border}`, marginTop: 16, paddingTop: 14 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-          <div style={{ fontSize: 11, fontWeight: 600, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Shower Routine</div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            <Btn onClick={() => onEditShower('new')} variant="primary" style={{ padding: '3px 10px', fontSize: 11 }}>+ Start new routine</Btn>
-            <InfoTooltip text="Add a new routine when your approach is changing — it preserves your history and lets you track what you used before. Edit when you're correcting a mistake. Think of each routine as a chapter." />
-          </div>
-        </div>
-        {(!showerHistory || showerHistory.length === 0) && (
-          <div style={{ fontSize: 12, color: T.textLight, fontStyle: 'italic' }}>No shower routine saved yet — add body washes, hair treatments, and more.</div>
-        )}
-        {[...(showerHistory || [])].sort((a, b) => b.startDate.localeCompare(a.startDate)).slice(0, 3).map((p, i) => {
-          const status = getPeriodStatus(p, now)
-          const isCurrent = status === 'current'
-          const title = status === 'current' ? `Current (as of ${fmtDate(p.startDate)})`
-            : status === 'upcoming' ? `Upcoming — starts ${fmtDate(p.startDate)}`
-            : `${fmtDate(p.startDate)} — ${p.endDate ? fmtDate(p.endDate) : '—'}`
-          return (
-            <div key={p.id} style={{
-              background: isCurrent ? T.olive : 'transparent',
-              border: isCurrent ? 'none' : `0.5px solid ${T.border}`,
-              borderRadius: T.radius.card, padding: '14px 16px',
-              marginTop: i > 0 ? 8 : 0,
-            }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <div style={{ fontSize: 13, fontWeight: 700, color: T.text }}>{title}</div>
-                <button onClick={async () => { if (await confirm({ title: 'Delete this shower routine period?', message: 'This cannot be undone.' })) onDeleteShower(p.id) }}
-                  style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: isCurrent ? 'rgba(15,47,43,0.5)' : T.textLight, fontSize: 16, padding: '0 2px', lineHeight: 1, flexShrink: 0 }}>×</button>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10, marginTop: 4 }}>
-                <div style={{ fontSize: 12, color: isCurrent ? 'rgba(15,47,43,0.75)' : T.textMuted, lineHeight: 1.7 }}>
-                  {(p.items || []).map(it => `${it.label} (${SHOWER_FREQUENCIES.find(f=>f.key===it.frequency)?.label||it.frequency})`).join(' · ') || 'No items'}
-                </div>
-                <button onClick={() => onEditShower(p)}
-                  style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: isCurrent ? 'rgba(15,47,43,0.65)' : T.textMuted, fontSize: 12, fontWeight: 600, fontFamily: 'inherit', padding: 0, flexShrink: 0, whiteSpace: 'nowrap' }}>Edit</button>
-              </div>
-              {(p.updatedAt || p.createdAt) && (
-                <>
-                  <div style={{ height: 0, borderTop: `0.5px solid ${isCurrent ? 'rgba(255,255,255,0.5)' : T.border}`, margin: '10px 0' }} />
-                  <div style={{ fontSize: 10, color: isCurrent ? 'rgba(15,47,43,0.6)' : T.textLight, fontStyle: 'italic', lineHeight: 1.6 }}>
-                    {p.createdAt && <div>Created: {fmtDateTime(p.createdAt)}</div>}
-                    {p.updatedAt && p.createdAt && p.updatedAt !== p.createdAt && (
-                      <div>Last edited: {fmtDateTime(p.updatedAt)}</div>
-                    )}
-                  </div>
-                </>
-              )}
-            </div>
-          )
-        })}
-      </div>
-
-      {/* See full history */}
-      <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16 }}>
-        <button
-          onClick={() => window.location.href = '/routine/history'}
-          style={{ fontSize: 11, padding: '6px 16px', borderRadius: 0, border: `0.5px solid ${T.border}`, background: 'transparent', cursor: 'pointer', color: T.textMuted, fontFamily: 'inherit' }}
-        >See full history →</button>
-      </div>
-      {confirmDialog}
     </div>
   )
 }
@@ -1987,50 +1740,6 @@ function DailySection({ dt, dailyHistory, onEditDaily, tab, products, onUpdateDa
     </div>
   )
 }
-
-
-// ─── PRODUCT SYSTEM ──────────────────────────────────────────
-// Maps routine step keys to human-readable categories for filtering
-
-
-// Star rating display helper
-
-// ─── PRODUCT FLAG BADGES ──────────────────────────────────────
-const PRODUCT_FLAGS = [
-  { key: 'black_owned',       label: 'Black-owned',       bg: '#1a1a1a', color: '#fff'    },
-  { key: 'indigenous_owned',  label: 'Indigenous-owned',  bg: '#7C3AED', color: '#fff'    },
-  { key: 'poc_owned',         label: 'POC-owned',         bg: '#D97706', color: '#fff'    },
-  { key: 'woman_owned',       label: 'Woman-owned',       bg: '#DB2777', color: '#fff'    },
-  { key: 'lgbtq_owned',       label: 'LGBTQ+-owned',      bg: 'linear-gradient(90deg,#FF6B6B,#FFE66D,#4ECDC4)', color: '#1a1a1a' },
-  { key: 'cruelty_free',      label: '🐰 Cruelty-free',   bg: '#D1FAE5', color: '#065F46' },
-  { key: 'vegan',             label: '🌱 Vegan',           bg: '#ECFDF5', color: '#065F46' },
-  { key: 'certified_organic', label: '🌿 Organic',         bg: '#F0FDF4', color: '#166534' },
-  { key: 'fair_trade',        label: '🤝 Fair trade',      bg: '#FEF3C7', color: '#92400E' },
-  { key: 'is_prescription',    label: '℞ Prescription',      bg: '#FFF7ED', color: '#9A3412' },
-  { key: 'clean_formula',      label: '✨ Clean',             bg: '#FDF4FF', color: '#7E22CE' },
-  { key: 'science_backed',     label: '🔬 Science-backed',    bg: '#EFF6FF', color: '#1D4ED8' },
-]
-
-function ProductFlagBadges({ product, max }) {
-  const active = PRODUCT_FLAGS.filter(f => product[f.key])
-  const shown = max ? active.slice(0, max) : active
-  const rest = max && active.length > max ? active.length - max : 0
-  if (!shown.length) return null
-  return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 3, marginTop: 4 }}>
-      {shown.map(f => (
-        <span key={f.key} style={{
-          fontSize: 9, padding: '2px 6px', borderRadius: 0,
-          background: f.bg, color: f.color,
-          border: '0.5px solid rgba(0,0,0,0.08)', fontWeight: 500,
-          whiteSpace: 'nowrap',
-        }}>{f.label}</span>
-      ))}
-      {rest > 0 && <span style={{ fontSize: 9, color: T.textLight, padding: '2px 4px' }}>+{rest} more</span>}
-    </div>
-  )
-}
-
 
 
 // ProductPicker — shown when clicking a step in the flyout
@@ -3189,10 +2898,8 @@ function AddProgramPanel({ session, activeProgram, activePrograms = [], routineP
   const [activeProgramSlugs, setActiveProgramSlugs] = useState([]) // slugs of all active programs
   const [activeProgramDetails, setActiveProgramDetails] = useState(null)
   const [phase2Options, setPhase2Options] = useState([])
-  const [endConfirm, setEndConfirm] = useState(false)
   const [ending, setEnding] = useState(false)
   const [starting, setStarting] = useState(null) // program id being started
-  const [pickingProgram, setPickingProgram] = useState(null)
   const [previewingProgram, setPreviewingProgram] = useState(null) // program object being previewed
   const [startDate, setStartDate] = useState(() => todayInTz(timezone || detectTimezone()))
   const [showAddMore, setShowAddMore] = useState(false)
@@ -4392,7 +4099,7 @@ export default function GlowUpCalendar({ session }) {
   const [onboardingDone, setOnboardingDone] = useState(null)   // null=loading, true/false
   const [reloadKey,      setReloadKey]      = useState(0)      // bump to retrigger loadAll
 
-  // panel: 'setup' | 'update' | 'history' | null
+  // panel: 'setup' | 'update' | null
   const [panel,         setPanel]         = useState(null)
   // editingPeriod: the period being edited in place, or null
   const [editingPeriod, setEditingPeriod] = useState(null)
@@ -4485,7 +4192,6 @@ export default function GlowUpCalendar({ session }) {
       const prodMap = {}
       // Load recovery routines from profiles
       if (profileRR?.recovery_routines) setRecoveryRoutines(profileRR.recovery_routines)
-      if (profileRR) setMenuProfile({ display_name: profileRR.display_name, avatar_url: profileRR.avatar_url })
       setSkinType(profileRR?.skin_type || '')
       if (profileRR?.timezone) setTimezone(profileRR.timezone)
       // Re-check survey status from DB each load so deletions are reflected
@@ -4596,11 +4302,7 @@ export default function GlowUpCalendar({ session }) {
   const [completedPrograms, setCompletedPrograms] = useState([])
   const [recoveryRoutines, setRecoveryRoutines] = useState({})
   const [skinType, setSkinType] = useState('')
-  const [menuProfile, setMenuProfile] = useState(null)
   const [loadError, setLoadError] = useState(null)
-  const [editFromHistory, setEditFromHistory] = useState(false)
-  const [dailyFromHistory, setDailyFromHistory] = useState(false)
-  const [showerFromHistory, setShowerFromHistory] = useState(false)
 
   // Persistence
   // Persist calendar month/year
@@ -4752,57 +4454,11 @@ export default function GlowUpCalendar({ session }) {
       p.startDate === editingPeriod.startDate ? { ...form, _dbId: editingPeriod._dbId, createdAt: editingPeriod.createdAt, updatedAt: editNow } : p
     ))
     setEditingPeriod(null)
-    setEditFromHistory(false)
-    if (editFromHistory) setPanel('history')
-    else setPanel(null)
-  }
-
-  function startEdit(period) {
-    setEditingPeriod(period)
     setPanel(null)
-    setDayFlyout(null)
   }
 
   function cancelEdit() {
     setEditingPeriod(null)
-    if (editFromHistory) {
-      setPanel('history')
-      setEditFromHistory(false)
-    }
-  }
-
-  async function deletePeriod(startDate) {
-    const period = routineHistory.find(p => p.startDate === startDate)
-    if (period?._dbId) {
-      // If this period has tret frequency history, merge it into the previous period
-      // so calendar accuracy is preserved for past dates
-      if (period.tretFrequencyHistory?.length > 0) {
-        const sorted = [...routineHistory].sort((a, b) => a.startDate.localeCompare(b.startDate))
-        const idx = sorted.findIndex(p => p._dbId === period._dbId)
-        const prev = sorted[idx - 1]
-        if (prev?._dbId) {
-          const merged = [...(period.tretFrequencyHistory || []), ...(prev.tretFrequencyHistory || [])]
-            .sort((a, b) => a.start_date.localeCompare(b.start_date))
-          await supabase.from('routine_periods')
-            .update({ tret_frequency_history: merged })
-            .eq('id', prev._dbId)
-        }
-      }
-      await supabase.from('routine_periods').delete().eq('id', period._dbId)
-      setRoutineHistory(h => h.filter(p => p._dbId !== period._dbId))
-    } else {
-      setRoutineHistory(h => h.filter(p => p.startDate !== startDate))
-    }
-  }
-
-  async function deleteDaily(id) {
-    await supabase.from('extras_periods').delete().eq('id', id)
-    setDailyHistory(h => h.filter(p => p.id !== id))
-  }
-
-  async function deleteShower(id) {
-    await supabase.from('shower_periods').delete().eq('id', id)
-    setShowerHistory(h => h.filter(p => p.id !== id))
   }
 
   // ── Daily routine handlers ────────────────────────────────
@@ -4829,7 +4485,6 @@ export default function GlowUpCalendar({ session }) {
       return [...h.filter(p => p.id !== id), formWithId].sort((a, b) => a.startDate.localeCompare(b.startDate))
     })
     setEditingDaily(null)
-    if (dailyFromHistory) { setPanel('history'); setDailyFromHistory(false) }
   }
 
   function openDailyEditor(period) {
@@ -4867,7 +4522,6 @@ export default function GlowUpCalendar({ session }) {
       return [...h.filter(p => p.id !== id), formWithId].sort((a, b) => a.startDate.localeCompare(b.startDate))
     })
     setEditingShower(null)
-    if (showerFromHistory) { setPanel('history'); setShowerFromHistory(false) }
   }
 
   function openShowerEditor(period) {
@@ -5750,7 +5404,7 @@ export default function GlowUpCalendar({ session }) {
               <ShowerEditor
                 initial={editingShower === 'new' ? null : editingShower}
                 onSave={saveShower}
-                onCancel={() => { setEditingShower(null); setDayFlyout(null); if (showerFromHistory) { setPanel('history'); setShowerFromHistory(false) } }}
+                onCancel={() => { setEditingShower(null); setDayFlyout(null) }}
                 allPeriods={showerHistory}
                 onEditConflict={(p) => setEditingShower(p)}
                 products={products}
@@ -5764,30 +5418,12 @@ export default function GlowUpCalendar({ session }) {
               <DailyEditor
                 initial={editingDaily === 'new' ? null : editingDaily}
                 onSave={saveDaily}
-                onCancel={() => { setEditingDaily(null); setDayFlyout(null); if (dailyFromHistory) { setPanel('history'); setDailyFromHistory(false) } }}
+                onCancel={() => { setEditingDaily(null); setDayFlyout(null) }}
                 allPeriods={dailyHistory}
                 onEditConflict={(p) => setEditingDaily(p)}
                 products={products}
                 onSaveProduct={saveProduct}
                 userId={userId}
-              />
-            )}
-
-            {/* History panel */}
-            {panel === 'history' && !editingPeriod && (
-              <RoutineHistoryPanel
-                history={routineHistory}
-                now={now}
-                onClose={() => setPanel(null)}
-                onEdit={(period) => { startEdit(period); setPanel(null); setEditFromHistory(true) }}
-                onDelete={deletePeriod}
-                onAddNew={() => { setPanel(routineHistory.length > 0 ? 'update' : 'setup'); setEditingPeriod(null) }}
-                dailyHistory={dailyHistory}
-                onEditDaily={(p) => { openDailyEditor(p); setPanel(null); setDailyFromHistory(true) }}
-                onDeleteDaily={deleteDaily}
-                showerHistory={showerHistory}
-                onEditShower={(p) => { openShowerEditor(p); setPanel(null); setShowerFromHistory(true) }}
-                onDeleteShower={deleteShower}
               />
             )}
 
