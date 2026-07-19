@@ -2890,6 +2890,28 @@ function ProgramEnrollmentPreview({ program, onConfirm, onBack, timezone }) {
   )
 }
 
+// Each program in the library gets its own dark brand color, matched by
+// slug (falls back to a name match in case a slug ever changes).
+const PROGRAM_COLOR_BY_SLUG = {
+  'aha-bha-onboarding':          T.darkBlue,
+  'benzoyl-peroxide-onboarding': T.darkPink,
+  'hyperpigmentation-protocol':  T.darkYellow,
+  'skin-barrier-repair':         T.darkOrange,
+  'tretinoin-onboarding':        T.darkGreen,
+}
+const PROGRAM_COLOR_BY_NAME_KEYWORD = [
+  [/aha|bha/i,             T.darkBlue],
+  [/benzoyl|peroxide/i,    T.darkPink],
+  [/hyperpigmentation/i,   T.darkYellow],
+  [/barrier/i,             T.darkOrange],
+  [/tretinoin/i,           T.darkGreen],
+]
+function programCardColor(program) {
+  if (PROGRAM_COLOR_BY_SLUG[program.slug]) return PROGRAM_COLOR_BY_SLUG[program.slug]
+  const match = PROGRAM_COLOR_BY_NAME_KEYWORD.find(([re]) => re.test(program.name || ''))
+  return match ? match[1] : T.text
+}
+
 function AddProgramPanel({ session, activeProgram, activePrograms = [], routinePeriod, skinType, timezone, onChanged }) {
   const [alertDialog, alertUser] = useAlert()
   const [loading, setLoading] = useState(true)
@@ -3271,28 +3293,29 @@ function AddProgramPanel({ session, activeProgram, activePrograms = [], routineP
           const completions = completionCounts[program.id] || 0
           const blocker = incompatibleWith(program)
           const isActive = activePrograms.some(p => p.program_id === program.id)
+          const cardColor = programCardColor(program)
           return (
-            <div key={program.id} style={{ background: T.creamLight, border: `0.5px solid ${T.border}`, borderRadius: T.radius.card, padding: '16px 18px', marginBottom: 10, opacity: blocker || isActive ? 0.6 : 1 }}>
+            <div key={program.id} style={{ background: cardColor, border: 'none', borderRadius: T.radius.card, padding: '16px 18px', marginBottom: 10, opacity: blocker || isActive ? 0.6 : 1 }}>
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: 6 }}>
-                <div style={{ fontFamily: T.fontFamilyAccent, fontStyle: T.fontStyleAccent, fontSize: 13, fontWeight: 600, color: 'rgba(0, 0, 0, 0.5)', letterSpacing: '0.02em', textTransform: 'uppercase' }}>
+                <div style={{ fontFamily: T.fontFamilyAccent, fontStyle: T.fontStyleAccent, fontSize: 13, fontWeight: 600, color: T.white, letterSpacing: '0.02em', textTransform: 'uppercase' }}>
                   {program.name}
                 </div>
                 {completions > 0 && (
-                  <div style={{ fontSize: 10, color: T.textMuted, background: T.creamDark, border: `0.5px solid ${T.border}`, padding: '2px 8px', borderRadius: T.radius.pill, flexShrink: 0, whiteSpace: 'nowrap' }}>
+                  <div style={{ fontSize: 10, color: T.white, background: 'rgba(255,255,255,0.2)', padding: '2px 8px', borderRadius: T.radius.pill, flexShrink: 0, whiteSpace: 'nowrap' }}>
                     {completions === 1 ? 'Completed once' : `Completed ${completions} times`}
                   </div>
                 )}
               </div>
-              <div style={{ fontSize: 14, color: T.text, lineHeight: 1.6, marginBottom: 14 }}>{program.description}</div>
+              <div style={{ fontSize: 14, color: T.white, lineHeight: 1.6, marginBottom: 14 }}>{program.description}</div>
               {isActive ? (
-                <div style={{ fontSize: 11, color: T.textMuted, fontStyle: 'italic' }}>Currently active</div>
+                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.85)', fontStyle: 'italic' }}>Currently active</div>
               ) : blocker ? (
-                <div style={{ fontSize: 11, color: T.pinkDeep }}>Complete your current program before starting this one</div>
+                <div style={{ fontSize: 11, color: T.white }}>Complete your current program before starting this one</div>
               ) : (
                 <button onClick={() => setPreviewingProgram(program)}
-                  style={{ width: '100%', padding: '12px', borderRadius: T.radius.pill, border: 'none', background: T.creamDark, color: T.text, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 600, transition: 'background 150ms ease' }}
-                  onMouseEnter={e => { e.currentTarget.style.background = T.creamDark }}
-                  onMouseLeave={e => { e.currentTarget.style.background = T.cream }}>
+                  style={{ width: '100%', padding: '12px', borderRadius: T.radius.pill, border: 'none', background: T.white, color: cardColor, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 600, transition: 'opacity 150ms ease' }}
+                  onMouseEnter={e => { e.currentTarget.style.opacity = 0.85 }}
+                  onMouseLeave={e => { e.currentTarget.style.opacity = 1 }}>
                   {completions > 0 ? <>Start <AccentWord>again</AccentWord></> : <>Learn <AccentWord>more</AccentWord> & start</>}
                 </button>
               )}
