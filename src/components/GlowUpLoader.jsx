@@ -47,7 +47,6 @@ function buildBarGradient() {
 }
 
 export default function GlowUpLoader() {
-  const logoColor = useRef(BAR_COLORS[Math.floor(Math.random() * BAR_COLORS.length)])
   const barGradient = useRef(buildBarGradient())
   const sayingQueue = useRef(shuffle(SAYINGS))
   const sayingIndex = useRef(0)
@@ -108,7 +107,7 @@ export default function GlowUpLoader() {
         fontSize: 'clamp(64px, 14vw, 88px)',
         lineHeight: 1,
         letterSpacing: '-0.01em',
-        color: logoColor.current,
+        color: T.white,
         textAlign: 'center',
         animation: 'glowupFloat 3s cubic-bezier(0.445, 0.05, 0.55, 0.95) infinite',
         userSelect: 'none',

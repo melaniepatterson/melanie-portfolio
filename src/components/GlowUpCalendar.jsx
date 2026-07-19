@@ -3796,29 +3796,31 @@ function UpcomingTreatmentsPanel({ treatments, allTypes, routineHistory, onClose
           const metaParts = [areaLabel, todLabel]
           if (cfg.pre > 0) metaParts.push(`${cfg.pre} days pause before`)
           if (cfg.post > 0) metaParts.push(`${cfg.post} days recovery after`)
+          const cardBg = isPast ? T.orangeLight : T.white
+          const cardText = T.darkOrange
           return (
-            <div key={tv._dbId} style={{ background: T.orange, borderRadius: T.radius.card, padding: '16px 18px', marginBottom: 8, opacity: isPast ? 0.55 : 1 }}>
+            <div key={tv._dbId} style={{ background: cardBg, borderRadius: T.radius.card, padding: '16px 18px', marginBottom: 8 }}>
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
                 {/* Circular date badge */}
-                <div style={{ width: 58, height: 58, borderRadius: '50%', background: T.creamLight, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <div style={{ fontSize: 9, fontWeight: 700, color: T.text, textTransform: 'uppercase', letterSpacing: '0.04em', lineHeight: 1.1 }}>{dt.toLocaleString('default',{month:'short'})}</div>
-                  <div style={{ fontSize: 20, fontWeight: 700, color: T.text, lineHeight: 1.1 }}>{dt.getDate()}</div>
+                <div style={{ width: 58, height: 58, borderRadius: '50%', background: isPast ? T.white : T.orangeLight, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <div style={{ fontSize: 9, fontWeight: 700, color: cardText, textTransform: 'uppercase', letterSpacing: '0.04em', lineHeight: 1.1 }}>{dt.toLocaleString('default',{month:'short'})}</div>
+                  <div style={{ fontSize: 20, fontWeight: 700, color: cardText, lineHeight: 1.1 }}>{dt.getDate()}</div>
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  {isToday && <span style={{ fontSize: 10, padding: '2px 10px', borderRadius: T.radius.pill, background: T.white, color: T.orange, fontWeight: 700, display: 'inline-block', marginBottom: 6 }}>Today</span>}
-                  <div style={{ fontSize: 18, fontWeight: 700, color: T.text, marginBottom: 3 }}>{typeLabel}</div>
-                  <div style={{ fontSize: 12, color: 'rgba(0,0,0,0.75)' }}>{metaParts.filter(Boolean).join(' · ')}</div>
+                  {isToday && <span style={{ fontSize: 10, padding: '2px 10px', borderRadius: T.radius.pill, background: T.orange, color: T.white, fontWeight: 700, display: 'inline-block', marginBottom: 6 }}>Today</span>}
+                  <div style={{ fontSize: 18, fontWeight: 700, color: cardText, marginBottom: 3 }}>{typeLabel}</div>
+                  <div style={{ fontSize: 12, color: cardText, opacity: 0.75 }}>{metaParts.filter(Boolean).join(' · ')}</div>
                 </div>
                 {!isPast && (
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8, flexShrink: 0 }}>
-                    <button onClick={() => onRemove(tv._dbId)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: 'rgba(0,0,0,0.55)', fontSize: 18, padding: 0, lineHeight: 1 }}>×</button>
-                    <button onClick={() => onEdit(key)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: 'rgba(0,0,0,0.7)', fontSize: 12, fontWeight: 600, fontFamily: 'inherit', padding: 0, whiteSpace: 'nowrap' }}>Edit</button>
+                    <button onClick={() => onRemove(tv._dbId)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: cardText, opacity: 0.55, fontSize: 18, padding: 0, lineHeight: 1 }}>×</button>
+                    <button onClick={() => onEdit(key)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: cardText, opacity: 0.7, fontSize: 12, fontWeight: 600, fontFamily: 'inherit', padding: 0, whiteSpace: 'nowrap' }}>Edit</button>
                   </div>
                 )}
               </div>
 
               {isPast && (
-                <div style={{ fontSize: 11, color: 'rgba(0,0,0,0.6)', fontStyle: 'italic', marginTop: 10 }}>
+                <div style={{ fontSize: 11, color: cardText, opacity: 0.7, fontStyle: 'italic', marginTop: 10 }}>
                   Recovery ended {(() => {
                     const recEnd = new Date(dt); recEnd.setDate(recEnd.getDate() + cfg.post)
                     const daysSince = Math.round((now - recEnd) / 86400000)
@@ -3831,11 +3833,11 @@ function UpcomingTreatmentsPanel({ treatments, allTypes, routineHistory, onClose
                 const daysUntilPause = Math.round((pauseStart - now) / 86400000)
                 const daysUntil = Math.round((dt - now) / 86400000)
                 return daysUntilPause <= 0 && daysUntil > 0 ? (
-                  <div style={{ fontSize: 11, color: '#5A3A00', background: 'rgba(255,255,255,0.55)', borderRadius: T.radius.pill, padding: '3px 10px', display: 'inline-block', marginTop: 10 }}>
+                  <div style={{ fontSize: 11, color: T.white, background: T.darkOrange, borderRadius: T.radius.pill, padding: '3px 10px', display: 'inline-block', marginTop: 10 }}>
                     Pause window active — {daysUntil} days until treatment
                   </div>
                 ) : daysUntilPause > 0 ? (
-                  <div style={{ fontSize: 11, color: 'rgba(0,0,0,0.7)', marginTop: 10 }}>
+                  <div style={{ fontSize: 11, color: cardText, opacity: 0.8, marginTop: 10 }}>
                     Pause exfoliants & retinoids in {daysUntilPause} days · Treatment in {daysUntil} days
                   </div>
                 ) : null
@@ -3843,7 +3845,7 @@ function UpcomingTreatmentsPanel({ treatments, allTypes, routineHistory, onClose
               {!isPast && cfg.post > 0 && (
                 <div style={{ marginTop: 10 }}>
                   <button onClick={() => setEditingRecovery(editingRecovery === tv._dbId ? null : tv._dbId)}
-                    style={{ fontSize: 11, padding: '4px 12px', borderRadius: T.radius.pill, border: 'none', background: editingRecovery === tv._dbId ? T.text : 'rgba(255,255,255,0.55)', color: editingRecovery === tv._dbId ? '#fff' : T.text, cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}>
+                    style={{ fontSize: 11, padding: '4px 12px', borderRadius: T.radius.pill, border: 'none', background: editingRecovery === tv._dbId ? T.darkOrange : T.orangeLight, color: editingRecovery === tv._dbId ? T.white : T.darkOrange, cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}>
                     Set recovery routine
                   </button>
                 </div>
@@ -3875,17 +3877,17 @@ function UpcomingTreatmentsPanel({ treatments, allTypes, routineHistory, onClose
   }
 
   return (
-    <div style={{ background: T.white, border: `1px solid ${T.text}`, borderRadius: T.radius.modal, padding: '16px 18px', marginBottom: 14 }}>
+    <div style={{ background: T.orange, border: 'none', borderRadius: T.radius.modal, padding: '16px 18px', marginBottom: 14 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-        <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>Treatments</div>
+        <div style={{ fontSize: 13, fontWeight: 600, color: T.white }}>Treatments</div>
         <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
 
-          <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 18, color: T.textMuted, padding: '0 2px', lineHeight: 1 }}>×</button>
+          <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 18, color: T.white, padding: '0 2px', lineHeight: 1 }}>×</button>
         </div>
       </div>
 
       {/* Add new treatment */}
-      <div style={{ marginBottom: 14, paddingBottom: 14, borderBottom: `0.5px solid ${T.border}` }}>
+      <div style={{ marginBottom: 14, paddingBottom: 14, borderBottom: '0.5px solid rgba(255,255,255,0.3)' }}>
         {addingDate ? (
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
             <DateInput value={addingDate} onChange={e => setAddingDate(e.target.value)} />
@@ -3902,23 +3904,23 @@ function UpcomingTreatmentsPanel({ treatments, allTypes, routineHistory, onClose
       </div>
 
       {Object.keys(treatments).length === 0 ? (
-        <div style={{ fontSize: 12, color: T.textMuted, background: T.creamDark, borderRadius: 0, padding: '12px 14px', lineHeight: 1.6 }}>
+        <div style={{ fontSize: 12, color: T.white, background: 'rgba(255,255,255,0.2)', borderRadius: T.radius.card, padding: '12px 14px', lineHeight: 1.6 }}>
           No treatments scheduled yet. Tap any date on the calendar to add a treatment.
         </div>
       ) : (
         <>
           {upcoming.length > 0 && (
             <div>
-              <div style={{ fontSize: 10, fontWeight: 600, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>Upcoming</div>
+              <div style={{ fontSize: 10, fontWeight: 600, color: T.white, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>Upcoming</div>
               {upcoming.map(t => renderTreatment(t, false))}
             </div>
           )}
           {past.length > 0 && (
             <div style={{ marginTop: upcoming.length > 0 ? 14 : 0 }}>
-              <div style={{ fontSize: 10, fontWeight: 600, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>Past</div>
+              <div style={{ fontSize: 10, fontWeight: 600, color: T.white, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>Past</div>
               {past.slice(0, 5).map(t => renderTreatment(t, true))}
               {past.length > 5 && (
-                <div style={{ fontSize: 11, color: T.textLight, fontStyle: 'italic', paddingTop: 8 }}>+{past.length - 5} older treatments</div>
+                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)', fontStyle: 'italic', paddingTop: 8 }}>+{past.length - 5} older treatments</div>
               )}
             </div>
           )}
@@ -4098,9 +4100,13 @@ function computeNotifications({ products, treatments, allTypes, timezone }) {
 }
 
 
+const LOGO_COLORS = [T.pink, T.blue, T.green, T.yellow, T.orange]
+
 export default function GlowUpCalendar({ session }) {
   const [confirmDialog, confirm] = useConfirm()
   const userId = session?.user?.id
+  // Random brand color per page load — calendar page only.
+  const logoColor = useRef(LOGO_COLORS[Math.floor(Math.random() * LOGO_COLORS.length)])
 
   // timezone must be declared FIRST so all date computations below are correct.
   // Initialize from device timezone immediately — profile load will override once
@@ -4779,7 +4785,7 @@ export default function GlowUpCalendar({ session }) {
   for (let i = 0; i < firstDow; i++) {
     const dayNum = prevMonthLastDay - firstDow + i + 1
     cells.push(
-      <div key={`prev${i}`} style={{ position: 'relative', borderRadius: 8, border: `0.5px solid ${T.creamDark}`, background: 'rgba(253,248,240,0.75)', display: 'flex', flexDirection: 'column', minHeight: '120px' }}>
+      <div key={`prev${i}`} style={{ position: 'relative', borderRadius: 8, border: `0.5px solid ${T.creamDark}`, background: 'rgba(253,248,240,0.75)', display: 'flex', flexDirection: 'column', minHeight: '100px' }}>
         <div style={{ fontSize: 10, color: T.textLight, padding: '3px 5px', fontWeight: 400, opacity: 0.5 }}>{dayNum}</div>
       </div>
     )
@@ -4880,7 +4886,7 @@ export default function GlowUpCalendar({ session }) {
     const activePeriod = getActivePeriod(dt, routineHistory)
 
     cells.push(
-      <div key={key} style={{ position: 'relative', borderRadius: 8, overflow: 'hidden', border: `${isOpen ? '1px' : cellBorderW} solid ${isOpen ? T.text : cellBorder}`, display: 'flex', flexDirection: 'column', zIndex: isOpen ? 100 : 1, minHeight: '120px' }}>
+      <div key={key} style={{ position: 'relative', borderRadius: 8, overflow: 'hidden', border: `${isOpen ? '1px' : cellBorderW} solid ${isOpen ? T.text : cellBorder}`, display: 'flex', flexDirection: 'column', zIndex: isOpen ? 100 : 1, minHeight: '100px' }}>
         {/* Date row */}
         <div style={{ padding: '3px 6px', background: T.white, borderBottom: `0.5px solid ${upperDivider}`, fontSize: 11, fontWeight: 600, color: isOpen ? T.text : dateColor, textAlign: 'center' }}>
           {d}
@@ -4888,7 +4894,7 @@ export default function GlowUpCalendar({ session }) {
         {/* AM half */}
         <div
           onClick={e => { e.stopPropagation(); isOpen && dayFlyout?.tab === 'am' ? setDayFlyout(null) : openDayFlyout(key, dt, 'am') }}
-          style={{ flex: 1, background: isOpen && dayFlyout?.tab === 'am' ? `linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), ${amCellBg}` : amCellBg, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '3px 4px', cursor: 'pointer', borderBottom: `0.5px solid ${lowerDivider}`, gap: 2, overflow: 'visible', transition: 'background 0.15s', position: 'relative', zIndex: 1 }}
+          style={{ flex: 1, background: isOpen && dayFlyout?.tab === 'am' ? `linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), ${amCellBg}` : amCellBg, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'space-between', padding: '3px 4px', cursor: 'pointer', borderBottom: `0.5px solid ${lowerDivider}`, gap: 2, overflow: 'visible', transition: 'background 0.15s', position: 'relative', zIndex: 1 }}
         >
           <div style={{ fontSize: 9, fontWeight: 600, color: isOpen && dayFlyout?.tab === 'am' ? T.text : (amFill?.text || T.textMuted), opacity: 0.8, letterSpacing: '0.04em' }}>AM</div>
           {amBadges}
@@ -4896,7 +4902,7 @@ export default function GlowUpCalendar({ session }) {
         {/* PM half */}
         <div
           onClick={e => { e.stopPropagation(); isOpen && dayFlyout?.tab === 'pm' ? setDayFlyout(null) : openDayFlyout(key, dt, 'pm') }}
-          style={{ flex: 1, background: isOpen && dayFlyout?.tab === 'pm' ? `linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), ${pmCellBg}` : pmCellBg, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '3px 4px', cursor: 'pointer', gap: 2, overflow: 'visible', transition: 'background 0.15s', position: 'relative', zIndex: 1 }}
+          style={{ flex: 1, background: isOpen && dayFlyout?.tab === 'pm' ? `linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), ${pmCellBg}` : pmCellBg, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'space-between', padding: '3px 4px', cursor: 'pointer', gap: 2, overflow: 'visible', transition: 'background 0.15s', position: 'relative', zIndex: 1 }}
         >
           <div style={{ fontSize: 9, fontWeight: 600, color: isOpen && dayFlyout?.tab === 'pm' ? T.text : (pmFill?.text || T.textMuted), opacity: 0.8, letterSpacing: '0.04em' }}>PM</div>
           {pmBadges}
@@ -4910,7 +4916,7 @@ export default function GlowUpCalendar({ session }) {
   const trailingCount = totalCells - firstDow - daysInMonth
   for (let i = 1; i <= trailingCount; i++) {
     cells.push(
-      <div key={`next${i}`} style={{ position: 'relative', borderRadius: 8, border: `0.5px solid ${T.creamDark}`, background: 'rgba(253,248,240,0.75)', display: 'flex', flexDirection: 'column', minHeight: '120px' }}>
+      <div key={`next${i}`} style={{ position: 'relative', borderRadius: 8, border: `0.5px solid ${T.creamDark}`, background: 'rgba(253,248,240,0.75)', display: 'flex', flexDirection: 'column', minHeight: '100px' }}>
         <div style={{ fontSize: 10, color: T.textLight, padding: '3px 5px', fontWeight: 400, opacity: 0.5 }}>{i}</div>
       </div>
     )
@@ -5046,7 +5052,7 @@ export default function GlowUpCalendar({ session }) {
 
       {/* Glow Up logo — desktop only */}
       <div className="glowup-cal-logo" style={{ alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
-        <GlowUpLogo size={32} />
+        <GlowUpLogo size={32} style={{ color: logoColor.current }} />
       </div>
 
       {/* Program nudge — for users who built their routine manually and have never enrolled in a program */}
@@ -5336,7 +5342,7 @@ export default function GlowUpCalendar({ session }) {
       </div>
 
       {/* Grid — always visible, never moves */}
-      <div onClick={() => { if (dayFlyout) setDayFlyout(null) }} style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: 'clamp(2px, 0.5vw, 4px)', gridAutoRows: '120px' }}>{cells}</div>
+      <div onClick={() => { if (dayFlyout) setDayFlyout(null) }} style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: 'clamp(2px, 0.5vw, 4px)', gridAutoRows: '100px' }}>{cells}</div>
 
       {/* Overlay — takes over the full page, like Onboarding does on first run */}
       {hasOverlay && (
