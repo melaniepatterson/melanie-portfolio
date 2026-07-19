@@ -154,35 +154,35 @@ button:hover .split-char {
 
 /* Primary — the one main action on a screen */
 .gu-btn-primary {
-  background: #0F2F2B;
+  background: #000000;
   color: #fff;
 }
-.gu-btn-primary:hover:not(:disabled)  { background: #2D5E57; }
-.gu-btn-primary:active:not(:disabled) { background: #071A18; transition-duration: 80ms; }
+.gu-btn-primary:hover:not(:disabled)  { background: #333333; }
+.gu-btn-primary:active:not(:disabled) { background: #1A1A1A; transition-duration: 80ms; }
 .gu-btn-primary:focus-visible { box-shadow: 0 0 0 3px #98AAF8; }
-.gu-btn-primary:disabled { background: #0F2F2B; opacity: 0.5; }
+.gu-btn-primary:disabled { background: #000000; opacity: 0.5; }
 
 /* Secondary — a supporting action alongside a primary */
 .gu-btn-secondary {
   background: transparent;
-  border-color: #0F2F2B;
-  color: #0F2F2B;
+  border-color: #000000;
+  color: #000000;
 }
-.gu-btn-secondary:hover:not(:disabled)  { border-color: #2D5E57; color: #2D5E57; }
-.gu-btn-secondary:active:not(:disabled) { border-color: #071A18; color: #071A18; transition-duration: 80ms; }
+.gu-btn-secondary:hover:not(:disabled)  { border-color: #333333; color: #333333; }
+.gu-btn-secondary:active:not(:disabled) { border-color: #1A1A1A; color: #1A1A1A; transition-duration: 80ms; }
 .gu-btn-secondary:focus-visible { box-shadow: 0 0 0 3px #98AAF8; }
-.gu-btn-secondary:disabled { border-color: #0F2F2B; color: #0F2F2B; opacity: 0.5; }
+.gu-btn-secondary:disabled { border-color: #000000; color: #000000; opacity: 0.5; }
 
 /* Ghost — low-priority actions, shouldn't draw the eye */
 .gu-btn-ghost {
   background: transparent;
   border-color: transparent;
-  color: #0F2F2B;
+  color: #000000;
 }
-.gu-btn-ghost:hover:not(:disabled)  { color: #2D5E57; text-decoration: underline; }
-.gu-btn-ghost:active:not(:disabled) { color: #071A18; text-decoration: underline; transition-duration: 80ms; }
+.gu-btn-ghost:hover:not(:disabled)  { color: #333333; text-decoration: underline; }
+.gu-btn-ghost:active:not(:disabled) { color: #1A1A1A; text-decoration: underline; transition-duration: 80ms; }
 .gu-btn-ghost:focus-visible { box-shadow: 0 0 0 3px #98AAF8; }
-.gu-btn-ghost:disabled { color: #0F2F2B; opacity: 0.5; }
+.gu-btn-ghost:disabled { color: #000000; opacity: 0.5; }
 
 /* Danger — destructive actions, always confirm before use */
 .gu-btn-danger {
@@ -193,7 +193,7 @@ button:hover .split-char {
 .gu-btn-danger:hover:not(:disabled)  { border-color: #B84400; color: #B84400; background: #FEE9D5; }
 .gu-btn-danger:active:not(:disabled) { background: #E95800; border-color: #E95800; color: #fff; transition-duration: 80ms; }
 .gu-btn-danger:focus-visible { box-shadow: 0 0 0 3px #98AAF8; }
-.gu-btn-danger:disabled { border-color: #0F2F2B; color: #0F2F2B; opacity: 0.5; }
+.gu-btn-danger:disabled { border-color: #000000; color: #000000; opacity: 0.5; }
 
 /* Active — selected/toggled state for chip-like buttons (day pickers, tabs).
    Not part of the destructive/primary/secondary/ghost spec — kept for the
@@ -201,7 +201,7 @@ button:hover .split-char {
 .gu-btn-active {
   background: #ED6FBB;
   border-color: #C93500;
-  color: #0F2F2B;
+  color: #000000;
 }
 .gu-btn-active:disabled { opacity: 0.5; }
 
@@ -215,11 +215,11 @@ button:hover .split-char {
   font-size: 14px;
   padding: 12px 18px;
   border-radius: 9999px;
-  border: 1px solid rgba(15, 47, 43, 0.5);
+  border: 1px solid rgba(0, 0, 0, 0.5);
   background: #fff;
-  color: #0F2F2B;
+  color: #000000;
   outline: none;
   transition: border-color 150ms ease;
 }
-.gu-input:focus { border-color: #0F2F2B; }
-.gu-input::placeholder { color: rgba(15, 47, 43, 0.5); }
+.gu-input:focus { border-color: #000000; }
+.gu-input::placeholder { color: rgba(0, 0, 0, 0.5); }

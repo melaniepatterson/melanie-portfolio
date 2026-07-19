@@ -3274,7 +3274,7 @@ function AddProgramPanel({ session, activeProgram, activePrograms = [], routineP
           return (
             <div key={program.id} style={{ background: T.creamLight, border: `0.5px solid ${T.border}`, borderRadius: T.radius.card, padding: '16px 18px', marginBottom: 10, opacity: blocker || isActive ? 0.6 : 1 }}>
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: 6 }}>
-                <div style={{ fontFamily: T.fontFamilyAccent, fontStyle: T.fontStyleAccent, fontSize: 13, fontWeight: 600, color: 'rgba(101, 96, 24, 0.5)', letterSpacing: '0.02em', textTransform: 'uppercase' }}>
+                <div style={{ fontFamily: T.fontFamilyAccent, fontStyle: T.fontStyleAccent, fontSize: 13, fontWeight: 600, color: 'rgba(0, 0, 0, 0.5)', letterSpacing: '0.02em', textTransform: 'uppercase' }}>
                   {program.name}
                 </div>
                 {completions > 0 && (
@@ -3290,7 +3290,7 @@ function AddProgramPanel({ session, activeProgram, activePrograms = [], routineP
                 <div style={{ fontSize: 11, color: T.pinkDeep }}>Complete your current program before starting this one</div>
               ) : (
                 <button onClick={() => setPreviewingProgram(program)}
-                  style={{ width: '100%', padding: '12px', borderRadius: T.radius.pill, border: 'none', background: T.cream, color: T.darkOlive, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 600, transition: 'background 150ms ease' }}
+                  style={{ width: '100%', padding: '12px', borderRadius: T.radius.pill, border: 'none', background: T.creamDark, color: T.text, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 600, transition: 'background 150ms ease' }}
                   onMouseEnter={e => { e.currentTarget.style.background = T.creamDark }}
                   onMouseLeave={e => { e.currentTarget.style.background = T.cream }}>
                   {completions > 0 ? <>Start <AccentWord>again</AccentWord></> : <>Learn <AccentWord>more</AccentWord> & start</>}
@@ -3784,18 +3784,18 @@ function UpcomingTreatmentsPanel({ treatments, allTypes, routineHistory, onClose
                 <div style={{ flex: 1, minWidth: 0 }}>
                   {isToday && <span style={{ fontSize: 10, padding: '2px 10px', borderRadius: T.radius.pill, background: T.white, color: T.orange, fontWeight: 700, display: 'inline-block', marginBottom: 6 }}>Today</span>}
                   <div style={{ fontSize: 18, fontWeight: 700, color: T.text, marginBottom: 3 }}>{typeLabel}</div>
-                  <div style={{ fontSize: 12, color: 'rgba(15,47,43,0.75)' }}>{metaParts.filter(Boolean).join(' · ')}</div>
+                  <div style={{ fontSize: 12, color: 'rgba(0,0,0,0.75)' }}>{metaParts.filter(Boolean).join(' · ')}</div>
                 </div>
                 {!isPast && (
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8, flexShrink: 0 }}>
-                    <button onClick={() => onRemove(tv._dbId)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: 'rgba(15,47,43,0.55)', fontSize: 18, padding: 0, lineHeight: 1 }}>×</button>
-                    <button onClick={() => onEdit(key)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: 'rgba(15,47,43,0.7)', fontSize: 12, fontWeight: 600, fontFamily: 'inherit', padding: 0, whiteSpace: 'nowrap' }}>Edit</button>
+                    <button onClick={() => onRemove(tv._dbId)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: 'rgba(0,0,0,0.55)', fontSize: 18, padding: 0, lineHeight: 1 }}>×</button>
+                    <button onClick={() => onEdit(key)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: 'rgba(0,0,0,0.7)', fontSize: 12, fontWeight: 600, fontFamily: 'inherit', padding: 0, whiteSpace: 'nowrap' }}>Edit</button>
                   </div>
                 )}
               </div>
 
               {isPast && (
-                <div style={{ fontSize: 11, color: 'rgba(15,47,43,0.6)', fontStyle: 'italic', marginTop: 10 }}>
+                <div style={{ fontSize: 11, color: 'rgba(0,0,0,0.6)', fontStyle: 'italic', marginTop: 10 }}>
                   Recovery ended {(() => {
                     const recEnd = new Date(dt); recEnd.setDate(recEnd.getDate() + cfg.post)
                     const daysSince = Math.round((now - recEnd) / 86400000)
@@ -3812,7 +3812,7 @@ function UpcomingTreatmentsPanel({ treatments, allTypes, routineHistory, onClose
                     Pause window active — {daysUntil} days until treatment
                   </div>
                 ) : daysUntilPause > 0 ? (
-                  <div style={{ fontSize: 11, color: 'rgba(15,47,43,0.7)', marginTop: 10 }}>
+                  <div style={{ fontSize: 11, color: 'rgba(0,0,0,0.7)', marginTop: 10 }}>
                     Pause exfoliants & retinoids in {daysUntilPause} days · Treatment in {daysUntil} days
                   </div>
                 ) : null
@@ -4804,10 +4804,10 @@ export default function GlowUpCalendar({ session }) {
     const dateColor = isToday ? T.text : (amFill?.text || pmFill?.text || T.textMuted)
 
     // Dividers are fixed neutral colors regardless of status — only the
-    // Today cell overrides them with its own olive border/divider color.
-    const upperDivider = isToday ? T.olive : T.border
-    const lowerDivider = isToday ? T.olive : T.white
-    const cellBorder    = isToday ? T.olive : T.border
+    // Today cell overrides them with its own border/divider color.
+    const upperDivider = isToday ? T.text : T.border
+    const lowerDivider = isToday ? T.text : T.white
+    const cellBorder    = isToday ? T.text : T.border
     const cellBorderW    = isToday ? '1.5px' : '0.5px'
 
     // AM badge — tier system, single badge
@@ -4865,7 +4865,7 @@ export default function GlowUpCalendar({ session }) {
         {/* AM half */}
         <div
           onClick={e => { e.stopPropagation(); isOpen && dayFlyout?.tab === 'am' ? setDayFlyout(null) : openDayFlyout(key, dt, 'am') }}
-          style={{ flex: 1, background: isOpen && dayFlyout?.tab === 'am' ? `linear-gradient(rgba(15,47,43,0.1), rgba(15,47,43,0.1)), ${amCellBg}` : amCellBg, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '3px 4px', cursor: 'pointer', borderBottom: `0.5px solid ${lowerDivider}`, gap: 2, overflow: 'visible', transition: 'background 0.15s', position: 'relative', zIndex: 1 }}
+          style={{ flex: 1, background: isOpen && dayFlyout?.tab === 'am' ? `linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), ${amCellBg}` : amCellBg, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '3px 4px', cursor: 'pointer', borderBottom: `0.5px solid ${lowerDivider}`, gap: 2, overflow: 'visible', transition: 'background 0.15s', position: 'relative', zIndex: 1 }}
         >
           <div style={{ fontSize: 9, fontWeight: 600, color: isOpen && dayFlyout?.tab === 'am' ? T.text : (amFill?.text || T.textMuted), opacity: 0.8, letterSpacing: '0.04em' }}>AM</div>
           {amBadges}
@@ -4873,7 +4873,7 @@ export default function GlowUpCalendar({ session }) {
         {/* PM half */}
         <div
           onClick={e => { e.stopPropagation(); isOpen && dayFlyout?.tab === 'pm' ? setDayFlyout(null) : openDayFlyout(key, dt, 'pm') }}
-          style={{ flex: 1, background: isOpen && dayFlyout?.tab === 'pm' ? `linear-gradient(rgba(15,47,43,0.1), rgba(15,47,43,0.1)), ${pmCellBg}` : pmCellBg, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '3px 4px', cursor: 'pointer', gap: 2, overflow: 'visible', transition: 'background 0.15s', position: 'relative', zIndex: 1 }}
+          style={{ flex: 1, background: isOpen && dayFlyout?.tab === 'pm' ? `linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), ${pmCellBg}` : pmCellBg, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '3px 4px', cursor: 'pointer', gap: 2, overflow: 'visible', transition: 'background 0.15s', position: 'relative', zIndex: 1 }}
         >
           <div style={{ fontSize: 9, fontWeight: 600, color: isOpen && dayFlyout?.tab === 'pm' ? T.text : (pmFill?.text || T.textMuted), opacity: 0.8, letterSpacing: '0.04em' }}>PM</div>
           {pmBadges}

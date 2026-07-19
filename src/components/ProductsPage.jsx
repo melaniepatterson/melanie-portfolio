@@ -383,22 +383,14 @@ function IngredientsAccordion({ ingredients }) {
 
 // ─── PRODUCT DETAIL MODAL ────────────────────────────────────
 // Brand color palette — harmonious Glow Up pinks, blushes, peaches, and warm oranges
+// Spans all 5 brand hues at 3 lightness levels each, so product tiles read
+// as randomly colorful rather than one narrow pink family.
 const BRAND_COLORS = [
-  '#FFD6EC', // bubblegum pink
-  '#FFE4F0', // soft blush
-  '#FFC8E0', // deeper pink
-  '#FFBBD4', // rose
-  '#FFD0C8', // blush peach
-  '#FFE0D0', // soft peach
-  '#FFCAB8', // warm peach
-  '#FFB8A4', // coral peach
-  '#FFD8C0', // apricot
-  '#FFC4A8', // warm apricot
-  '#FFE8D8', // palest peach
-  '#FFD4BC', // honey peach
-  '#FFC8D8', // dusty rose
-  '#FFE0E8', // palest pink
-  '#FFCCD8', // muted rose
+  '#FCE9F5', '#FAD4EB', '#F6B7DD', // pink — light to medium
+  '#F0F2FE', '#E0E6FD', '#CCD5FC', // blue — light to medium
+  '#EBFBF2', '#D7F7E4', '#BDF1D2', // green — light to medium
+  '#FEF6DE', '#FCEDBD', '#FAE191', // yellow — light to medium
+  '#F9E9E2', '#FBD4C6', '#F8B8A0', // orange — light to medium
 ]
 function getBrandColor(brand, id) {
   // Use product ID hash for random-but-stable color per product (not per brand)
@@ -804,7 +796,7 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
       )}
 
       {/* ── Left Sidebar — desktop only ──────────────────────── */}
-      {!isMobile && <div style={{ width: 200, flexShrink: 0, borderRight: '0.5px solid ' + T.border, padding: '16px 16px 16px 20px', overflowY: 'auto', position: 'sticky', top: 0, height: '100%' }}>
+      {!isMobile && <div style={{ width: 200, flexShrink: 0, background: T.white, color: T.text, borderRight: '0.5px solid ' + T.border, padding: '16px 16px 16px 20px', overflowY: 'auto', position: 'sticky', top: 0, height: '100%' }}>
         <FilterContent />
       </div>}
 
@@ -1238,12 +1230,12 @@ export default function ProductsPage({ session }) {
   return (
     <div style={{ fontFamily: 'inherit', minHeight: '100vh', background: T.cream, paddingBottom: 40 }}>
       {/* ── App header ──────────────────────────────────────────── */}
-      <div style={{ background: T.white, borderBottom: '0.5px solid ' + T.border }}>
+      <div style={{ background: T.text }}>
         {/* Logo row — logo links back to calendar */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px 10px' }}>
           <style>{`.glowup-prodlogo { display: flex }`}</style>
           <a href="/routine" className="glowup-prodlogo" style={{ alignItems: 'baseline', textDecoration: 'none' }}>
-            <GlowUpLogo />
+            <GlowUpLogo style={{ color: T.white }} />
           </a>
           <div className="glowup-prodlogo" style={{ flex: 1 }} />
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -1252,20 +1244,20 @@ export default function ProductsPage({ session }) {
               + Add new product
             </button>
             <button onClick={() => setShowMenu(true)}
-              style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 0, padding: '5px 10px', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', justifyContent: 'center', width: 36, height: 32 }}>
-              <span style={{ display: 'block', width: 14, height: 1.5, background: T.text }} />
-              <span style={{ display: 'block', width: 14, height: 1.5, background: T.text }} />
-              <span style={{ display: 'block', width: 14, height: 1.5, background: T.text }} />
+              style={{ border: '0.5px solid rgba(255,255,255,0.4)', background: 'transparent', borderRadius: 0, padding: '5px 10px', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', justifyContent: 'center', width: 36, height: 32 }}>
+              <span style={{ display: 'block', width: 14, height: 1.5, background: T.white }} />
+              <span style={{ display: 'block', width: 14, height: 1.5, background: T.white }} />
+              <span style={{ display: 'block', width: 14, height: 1.5, background: T.white }} />
             </button>
             {showMenu && <SideMenu session={session} onClose={() => setShowMenu(false)} />}
           </div>
         </div>
         {/* Page title row with tabs */}
         <div style={{ padding: '0 20px 0' }}>
-          <div style={{ display: 'flex', gap: 20, borderBottom: `1px solid ${T.border}` }}>
+          <div style={{ display: 'flex', gap: 20, borderBottom: '1px solid rgba(255,255,255,0.25)' }}>
             {[['library', 'My Products'], ['history', 'Finish History']].map(([key, label]) => (
               <button key={key} onClick={() => setActiveTab(key)}
-                style={{ padding: '8px 0', border: 'none', background: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 12, fontWeight: activeTab === key ? 700 : 400, color: activeTab === key ? T.text : T.textMuted, borderBottom: `2px solid ${activeTab === key ? T.text : 'transparent'}`, marginBottom: -1 }}>
+                style={{ padding: '8px 0', border: 'none', background: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 12, fontWeight: activeTab === key ? 700 : 400, color: activeTab === key ? T.white : 'rgba(255,255,255,0.6)', borderBottom: `2px solid ${activeTab === key ? T.white : 'transparent'}`, marginBottom: -1 }}>
                 {label}
               </button>
             ))}

@@ -83,7 +83,7 @@ export default function GlowUpLoader() {
   return (
     <div style={{
       position: 'fixed', inset: 0,
-      background: T.darkOlive,
+      background: T.darkGreen,
       display: 'flex', flexDirection: 'column',
       alignItems: 'center', justifyContent: 'center',
       gap: 28, zIndex: 9999,
@@ -107,7 +107,7 @@ export default function GlowUpLoader() {
         fontSize: 'clamp(64px, 14vw, 88px)',
         lineHeight: 1,
         letterSpacing: '-0.01em',
-        color: T.cream,
+        color: T.white,
         textAlign: 'center',
         animation: 'glowupFloat 3s cubic-bezier(0.445, 0.05, 0.55, 0.95) infinite',
         userSelect: 'none',
@@ -128,7 +128,7 @@ export default function GlowUpLoader() {
       <div style={{
         fontFamily: T.fontFamily,
         fontSize: T.fontSize.sm,
-        color: T.cream,
+        color: T.white,
         letterSpacing: '0.02em',
         minHeight: 16,
         textAlign: 'center',

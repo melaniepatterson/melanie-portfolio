@@ -21,6 +21,7 @@ import CookieNotice from './components/CookieNotice'
 import PrivacyPolicy from './components/PrivacyPolicy'
 import BetaSurvey from './components/BetaSurvey'
 import { supabase } from './lib/supabase'
+import T from './components/theme'
 
 function Layout() {
   const location = useLocation();
@@ -134,7 +135,7 @@ function Layout() {
         {!isHome && !isRoutine && <Nav isWork={isWork || isWorkDetail} />}
         <Logo isWork={isWork || isWorkDetail} isHidden={isRoutine} />
         <div className="page-wrapper" style={{
-          backgroundColor: isWork || isWorkDetail ? "#C93500" : "#FAF7F2",
+          backgroundColor: isWork || isWorkDetail ? "#C93500" : isRoutine ? T.cream : "#FAF7F2",
           ...(isRoutine && {
             display: 'flex',
             alignItems: 'center',

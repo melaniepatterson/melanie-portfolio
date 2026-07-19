@@ -567,17 +567,17 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
   )
 
   // Shown ahead of time so people can plan, per the expanded banner spec —
-  // renders as the dark-olive continuation of the same card, not a
+  // renders as the dark continuation of the same card, not a
   // separately bordered box.
   const upNextBlock = !ready && nextPhase && effectiveDuration != null && (
-    <div style={{ background: T.darkOlive, padding: '14px 16px' }}>
-      <div style={{ fontFamily: T.fontFamilyAccent, fontStyle: T.fontStyleAccent, fontSize: 10, fontWeight: 600, color: T.creamLight, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 4 }}>
+    <div style={{ background: T.text, padding: '14px 16px' }}>
+      <div style={{ fontFamily: T.fontFamilyAccent, fontStyle: T.fontStyleAccent, fontSize: 10, fontWeight: 600, color: T.white, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 4 }}>
         Up next — around {fmtDate(phaseEnd)}
       </div>
-      <div style={{ fontSize: 13, fontWeight: 700, color: T.cream, marginBottom: 3 }}>
+      <div style={{ fontSize: 13, fontWeight: 700, color: T.white, marginBottom: 3 }}>
         {nextPhase.advancement_type === 'auto' ? 'Graduation' : `Phase ${nextPhase.phase_number} — ${nextPhase.name}`}
       </div>
-      <div style={{ fontSize: 12, color: 'rgba(251,240,219,0.8)', lineHeight: 1.6 }}>{nextPhase.preview_description || nextPhase.description}</div>
+      <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.8)', lineHeight: 1.6 }}>{nextPhase.preview_description || nextPhase.description}</div>
     </div>
   )
 
@@ -585,7 +585,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
     <div style={{ overflow: 'hidden', width: '100%', minWidth: 0, boxSizing: 'border-box' }}>
       {/* Card — white header/content zone, olive border, seamlessly
           continues into the dark-olive Up Next zone when shown */}
-      <div style={{ background: T.white, border: `1px solid ${T.darkOlive}`, borderRadius: T.radius.modal, marginBottom: 12, overflow: 'hidden', minWidth: 0 }}>
+      <div style={{ background: T.white, border: `1px solid ${T.text}`, borderRadius: T.radius.modal, marginBottom: 12, overflow: 'hidden', minWidth: 0 }}>
         <div style={{ padding: '10px 14px' }}>
           {/* Header row — always visible */}
           <button onClick={toggleCollapsed}
@@ -599,7 +599,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
               }
             `}</style>
             <div style={{ minWidth: 0, flex: 1, overflow: 'hidden' }}>
-              <div style={{ fontFamily: T.fontFamilyAccent, fontStyle: T.fontStyleAccent, fontSize: 13, fontWeight: 600, color: T.darkOlive, letterSpacing: '0.02em', textTransform: 'uppercase', marginBottom: 2 }}>
+              <div style={{ fontFamily: T.fontFamilyAccent, fontStyle: T.fontStyleAccent, fontSize: 13, fontWeight: 600, color: T.text, letterSpacing: '0.02em', textTransform: 'uppercase', marginBottom: 2 }}>
                 {program.name}
               </div>
               <div style={{ fontSize: 12, fontWeight: 600, color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
@@ -615,7 +615,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
               {/* Mobile only — progress bar below text */}
               {effectiveDuration && (
                 <div className="gu-progress-below" style={{ width: '100%', height: 4, background: T.creamDark, borderRadius: T.radius.pill, overflow: 'hidden', marginTop: 6 }}>
-                  <div style={{ width: `${phaseProgress}%`, height: '100%', background: `linear-gradient(90deg, ${T.darkOlive}, ${T.olive})`, borderRadius: T.radius.pill, transition: 'width 0.3s' }} />
+                  <div style={{ width: `${phaseProgress}%`, height: '100%', background: T.text, borderRadius: T.radius.pill, transition: 'width 0.3s' }} />
                 </div>
               )}
             </div>
@@ -623,10 +623,10 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
               {/* Desktop only — progress bar inline */}
               {effectiveDuration && (
                 <div className="gu-progress-inline" style={{ width: 80, height: 4, background: T.creamDark, borderRadius: T.radius.pill, overflow: 'hidden', alignItems: 'center' }}>
-                  <div style={{ width: `${phaseProgress}%`, height: '100%', background: `linear-gradient(90deg, ${T.darkOlive}, ${T.olive})`, borderRadius: T.radius.pill, transition: 'width 0.3s' }} />
+                  <div style={{ width: `${phaseProgress}%`, height: '100%', background: T.text, borderRadius: T.radius.pill, transition: 'width 0.3s' }} />
                 </div>
               )}
-              <span style={{ fontSize: 10, color: T.darkOlive, transition: 'transform 0.15s', display: 'inline-block', transform: collapsed ? 'rotate(0deg)' : 'rotate(180deg)' }}>▼</span>
+              <span style={{ fontSize: 10, color: T.text, transition: 'transform 0.15s', display: 'inline-block', transform: collapsed ? 'rotate(0deg)' : 'rotate(180deg)' }}>▼</span>
             </div>
           </button>
 
@@ -696,7 +696,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
 
       {/* Advancement banner — Phase 1 → 2 */}
       {!isLinearProgram && ready && currentPhase.phase_number === 1 && (
-        <div style={{ border: `1px solid ${T.darkOlive}`, borderRadius: T.radius.modal, overflow: 'hidden', width: '100%', minWidth: 0, boxSizing: 'border-box' }}>
+        <div style={{ border: `1px solid ${T.text}`, borderRadius: T.radius.modal, overflow: 'hidden', width: '100%', minWidth: 0, boxSizing: 'border-box' }}>
           <button onClick={() => setShowPicker(true)}
             style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, background: T.text, color: '#fff', border: 'none', borderRadius: 0, padding: '14px 16px', cursor: 'pointer', fontFamily: 'inherit' }}>
             <div>
@@ -711,7 +711,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
 
       {/* Advancement banner — Phase 2 → Graduation */}
       {!isLinearProgram && ready && currentPhase.phase_number === 2 && (
-        <div style={{ border: `1px solid ${T.darkOlive}`, borderRadius: T.radius.modal, overflow: 'hidden', width: '100%', minWidth: 0, boxSizing: 'border-box' }}>
+        <div style={{ border: `1px solid ${T.text}`, borderRadius: T.radius.modal, overflow: 'hidden', width: '100%', minWidth: 0, boxSizing: 'border-box' }}>
           <button onClick={() => setShowGraduation(true)}
             style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, background: T.text, color: '#fff', border: 'none', borderRadius: 0, padding: '14px 16px', cursor: 'pointer', fontFamily: 'inherit' }}>
             <div>
@@ -726,7 +726,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
 
       {/* Advancement banner — Linear programs (Tretinoin etc) */}
       {isLinearProgram && ready && nextPhase && (
-        <div style={{ border: `1px solid ${T.darkOlive}`, borderRadius: T.radius.modal, overflow: 'hidden', width: '100%', minWidth: 0, boxSizing: 'border-box' }}>
+        <div style={{ border: `1px solid ${T.text}`, borderRadius: T.radius.modal, overflow: 'hidden', width: '100%', minWidth: 0, boxSizing: 'border-box' }}>
           <button onClick={() => setShowLinearAdvance(true)}
             style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, background: T.text, color: '#fff', border: 'none', borderRadius: 0, padding: '14px 16px', cursor: 'pointer', fontFamily: 'inherit' }}>
             <div>

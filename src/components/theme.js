@@ -20,18 +20,15 @@ const T = {
   green:   '#7BE3A5',   // mint — tretinoin badges
   yellow:  '#F5C222',   // yellow — pause badges
   orange:  '#F07040',   // orange — treatment badges, warning buttons
-  olive:   '#BDB62E',   // olive — UI accent (default day color, etc.)
-  logoOlive: '#92881F', // olive — wordmark/logo only, do not use elsewhere
 
   // ── Dark variants ────────────────────────────────────────────
   // Used for PM halves of the day flyout, and anywhere a solid-color
-  // fill needs cream text on top instead of darkText.
+  // fill needs white text on top instead of darkText.
   darkPink:   '#A82070',
   darkBlue:   '#3348C0',
   darkGreen:  '#197A3C',
   darkYellow: '#8A5C00',
   darkOrange: '#9E4008',
-  darkOlive:  '#656018',
 
   // ── Extra accent tints ───────────────────────────────────────
   pinkDeep:    '#C93500',   // deep accent — CTAs, error text, active states (used everywhere, formalizing it here)
@@ -40,20 +37,20 @@ const T = {
   // ── Neutrals ─────────────────────────────────────────────────
   white:      '#FFFFFF',       // inputs, text areas, max contrast surfaces
   creamLight: '#FDF8F0',       // modals, cards, panels
-  cream:      '#FBF0DB',       // page background
+  cream:      '#FFFFFF',       // page background — plain white
   creamDark:  '#EDE2C2',       // secondary surfaces, tags, dividers
   border:     '#D4C9A8',       // all borders
 
   // ── Text ─────────────────────────────────────────────────────
-  text:      '#0F2F2B',                    // primary text — 100%
-  textMuted: 'rgba(15, 47, 43, 0.70)',     // secondary text — 70%
-  textLight: 'rgba(15, 47, 43, 0.50)',     // tertiary, placeholders — 50%
+  text:      '#000000',                  // primary text — 100%
+  textMuted: 'rgba(0, 0, 0, 0.70)',      // secondary text — 70%
+  textLight: 'rgba(0, 0, 0, 0.50)',      // tertiary, placeholders — 50%
 
   // ── Button states ────────────────────────────────────────────
   // See STYLES — BUTTONS spec (2026-07) — supersedes the destructive
   // colors in the original handoff doc Section 5 (#F07040 → #E95800).
-  btnHover:    '#2D5E57',   // primary hover (lighter than default)
-  btnActive:   '#071A18',   // primary active/pressed (darker than default)
+  btnHover:    '#333333',   // primary hover (lighter than default)
+  btnActive:   '#1A1A1A',   // primary active/pressed
   warn:        '#E95800',   // destructive default — border + text
   warnHover:   '#B84400',   // destructive hover border + text
   warnHoverBg: '#FEE9D5',   // destructive hover background
