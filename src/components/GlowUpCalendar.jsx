@@ -3333,17 +3333,17 @@ function NewRoutinePeriodPicker({ routineHistory, dailyHistory, showerHistory, p
   const [chosen, setChosen] = useState(null)
 
   const primaryOptions = [
-    { key: 'program',  label: 'Add a program',              desc: 'Guided phases for introducing something new — like a tretinoin ramp-up — that build on your current routine.' },
-    { key: 'skincare', label: 'Manually adjust your routine',  desc: 'Edit your morning and evening steps directly — cleanse, moisturize, actives, SPF.' },
+    { key: 'program',  label: 'Add a program',              desc: 'Guided phases for introducing something new — like a tretinoin ramp-up — that build on your current routine.', hover: T.blue },
+    { key: 'skincare', label: 'Manually adjust your routine',  desc: 'Edit your morning and evening steps directly — cleanse, moisturize, actives, SPF.', hover: T.green },
   ]
   const otherOptions = [
-    { key: 'daily',  label: 'Extras',         desc: 'Growth serums, eye patches, tools, supplements.' },
-    { key: 'shower', label: 'Shower routine', desc: 'Body washes, hair treatments, and anything else in the shower.' },
+    { key: 'daily',  label: 'Extras',         desc: 'Growth serums, eye patches, tools, supplements.', hover: T.yellow },
+    { key: 'shower', label: 'Shower routine', desc: 'Body washes, hair treatments, and anything else in the shower.', hover: T.orange },
   ]
   const options = [...primaryOptions, ...otherOptions]
 
   if (!chosen) return (
-    <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 0, padding: '18px 18px', marginBottom: 14 }}>
+    <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: T.radius.modal, padding: '18px 18px', marginBottom: 14 }}>
       <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 4 }}>What kind of routine would you like to add?</div>
       <div style={{ fontSize: 12, color: T.textMuted, marginBottom: 14 }}>Each type is tracked separately with its own history.</div>
 
@@ -3351,16 +3351,16 @@ function NewRoutinePeriodPicker({ routineHistory, dailyHistory, showerHistory, p
       <div style={{ display: 'flex', alignItems: 'stretch', gap: 10, marginBottom: 16 }}>
         {primaryOptions.map(o => (
           <button key={o.key} onClick={() => setChosen(o.key)} style={{
-            flex: 1, padding: '16px 14px', borderRadius: 0,
-            border: `1px solid ${T.text}`, background: T.cream,
+            flex: 1, padding: '16px 14px', borderRadius: T.radius.card,
+            border: 'none', background: T.text,
             textAlign: 'left', cursor: 'pointer',
-            transition: 'border-color 0.15s, background 0.15s',
+            transition: 'background 0.2s ease, transform 0.2s ease',
           }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = T.pinkDeep; e.currentTarget.style.background = T.pink }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = T.text; e.currentTarget.style.background = T.cream }}
+            onMouseEnter={e => { e.currentTarget.style.background = o.hover; e.currentTarget.style.transform = 'scale(1.02)' }}
+            onMouseLeave={e => { e.currentTarget.style.background = T.text; e.currentTarget.style.transform = 'scale(1)' }}
           >
-            <div style={{ fontSize: 14, fontWeight: 700, color: T.text, marginBottom: 4 }}>{o.label}</div>
-            <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.6 }}>{o.desc}</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: T.white, marginBottom: 4 }}>{o.label}</div>
+            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)', lineHeight: 1.6 }}>{o.desc}</div>
           </button>
         )).reduce((acc, el, i) => i === 0 ? [el] : [...acc,
           <div key="or" style={{ display: 'flex', alignItems: 'center', fontSize: 11, color: T.textLight, fontStyle: 'italic', flexShrink: 0 }}>or</div>,
@@ -3372,16 +3372,16 @@ function NewRoutinePeriodPicker({ routineHistory, dailyHistory, showerHistory, p
       <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
         {otherOptions.map(o => (
           <button key={o.key} onClick={() => setChosen(o.key)} style={{
-            flex: 1, padding: '10px 12px', borderRadius: 0,
-            border: `0.5px solid ${T.border}`, background: T.cream,
+            flex: 1, padding: '10px 12px', borderRadius: T.radius.card,
+            border: 'none', background: T.text,
             textAlign: 'left', cursor: 'pointer',
-            transition: 'border-color 0.15s, background 0.15s',
+            transition: 'background 0.2s ease, transform 0.2s ease',
           }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = T.pinkDeep; e.currentTarget.style.background = T.pink }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = T.border; e.currentTarget.style.background = T.cream }}
+            onMouseEnter={e => { e.currentTarget.style.background = o.hover; e.currentTarget.style.transform = 'scale(1.02)' }}
+            onMouseLeave={e => { e.currentTarget.style.background = T.text; e.currentTarget.style.transform = 'scale(1)' }}
           >
-            <div style={{ fontSize: 12, fontWeight: 500, color: T.text, marginBottom: 2 }}>{o.label}</div>
-            <div style={{ fontSize: 10, color: T.textMuted, lineHeight: 1.5 }}>{o.desc}</div>
+            <div style={{ fontSize: 12, fontWeight: 500, color: T.white, marginBottom: 2 }}>{o.label}</div>
+            <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.75)', lineHeight: 1.5 }}>{o.desc}</div>
           </button>
         ))}
       </div>
