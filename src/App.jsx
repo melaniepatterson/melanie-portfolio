@@ -143,7 +143,7 @@ function Layout() {
         {!isHome && !isRoutine && <Nav isWork={isWork || isWorkDetail} />}
         <Logo isWork={isWork || isWorkDetail} isHidden={isRoutine} />
         <div className="page-wrapper" style={{
-          backgroundColor: isWork || isWorkDetail ? "#C93500" : isRoutine ? T.cream : "#FAF7F2",
+          backgroundColor: isWork || isWorkDetail ? "#C93500" : isRoutine ? T.darkGreen : "#FAF7F2",
           ...(isRoutine && {
             display: 'flex',
             alignItems: 'center',
@@ -174,7 +174,7 @@ function Layout() {
             fontSize: "0.6rem",
             letterSpacing: "0.1em",
             opacity: 0.4,
-            color: isWork || isWorkDetail ? "#FAF7F2" : isRoutine ? "#000000" : "#C93500",
+            color: isWork || isWorkDetail ? "#FAF7F2" : isRoutine ? "#FFFFFF" : "#C93500",
             pointerEvents: "none",
           }}>
             © {new Date().getFullYear()} Melanie Patterson

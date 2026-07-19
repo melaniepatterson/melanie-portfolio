@@ -31,6 +31,7 @@ import BetaSurvey from './BetaSurvey'
 import { applyProgramPhase, buildStepEntries } from './programOptions'
 import { todayInTz, nowInTz, detectTimezone } from './timezone'
 import { fmtDate, fmtDateTime } from './dateFormat'
+import { programCardColor } from './programColors'
 import SideMenu from './SideMenu'
 import T from './theme'
 import ProductForm from './shared/ProductForm'
@@ -2890,28 +2891,6 @@ function ProgramEnrollmentPreview({ program, onConfirm, onBack, timezone }) {
   )
 }
 
-// Each program in the library gets its own dark brand color, matched by
-// slug (falls back to a name match in case a slug ever changes).
-const PROGRAM_COLOR_BY_SLUG = {
-  'aha-bha-onboarding':          T.darkBlue,
-  'benzoyl-peroxide-onboarding': T.darkPink,
-  'hyperpigmentation-protocol':  T.darkYellow,
-  'skin-barrier-repair':         T.darkOrange,
-  'tretinoin-onboarding':        T.darkGreen,
-}
-const PROGRAM_COLOR_BY_NAME_KEYWORD = [
-  [/aha|bha/i,             T.darkBlue],
-  [/benzoyl|peroxide/i,    T.darkPink],
-  [/hyperpigmentation/i,   T.darkYellow],
-  [/barrier/i,             T.darkOrange],
-  [/tretinoin/i,           T.darkGreen],
-]
-function programCardColor(program) {
-  if (PROGRAM_COLOR_BY_SLUG[program.slug]) return PROGRAM_COLOR_BY_SLUG[program.slug]
-  const match = PROGRAM_COLOR_BY_NAME_KEYWORD.find(([re]) => re.test(program.name || ''))
-  return match ? match[1] : T.text
-}
-
 function AddProgramPanel({ session, activeProgram, activePrograms = [], routinePeriod, skinType, timezone, onChanged }) {
   const [alertDialog, alertUser] = useAlert()
   const [loading, setLoading] = useState(true)
@@ -4100,13 +4079,9 @@ function computeNotifications({ products, treatments, allTypes, timezone }) {
 }
 
 
-const LOGO_COLORS = [T.pink, T.blue, T.green, T.yellow, T.orange]
-
 export default function GlowUpCalendar({ session }) {
   const [confirmDialog, confirm] = useConfirm()
   const userId = session?.user?.id
-  // Random brand color per page load — calendar page only.
-  const logoColor = useRef(LOGO_COLORS[Math.floor(Math.random() * LOGO_COLORS.length)])
 
   // timezone must be declared FIRST so all date computations below are correct.
   // Initialize from device timezone immediately — profile load will override once
@@ -4785,8 +4760,8 @@ export default function GlowUpCalendar({ session }) {
   for (let i = 0; i < firstDow; i++) {
     const dayNum = prevMonthLastDay - firstDow + i + 1
     cells.push(
-      <div key={`prev${i}`} style={{ position: 'relative', borderRadius: 8, border: `0.5px solid ${T.creamDark}`, background: 'rgba(253,248,240,0.75)', display: 'flex', flexDirection: 'column', minHeight: '100px' }}>
-        <div style={{ fontSize: 10, color: T.textLight, padding: '3px 5px', fontWeight: 400, opacity: 0.5 }}>{dayNum}</div>
+      <div key={`prev${i}`} style={{ position: 'relative', borderRadius: 8, border: `0.5px solid ${T.darkGreen}`, background: '#EBFBF2', display: 'flex', flexDirection: 'column', minHeight: '100px' }}>
+        <div style={{ fontSize: 10, color: T.darkGreen, padding: '3px 5px', fontWeight: 400, opacity: 0.5 }}>{dayNum}</div>
       </div>
     )
   }
@@ -4830,13 +4805,13 @@ export default function GlowUpCalendar({ session }) {
     const pmFill = cellFillFor(pmStatusKey)
     const amCellBg = amFill?.bg ?? T.white
     const pmCellBg = pmFill?.bg ?? T.white
-    const dateColor = isToday ? T.text : (amFill?.text || pmFill?.text || T.textMuted)
+    const dateColor = T.darkGreen
 
-    // Dividers are fixed neutral colors regardless of status — only the
-    // Today cell overrides them with its own border/divider color.
-    const upperDivider = T.text
-    const lowerDivider = T.text
-    const cellBorder    = T.text
+    // Dividers are dark green for every cell — only the Today cell's outer
+    // stroke stays black, so it still reads as a distinct highlight.
+    const upperDivider = T.darkGreen
+    const lowerDivider = T.darkGreen
+    const cellBorder    = isToday ? T.text : T.darkGreen
     const cellBorderW    = isToday ? '1.5px' : '0.5px'
 
     // AM badge — tier system, single badge
@@ -4916,8 +4891,8 @@ export default function GlowUpCalendar({ session }) {
   const trailingCount = totalCells - firstDow - daysInMonth
   for (let i = 1; i <= trailingCount; i++) {
     cells.push(
-      <div key={`next${i}`} style={{ position: 'relative', borderRadius: 8, border: `0.5px solid ${T.creamDark}`, background: 'rgba(253,248,240,0.75)', display: 'flex', flexDirection: 'column', minHeight: '100px' }}>
-        <div style={{ fontSize: 10, color: T.textLight, padding: '3px 5px', fontWeight: 400, opacity: 0.5 }}>{i}</div>
+      <div key={`next${i}`} style={{ position: 'relative', borderRadius: 8, border: `0.5px solid ${T.darkGreen}`, background: '#EBFBF2', display: 'flex', flexDirection: 'column', minHeight: '100px' }}>
+        <div style={{ fontSize: 10, color: T.darkGreen, padding: '3px 5px', fontWeight: 400, opacity: 0.5 }}>{i}</div>
       </div>
     )
   }
@@ -5052,7 +5027,7 @@ export default function GlowUpCalendar({ session }) {
 
       {/* Glow Up logo — desktop only */}
       <div className="glowup-cal-logo" style={{ alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
-        <GlowUpLogo size={32} style={{ color: logoColor.current }} />
+        <GlowUpLogo size={32} style={{ color: T.white }} />
       </div>
 
       {/* Program nudge — for users who built their routine manually and have never enrolled in a program */}
@@ -5147,24 +5122,28 @@ export default function GlowUpCalendar({ session }) {
 
       {/* Month/year with flanking nav arrows — fixed-width center keeps arrows static */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 6 }}>
-        <button onClick={prevMonth} aria-label="Previous month" style={{ border: 'none', background: 'transparent', padding: '5px 20px', cursor: 'pointer', fontSize: 18, color: T.text, flexShrink: 0 }}>←</button>
+        <button onClick={prevMonth} aria-label="Previous month" style={{ border: 'none', background: 'transparent', padding: '5px 20px', cursor: 'pointer', fontSize: 18, color: T.white, flexShrink: 0 }}>←</button>
         <div style={{ width: 260, textAlign: 'center' }}>
-          <div style={{ fontFamily: T.fontFamilyAccent, fontStyle: T.fontStyleAccent, fontSize: 'clamp(28px, 6vw, 42px)', fontWeight: 500, color: T.text, lineHeight: 1.1 }}>{MONTHS[month]}</div>
-          <div style={{ fontSize: 'clamp(13px, 2.5vw, 18px)', color: T.textMuted, fontWeight: 400, marginTop: 2 }}>{year}</div>
+          <div style={{ fontFamily: T.fontFamilyAccent, fontStyle: T.fontStyleAccent, fontSize: 'clamp(28px, 6vw, 42px)', fontWeight: 500, color: T.white, lineHeight: 1.1 }}>{MONTHS[month]}</div>
+          <div style={{ fontSize: 'clamp(13px, 2.5vw, 18px)', color: 'rgba(255,255,255,0.7)', fontWeight: 400, marginTop: 2 }}>{year}</div>
         </div>
-        <button onClick={nextMonth} aria-label="Next month" style={{ border: 'none', background: 'transparent', padding: '5px 20px', cursor: 'pointer', fontSize: 18, color: T.text, flexShrink: 0 }}>→</button>
+        <button onClick={nextMonth} aria-label="Next month" style={{ border: 'none', background: 'transparent', padding: '5px 20px', cursor: 'pointer', fontSize: 18, color: T.white, flexShrink: 0 }}>→</button>
       </div>
 
       {/* Header — always visible, never moves */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, gap: 8 }}>
         {/* Left — primary actions */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-          <Btn variant={['update','setup'].includes(panel) ? 'active' : 'primary'} onClick={() => { setPanel(p => ['update','setup'].includes(p) ? null : (hasRoutine ? 'update' : 'setup')); setEditingPeriod(null); setDayFlyout(null) }}>
+          <Btn variant={['update','setup'].includes(panel) ? 'active' : 'primary'}
+            style={['update','setup'].includes(panel) ? undefined : { background: T.white, color: T.darkGreen }}
+            onClick={() => { setPanel(p => ['update','setup'].includes(p) ? null : (hasRoutine ? 'update' : 'setup')); setEditingPeriod(null); setDayFlyout(null) }}>
             + Build your <AccentWord>routine</AccentWord>
           </Btn>
-          <Btn variant={showTreatments ? 'active' : 'secondary'} onClick={() => { setShowTreatments(s => !s); setDayFlyout(null) }}>My treatments</Btn>
+          <Btn variant={showTreatments ? 'active' : 'secondary'}
+            style={showTreatments ? undefined : { borderColor: T.white, color: T.white }}
+            onClick={() => { setShowTreatments(s => !s); setDayFlyout(null) }}>My treatments</Btn>
           {(month !== now.getMonth() || year !== now.getFullYear()) && (
-            <Btn variant="ghost" onClick={() => { setMonth(now.getMonth()); setYear(now.getFullYear()) }}>Today</Btn>
+            <Btn variant="ghost" style={{ color: T.white }} onClick={() => { setMonth(now.getMonth()); setYear(now.getFullYear()) }}>Today</Btn>
           )}
         </div>
         {/* Right — bell + hamburger */}
@@ -5179,10 +5158,10 @@ export default function GlowUpCalendar({ session }) {
             )}
           </button>
           <button onClick={() => setShowMenu(s => !s)} aria-label="Menu"
-            style={{ border: 'none', background: showMenu ? T.pink : 'transparent', borderRadius: T.radius.pill, padding: '5px 10px', cursor: 'pointer', color: T.text, fontSize: 16, lineHeight: 1, display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', justifyContent: 'center', width: 36, height: 32 }}>
-            <span style={{ display: 'block', width: 14, height: 1.5, background: T.text, borderRadius: 0 }} />
-            <span style={{ display: 'block', width: 14, height: 1.5, background: T.text, borderRadius: 0 }} />
-            <span style={{ display: 'block', width: 14, height: 1.5, background: T.text, borderRadius: 0 }} />
+            style={{ border: 'none', background: showMenu ? T.pink : 'transparent', borderRadius: T.radius.pill, padding: '5px 10px', cursor: 'pointer', color: T.white, fontSize: 16, lineHeight: 1, display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', justifyContent: 'center', width: 36, height: 32 }}>
+            <span style={{ display: 'block', width: 14, height: 1.5, background: showMenu ? T.text : T.white, borderRadius: 0 }} />
+            <span style={{ display: 'block', width: 14, height: 1.5, background: showMenu ? T.text : T.white, borderRadius: 0 }} />
+            <span style={{ display: 'block', width: 14, height: 1.5, background: showMenu ? T.text : T.white, borderRadius: 0 }} />
           </button>
         </div>
       </div>
@@ -5332,13 +5311,13 @@ export default function GlowUpCalendar({ session }) {
       )}
 
       {/* Hint — above day headers */}
-      <p style={{ fontSize: 11, color: T.textLight, marginBottom: 6 }}>
+      <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', marginBottom: 6 }}>
         Tap AM or PM on any date to open the day's routine. Use "Products" to manage your product library. Tap any step to assign a product.
       </p>
 
       {/* Day headers — always visible */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: 3, marginBottom: 3 }}>
-        {DAYS.map(d => <div key={d} style={{ textAlign: 'center', fontSize: 11, fontWeight: 600, color: T.textLight, padding: '3px 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{d}</div>)}
+        {DAYS.map(d => <div key={d} style={{ textAlign: 'center', fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.6)', padding: '3px 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{d}</div>)}
       </div>
 
       {/* Grid — always visible, never moves */}

@@ -5,6 +5,7 @@ import ProgramOptionsChecklist, { toggleOption } from './ProgramOptionsChecklist
 import T from './theme'
 import Btn from './shared/Btn'
 import AccentWord from './shared/AccentWord'
+import { programCardColor } from './programColors'
 
 
 function daysSince(dateStr) {
@@ -585,7 +586,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
     <div style={{ overflow: 'hidden', width: '100%', minWidth: 0, boxSizing: 'border-box' }}>
       {/* Card — white header/content zone, olive border, seamlessly
           continues into the dark-olive Up Next zone when shown */}
-      <div style={{ background: T.white, border: `1px solid ${T.text}`, borderRadius: T.radius.modal, marginBottom: 12, overflow: 'hidden', minWidth: 0 }}>
+      <div style={{ background: T.white, border: `1px solid ${T.darkGreen}`, borderRadius: T.radius.modal, marginBottom: 12, overflow: 'hidden', minWidth: 0 }}>
         <div style={{ padding: '10px 14px' }}>
           {/* Header row — always visible */}
           <button onClick={toggleCollapsed}
@@ -599,23 +600,23 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
               }
             `}</style>
             <div style={{ minWidth: 0, flex: 1, overflow: 'hidden' }}>
-              <div style={{ fontFamily: T.fontFamilyAccent, fontStyle: T.fontStyleAccent, fontSize: 13, fontWeight: 600, color: T.text, letterSpacing: '0.02em', textTransform: 'uppercase', marginBottom: 2 }}>
+              <div style={{ fontFamily: T.fontFamilyAccent, fontStyle: T.fontStyleAccent, fontSize: 13, fontWeight: 600, color: programCardColor(program), letterSpacing: '0.02em', textTransform: 'uppercase', marginBottom: 2 }}>
                 {program.name}
               </div>
-              <div style={{ fontSize: 12, fontWeight: 600, color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: T.darkGreen, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 Phase {currentPhase.phase_number} of {countedPhases.length} — {currentPhase.name}
                 {elapsed < 0 ? (
-                  <span style={{ fontWeight: 400, color: T.textMuted }}> · Starts {fmtDate(phaseStart)}</span>
+                  <span style={{ fontWeight: 400, color: T.darkGreen, opacity: 0.7 }}> · Starts {fmtDate(phaseStart)}</span>
                 ) : currentPhase.duration_days && (
                   pauseDays > 0 && effectiveElapsed <= elapsed
-                    ? <span style={{ fontWeight: 400, color: T.textMuted }}> · Day {Math.max(effectiveElapsed, 1)} of {effectiveDuration} — paused for treatment{resumeDate ? `, resumes ${resumeDate}` : ''}</span>
-                    : <span style={{ fontWeight: 400, color: T.textMuted }}> · Day {Math.min(Math.max(effectiveElapsed, 0) + 1, effectiveDuration)} of {effectiveDuration}</span>
+                    ? <span style={{ fontWeight: 400, color: T.darkGreen, opacity: 0.7 }}> · Day {Math.max(effectiveElapsed, 1)} of {effectiveDuration} — paused for treatment{resumeDate ? `, resumes ${resumeDate}` : ''}</span>
+                    : <span style={{ fontWeight: 400, color: T.darkGreen, opacity: 0.7 }}> · Day {Math.min(Math.max(effectiveElapsed, 0) + 1, effectiveDuration)} of {effectiveDuration}</span>
                 )}
               </div>
               {/* Mobile only — progress bar below text */}
               {effectiveDuration && (
                 <div className="gu-progress-below" style={{ width: '100%', height: 4, background: T.creamDark, borderRadius: T.radius.pill, overflow: 'hidden', marginTop: 6 }}>
-                  <div style={{ width: `${phaseProgress}%`, height: '100%', background: T.text, borderRadius: T.radius.pill, transition: 'width 0.3s' }} />
+                  <div style={{ width: `${phaseProgress}%`, height: '100%', background: T.darkGreen, borderRadius: T.radius.pill, transition: 'width 0.3s' }} />
                 </div>
               )}
             </div>
@@ -623,10 +624,10 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
               {/* Desktop only — progress bar inline */}
               {effectiveDuration && (
                 <div className="gu-progress-inline" style={{ width: 80, height: 4, background: T.creamDark, borderRadius: T.radius.pill, overflow: 'hidden', alignItems: 'center' }}>
-                  <div style={{ width: `${phaseProgress}%`, height: '100%', background: T.text, borderRadius: T.radius.pill, transition: 'width 0.3s' }} />
+                  <div style={{ width: `${phaseProgress}%`, height: '100%', background: T.darkGreen, borderRadius: T.radius.pill, transition: 'width 0.3s' }} />
                 </div>
               )}
-              <span style={{ fontSize: 10, color: T.text, transition: 'transform 0.15s', display: 'inline-block', transform: collapsed ? 'rotate(0deg)' : 'rotate(180deg)' }}>▼</span>
+              <span style={{ fontSize: 10, color: T.darkGreen, transition: 'transform 0.15s', display: 'inline-block', transform: collapsed ? 'rotate(0deg)' : 'rotate(180deg)' }}>▼</span>
             </div>
           </button>
 
