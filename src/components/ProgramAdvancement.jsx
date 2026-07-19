@@ -571,7 +571,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
   // renders as the dark continuation of the same card, not a
   // separately bordered box.
   const upNextBlock = !ready && nextPhase && effectiveDuration != null && (
-    <div style={{ background: T.text, padding: '14px 16px' }}>
+    <div style={{ background: T.darkGreen, padding: '14px 16px' }}>
       <div style={{ fontFamily: T.fontFamilyAccent, fontStyle: T.fontStyleAccent, fontSize: 10, fontWeight: 600, color: T.white, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 4 }}>
         Up next — around {fmtDate(phaseEnd)}
       </div>

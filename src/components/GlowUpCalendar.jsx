@@ -4760,7 +4760,7 @@ export default function GlowUpCalendar({ session }) {
   for (let i = 0; i < firstDow; i++) {
     const dayNum = prevMonthLastDay - firstDow + i + 1
     cells.push(
-      <div key={`prev${i}`} style={{ position: 'relative', borderRadius: 8, border: `0.5px solid ${T.darkGreen}`, background: T.creamLight, display: 'flex', flexDirection: 'column', minHeight: '100px' }}>
+      <div key={`prev${i}`} style={{ position: 'relative', borderRadius: 8, border: 'none', background: '#EBFBF2', display: 'flex', flexDirection: 'column', minHeight: '100px' }}>
         <div style={{ fontSize: 10, color: T.darkGreen, padding: '3px 5px', fontWeight: 400, opacity: 0.5 }}>{dayNum}</div>
       </div>
     )
@@ -4871,7 +4871,7 @@ export default function GlowUpCalendar({ session }) {
           onClick={e => { e.stopPropagation(); isOpen && dayFlyout?.tab === 'am' ? setDayFlyout(null) : openDayFlyout(key, dt, 'am') }}
           style={{ flex: 1, background: isOpen && dayFlyout?.tab === 'am' ? `linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), ${amCellBg}` : amCellBg, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'space-between', padding: '3px 4px', cursor: 'pointer', borderBottom: `0.5px solid ${lowerDivider}`, gap: 2, overflow: 'visible', transition: 'background 0.15s', position: 'relative', zIndex: 1 }}
         >
-          <div style={{ fontSize: 9, fontWeight: 600, color: isOpen && dayFlyout?.tab === 'am' ? T.text : (amFill?.text || T.textMuted), opacity: 0.8, letterSpacing: '0.04em' }}>AM</div>
+          <div style={{ fontSize: 9, fontWeight: 600, color: isOpen && dayFlyout?.tab === 'am' ? T.text : (amFill?.text || T.darkGreen), opacity: 0.8, letterSpacing: '0.04em' }}>AM</div>
           {amBadges}
         </div>
         {/* PM half */}
@@ -4879,7 +4879,7 @@ export default function GlowUpCalendar({ session }) {
           onClick={e => { e.stopPropagation(); isOpen && dayFlyout?.tab === 'pm' ? setDayFlyout(null) : openDayFlyout(key, dt, 'pm') }}
           style={{ flex: 1, background: isOpen && dayFlyout?.tab === 'pm' ? `linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), ${pmCellBg}` : pmCellBg, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'space-between', padding: '3px 4px', cursor: 'pointer', gap: 2, overflow: 'visible', transition: 'background 0.15s', position: 'relative', zIndex: 1 }}
         >
-          <div style={{ fontSize: 9, fontWeight: 600, color: isOpen && dayFlyout?.tab === 'pm' ? T.text : (pmFill?.text || T.textMuted), opacity: 0.8, letterSpacing: '0.04em' }}>PM</div>
+          <div style={{ fontSize: 9, fontWeight: 600, color: isOpen && dayFlyout?.tab === 'pm' ? T.text : (pmFill?.text || T.darkGreen), opacity: 0.8, letterSpacing: '0.04em' }}>PM</div>
           {pmBadges}
         </div>
       </div>
@@ -4891,7 +4891,7 @@ export default function GlowUpCalendar({ session }) {
   const trailingCount = totalCells - firstDow - daysInMonth
   for (let i = 1; i <= trailingCount; i++) {
     cells.push(
-      <div key={`next${i}`} style={{ position: 'relative', borderRadius: 8, border: `0.5px solid ${T.darkGreen}`, background: T.creamLight, display: 'flex', flexDirection: 'column', minHeight: '100px' }}>
+      <div key={`next${i}`} style={{ position: 'relative', borderRadius: 8, border: 'none', background: '#EBFBF2', display: 'flex', flexDirection: 'column', minHeight: '100px' }}>
         <div style={{ fontSize: 10, color: T.darkGreen, padding: '3px 5px', fontWeight: 400, opacity: 0.5 }}>{i}</div>
       </div>
     )
