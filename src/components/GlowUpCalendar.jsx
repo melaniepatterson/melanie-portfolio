@@ -3856,7 +3856,7 @@ function UpcomingTreatmentsPanel({ treatments, allTypes, routineHistory, onClose
   }
 
   return (
-    <div style={{ background: T.orange, border: 'none', borderRadius: T.radius.modal, padding: '16px 18px', marginBottom: 14 }}>
+    <div style={{ background: 'transparent', padding: 0, marginBottom: 14 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
         <div style={{ fontSize: 13, fontWeight: 600, color: T.white }}>Treatments</div>
         <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
@@ -3870,13 +3870,13 @@ function UpcomingTreatmentsPanel({ treatments, allTypes, routineHistory, onClose
         {addingDate ? (
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
             <DateInput value={addingDate} onChange={e => setAddingDate(e.target.value)} />
-            <Btn variant="primary" disabled={!addingDate} onClick={() => { onAddNew(addingDate); setAddingDate('') }} style={{ fontSize: 11, padding: '5px 12px' }}>
+            <Btn variant="primary" disabled={!addingDate} onClick={() => { onAddNew(addingDate); setAddingDate('') }} style={{ fontSize: 11, padding: '5px 12px', background: T.white, color: T.darkOrange }}>
               Choose type →
             </Btn>
-            <Btn onClick={() => setAddingDate('')} style={{ fontSize: 11, padding: '5px 10px' }}>Cancel</Btn>
+            <Btn onClick={() => setAddingDate('')} style={{ fontSize: 11, padding: '5px 10px', borderColor: T.white, color: T.white }}>Cancel</Btn>
           </div>
         ) : (
-          <Btn variant="primary" onClick={() => setAddingDate(dateKey(new Date()))} style={{ fontSize: 11, padding: '5px 12px' }}>
+          <Btn variant="primary" onClick={() => setAddingDate(dateKey(new Date()))} style={{ fontSize: 11, padding: '5px 12px', background: T.white, color: T.darkOrange }}>
             + Add a treatment
           </Btn>
         )}
@@ -4807,10 +4807,11 @@ export default function GlowUpCalendar({ session }) {
     const pmCellBg = pmFill?.bg ?? T.white
     const dateColor = T.darkGreen
 
-    // Dividers are dark green for every cell — only the Today cell's outer
-    // stroke stays black, so it still reads as a distinct highlight.
+    // Dividers are dark green by default — only the Today cell's outer
+    // stroke stays black. The AM/PM divider switches to white whenever
+    // either half has a status fill, so it still reads against the color.
     const upperDivider = T.darkGreen
-    const lowerDivider = T.darkGreen
+    const lowerDivider = (amFill || pmFill) ? T.white : T.darkGreen
     const cellBorder    = isToday ? T.text : T.darkGreen
     const cellBorderW    = isToday ? '1.5px' : '0.5px'
 
@@ -5331,7 +5332,7 @@ export default function GlowUpCalendar({ session }) {
             style={{
               position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
               zIndex: 50,
-              background: T.white,
+              background: showTreatments ? T.orange : T.white,
               animation: 'panelIn 0.2s ease',
               overflowY: 'auto',
               WebkitOverflowScrolling: 'touch',

@@ -615,16 +615,16 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
               </div>
               {/* Mobile only — progress bar below text */}
               {effectiveDuration && (
-                <div className="gu-progress-below" style={{ width: '100%', height: 4, background: T.creamDark, borderRadius: T.radius.pill, overflow: 'hidden', marginTop: 6 }}>
-                  <div style={{ width: `${phaseProgress}%`, height: '100%', background: T.darkGreen, borderRadius: T.radius.pill, transition: 'width 0.3s' }} />
+                <div className="gu-progress-below" style={{ width: '100%', height: 4, background: '#EBFBF2', borderRadius: T.radius.pill, overflow: 'hidden', marginTop: 6 }}>
+                  <div style={{ width: `${phaseProgress}%`, height: '100%', background: programCardColor(program), borderRadius: T.radius.pill, transition: 'width 0.3s' }} />
                 </div>
               )}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
               {/* Desktop only — progress bar inline */}
               {effectiveDuration && (
-                <div className="gu-progress-inline" style={{ width: 80, height: 4, background: T.creamDark, borderRadius: T.radius.pill, overflow: 'hidden', alignItems: 'center' }}>
-                  <div style={{ width: `${phaseProgress}%`, height: '100%', background: T.darkGreen, borderRadius: T.radius.pill, transition: 'width 0.3s' }} />
+                <div className="gu-progress-inline" style={{ width: 80, height: 4, background: '#EBFBF2', borderRadius: T.radius.pill, overflow: 'hidden', alignItems: 'center' }}>
+                  <div style={{ width: `${phaseProgress}%`, height: '100%', background: programCardColor(program), borderRadius: T.radius.pill, transition: 'width 0.3s' }} />
                 </div>
               )}
               <span style={{ fontSize: 10, color: T.darkGreen, transition: 'transform 0.15s', display: 'inline-block', transform: collapsed ? 'rotate(0deg)' : 'rotate(180deg)' }}>▼</span>
@@ -637,14 +637,14 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
 
               {/* Current phase description — hide for Phase 1 tretinoin since sandwich note covers it */}
               {program.slug !== 'basic-skincare' && currentPhase.description && !(currentPhase.phase_number === 1 && (/sandwich/i.test(currentPhase.name || '') || /sandwich/i.test(currentPhase.description || ''))) && (
-                <div style={{ marginTop: 8, fontSize: 11, color: T.textMuted, lineHeight: 1.7, padding: '8px 10px', background: T.creamDark, borderRadius: 0 }}>
+                <div style={{ marginTop: 8, fontSize: 11, color: T.darkGreen, opacity: 0.85, lineHeight: 1.7, padding: '8px 10px', background: '#EBFBF2', borderRadius: 0 }}>
                   {currentPhase.description}
                 </div>
               )}
 
               {/* Sandwich method description — only shown on Phase 1 */}
               {currentPhase.phase_number === 1 && (/sandwich/i.test(currentPhase.name || '') || /sandwich/i.test(currentPhase.description || '')) && (
-                <div style={{ marginTop: 8, fontSize: 11, color: T.textMuted, lineHeight: 1.7, padding: '8px 10px', background: T.creamDark, borderRadius: 0 }}>
+                <div style={{ marginTop: 8, fontSize: 11, color: T.darkGreen, opacity: 0.85, lineHeight: 1.7, padding: '8px 10px', background: '#EBFBF2', borderRadius: 0 }}>
                   <span style={{ fontWeight: 600, color: T.text }}>What is the sandwich method? </span>
                   Apply moisturizer, wait 2–3 min, apply tretinoin, then moisturizer again on top. The buffer layers reduce irritation while it still absorbs.
                 </div>
