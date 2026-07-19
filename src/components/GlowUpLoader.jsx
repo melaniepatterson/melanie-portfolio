@@ -18,6 +18,7 @@ const SAYINGS = [
 ]
 
 const BAR_COLORS = [T.pink, T.blue, T.green, T.yellow, T.orange]
+const BG_COLORS = [T.darkPink, T.darkBlue, T.darkGreen, T.darkYellow, T.darkOrange]
 const SLOT = 240          // px per color slot
 const BAND_HALF = 45      // half-width of the solid color blob within a slot
 const UNIT = SLOT * BAR_COLORS.length // one full pass through all 5 colors
@@ -47,6 +48,7 @@ function buildBarGradient() {
 }
 
 export default function GlowUpLoader() {
+  const bgColor = useRef(BG_COLORS[Math.floor(Math.random() * BG_COLORS.length)])
   const barGradient = useRef(buildBarGradient())
   const sayingQueue = useRef(shuffle(SAYINGS))
   const sayingIndex = useRef(0)
@@ -83,7 +85,7 @@ export default function GlowUpLoader() {
   return (
     <div style={{
       position: 'fixed', inset: 0,
-      background: T.darkGreen,
+      background: bgColor.current,
       display: 'flex', flexDirection: 'column',
       alignItems: 'center', justifyContent: 'center',
       gap: 28, zIndex: 9999,

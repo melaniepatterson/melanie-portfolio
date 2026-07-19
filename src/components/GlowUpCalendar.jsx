@@ -3875,7 +3875,7 @@ function UpcomingTreatmentsPanel({ treatments, allTypes, routineHistory, onClose
   }
 
   return (
-    <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 0, padding: '16px 18px', marginBottom: 14 }}>
+    <div style={{ background: T.white, border: `1px solid ${T.text}`, borderRadius: T.radius.modal, padding: '16px 18px', marginBottom: 14 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
         <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>Treatments</div>
         <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
@@ -4828,9 +4828,9 @@ export default function GlowUpCalendar({ session }) {
 
     // Dividers are fixed neutral colors regardless of status — only the
     // Today cell overrides them with its own border/divider color.
-    const upperDivider = isToday ? T.text : T.border
-    const lowerDivider = isToday ? T.text : T.white
-    const cellBorder    = isToday ? T.text : T.border
+    const upperDivider = T.text
+    const lowerDivider = T.text
+    const cellBorder    = T.text
     const cellBorderW    = isToday ? '1.5px' : '0.5px'
 
     // AM badge — tier system, single badge
@@ -5170,7 +5170,7 @@ export default function GlowUpCalendar({ session }) {
         {/* Right — bell + hamburger */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <button onClick={() => setShowNotifications(s => !s)} aria-label="Notifications"
-            style={{ position: 'relative', border: `0.5px solid ${showNotifications ? T.pinkDeep : T.border}`, background: showNotifications ? T.pink : 'transparent', borderRadius: T.radius.pill, padding: '5px 10px', cursor: 'pointer', fontSize: 15, lineHeight: 1, width: 36, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            style={{ position: 'relative', border: 'none', background: showNotifications ? T.pink : 'transparent', borderRadius: T.radius.pill, padding: '5px 10px', cursor: 'pointer', fontSize: 15, lineHeight: 1, width: 36, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             🔔
             {unreadCount > 0 && (
               <span style={{ position: 'absolute', top: 2, right: 2, width: 14, height: 14, borderRadius: '50%', background: T.pinkDeep, color: '#fff', fontSize: 8, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>
@@ -5179,7 +5179,7 @@ export default function GlowUpCalendar({ session }) {
             )}
           </button>
           <button onClick={() => setShowMenu(s => !s)} aria-label="Menu"
-            style={{ border: `0.5px solid ${showMenu ? T.pinkDeep : T.border}`, background: showMenu ? T.pink : 'transparent', borderRadius: T.radius.pill, padding: '5px 10px', cursor: 'pointer', color: T.text, fontSize: 16, lineHeight: 1, display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', justifyContent: 'center', width: 36, height: 32 }}>
+            style={{ border: 'none', background: showMenu ? T.pink : 'transparent', borderRadius: T.radius.pill, padding: '5px 10px', cursor: 'pointer', color: T.text, fontSize: 16, lineHeight: 1, display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', justifyContent: 'center', width: 36, height: 32 }}>
             <span style={{ display: 'block', width: 14, height: 1.5, background: T.text, borderRadius: 0 }} />
             <span style={{ display: 'block', width: 14, height: 1.5, background: T.text, borderRadius: 0 }} />
             <span style={{ display: 'block', width: 14, height: 1.5, background: T.text, borderRadius: 0 }} />
@@ -5189,7 +5189,7 @@ export default function GlowUpCalendar({ session }) {
 
       {/* Notification feed */}
       {showNotifications && (
-        <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 0, padding: '14px 16px', marginBottom: 14, animation: 'panelIn 0.15s ease' }}>
+        <div style={{ background: T.white, border: `1px solid ${T.text}`, borderRadius: T.radius.modal, padding: '14px 16px', marginBottom: 14, animation: 'panelIn 0.15s ease' }}>
           <div style={{ fontSize: 12, fontWeight: 700, color: T.text, marginBottom: 12 }}>Notifications</div>
           {notifications.length === 0 ? (
             <div style={{ fontSize: 12, color: T.textMuted, fontStyle: 'italic', padding: '8px 0' }}>
@@ -5342,7 +5342,7 @@ export default function GlowUpCalendar({ session }) {
       </div>
 
       {/* Grid — always visible, never moves */}
-      <div onClick={() => { if (dayFlyout) setDayFlyout(null) }} style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: 'clamp(2px, 0.5vw, 4px)', gridAutoRows: '88px' }}>{cells}</div>
+      <div onClick={() => { if (dayFlyout) setDayFlyout(null) }} style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: 'clamp(2px, 0.5vw, 4px)', gridAutoRows: 'minmax(88px, auto)' }}>{cells}</div>
 
       {/* Overlay — floats over the calendar */}
       {hasOverlay && (
