@@ -41,6 +41,14 @@ function Layout() {
     return () => subscription.unsubscribe()
   }, [])
 
+  // GlowUp uses DM Sans everywhere — the rest of the portfolio site sets
+  // Bricolage Grotesque on <body>, which otherwise leaks through anywhere
+  // a GlowUp component relies on fontFamily: 'inherit'.
+  useEffect(() => {
+    document.body.style.fontFamily = isRoutine ? T.fontFamily : ''
+    return () => { document.body.style.fontFamily = '' }
+  }, [isRoutine])
+
   // Check ?survey=1 param — open modal over whatever page is current
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)

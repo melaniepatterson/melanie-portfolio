@@ -30,12 +30,13 @@ export default function SideMenu({ session, onClose, onFeedback }) {
 
   const currentPath = window.location.pathname
 
+  // Each item gets its own brand color for the active-state pill.
   const menuItems = [
-    { label: 'Calendar',          icon: '📅', href: '/routine' },
-    { label: 'Routine history',   icon: '📋', href: '/routine/history' },
-    { label: 'Product library',   icon: '🧴', href: '/routine/products' },
-    { label: 'Account & settings',icon: '👤', href: '/routine/profile' },
-    { label: 'Send feedback', icon: '💬', action: onFeedback || (() => { window.location.href = '/routine?feedback=1' }) },
+    { label: 'Calendar',           href: '/routine',          color: T.blue },
+    { label: 'Routine history',    href: '/routine/history',  color: T.green },
+    { label: 'Product library',    href: '/routine/products', color: T.yellow },
+    { label: 'Account & settings', href: '/routine/profile',  color: T.orange },
+    { label: 'Send feedback', color: T.pink, action: onFeedback || (() => { window.location.href = '/routine?feedback=1' }) },
   ]
 
   async function signOut() {
@@ -45,52 +46,61 @@ export default function SideMenu({ session, onClose, onFeedback }) {
 
   return (
     <>
+      <style>{`
+        @keyframes glowupMenuPop {
+          0%   { transform: scale(0.9); }
+          60%  { transform: scale(1.03); }
+          100% { transform: scale(1); }
+        }
+      `}</style>
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.2)', zIndex: 200 }} />
       <div style={{
-        position: 'fixed', top: 0, right: 0, bottom: 0, width: 260,
-        background: T.white, borderLeft: `0.5px solid ${T.border}`,
+        position: 'fixed', top: 0, right: 0, bottom: 0, width: 280,
+        background: T.darkGreen, border: 'none',
         zIndex: 201, display: 'flex', flexDirection: 'column',
-        fontFamily: 'inherit', boxShadow: '-4px 0 24px rgba(0,0,0,0.08)',
+        fontFamily: 'inherit', boxShadow: '-4px 0 24px rgba(0,0,0,0.2)',
       }}>
         {/* Header */}
-        <div style={{ padding: '20px 20px 16px', borderBottom: `0.5px solid ${T.border}` }}>
+        <div style={{ padding: '20px 20px 16px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               {!avatarReady ? (
-                <div style={{ width: 44, height: 44, borderRadius: '50%', background: T.creamDark, flexShrink: 0 }} />
+                <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'rgba(255,255,255,0.15)', flexShrink: 0 }} />
               ) : (
                 <Avatar avatarUrl={avatarUrl} displayName={displayName} email={email} size={44} />
               )}
               <div style={{ minWidth: 0 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: T.white, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {avatarReady ? displayName : ''}
                 </div>
               </div>
             </div>
-            <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 20, color: T.textMuted, padding: '0 2px', lineHeight: 1, flexShrink: 0 }}>×</button>
+            <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 22, color: T.white, padding: '0 2px', lineHeight: 1, flexShrink: 0 }}>×</button>
           </div>
         </div>
 
         {/* Menu items */}
-        <div style={{ flex: 1, padding: '8px 0', overflowY: 'auto' }}>
-          {menuItems.map(({ label, icon, href, action }) => {
+        <div style={{ flex: 1, padding: '12px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 4 }}>
+          {menuItems.map(({ label, href, action, color }) => {
             const isActive = href && currentPath === href
             return (
               <button key={label}
                 onClick={() => { onClose(); if (action) action(); else if (href) window.location.href = href }}
                 style={{
-                  display: 'flex', alignItems: 'center', gap: 12, width: '100%',
-                  padding: '12px 20px', border: 'none',
-                  background: isActive ? T.creamDark : 'transparent',
-                  cursor: 'pointer', textAlign: 'left', fontSize: 13,
-                  color: isActive ? T.pinkDeep : T.text,
-                  borderBottom: `0.5px solid ${T.border}`,
-                  fontWeight: isActive ? 600 : 400,
+                  display: 'flex', alignItems: 'center', width: '100%',
+                  padding: '14px 16px', border: 'none', borderRadius: T.radius.card,
+                  background: isActive ? color : 'transparent',
+                  cursor: 'pointer', textAlign: 'left', fontSize: 18,
+                  color: isActive ? T.text : T.white,
+                  fontWeight: isActive ? 700 : 400,
+                  fontFamily: isActive ? T.fontFamilyAccent : 'inherit',
+                  fontStyle: isActive ? T.fontStyleAccent : 'normal',
+                  animation: isActive ? 'glowupMenuPop 0.3s ease' : 'none',
+                  transition: 'background 0.15s ease',
                 }}
-                onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = T.creamDark }}
+                onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'rgba(255,255,255,0.1)' }}
                 onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent' }}
               >
-                <span style={{ fontSize: 16, width: 20, textAlign: 'center' }}>{icon}</span>
                 {label}
               </button>
             )
@@ -98,18 +108,17 @@ export default function SideMenu({ session, onClose, onFeedback }) {
         </div>
 
         {/* Footer */}
-        <div style={{ padding: '12px 20px', borderTop: `0.5px solid ${T.border}`, flexShrink: 0 }}>
+        <div style={{ padding: '16px 20px', flexShrink: 0 }}>
           <button onClick={signOut} style={{
-            display: 'flex', alignItems: 'center', gap: 12, width: '100%',
+            display: 'flex', alignItems: 'center', width: '100%',
             padding: '10px 0', border: 'none', background: 'transparent',
-            cursor: 'pointer', fontSize: 13, color: T.textLight, textAlign: 'left',
+            cursor: 'pointer', fontSize: 15, color: 'rgba(255,255,255,0.7)', textAlign: 'left',
           }}>
-            <span style={{ fontSize: 16, width: 20, textAlign: 'center' }}>→</span>
             Sign out
           </button>
-          <div style={{ display: 'flex', gap: 16, paddingTop: 8, borderTop: `0.5px solid ${T.border}` }}>
-            <a href="/privacy" style={{ fontSize: 10, color: T.textLight, textDecoration: 'none', letterSpacing: '0.04em' }}>Privacy Policy</a>
-            <a href="/privacy#cookies" style={{ fontSize: 10, color: T.textLight, textDecoration: 'none', letterSpacing: '0.04em' }}>Cookie Policy</a>
+          <div style={{ display: 'flex', gap: 16, paddingTop: 8 }}>
+            <a href="/privacy" style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', textDecoration: 'none', letterSpacing: '0.04em' }}>Privacy Policy</a>
+            <a href="/privacy#cookies" style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', textDecoration: 'none', letterSpacing: '0.04em' }}>Cookie Policy</a>
           </div>
         </div>
       </div>
