@@ -4779,7 +4779,7 @@ export default function GlowUpCalendar({ session }) {
   for (let i = 0; i < firstDow; i++) {
     const dayNum = prevMonthLastDay - firstDow + i + 1
     cells.push(
-      <div key={`prev${i}`} style={{ position: 'relative', borderRadius: 8, border: `0.5px solid ${T.creamDark}`, background: 'rgba(253,248,240,0.75)', display: 'flex', flexDirection: 'column', minHeight: '88px' }}>
+      <div key={`prev${i}`} style={{ position: 'relative', borderRadius: 8, border: `0.5px solid ${T.creamDark}`, background: 'rgba(253,248,240,0.75)', display: 'flex', flexDirection: 'column', minHeight: '120px' }}>
         <div style={{ fontSize: 10, color: T.textLight, padding: '3px 5px', fontWeight: 400, opacity: 0.5 }}>{dayNum}</div>
       </div>
     )
@@ -4880,7 +4880,7 @@ export default function GlowUpCalendar({ session }) {
     const activePeriod = getActivePeriod(dt, routineHistory)
 
     cells.push(
-      <div key={key} style={{ position: 'relative', borderRadius: 8, overflow: 'hidden', border: `${isOpen ? '1px' : cellBorderW} solid ${isOpen ? T.text : cellBorder}`, display: 'flex', flexDirection: 'column', zIndex: isOpen ? 100 : 1, minHeight: '88px' }}>
+      <div key={key} style={{ position: 'relative', borderRadius: 8, overflow: 'hidden', border: `${isOpen ? '1px' : cellBorderW} solid ${isOpen ? T.text : cellBorder}`, display: 'flex', flexDirection: 'column', zIndex: isOpen ? 100 : 1, minHeight: '120px' }}>
         {/* Date row */}
         <div style={{ padding: '3px 6px', background: T.white, borderBottom: `0.5px solid ${upperDivider}`, fontSize: 11, fontWeight: 600, color: isOpen ? T.text : dateColor, textAlign: 'center' }}>
           {d}
@@ -4910,7 +4910,7 @@ export default function GlowUpCalendar({ session }) {
   const trailingCount = totalCells - firstDow - daysInMonth
   for (let i = 1; i <= trailingCount; i++) {
     cells.push(
-      <div key={`next${i}`} style={{ position: 'relative', borderRadius: 8, border: `0.5px solid ${T.creamDark}`, background: 'rgba(253,248,240,0.75)', display: 'flex', flexDirection: 'column', minHeight: '88px' }}>
+      <div key={`next${i}`} style={{ position: 'relative', borderRadius: 8, border: `0.5px solid ${T.creamDark}`, background: 'rgba(253,248,240,0.75)', display: 'flex', flexDirection: 'column', minHeight: '120px' }}>
         <div style={{ fontSize: 10, color: T.textLight, padding: '3px 5px', fontWeight: 400, opacity: 0.5 }}>{i}</div>
       </div>
     )
@@ -4965,12 +4965,6 @@ export default function GlowUpCalendar({ session }) {
     const d = new Date(dayFlyout.date); d.setDate(d.getDate() + 1)
     openDayFlyout(dateKey(d), d, dayFlyout.tab)
   }
-
-  function closeAllPanels() {
-    setPanel(null); setEditingPeriod(null); setEditingDaily(null); setEditingShower(null)
-    setEditingProduct(null); setSelector(null); setShowExport(false); setShowTreatments(false); setShowFeedback(false)
-  }
-
 
   function updateRecoveryProducts(typeKey, stepKey, productId) {
     setRecoveryRoutines(prev => {
@@ -5342,37 +5336,27 @@ export default function GlowUpCalendar({ session }) {
       </div>
 
       {/* Grid — always visible, never moves */}
-      <div onClick={() => { if (dayFlyout) setDayFlyout(null) }} style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: 'clamp(2px, 0.5vw, 4px)', gridAutoRows: 'minmax(88px, auto)' }}>{cells}</div>
+      <div onClick={() => { if (dayFlyout) setDayFlyout(null) }} style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: 'clamp(2px, 0.5vw, 4px)', gridAutoRows: '120px' }}>{cells}</div>
 
-      {/* Overlay — floats over the calendar */}
+      {/* Overlay — takes over the full page, like Onboarding does on first run */}
       {hasOverlay && (
         <>
-          {/* Clickable backdrop */}
-          <div
-            onClick={closeAllPanels}
-            style={{
-              position: 'fixed', inset: 0,
-              background: 'rgba(250,247,242,0.7)',
-              backdropFilter: 'blur(2px)',
-              zIndex: 40,
-            }}
-          />
-          {/* Panel container — fixed to escape overflow:hidden, pointer-events none so backdrop clicks through */}
+          {/* Full-page container — fixed to escape overflow:hidden */}
           <div
             style={{
               position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
               zIndex: 50,
-              pointerEvents: 'none',
+              background: T.white,
               animation: 'panelIn 0.2s ease',
               overflowY: 'auto',
               WebkitOverflowScrolling: 'touch',
             }}>
-            {/* Inner wrapper — restores pointer events, stops propagation */}
+            {/* Inner wrapper — centered column, reasonable reading width */}
             <div
-              onClick={e => e.stopPropagation()}
               style={{
-                pointerEvents: 'auto',
-                maxWidth: 900, margin: '0 auto', padding: '12px 12px 60px',
+                maxWidth: 560, margin: '0 auto', minHeight: '100vh',
+                display: 'flex', flexDirection: 'column', justifyContent: 'center',
+                padding: '48px 20px',
               }}>
 
             {/* First launch */}
@@ -5543,8 +5527,8 @@ export default function GlowUpCalendar({ session }) {
                 products={products}
               />
             )}
-            </div>{/* end inner stopPropagation wrapper */}
-          </div>{/* end panel container */}
+            </div>{/* end centered column */}
+          </div>{/* end full-page container */}
         </>
       )}
 

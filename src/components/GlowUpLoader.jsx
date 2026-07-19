@@ -18,7 +18,6 @@ const SAYINGS = [
 ]
 
 const BAR_COLORS = [T.pink, T.blue, T.green, T.yellow, T.orange]
-const BG_COLORS = [T.darkPink, T.darkBlue, T.darkGreen, T.darkYellow, T.darkOrange]
 const SLOT = 240          // px per color slot
 const BAND_HALF = 45      // half-width of the solid color blob within a slot
 const UNIT = SLOT * BAR_COLORS.length // one full pass through all 5 colors
@@ -48,7 +47,7 @@ function buildBarGradient() {
 }
 
 export default function GlowUpLoader() {
-  const bgColor = useRef(BG_COLORS[Math.floor(Math.random() * BG_COLORS.length)])
+  const logoColor = useRef(BAR_COLORS[Math.floor(Math.random() * BAR_COLORS.length)])
   const barGradient = useRef(buildBarGradient())
   const sayingQueue = useRef(shuffle(SAYINGS))
   const sayingIndex = useRef(0)
@@ -85,7 +84,7 @@ export default function GlowUpLoader() {
   return (
     <div style={{
       position: 'fixed', inset: 0,
-      background: bgColor.current,
+      background: T.darkGreen,
       display: 'flex', flexDirection: 'column',
       alignItems: 'center', justifyContent: 'center',
       gap: 28, zIndex: 9999,
@@ -109,7 +108,7 @@ export default function GlowUpLoader() {
         fontSize: 'clamp(64px, 14vw, 88px)',
         lineHeight: 1,
         letterSpacing: '-0.01em',
-        color: T.white,
+        color: logoColor.current,
         textAlign: 'center',
         animation: 'glowupFloat 3s cubic-bezier(0.445, 0.05, 0.55, 0.95) infinite',
         userSelect: 'none',
