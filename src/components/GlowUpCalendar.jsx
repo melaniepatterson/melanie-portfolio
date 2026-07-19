@@ -4781,10 +4781,16 @@ export default function GlowUpCalendar({ session }) {
     const amStatusKey = info.isTreatment ? (treatmentTimeOfDay === 'am' ? s : 'recovery') : s
     const pmStatusKey = info.isTreatment ? (treatmentTimeOfDay === 'pm' ? s : 'recovery') : s
 
-    // Pause day cells use the solid brand yellow, not the lighter badge
-    // tint — the two diverge here per the calendar cell spec (every other
-    // status's cell fill matches its badge tint exactly).
-    const CELL_FILL_OVERRIDE = { pause: T.yellow }
+    // Cell fills use the saturated brand color for each status, not the
+    // lighter badge tint — badges (which sit on top of the cell) use the
+    // light tint + border per the badge spec, but the cell itself is bold.
+    const CELL_FILL_OVERRIDE = {
+      tret: T.green, bha: T.blue, pause: T.yellow, recovery: T.pink,
+      treatment: T.orange, microneedling: T.orange, massage: T.orange, hairTreatment: T.orange,
+      peel: T.orange, electrolysis: T.orange, facial: T.orange, microderm: T.orange, custom: T.orange,
+      laser: T.orange, dermaplaning: T.orange, botox: T.orange, led: T.orange,
+      microneedling_home: T.orange, hydrafacial: T.orange,
+    }
     function cellFillFor(statusKey) {
       const key = statusKey === 'pca' ? 'recovery' : statusKey
       if (!key || !T[key]) return null
