@@ -3393,8 +3393,8 @@ function NewRoutinePeriodPicker({ routineHistory, dailyHistory, showerHistory, p
   return (
     <div>
       {/* Back link lives inside a wrapper card so it feels contained */}
-      <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 0, marginBottom: 14, overflow: 'hidden' }}>
-        <button onClick={() => setChosen(null)} style={{ border: 'none', borderBottom: `0.5px solid ${T.border}`, background: T.creamDark, fontSize: 12, color: T.pinkDeep, cursor: 'pointer', padding: '10px 16px', display: 'block', width: '100%', textAlign: 'left' }}>
+      <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: T.radius.modal, marginBottom: 14, overflow: 'hidden' }}>
+        <button onClick={() => setChosen(null)} style={{ border: 'none', borderRadius: 0, background: T.text, fontSize: 12, color: T.white, cursor: 'pointer', padding: '10px 16px', display: 'block', width: '100%', textAlign: 'left' }}>
           ← Back to routine type
         </button>
         <div style={{ padding: '0' }}>
