@@ -30,13 +30,14 @@ export default function SideMenu({ session, onClose, onFeedback }) {
 
   const currentPath = window.location.pathname
 
-  // Each item gets its own brand color for the active-state pill.
+  // Each item gets its own brand color for the active-state pill — avoids
+  // yellow since that's now the drawer's own background.
   const menuItems = [
     { label: 'Calendar',           href: '/routine',          color: T.blue },
     { label: 'Routine history',    href: '/routine/history',  color: T.green },
-    { label: 'Product library',    href: '/routine/products', color: T.yellow },
+    { label: 'Product library',    href: '/routine/products', color: T.pink },
     { label: 'Account & settings', href: '/routine/profile',  color: T.orange },
-    { label: 'Send feedback', color: T.pink, action: onFeedback || (() => { window.location.href = '/routine?feedback=1' }) },
+    { label: 'Send feedback', color: T.blue, action: onFeedback || (() => { window.location.href = '/routine?feedback=1' }) },
   ]
 
   async function signOut() {
@@ -56,7 +57,7 @@ export default function SideMenu({ session, onClose, onFeedback }) {
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.2)', zIndex: 200 }} />
       <div style={{
         position: 'fixed', top: 0, right: 0, bottom: 0, width: 280,
-        background: T.darkGreen, border: 'none',
+        background: T.darkYellow, border: 'none',
         zIndex: 201, display: 'flex', flexDirection: 'column',
         fontFamily: 'inherit', boxShadow: '-4px 0 24px rgba(0,0,0,0.2)',
       }}>

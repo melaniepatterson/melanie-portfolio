@@ -542,8 +542,8 @@ function Badge({ colorKey, label }) {
 }
 
 
-function SectionLabel({ children }) {
-  return <div style={{ fontSize: 11, fontWeight: 600, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8, marginTop: 14, paddingTop: 12, borderTop: `0.5px solid ${T.border}` }}>{children}</div>
+function SectionLabel({ children, style }) {
+  return <div style={{ fontSize: 11, fontWeight: 600, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8, marginTop: 14, paddingTop: 12, borderTop: `0.5px solid ${T.border}`, ...style }}>{children}</div>
 }
 
 function FieldLabel({ children }) {
@@ -3307,65 +3307,72 @@ function AddProgramPanel({ session, activeProgram, activePrograms = [], routineP
   )
 }
 
-function NewRoutinePeriodPicker({ routineHistory, dailyHistory, showerHistory, products, onSaveNew, onSaveDaily, onSaveShower, onCancel, onSaveProduct, onEditConflictRoutine, onEditConflictDaily, onEditConflictShower, now, session, activeProgram, activePrograms, skinType, timezone, onProgramChanged }) {
+function NewRoutinePeriodPicker({ routineHistory, dailyHistory, showerHistory, products, onSaveNew, onSaveDaily, onSaveShower, onCancel, onSaveProduct, onEditConflictRoutine, onEditConflictDaily, onEditConflictShower, now, session, activeProgram, activePrograms, skinType, timezone, onProgramChanged, onScreenChange }) {
   const userId = session?.user?.id
   const [chosen, setChosen] = useState(null)
 
+  // Tell the parent whether we're on the chooser screen (full-page blue)
+  // or a sub-panel (its own colors) — parent owns the full-page background.
+  useEffect(() => {
+    onScreenChange?.(!chosen)
+    return () => onScreenChange?.(false)
+  }, [chosen])
+
   const primaryOptions = [
-    { key: 'program',  label: 'Add a program',              desc: 'Guided phases for introducing something new — like a tretinoin ramp-up — that build on your current routine.', hover: T.blue },
-    { key: 'skincare', label: 'Manually adjust your routine',  desc: 'Edit your morning and evening steps directly — cleanse, moisturize, actives, SPF.', hover: T.green },
+    { key: 'program',  label: 'Add a program',              desc: 'Guided phases for introducing something new — like a tretinoin ramp-up — that build on your current routine.' },
+    { key: 'skincare', label: 'Manually adjust your routine',  desc: 'Edit your morning and evening steps directly — cleanse, moisturize, actives, SPF.' },
   ]
   const otherOptions = [
-    { key: 'daily',  label: 'Extras',         desc: 'Growth serums, eye patches, tools, supplements.', hover: T.yellow },
-    { key: 'shower', label: 'Shower routine', desc: 'Body washes, hair treatments, and anything else in the shower.', hover: T.orange },
+    { key: 'daily',  label: 'Extras',         desc: 'Growth serums, eye patches, tools, supplements.' },
+    { key: 'shower', label: 'Shower routine', desc: 'Body washes, hair treatments, and anything else in the shower.' },
   ]
   const options = [...primaryOptions, ...otherOptions]
 
   if (!chosen) return (
-    <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: T.radius.modal, padding: '18px 18px', marginBottom: 14 }}>
-      <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 4 }}>What kind of routine would you like to add?</div>
-      <div style={{ fontSize: 12, color: T.textMuted, marginBottom: 14 }}>Each type is tracked separately with its own history.</div>
+    <div style={{ background: 'transparent', padding: 0, marginBottom: 14 }}>
+      <div style={{ fontSize: 13, fontWeight: 600, color: T.white, marginBottom: 4 }}>What kind of routine would you like to add?</div>
+      <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.75)', marginBottom: 14 }}>Each type is tracked separately with its own history.</div>
 
       {/* Primary choice: build a program vs manually adjust */}
       <div style={{ display: 'flex', alignItems: 'stretch', gap: 10, marginBottom: 16 }}>
         {primaryOptions.map(o => (
           <button key={o.key} onClick={() => setChosen(o.key)} style={{
             flex: 1, padding: '16px 14px', borderRadius: T.radius.card,
-            border: 'none', background: T.text,
+            border: 'none', background: T.white,
             textAlign: 'left', cursor: 'pointer',
-            transition: 'background 0.2s ease, transform 0.2s ease',
+            transition: 'transform 0.2s ease, box-shadow 0.2s ease',
           }}
-            onMouseEnter={e => { e.currentTarget.style.background = o.hover; e.currentTarget.style.transform = 'scale(1.02)' }}
-            onMouseLeave={e => { e.currentTarget.style.background = T.text; e.currentTarget.style.transform = 'scale(1)' }}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.02)'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.15)' }}
+            onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = 'none' }}
           >
-            <div style={{ fontSize: 14, fontWeight: 700, color: T.white, marginBottom: 4 }}>{o.label}</div>
-            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)', lineHeight: 1.6 }}>{o.desc}</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: T.darkBlue, marginBottom: 4 }}>{o.label}</div>
+            <div style={{ fontSize: 11, color: T.darkBlue, opacity: 0.75, lineHeight: 1.6 }}>{o.desc}</div>
           </button>
         )).reduce((acc, el, i) => i === 0 ? [el] : [...acc,
-          <div key="or" style={{ display: 'flex', alignItems: 'center', fontSize: 11, color: T.textLight, fontStyle: 'italic', flexShrink: 0 }}>or</div>,
+          <div key="or" style={{ display: 'flex', alignItems: 'center', fontSize: 11, color: 'rgba(255,255,255,0.7)', fontStyle: 'italic', flexShrink: 0 }}>or</div>,
           el
         ], [])}
       </div>
 
-      <SectionLabel>Other options</SectionLabel>
+      <SectionLabel style={{ color: 'rgba(255,255,255,0.75)', borderTop: '0.5px solid rgba(255,255,255,0.3)' }}>Other options</SectionLabel>
       <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
         {otherOptions.map(o => (
           <button key={o.key} onClick={() => setChosen(o.key)} style={{
             flex: 1, padding: '10px 12px', borderRadius: T.radius.card,
-            border: 'none', background: T.text,
+            border: 'none', background: T.white,
             textAlign: 'left', cursor: 'pointer',
-            transition: 'background 0.2s ease, transform 0.2s ease',
+            transition: 'transform 0.2s ease, box-shadow 0.2s ease',
           }}
-            onMouseEnter={e => { e.currentTarget.style.background = o.hover; e.currentTarget.style.transform = 'scale(1.02)' }}
-            onMouseLeave={e => { e.currentTarget.style.background = T.text; e.currentTarget.style.transform = 'scale(1)' }}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.02)'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.15)' }}
+            onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = 'none' }}
           >
-            <div style={{ fontSize: 12, fontWeight: 500, color: T.white, marginBottom: 2 }}>{o.label}</div>
-            <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.75)', lineHeight: 1.5 }}>{o.desc}</div>
+            <div style={{ fontSize: 12, fontWeight: 500, color: T.darkBlue, marginBottom: 2 }}>{o.label}</div>
+            <div style={{ fontSize: 10, color: T.darkBlue, opacity: 0.75, lineHeight: 1.5 }}>{o.desc}</div>
           </button>
         ))}
       </div>
 
-      <Btn onClick={onCancel}>Cancel</Btn>
+      <Btn onClick={onCancel} style={{ borderColor: T.white, color: T.white }}>Cancel</Btn>
     </div>
   )
 
@@ -4079,9 +4086,13 @@ function computeNotifications({ products, treatments, allTypes, timezone }) {
 }
 
 
+const LOGO_COLORS = [T.pink, T.blue, T.green, T.yellow, T.orange]
+
 export default function GlowUpCalendar({ session }) {
   const [confirmDialog, confirm] = useConfirm()
   const userId = session?.user?.id
+  // Random brand color per page load — calendar page only.
+  const logoColor = useRef(LOGO_COLORS[Math.floor(Math.random() * LOGO_COLORS.length)])
 
   // timezone must be declared FIRST so all date computations below are correct.
   // Initialize from device timezone immediately — profile load will override once
@@ -4268,6 +4279,7 @@ export default function GlowUpCalendar({ session }) {
     loadAll()
   }, [userId, reloadKey])
   const [showTreatments, setShowTreatments] = useState(false)
+  const [routineChooserOpen, setRoutineChooserOpen] = useState(false)
   const [showMenu,          setShowMenu]          = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
   const [treatmentWarning,  setTreatmentWarning]  = useState(null) // { key, date } pending selector
@@ -5028,7 +5040,7 @@ export default function GlowUpCalendar({ session }) {
 
       {/* Glow Up logo — desktop only */}
       <div className="glowup-cal-logo" style={{ alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
-        <GlowUpLogo size={32} style={{ color: T.darkGreen }} />
+        <GlowUpLogo size={32} style={{ color: logoColor.current }} />
       </div>
 
       {/* Program nudge — for users who built their routine manually and have never enrolled in a program */}
@@ -5332,7 +5344,7 @@ export default function GlowUpCalendar({ session }) {
             style={{
               position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
               zIndex: 50,
-              background: showTreatments ? T.orange : T.white,
+              background: showTreatments ? T.orange : routineChooserOpen ? T.blue : T.white,
               animation: 'panelIn 0.2s ease',
               overflowY: 'auto',
               WebkitOverflowScrolling: 'touch',
@@ -5380,6 +5392,7 @@ export default function GlowUpCalendar({ session }) {
                 skinType={skinType}
                 timezone={timezone}
                 onProgramChanged={() => { setReloadKey(k => k + 1); setPanel(null) }}
+                onScreenChange={setRoutineChooserOpen}
               />
             )}
 
