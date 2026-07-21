@@ -3337,11 +3337,12 @@ function NewRoutinePeriodPicker({ routineHistory, dailyHistory, showerHistory, p
       <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.75)', marginBottom: 14 }}>Each type is tracked separately with its own history.</div>
 
       {/* Primary choice: build a program vs manually adjust */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 16 }}>
+      <div style={{ display: 'flex', alignItems: 'stretch', gap: 10, marginBottom: 16 }}>
         {primaryOptions.map(o => (
           <button key={o.key} onClick={() => setChosen(o.key)} style={{
             flex: 1, padding: '16px 14px', borderRadius: T.radius.card,
             border: 'none', background: T.white,
+            display: 'flex', flexDirection: 'column', justifyContent: 'center',
             textAlign: 'left', cursor: 'pointer',
             transition: 'transform 0.2s ease, box-shadow 0.2s ease',
           }}
@@ -5199,8 +5200,9 @@ export default function GlowUpCalendar({ session }) {
         {/* Right — bell + hamburger */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <button onClick={() => setShowNotifications(s => !s)} aria-label="Notifications"
-            style={{ position: 'relative', border: 'none', background: showNotifications ? T.pink : 'transparent', borderRadius: T.radius.pill, padding: '5px 10px', cursor: 'pointer', fontSize: 15, lineHeight: 1, width: 36, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            style={{ position: 'relative', border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '5px 8px', cursor: 'pointer', fontSize: 15, lineHeight: 1, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
             🔔
+            <span style={{ fontSize: 8, color: T.text, transition: 'transform 0.15s', display: 'inline-block', transform: showNotifications ? 'rotate(180deg)' : 'rotate(0deg)' }}>▼</span>
             {unreadCount > 0 && (
               <span style={{ position: 'absolute', top: 2, right: 2, width: 14, height: 14, borderRadius: '50%', background: T.pinkDeep, color: '#fff', fontSize: 8, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>
                 {unreadCount > 9 ? '9+' : unreadCount}
@@ -5218,10 +5220,10 @@ export default function GlowUpCalendar({ session }) {
 
       {/* Notification feed */}
       {showNotifications && (
-        <div style={{ background: T.white, border: `1px solid ${T.darkGreen}`, borderRadius: T.radius.modal, padding: '14px 16px', marginBottom: 14, animation: 'panelIn 0.15s ease' }}>
-          <div style={{ fontSize: 12, fontWeight: 700, color: T.darkGreen, marginBottom: 12 }}>Notifications</div>
+        <div style={{ background: T.white, border: `1px solid ${T.text}`, borderRadius: T.radius.modal, padding: '14px 16px', marginBottom: 14, animation: 'panelIn 0.15s ease' }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: T.text, marginBottom: 12 }}>Notifications</div>
           {notifications.length === 0 ? (
-            <div style={{ fontSize: 12, color: T.darkGreen, opacity: 0.7, fontStyle: 'italic', padding: '8px 0' }}>
+            <div style={{ fontSize: 12, color: T.text, opacity: 0.7, fontStyle: 'italic', padding: '8px 0' }}>
               You're all caught up — nothing needs attention right now.
             </div>
           ) : notifications.map(n => (
@@ -5230,8 +5232,8 @@ export default function GlowUpCalendar({ session }) {
                 {n.type === 'warning' ? '⚠️' : n.type === 'nudge' ? '✅' : 'ℹ️'}
               </div>
               <div>
-                <div style={{ fontSize: 12, fontWeight: 600, color: T.darkGreen, marginBottom: 2 }}>{n.title}</div>
-                <div style={{ fontSize: 11, color: T.darkGreen, opacity: 0.7, lineHeight: 1.6 }}>{n.body}</div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: T.text, marginBottom: 2 }}>{n.title}</div>
+                <div style={{ fontSize: 11, color: T.text, opacity: 0.7, lineHeight: 1.6 }}>{n.body}</div>
               </div>
             </div>
           ))}

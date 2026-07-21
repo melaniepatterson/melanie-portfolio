@@ -133,7 +133,8 @@ export default function SideMenu({ session, onClose, onFeedback }) {
           <button onClick={signOut} style={{
             display: 'flex', alignItems: 'center', width: '100%',
             padding: '10px 0', border: 'none', background: 'transparent',
-            cursor: 'pointer', fontSize: 15, color: 'rgba(0,0,0,0.6)', textAlign: 'left',
+            cursor: 'pointer', fontSize: 15, color: T.text, textAlign: 'left',
+            textTransform: 'uppercase', letterSpacing: '0.02em',
           }}>
             Sign out
           </button>
