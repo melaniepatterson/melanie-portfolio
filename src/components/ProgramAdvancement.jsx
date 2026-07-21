@@ -572,7 +572,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
   // separately bordered box.
   const upNextBlock = !ready && nextPhase && effectiveDuration != null && (
     <div style={{ background: T.darkGreen, padding: '14px 16px' }}>
-      <div style={{ fontFamily: T.fontFamilyAccent, fontStyle: T.fontStyleAccent, fontSize: 10, fontWeight: 600, color: T.white, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 4 }}>
+      <div style={{ fontSize: 10, fontWeight: 600, color: T.white, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 4 }}>
         Up next — around {fmtDate(phaseEnd)}
       </div>
       <div style={{ fontSize: 13, fontWeight: 700, color: T.white, marginBottom: 3 }}>
@@ -600,7 +600,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
               }
             `}</style>
             <div style={{ minWidth: 0, flex: 1, overflow: 'hidden' }}>
-              <div style={{ fontFamily: T.fontFamilyAccent, fontStyle: T.fontStyleAccent, fontSize: 13, fontWeight: 600, color: programCardColor(program), letterSpacing: '0.02em', textTransform: 'uppercase', marginBottom: 2 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: programCardColor(program), letterSpacing: '0.02em', textTransform: 'uppercase', marginBottom: 2 }}>
                 {program.name}
               </div>
               <div style={{ fontSize: 12, fontWeight: 600, color: T.darkGreen, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>

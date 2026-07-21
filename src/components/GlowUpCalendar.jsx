@@ -2577,7 +2577,7 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
   }
 
   return (
-    <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 0, padding: '12px 14px', marginBottom: 14 }}>
+    <div style={{ background: 'transparent', padding: '12px 14px', marginBottom: 14 }}>
       {/* Date + actions */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
         <div style={{ fontSize: 13, fontWeight: 500, color: T.text }}>
@@ -2611,7 +2611,7 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
             <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 10 }}>
               {allTreatments.map(t => {
                 const lbl = allTypes?.[t.type]?.label || t.type
-                return <div key={t._dbId} style={{ fontSize: 11, fontWeight: 500, padding: '4px 10px', borderRadius: 0, background: '#E0F2FE', color: '#0C4A6E', display: 'inline-block' }}>{lbl.charAt(0).toUpperCase() + lbl.slice(1).toLowerCase()}</div>
+                return <div key={t._dbId} style={{ fontSize: 11, fontWeight: 500, padding: '4px 10px', borderRadius: T.radius.pill, background: '#E0F2FE', color: '#0C4A6E', display: 'inline-block' }}>{lbl.charAt(0).toUpperCase() + lbl.slice(1).toLowerCase()}</div>
               })}
             </div>
           )
@@ -2619,7 +2619,7 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
         const label = isTreatment ? (allTypes?.[dayType]?.label || dayType) : b.label
         const bg    = isTreatment ? '#E0F2FE' : b.bg
         const color = isTreatment ? '#0C4A6E' : b.color
-        return <div style={{ fontSize: 11, fontWeight: 500, padding: '4px 10px', borderRadius: 0, background: bg, color, marginBottom: 10, display: 'inline-block' }}>{label}</div>
+        return <div style={{ fontSize: 11, fontWeight: 500, padding: '4px 10px', borderRadius: T.radius.pill, background: bg, color, marginBottom: 10, display: 'inline-block' }}>{label}</div>
       })()}
 
       {/* 1. Shower routine — always at top */}
@@ -3277,7 +3277,7 @@ function AddProgramPanel({ session, activeProgram, activePrograms = [], routineP
           return (
             <div key={program.id} style={{ borderRadius: T.radius.card, marginBottom: 10, overflow: 'hidden', opacity: blocker || isActive ? 0.6 : 1 }}>
               <div style={{ background: cardColor, padding: '14px 18px', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
-                <div style={{ fontFamily: T.fontFamilyAccent, fontStyle: T.fontStyleAccent, fontSize: 13, fontWeight: 600, color: T.white, letterSpacing: '0.02em', textTransform: 'uppercase' }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: T.white, letterSpacing: '0.02em', textTransform: 'uppercase' }}>
                   {program.name}
                 </div>
                 {completions > 0 && (
@@ -4091,6 +4091,33 @@ function computeNotifications({ products, treatments, allTypes, timezone }) {
 
 const LOGO_COLORS = [T.pink, T.blue, T.green, T.yellow, T.orange]
 
+// Shared bright/dark color pair per day-type status — used for cell fills
+// and the day flyout's body/header colorization.
+const STATUS_COLORS = {
+  tret:               { fill: T.green,  dark: T.darkGreen },
+  bha:                { fill: T.blue,   dark: T.darkBlue },
+  pause:              { fill: T.yellow, dark: T.darkYellow },
+  recovery:           { fill: T.pink,   dark: T.darkPink },
+  treatment:          { fill: T.orange, dark: T.darkOrange },
+  microneedling:      { fill: T.orange, dark: T.darkOrange },
+  massage:            { fill: T.orange, dark: T.darkOrange },
+  hairTreatment:      { fill: T.orange, dark: T.darkOrange },
+  peel:               { fill: T.orange, dark: T.darkOrange },
+  electrolysis:       { fill: T.orange, dark: T.darkOrange },
+  facial:             { fill: T.orange, dark: T.darkOrange },
+  microderm:          { fill: T.orange, dark: T.darkOrange },
+  custom:             { fill: T.orange, dark: T.darkOrange },
+  laser:              { fill: T.orange, dark: T.darkOrange },
+  dermaplaning:       { fill: T.orange, dark: T.darkOrange },
+  botox:              { fill: T.orange, dark: T.darkOrange },
+  led:                { fill: T.orange, dark: T.darkOrange },
+  microneedling_home: { fill: T.orange, dark: T.darkOrange },
+  hydrafacial:        { fill: T.orange, dark: T.darkOrange },
+}
+// Statuses that are strictly a nighttime concept (actives applied PM only,
+// or a pre-treatment pause the night before) — the AM half stays neutral.
+const PM_ONLY_STATUSES = ['tret', 'bha', 'pause']
+
 export default function GlowUpCalendar({ session }) {
   const [confirmDialog, confirm] = useConfirm()
   const userId = session?.user?.id
@@ -4795,32 +4822,27 @@ export default function GlowUpCalendar({ session }) {
 
     // Each half colors for its own status. On a treatment day, only the
     // half the treatment actually happened in shows the treatment color —
-    // the other half shows recovery starting that same day. Matches the
-    // AM/PM badge logic just below, which already does this per-half.
-    const amStatusKey = info.isTreatment ? (treatmentTimeOfDay === 'am' ? s : 'recovery') : s
+    // the other half shows recovery starting that same day. Tretinoin, BHA,
+    // and pause are nighttime-only concepts, so the AM half stays neutral
+    // unless it's a treatment or recovery day. Matches the AM/PM badge logic
+    // just below, which already does this per-half.
+    const amStatusKey = info.isTreatment ? (treatmentTimeOfDay === 'am' ? s : 'recovery') : (PM_ONLY_STATUSES.includes(s) ? null : s)
     const pmStatusKey = info.isTreatment ? (treatmentTimeOfDay === 'pm' ? s : 'recovery') : s
 
     // Cell fills use the saturated brand color for each status, not the
     // lighter badge tint — badges (which sit on top of the cell) use the
     // light tint + border per the badge spec, but the cell itself is bold.
-    const CELL_FILL_OVERRIDE = {
-      tret: T.green, bha: T.blue, pause: T.yellow, recovery: T.pink,
-      treatment: T.orange, microneedling: T.orange, massage: T.orange, hairTreatment: T.orange,
-      peel: T.orange, electrolysis: T.orange, facial: T.orange, microderm: T.orange, custom: T.orange,
-      laser: T.orange, dermaplaning: T.orange, botox: T.orange, led: T.orange,
-      microneedling_home: T.orange, hydrafacial: T.orange,
-    }
     function cellFillFor(statusKey) {
       const key = statusKey === 'pca' ? 'recovery' : statusKey
-      if (!key || !T[key]) return null
-      return { bg: CELL_FILL_OVERRIDE[key] || T[key].bg, text: T[key].text }
+      if (!key || !T[key] || !STATUS_COLORS[key]) return null
+      return { bg: STATUS_COLORS[key].fill, text: T[key].text }
     }
 
     const amFill = cellFillFor(amStatusKey)
     const pmFill = cellFillFor(pmStatusKey)
     const amCellBg = amFill?.bg ?? T.white
     const pmCellBg = pmFill?.bg ?? T.white
-    const dateColor = T.darkGreen
+    const dateColor = T.text
 
     // Dividers are dark green by default — only the Today cell's outer
     // stroke stays black. The AM/PM divider switches to white whenever
@@ -5138,12 +5160,12 @@ export default function GlowUpCalendar({ session }) {
 
       {/* Month/year with flanking nav arrows — fixed-width center keeps arrows static */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 6 }}>
-        <button onClick={prevMonth} aria-label="Previous month" style={{ border: 'none', background: 'transparent', padding: '5px 20px', cursor: 'pointer', fontSize: 18, color: T.darkGreen, flexShrink: 0 }}>←</button>
+        <button onClick={prevMonth} aria-label="Previous month" style={{ border: 'none', background: 'transparent', padding: '5px 20px', cursor: 'pointer', fontSize: 18, color: T.text, flexShrink: 0 }}>←</button>
         <div style={{ width: 260, textAlign: 'center' }}>
-          <div style={{ fontFamily: T.fontFamilyAccent, fontStyle: T.fontStyleAccent, fontSize: 'clamp(28px, 6vw, 42px)', fontWeight: 500, color: T.darkGreen, lineHeight: 1.1 }}>{MONTHS[month]}</div>
+          <div style={{ fontSize: 'clamp(28px, 6vw, 42px)', fontWeight: 500, color: T.text, lineHeight: 1.1 }}>{MONTHS[month]}</div>
           <div style={{ fontSize: 'clamp(13px, 2.5vw, 18px)', color: T.darkGreen, opacity: 0.7, fontWeight: 400, marginTop: 2 }}>{year}</div>
         </div>
-        <button onClick={nextMonth} aria-label="Next month" style={{ border: 'none', background: 'transparent', padding: '5px 20px', cursor: 'pointer', fontSize: 18, color: T.darkGreen, flexShrink: 0 }}>→</button>
+        <button onClick={nextMonth} aria-label="Next month" style={{ border: 'none', background: 'transparent', padding: '5px 20px', cursor: 'pointer', fontSize: 18, color: T.text, flexShrink: 0 }}>→</button>
       </div>
 
       {/* Header — always visible, never moves */}
@@ -5241,6 +5263,21 @@ export default function GlowUpCalendar({ session }) {
       {dayFlyout && (() => {
         const activePeriodFlyout = getActivePeriod(dayFlyout.date, routineHistory)
         const fmt = new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'long', day: 'numeric' })
+
+        // Colorize the flyout to match this half's routine-item color — same
+        // PM-only rule as the calendar cells (tret/bha/pause are a nighttime
+        // concept, so an AM flyout on one of those days stays neutral).
+        const flyoutInfo = getDayInfo(dayFlyout.date, treatments, allTypes, routineHistory)
+        const flyoutTreatmentTod = flyoutInfo.isTreatment ? (flyoutInfo.allTreatments?.[0]?.timeOfDay || 'am') : null
+        const flyoutStatusKey = flyoutInfo.isTreatment
+          ? (flyoutTreatmentTod === dayFlyout.tab ? flyoutInfo.status : 'recovery')
+          : (dayFlyout.tab === 'am' && PM_ONLY_STATUSES.includes(flyoutInfo.status) ? null : flyoutInfo.status)
+        const flyoutColorKey = flyoutStatusKey === 'pca' ? 'recovery' : flyoutStatusKey
+        const flyoutColors = flyoutColorKey ? STATUS_COLORS[flyoutColorKey] : null
+        const flyoutBodyBg = flyoutColors?.fill ?? T.white
+        const flyoutHeaderBg = flyoutColors?.dark ?? T.white
+        const flyoutHeaderInk = flyoutColors ? T.white : T.text
+
         return (
           <>
             {/* Backdrop */}
@@ -5257,25 +5294,24 @@ export default function GlowUpCalendar({ session }) {
                 maxHeight: '85vh',
                 display: 'flex', flexDirection: 'column',
                 zIndex: 501,
-                borderRadius: 0,
-                background: T.white,
-                border: `0.5px solid ${T.pinkDeep}`,
+                borderRadius: T.radius.modal,
+                background: flyoutBodyBg,
                 boxShadow: '0 8px 40px rgba(0,0,0,0.18)',
                 animation: 'fadeIn 0.15s ease',
                 overflow: 'hidden',
               }}
             >
               {/* Sticky header: prev/next day arrows + date + close */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 14px 10px', borderBottom: `0.5px solid ${T.border}`, flexShrink: 0, background: T.white }}>
-                <button onClick={goToPrevDay} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 0, padding: '5px 12px', cursor: 'pointer', fontSize: 14, color: T.text, flexShrink: 0 }}>←</button>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 14px 10px', flexShrink: 0, background: flyoutHeaderBg }}>
+                <button onClick={goToPrevDay} style={{ border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '5px 12px', cursor: 'pointer', fontSize: 14, color: flyoutHeaderInk, flexShrink: 0 }}>←</button>
                 <div style={{ flex: 1, textAlign: 'center' }}>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: T.text }}>{fmt.format(dayFlyout.date)}</div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: flyoutHeaderInk }}>{fmt.format(dayFlyout.date)}</div>
                 </div>
-                <button onClick={goToNextDay} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 0, padding: '5px 12px', cursor: 'pointer', fontSize: 14, color: T.text, flexShrink: 0 }}>→</button>
-                <button onClick={() => setDayFlyout(null)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 18, color: T.textLight, padding: '0 2px', lineHeight: 1, flexShrink: 0 }}>×</button>
+                <button onClick={goToNextDay} style={{ border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '5px 12px', cursor: 'pointer', fontSize: 14, color: flyoutHeaderInk, flexShrink: 0 }}>→</button>
+                <button onClick={() => setDayFlyout(null)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 18, color: flyoutHeaderInk, opacity: 0.8, padding: '0 2px', lineHeight: 1, flexShrink: 0 }}>×</button>
               </div>
               {/* Scrollable content */}
-              <div style={{ overflowY: 'auto', WebkitOverflowScrolling: 'touch', flex: 1 }}>
+              <div style={{ overflowY: 'auto', WebkitOverflowScrolling: 'touch', flex: 1, background: flyoutBodyBg }}>
                 <DayFlyout
                   flyout={dayFlyout}
                   period={activePeriodFlyout}
@@ -5327,7 +5363,7 @@ export default function GlowUpCalendar({ session }) {
       )}
 
       {/* Hint — above day headers */}
-      <p style={{ fontSize: 11, color: T.darkGreen, opacity: 0.6, marginBottom: 6 }}>
+      <p style={{ fontSize: 11, color: T.text, opacity: 0.6, marginBottom: 6 }}>
         Tap AM or PM on any date to open the day's routine. Use "Products" to manage your product library. Tap any step to assign a product.
       </p>
 

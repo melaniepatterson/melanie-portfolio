@@ -94,8 +94,7 @@ export default function SideMenu({ session, onClose, onFeedback }) {
                   cursor: 'pointer', textAlign: 'left', fontSize: 18,
                   color: T.text,
                   fontWeight: isActive ? 700 : 400,
-                  fontFamily: isActive ? T.fontFamilyAccent : 'inherit',
-                  fontStyle: isActive ? T.fontStyleAccent : 'normal',
+                  fontFamily: 'inherit',
                   animation: isActive ? 'glowupMenuPop 0.3s ease' : 'none',
                   transition: 'background 0.15s ease',
                 }}
