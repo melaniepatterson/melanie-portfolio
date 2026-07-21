@@ -3,12 +3,12 @@ import Avatar from './Avatar'
 import { supabase } from '../lib/supabase'
 import T from './theme'
 
-// Each letter gets a random vertical drift + tilt, applied on hover via
-// CSS custom properties — a true random scatter, not an alternating pattern.
+// Each letter alternates up/down in a steady rhythm, with just the tilt
+// varying a little per letter — applied on hover via CSS custom properties.
 function ScatterText({ text }) {
-  const offsets = useMemo(() => text.split('').map(() => ({
-    ty: (Math.random() * 16 - 8).toFixed(1),
-    rot: (Math.random() * 16 - 8).toFixed(1),
+  const offsets = useMemo(() => text.split('').map((_, i) => ({
+    ty: (i % 2 === 0 ? -4 : 4).toFixed(1),
+    rot: (Math.random() * 8 - 4).toFixed(1),
   })), [text])
   return text.split('').map((ch, i) => (
     <span key={i} className="glowup-scatter-letter" style={{ whiteSpace: 'pre', '--ty': `${offsets[i].ty}px`, '--rot': `${offsets[i].rot}deg` }}>
