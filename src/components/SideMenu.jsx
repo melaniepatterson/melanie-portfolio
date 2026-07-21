@@ -7,7 +7,7 @@ import T from './theme'
 // varying a little per letter — applied on hover via CSS custom properties.
 function ScatterText({ text }) {
   const offsets = useMemo(() => text.split('').map((_, i) => ({
-    ty: (i % 2 === 0 ? -4 : 4).toFixed(1),
+    ty: (i % 2 === 0 ? -2 : 2).toFixed(1),
     rot: (Math.random() * 8 - 4).toFixed(1),
   })), [text])
   return text.split('').map((ch, i) => (
