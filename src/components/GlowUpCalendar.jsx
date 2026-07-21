@@ -5174,7 +5174,7 @@ export default function GlowUpCalendar({ session }) {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 6 }}>
         <button onClick={prevMonth} aria-label="Previous month" style={{ border: 'none', background: 'transparent', padding: '5px 20px', cursor: 'pointer', fontSize: 18, color: T.text, flexShrink: 0 }}>←</button>
         <div style={{ width: 260, textAlign: 'center' }}>
-          <div style={{ fontSize: 'clamp(28px, 6vw, 42px)', fontWeight: 500, color: T.text, lineHeight: 1.1, textTransform: 'uppercase' }}>{MONTHS[month]}</div>
+          <div style={{ fontSize: 'clamp(20px, 4vw, 30px)', fontWeight: 500, color: T.text, lineHeight: 1.1, textTransform: 'uppercase' }}>{MONTHS[month]}</div>
           <div style={{ fontSize: 'clamp(13px, 2.5vw, 18px)', color: T.darkGreen, opacity: 0.7, fontWeight: 400, marginTop: 2 }}>{year}</div>
         </div>
         <button onClick={nextMonth} aria-label="Next month" style={{ border: 'none', background: 'transparent', padding: '5px 20px', cursor: 'pointer', fontSize: 18, color: T.text, flexShrink: 0 }}>→</button>
@@ -5185,12 +5185,12 @@ export default function GlowUpCalendar({ session }) {
         {/* Left — primary actions */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           <Btn variant={['update','setup'].includes(panel) ? 'active' : 'primary'}
-            style={['update','setup'].includes(panel) ? undefined : { background: T.darkGreen, color: T.white }}
+            style={['update','setup'].includes(panel) ? undefined : { background: T.text, color: T.white }}
             onClick={() => { setPanel(p => ['update','setup'].includes(p) ? null : (hasRoutine ? 'update' : 'setup')); setEditingPeriod(null); setDayFlyout(null) }}>
             + Build your <AccentWord>routine</AccentWord>
           </Btn>
           <Btn variant={showTreatments ? 'active' : 'secondary'}
-            style={showTreatments ? undefined : { borderColor: T.darkGreen, color: T.darkGreen }}
+            style={showTreatments ? undefined : { borderColor: T.text, color: T.text }}
             onClick={() => { setShowTreatments(s => !s); setDayFlyout(null) }}>My treatments</Btn>
           {(month !== now.getMonth() || year !== now.getFullYear()) && (
             <Btn variant="ghost" style={{ color: T.darkGreen }} onClick={() => { setMonth(now.getMonth()); setYear(now.getFullYear()) }}>Today</Btn>
@@ -5381,7 +5381,7 @@ export default function GlowUpCalendar({ session }) {
 
       {/* Day headers — always visible */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: 3, marginBottom: 3 }}>
-        {DAYS.map(d => <div key={d} style={{ textAlign: 'center', fontSize: 11, fontWeight: 600, color: T.darkGreen, opacity: 0.6, padding: '3px 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{d}</div>)}
+        {DAYS.map(d => <div key={d} style={{ textAlign: 'center', fontSize: 11, fontWeight: 600, color: T.text, opacity: 0.6, padding: '3px 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{d}</div>)}
       </div>
 
       {/* Grid — always visible, never moves */}

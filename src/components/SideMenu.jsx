@@ -114,7 +114,7 @@ export default function SideMenu({ session, onClose, onFeedback }) {
                   background: isActive ? color : 'transparent',
                   cursor: 'pointer', textAlign: 'left', fontSize: 18,
                   color: T.text, textTransform: 'uppercase', letterSpacing: '0.02em',
-                  fontWeight: 600,
+                  fontWeight: 700,
                   fontFamily: 'inherit',
                   animation: isActive ? 'glowupMenuPop 0.3s ease' : 'none',
                   transition: 'background 0.15s ease',

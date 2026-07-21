@@ -586,7 +586,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
     <div style={{ overflow: 'hidden', width: '100%', minWidth: 0, boxSizing: 'border-box' }}>
       {/* Card — white header/content zone, olive border, seamlessly
           continues into the dark-olive Up Next zone when shown */}
-      <div style={{ background: T.white, border: `1px solid ${T.darkGreen}`, borderRadius: T.radius.modal, marginBottom: 12, overflow: 'hidden', minWidth: 0 }}>
+      <div style={{ background: T.white, border: `1px solid ${T.text}`, borderRadius: T.radius.modal, marginBottom: 12, overflow: 'hidden', minWidth: 0 }}>
         <div style={{ padding: '10px 14px' }}>
           {/* Header row — always visible */}
           <button onClick={toggleCollapsed}
@@ -603,14 +603,14 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
               <div style={{ fontSize: 13, fontWeight: 600, color: programCardColor(program), letterSpacing: '0.02em', textTransform: 'uppercase', marginBottom: 2 }}>
                 {program.name}
               </div>
-              <div style={{ fontSize: 12, fontWeight: 600, color: T.darkGreen, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: T.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 Phase {currentPhase.phase_number} of {countedPhases.length} — {currentPhase.name}
                 {elapsed < 0 ? (
-                  <span style={{ fontWeight: 400, color: T.darkGreen, opacity: 0.7 }}> · Starts {fmtDate(phaseStart)}</span>
+                  <span style={{ fontWeight: 400, color: T.text, opacity: 0.7 }}> · Starts {fmtDate(phaseStart)}</span>
                 ) : currentPhase.duration_days && (
                   pauseDays > 0 && effectiveElapsed <= elapsed
-                    ? <span style={{ fontWeight: 400, color: T.darkGreen, opacity: 0.7 }}> · Day {Math.max(effectiveElapsed, 1)} of {effectiveDuration} — paused for treatment{resumeDate ? `, resumes ${resumeDate}` : ''}</span>
-                    : <span style={{ fontWeight: 400, color: T.darkGreen, opacity: 0.7 }}> · Day {Math.min(Math.max(effectiveElapsed, 0) + 1, effectiveDuration)} of {effectiveDuration}</span>
+                    ? <span style={{ fontWeight: 400, color: T.text, opacity: 0.7 }}> · Day {Math.max(effectiveElapsed, 1)} of {effectiveDuration} — paused for treatment{resumeDate ? `, resumes ${resumeDate}` : ''}</span>
+                    : <span style={{ fontWeight: 400, color: T.text, opacity: 0.7 }}> · Day {Math.min(Math.max(effectiveElapsed, 0) + 1, effectiveDuration)} of {effectiveDuration}</span>
                 )}
               </div>
               {/* Mobile only — progress bar below text */}
@@ -627,7 +627,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
                   <div style={{ width: `${phaseProgress}%`, height: '100%', background: programCardColor(program), borderRadius: T.radius.pill, transition: 'width 0.3s' }} />
                 </div>
               )}
-              <span style={{ fontSize: 10, color: T.darkGreen, transition: 'transform 0.15s', display: 'inline-block', transform: collapsed ? 'rotate(0deg)' : 'rotate(180deg)' }}>▼</span>
+              <span style={{ fontSize: 10, color: T.text, transition: 'transform 0.15s', display: 'inline-block', transform: collapsed ? 'rotate(0deg)' : 'rotate(180deg)' }}>▼</span>
             </div>
           </button>
 
@@ -637,14 +637,14 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
 
               {/* Current phase description — hide for Phase 1 tretinoin since sandwich note covers it */}
               {program.slug !== 'basic-skincare' && currentPhase.description && !(currentPhase.phase_number === 1 && (/sandwich/i.test(currentPhase.name || '') || /sandwich/i.test(currentPhase.description || ''))) && (
-                <div style={{ marginTop: 8, fontSize: 11, color: T.darkGreen, opacity: 0.85, lineHeight: 1.7, padding: '8px 10px', background: '#EBFBF2', borderRadius: 0 }}>
+                <div style={{ marginTop: 8, fontSize: 11, color: T.text, opacity: 0.85, lineHeight: 1.7, padding: '8px 10px', background: '#EBFBF2', borderRadius: 0 }}>
                   {currentPhase.description}
                 </div>
               )}
 
               {/* Sandwich method description — only shown on Phase 1 */}
               {currentPhase.phase_number === 1 && (/sandwich/i.test(currentPhase.name || '') || /sandwich/i.test(currentPhase.description || '')) && (
-                <div style={{ marginTop: 8, fontSize: 11, color: T.darkGreen, opacity: 0.85, lineHeight: 1.7, padding: '8px 10px', background: '#EBFBF2', borderRadius: 0 }}>
+                <div style={{ marginTop: 8, fontSize: 11, color: T.text, opacity: 0.85, lineHeight: 1.7, padding: '8px 10px', background: '#EBFBF2', borderRadius: 0 }}>
                   <span style={{ fontWeight: 600, color: T.text }}>What is the sandwich method? </span>
                   Apply moisturizer, wait 2–3 min, apply tretinoin, then moisturizer again on top. The buffer layers reduce irritation while it still absorbs.
                 </div>
