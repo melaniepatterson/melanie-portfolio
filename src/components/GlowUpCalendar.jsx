@@ -4868,6 +4868,9 @@ export default function GlowUpCalendar({ session }) {
       // Recovery AM
       if (s === 'pca' || s === 'recovery')
         return <Badge key="r" colorKey="recovery" label="Recovery" />
+      // Pause AM
+      if (s === 'pause')
+        return <Badge key="p" colorKey="pause" label="No actives" />
 
       return null
     })()
