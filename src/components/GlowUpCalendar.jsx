@@ -3333,11 +3333,11 @@ function NewRoutinePeriodPicker({ routineHistory, dailyHistory, showerHistory, p
 
   if (!chosen) return (
     <div style={{ background: 'transparent', padding: 0, marginBottom: 14 }}>
-      <div style={{ fontSize: 13, fontWeight: 600, color: T.white, marginBottom: 4 }}>What kind of routine would you like to add?</div>
+      <div style={{ fontSize: 22, fontWeight: 600, color: T.white, marginBottom: 6 }}>What kind of routine would you like to add?</div>
       <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.75)', marginBottom: 14 }}>Each type is tracked separately with its own history.</div>
 
       {/* Primary choice: build a program vs manually adjust */}
-      <div style={{ display: 'flex', alignItems: 'stretch', gap: 10, marginBottom: 16 }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 16 }}>
         {primaryOptions.map(o => (
           <button key={o.key} onClick={() => setChosen(o.key)} style={{
             flex: 1, padding: '16px 14px', borderRadius: T.radius.card,
@@ -4114,9 +4114,10 @@ const STATUS_COLORS = {
   microneedling_home: { fill: T.orange, dark: T.darkOrange },
   hydrafacial:        { fill: T.orange, dark: T.darkOrange },
 }
-// Statuses that are strictly a nighttime concept (actives applied PM only,
-// or a pre-treatment pause the night before) — the AM half stays neutral.
-const PM_ONLY_STATUSES = ['tret', 'bha', 'pause']
+// Statuses that are strictly a nighttime concept (actives applied PM
+// only) — the AM half stays neutral. Pause ("no actives") applies to both
+// halves, so it's excluded here.
+const PM_ONLY_STATUSES = ['tret', 'bha']
 
 export default function GlowUpCalendar({ session }) {
   const [confirmDialog, confirm] = useConfirm()
@@ -5162,7 +5163,7 @@ export default function GlowUpCalendar({ session }) {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 6 }}>
         <button onClick={prevMonth} aria-label="Previous month" style={{ border: 'none', background: 'transparent', padding: '5px 20px', cursor: 'pointer', fontSize: 18, color: T.text, flexShrink: 0 }}>←</button>
         <div style={{ width: 260, textAlign: 'center' }}>
-          <div style={{ fontSize: 'clamp(28px, 6vw, 42px)', fontWeight: 500, color: T.text, lineHeight: 1.1 }}>{MONTHS[month]}</div>
+          <div style={{ fontSize: 'clamp(28px, 6vw, 42px)', fontWeight: 500, color: T.text, lineHeight: 1.1, textTransform: 'uppercase' }}>{MONTHS[month]}</div>
           <div style={{ fontSize: 'clamp(13px, 2.5vw, 18px)', color: T.darkGreen, opacity: 0.7, fontWeight: 400, marginTop: 2 }}>{year}</div>
         </div>
         <button onClick={nextMonth} aria-label="Next month" style={{ border: 'none', background: 'transparent', padding: '5px 20px', cursor: 'pointer', fontSize: 18, color: T.text, flexShrink: 0 }}>→</button>

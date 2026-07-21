@@ -22,6 +22,13 @@ function getPeriodLabel(p) {
   return `${fmtDate(p.startDate)} — ${p.endDate ? fmtDate(p.endDate) : '—'}`
 }
 
+// Ended periods get the light/past treatment; current + upcoming stay white.
+function isPastPeriod(p) {
+  const today = new Date(); today.setHours(0,0,0,0)
+  const end = p.endDate ? new Date(p.endDate + 'T00:00:00') : null
+  return !!(end && end < today)
+}
+
 function navigate(type, data) {
   sessionStorage.setItem('glowup-history-action', JSON.stringify({ type, data }))
   window.location.href = '/routine'
@@ -99,16 +106,16 @@ export default function RoutineHistory({ session }) {
   return (
     <div style={{ fontFamily: 'inherit', minHeight: '100vh', background: T.cream, paddingBottom: 40 }}>
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 20px 16px', borderBottom: `0.5px solid ${T.border}`, background: T.white }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 20px 16px', background: T.darkGreen }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <button onClick={() => window.history.back()} style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 0, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.text }}>←</button>
-          <GlowUpLogo />
+          <button onClick={() => window.history.back()} style={{ border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.white }}>←</button>
+          <GlowUpLogo style={{ color: T.white }} />
         </div>
         <button onClick={() => setShowMenu(true)}
-          style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 0, padding: '5px 10px', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', justifyContent: 'center', width: 36, height: 32 }}>
-          <span style={{ display: 'block', width: 14, height: 1.5, background: T.text }} />
-          <span style={{ display: 'block', width: 14, height: 1.5, background: T.text }} />
-          <span style={{ display: 'block', width: 14, height: 1.5, background: T.text }} />
+          style={{ border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '5px 10px', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', justifyContent: 'center', width: 36, height: 32 }}>
+          <span style={{ display: 'block', width: 14, height: 1.5, background: T.white }} />
+          <span style={{ display: 'block', width: 14, height: 1.5, background: T.white }} />
+          <span style={{ display: 'block', width: 14, height: 1.5, background: T.white }} />
         </button>
         {showMenu && <SideMenu session={session} onClose={() => setShowMenu(false)} />}
       </div>
@@ -117,9 +124,9 @@ export default function RoutineHistory({ session }) {
       <div style={{ display: 'flex', gap: 6, padding: '16px 20px 8px' }}>
         {tabs.map(t => (
           <button key={t.key} onClick={() => setTab(t.key)} style={{
-            padding: '6px 14px', borderRadius: 0, fontSize: 12, cursor: 'pointer',
-            border: `0.5px solid ${tab === t.key ? T.pinkDeep : T.border}`,
-            background: tab === t.key ? T.pink : T.white,
+            padding: '6px 14px', borderRadius: T.radius.pill, fontSize: 12, cursor: 'pointer',
+            border: 'none',
+            background: tab === t.key ? T.pink : T.creamDark,
             color: T.text, fontFamily: 'inherit',
           }}>{t.label} {t.count > 0 && <span style={{ fontSize: 10, color: T.textMuted }}>({t.count})</span>}</button>
         ))}
@@ -136,22 +143,25 @@ export default function RoutineHistory({ session }) {
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
                   <div style={{ fontSize: 11, fontWeight: 600, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Skincare</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                    <Btn variant="primary" onClick={() => navigate('new-skincare', null)}>+ Start new routine</Btn>
+                    <Btn variant="primary" style={{ background: T.darkGreen, color: T.white }} onClick={() => navigate('new-skincare', null)}>+ Start new routine</Btn>
                     <InfoTooltip text={TOOLTIP_TEXT} />
                   </div>
                 </div>
                 {routineHistory.length === 0
                   ? <div style={{ fontSize: 13, color: T.textMuted, fontStyle: 'italic' }}>No skincare routines yet.</div>
-                  : routineHistory.map((p, i) => (
-                    <div key={i} style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 0, padding: '12px 14px', marginBottom: 10 }}>
+                  : routineHistory.map((p, i) => {
+                    const past = isPastPeriod(p)
+                    const cardBg = past ? '#EBFBF2' : T.white
+                    return (
+                    <div key={i} style={{ background: cardBg, borderRadius: T.radius.card, padding: '12px 14px', marginBottom: 10 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
-                        <div style={{ fontSize: 12, fontWeight: 600, color: T.text }}>{getPeriodLabel(p)}</div>
+                        <div style={{ fontSize: 12, fontWeight: 600, color: T.darkGreen }}>{getPeriodLabel(p)}</div>
                         <div style={{ display: 'flex', gap: 4 }}>
-                          <Btn onClick={() => navigate('edit-skincare', p)}>Edit</Btn>
-                          <button onClick={() => deleteSkincare(p)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 16, padding: '0 4px' }}>×</button>
+                          <Btn style={{ borderColor: T.darkGreen, color: T.darkGreen }} onClick={() => navigate('edit-skincare', p)}>Edit</Btn>
+                          <button onClick={() => deleteSkincare(p)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.darkGreen, opacity: 0.6, fontSize: 16, padding: '0 4px' }}>×</button>
                         </div>
                       </div>
-                      <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.7 }}>
+                      <div style={{ fontSize: 11, color: T.darkGreen, opacity: 0.85, lineHeight: 1.7 }}>
                         {(() => {
                           const steps = p.steps
                           if (steps) {
@@ -177,7 +187,8 @@ export default function RoutineHistory({ session }) {
                       </div>
                       <Timestamps p={p} />
                     </div>
-                  ))
+                    )
+                  })
                 }
               </>
             )}
@@ -188,7 +199,7 @@ export default function RoutineHistory({ session }) {
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
                   <div style={{ fontSize: 11, fontWeight: 600, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Extras</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                    <Btn variant="primary" onClick={() => navigate('new-daily', null)}>+ Start new routine</Btn>
+                    <Btn variant="primary" style={{ background: T.darkGreen, color: T.white }} onClick={() => navigate('new-daily', null)}>+ Start new routine</Btn>
                     <InfoTooltip text={TOOLTIP_TEXT} />
                   </div>
                 </div>
@@ -199,7 +210,7 @@ export default function RoutineHistory({ session }) {
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
                         <div style={{ fontSize: 12, fontWeight: 600, color: T.text }}>{getPeriodLabel(p)}</div>
                         <div style={{ display: 'flex', gap: 4 }}>
-                          <Btn onClick={() => navigate('edit-daily', p)}>Edit</Btn>
+                          <Btn style={{ borderColor: T.darkGreen, color: T.darkGreen }} onClick={() => navigate('edit-daily', p)}>Edit</Btn>
                           <button onClick={() => deleteDaily(p)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 16, padding: '0 4px' }}>×</button>
                         </div>
                       </div>
@@ -217,7 +228,7 @@ export default function RoutineHistory({ session }) {
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
                   <div style={{ fontSize: 11, fontWeight: 600, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Shower</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                    <Btn variant="primary" onClick={() => navigate('new-shower', null)}>+ Start new routine</Btn>
+                    <Btn variant="primary" style={{ background: T.darkGreen, color: T.white }} onClick={() => navigate('new-shower', null)}>+ Start new routine</Btn>
                     <InfoTooltip text={TOOLTIP_TEXT} />
                   </div>
                 </div>
@@ -228,7 +239,7 @@ export default function RoutineHistory({ session }) {
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
                         <div style={{ fontSize: 12, fontWeight: 600, color: T.text }}>{getPeriodLabel(p)}</div>
                         <div style={{ display: 'flex', gap: 4 }}>
-                          <Btn onClick={() => navigate('edit-shower', p)}>Edit</Btn>
+                          <Btn style={{ borderColor: T.darkGreen, color: T.darkGreen }} onClick={() => navigate('edit-shower', p)}>Edit</Btn>
                           <button onClick={() => deleteShower(p)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 16, padding: '0 4px' }}>×</button>
                         </div>
                       </div>
