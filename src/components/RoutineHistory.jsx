@@ -22,13 +22,6 @@ function getPeriodLabel(p) {
   return `${fmtDate(p.startDate)} — ${p.endDate ? fmtDate(p.endDate) : '—'}`
 }
 
-// Ended periods get the light/past treatment; current + upcoming stay white.
-function isPastPeriod(p) {
-  const today = new Date(); today.setHours(0,0,0,0)
-  const end = p.endDate ? new Date(p.endDate + 'T00:00:00') : null
-  return !!(end && end < today)
-}
-
 function navigate(type, data) {
   sessionStorage.setItem('glowup-history-action', JSON.stringify({ type, data }))
   window.location.href = '/routine'
@@ -126,7 +119,7 @@ export default function RoutineHistory({ session }) {
           <button key={t.key} onClick={() => setTab(t.key)} style={{
             padding: '6px 14px', borderRadius: T.radius.pill, fontSize: 12, cursor: 'pointer',
             border: 'none',
-            background: tab === t.key ? T.pink : T.creamDark,
+            background: tab === t.key ? T.pink : '#EBFBF2',
             color: T.text, fontFamily: 'inherit',
           }}>{t.label} {t.count > 0 && <span style={{ fontSize: 10, color: T.textMuted }}>({t.count})</span>}</button>
         ))}
@@ -141,7 +134,7 @@ export default function RoutineHistory({ session }) {
             {tab === 'skincare' && (
               <>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-                  <div style={{ fontSize: 11, fontWeight: 600, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Skincare</div>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: T.green, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Skincare</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                     <Btn variant="primary" style={{ background: T.darkGreen, color: T.white }} onClick={() => navigate('new-skincare', null)}>+ Start new routine</Btn>
                     <InfoTooltip text={TOOLTIP_TEXT} />
@@ -149,19 +142,16 @@ export default function RoutineHistory({ session }) {
                 </div>
                 {routineHistory.length === 0
                   ? <div style={{ fontSize: 13, color: T.textMuted, fontStyle: 'italic' }}>No skincare routines yet.</div>
-                  : routineHistory.map((p, i) => {
-                    const past = isPastPeriod(p)
-                    const cardBg = past ? '#EBFBF2' : T.white
-                    return (
-                    <div key={i} style={{ background: cardBg, borderRadius: T.radius.card, padding: '12px 14px', marginBottom: 10 }}>
+                  : routineHistory.map((p, i) => (
+                    <div key={i} style={{ background: T.green, borderRadius: T.radius.card, padding: '12px 14px', marginBottom: 10 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
-                        <div style={{ fontSize: 12, fontWeight: 600, color: T.darkGreen }}>{getPeriodLabel(p)}</div>
+                        <div style={{ fontSize: 12, fontWeight: 600, color: T.white }}>{getPeriodLabel(p)}</div>
                         <div style={{ display: 'flex', gap: 4 }}>
-                          <Btn style={{ borderColor: T.darkGreen, color: T.darkGreen }} onClick={() => navigate('edit-skincare', p)}>Edit</Btn>
-                          <button onClick={() => deleteSkincare(p)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.darkGreen, opacity: 0.6, fontSize: 16, padding: '0 4px' }}>×</button>
+                          <Btn style={{ borderColor: T.white, color: T.white }} onClick={() => navigate('edit-skincare', p)}>Edit</Btn>
+                          <button onClick={() => deleteSkincare(p)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.white, opacity: 0.7, fontSize: 16, padding: '0 4px' }}>×</button>
                         </div>
                       </div>
-                      <div style={{ fontSize: 11, color: T.darkGreen, opacity: 0.85, lineHeight: 1.7 }}>
+                      <div style={{ fontSize: 11, color: T.white, opacity: 0.85, lineHeight: 1.7 }}>
                         {(() => {
                           const steps = p.steps
                           if (steps) {
@@ -187,8 +177,7 @@ export default function RoutineHistory({ session }) {
                       </div>
                       <Timestamps p={p} />
                     </div>
-                    )
-                  })
+                  ))
                 }
               </>
             )}
