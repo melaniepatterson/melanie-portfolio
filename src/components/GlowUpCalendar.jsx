@@ -551,15 +551,15 @@ function FieldLabel({ children }) {
 }
 
 function TextInput({ value, onChange, placeholder, width = 140 }) {
-  return <input type="text" value={value} onChange={onChange} placeholder={placeholder} style={{ width, fontSize: 12, padding: '5px 2px', border: 'none', borderBottom: '1px solid #000000', borderRadius: 0, background: 'transparent', color: T.text, outline: 'none' }} />
+  return <input type="text" value={value} onChange={onChange} placeholder={placeholder} style={{ width, fontSize: 12, padding: '5px 2px', border: 'none', borderBottom: `1px solid ${T.darkGreen}`, borderRadius: 0, background: 'transparent', color: T.darkGreen, outline: 'none' }} />
 }
 
 function NumberInput({ value, onChange, min = 0, max = 14, width = 60 }) {
-  return <input type="number" value={value} onChange={onChange} min={min} max={max} style={{ width, fontSize: 12, padding: '5px 2px', border: 'none', borderBottom: '1px solid #000000', borderRadius: 0, background: 'transparent', color: T.text, outline: 'none' }} />
+  return <input type="number" value={value} onChange={onChange} min={min} max={max} style={{ width, fontSize: 12, padding: '5px 2px', border: 'none', borderBottom: `1px solid ${T.darkGreen}`, borderRadius: 0, background: 'transparent', color: T.darkGreen, outline: 'none' }} />
 }
 
 function DateInput({ value, onChange, disabled = false }) {
-  return <input type="date" value={value} onChange={onChange} disabled={disabled} style={{ fontSize: 12, padding: '5px 2px', border: 'none', borderBottom: '1px solid #000000', borderRadius: 0, background: 'transparent', color: disabled ? T.textMuted : T.text, outline: 'none', cursor: disabled ? 'not-allowed' : 'auto' }} />
+  return <input type="date" value={value} onChange={onChange} disabled={disabled} style={{ fontSize: 12, padding: '5px 2px', border: 'none', borderBottom: `1px solid ${T.darkGreen}`, borderRadius: 0, background: 'transparent', color: disabled ? T.textMuted : T.darkGreen, outline: 'none', cursor: disabled ? 'not-allowed' : 'auto' }} />
 }
 
 // ─── CONFLICT MESSAGE ────────────────────────────────────────
@@ -865,7 +865,7 @@ function CurrentRoutineSummary({ steps }) {
   const sortByOrder = (a, b) => (INGREDIENT_CATEGORIES[a.categoryKey]?.order ?? 99) - (INGREDIENT_CATEGORIES[b.categoryKey]?.order ?? 99)
 
   return (
-    <div style={{ background: T.creamDark, border: `0.5px solid ${T.border}`, borderRadius: 0, padding: '14px 16px', marginBottom: 14 }}>
+    <div style={{ background: T.creamDark, borderRadius: T.radius.modal, padding: '14px 16px', marginBottom: 14 }}>
       <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 10 }}>
         Your current routine
       </div>
@@ -874,14 +874,14 @@ function CurrentRoutineSummary({ steps }) {
           <div style={{ fontSize: 10, fontWeight: 700, color: T.textLight, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 6 }}>☀ Morning (AM)</div>
           {am.length === 0 && <div style={{ fontSize: 11, color: T.textLight }}>—</div>}
           {[...am].sort(sortByOrder).map(s => (
-            <div key={s.id} style={{ fontSize: 12, color: T.text, marginBottom: 3 }}>{s.label}</div>
+            <div key={s.id} style={{ fontSize: 12, color: T.darkGreen, marginBottom: 3 }}>{s.label}</div>
           ))}
         </div>
         <div>
           <div style={{ fontSize: 10, fontWeight: 700, color: T.textLight, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 6 }}>☾ Evening (PM)</div>
           {pm.length === 0 && <div style={{ fontSize: 11, color: T.textLight }}>—</div>}
           {[...pm].sort(sortByOrder).map(s => (
-            <div key={s.id} style={{ fontSize: 12, color: T.text, marginBottom: 3 }}>{s.label}</div>
+            <div key={s.id} style={{ fontSize: 12, color: T.darkGreen, marginBottom: 3 }}>{s.label}</div>
           ))}
         </div>
       </div>
@@ -919,8 +919,8 @@ function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = false, lo
   const canSave = form.startDate.length > 0 && !conflict
 
   return (
-    <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 0, padding: '16px 18px', marginBottom: 14 }}>
-      <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 4 }}>
+    <div style={{ background: T.white, borderRadius: T.radius.modal, padding: '16px 18px', marginBottom: 14 }}>
+      <div style={{ fontSize: 13, fontWeight: 600, color: T.darkGreen, marginBottom: 4 }}>
         {isFirst ? 'Skincare routine' : lockStartDate ? `Skincare routine — editing from ${fmtDate(initial.startDate)}` : 'Skincare routine'}
       </div>
       {!isFirst && !lockStartDate && (
@@ -939,29 +939,29 @@ function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = false, lo
 
       {!isFirst && <CurrentRoutineSummary steps={initial?.steps} />}
 
-      <SectionLabel>What does your skincare routine consist of?</SectionLabel>
-      <div style={{ fontSize: 12, color: T.textMuted, marginBottom: 12, lineHeight: 1.6, background: T.creamDark, borderRadius: 0, padding: '10px 12px' }}>
+      <SectionLabel style={{ borderTop: 'none', paddingTop: 0 }}>What does your skincare routine consist of?</SectionLabel>
+      <div style={{ fontSize: 12, color: T.textMuted, marginBottom: 12, lineHeight: 1.6, background: T.creamDark, borderRadius: T.radius.card, padding: '10px 12px' }}>
         Your morning and evening steps — from cleanse to SPF, actives, and treatments. Toggle on what you use and we'll build your calendar around it.
       </div>
 
       {/* Retinoid toggle */}
-      <div style={{ marginBottom: 4, padding: '10px 12px', borderRadius: 0, border: `0.5px solid ${form.tretEnabled ? T.pinkDeep : T.border}`, background: form.tretEnabled ? T.pink : T.white }}>
+      <div style={{ marginBottom: 4, padding: '10px 12px', borderRadius: T.radius.card, background: form.tretEnabled ? T.green : T.creamDark }}>
         <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer' }}>
-          <input type="checkbox" checked={form.tretEnabled} onChange={e => set('tretEnabled', e.target.checked)} style={{ width: 14, height: 14, marginTop: 2, cursor: 'pointer', accentColor: T.pinkDeep }} />
+          <input type="checkbox" checked={form.tretEnabled} onChange={e => set('tretEnabled', e.target.checked)} style={{ width: 14, height: 14, marginTop: 2, cursor: 'pointer', accentColor: T.darkGreen }} />
           <div>
-            <div style={{ fontSize: 12, fontWeight: 600, color: T.text }}>Retinoid (vitamin A)</div>
+            <div style={{ fontSize: 12, fontWeight: 600, color: T.darkGreen }}>Retinoid (vitamin A)</div>
             <div style={{ fontSize: 11, color: T.textMuted }}>Tretinoin, adapalene, retinol, retinaldehyde, and more — prescription or over the counter</div>
           </div>
         </label>
       </div>
       {form.tretEnabled && (
-        <div style={{ marginLeft: 12, marginBottom: 8, paddingLeft: 12, borderLeft: `2px solid ${T.pinkDeep}` }}>
+        <div style={{ marginLeft: 12, marginBottom: 8, paddingLeft: 12 }}>
           <div style={{ marginBottom: 8, marginTop: 8 }}>
             <FieldLabel>Which one?</FieldLabel>
             <select
               value={MAIN_ACTIVE_OPTIONS.find(o => o.value === form.activeName) ? form.activeName : 'tretinoin'}
               onChange={e => set('activeName', e.target.value)}
-              style={{ fontSize: 12, padding: '5px 8px', border: `0.5px solid ${T.border}`, borderRadius: 0, background: T.cream, color: T.text }}
+              style={{ fontSize: 12, padding: '5px 8px', border: 'none', borderRadius: T.radius.card, background: T.creamDark, color: T.darkGreen }}
             >
               {MAIN_ACTIVE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
             </select>
@@ -979,8 +979,8 @@ function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = false, lo
           <FieldLabel>How often?</FieldLabel>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 6, marginBottom: 6 }}>
             {TRET_FREQUENCIES.map(f => (
-              <button key={f.key} onClick={() => set('tretFrequency', f.key)} style={{ border: `0.5px solid ${form.tretFrequency === f.key ? T.pinkDeep : T.border}`, borderRadius: 0, padding: '8px 10px', cursor: 'pointer', background: form.tretFrequency === f.key ? T.pink : T.white, textAlign: 'left' }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: T.text }}>{f.label}</div>
+              <button key={f.key} onClick={() => set('tretFrequency', f.key)} style={{ border: 'none', borderRadius: T.radius.card, padding: '8px 10px', cursor: 'pointer', background: form.tretFrequency === f.key ? T.green : T.creamDark, textAlign: 'left' }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: T.darkGreen }}>{f.label}</div>
                 <div style={{ fontSize: 10, color: T.textLight }}>{f.description}</div>
               </button>
             ))}
@@ -991,7 +991,7 @@ function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = false, lo
       {/* Other evening actives */}
       {form.tretEnabled && (
         <div style={{ fontSize: 11, color: T.textMuted, margin: '8px 0 6px', paddingLeft: 2 }}>
-          <strong style={{ color: T.text }}>Active nights</strong> = nights you use your main evening treatment. <strong style={{ color: T.text }}>Off nights</strong> = the other evenings.
+          <strong style={{ color: T.darkGreen }}>Active nights</strong> = nights you use your main evening treatment. <strong style={{ color: T.darkGreen }}>Off nights</strong> = the other evenings.
         </div>
       )}
       {AVAILABLE_SECONDARY_ACTIVES.map(def => {
@@ -1000,14 +1000,14 @@ function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = false, lo
         const showNightsOptions = form.tretEnabled
         const incompatWarning = enabled && showNightsOptions ? SECONDARY_INCOMPATIBILITIES[def.key]?.[sa.nights] : null
         return (
-          <div key={def.key} style={{ marginBottom: 4, padding: '10px 12px', borderRadius: 0, border: `0.5px solid ${enabled ? T.pinkDeep : T.border}`, background: enabled ? T.pink : T.white }}>
+          <div key={def.key} style={{ marginBottom: 4, padding: '10px 12px', borderRadius: T.radius.card, background: enabled ? T.green : T.creamDark }}>
             <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer' }}>
               <input type="checkbox" checked={enabled} onChange={e => {
                 const base = form.secondaryActives || AVAILABLE_SECONDARY_ACTIVES.map(a => ({ key: a.key, enabled: false, nights: a.defaultNights }))
                 set('secondaryActives', base.map(a => a.key === def.key ? { ...a, enabled: e.target.checked } : a))
-              }} style={{ width: 14, height: 14, marginTop: 2, cursor: 'pointer', accentColor: T.pinkDeep }} />
+              }} style={{ width: 14, height: 14, marginTop: 2, cursor: 'pointer', accentColor: T.darkGreen }} />
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 12, fontWeight: 500, color: T.text }}>{def.label}</div>
+                <div style={{ fontSize: 12, fontWeight: 500, color: T.darkGreen }}>{def.label}</div>
                 {enabled && showNightsOptions && (
                   <div style={{ marginTop: 6 }}>
                     <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
@@ -1018,14 +1018,14 @@ function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = false, lo
                             e.preventDefault()
                             const base = form.secondaryActives || []
                             set('secondaryActives', base.map(a => a.key === def.key ? { ...a, nights: n.key } : a))
-                          }} style={{ fontSize: 10, padding: '2px 8px', borderRadius: 0, cursor: 'pointer', border: `0.5px solid ${sa.nights === n.key ? T.pinkDeep : T.border}`, background: sa.nights === n.key ? T.white : 'transparent', fontWeight: sa.nights === n.key ? 600 : 400, color: isIncompat ? '#92400E' : (sa.nights === n.key ? T.text : T.textLight), whiteSpace: 'nowrap' }}>
+                          }} style={{ fontSize: 10, padding: '2px 8px', borderRadius: T.radius.pill, cursor: 'pointer', border: 'none', background: sa.nights === n.key ? T.white : 'transparent', fontWeight: sa.nights === n.key ? 600 : 400, color: isIncompat ? '#92400E' : (sa.nights === n.key ? T.darkGreen : T.textLight), whiteSpace: 'nowrap' }}>
                             {n.label}{isIncompat ? ' ⚠' : ''}
                           </button>
                         )
                       })}
                     </div>
                     {incompatWarning && (
-                      <div style={{ fontSize: 10, color: '#92400E', background: '#FFFBEB', border: '0.5px solid #FCD34D', borderRadius: 0, padding: '5px 8px', marginTop: 5, lineHeight: 1.5 }}>
+                      <div style={{ fontSize: 10, color: '#92400E', background: '#FFFBEB', borderRadius: T.radius.card, padding: '5px 8px', marginTop: 5, lineHeight: 1.5 }}>
                         ⚠ {incompatWarning}
                       </div>
                     )}
@@ -1038,7 +1038,7 @@ function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = false, lo
                         e.preventDefault()
                         const base = form.secondaryActives || []
                         set('secondaryActives', base.map(a => a.key === def.key ? { ...a, nights: n.key } : a))
-                      }} style={{ fontSize: 10, padding: '2px 8px', borderRadius: 0, cursor: 'pointer', border: `0.5px solid ${sa.nights === n.key ? T.pinkDeep : T.border}`, background: sa.nights === n.key ? T.white : 'transparent', fontWeight: sa.nights === n.key ? 600 : 400, color: sa.nights === n.key ? T.text : T.textLight, whiteSpace: 'nowrap' }}>
+                      }} style={{ fontSize: 10, padding: '2px 8px', borderRadius: T.radius.pill, cursor: 'pointer', border: 'none', background: sa.nights === n.key ? T.white : 'transparent', fontWeight: sa.nights === n.key ? 600 : 400, color: sa.nights === n.key ? T.darkGreen : T.textLight, whiteSpace: 'nowrap' }}>
                         {n.label}
                       </button>
                     ))}
@@ -1052,7 +1052,7 @@ function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = false, lo
 
 
 
-      <SectionLabel>Product assignments (optional)</SectionLabel>
+      <SectionLabel style={{ borderTop: 'none' }}>Product assignments (optional)</SectionLabel>
       <div style={{ marginBottom: 8 }}>
         <Btn onClick={() => setShowProducts(s => !s)} style={{ fontSize: 11, padding: '4px 10px', marginBottom: 8 }}>{showProducts ? 'Hide products' : 'Assign products to steps'}</Btn>
         {showProducts && (
@@ -1085,8 +1085,8 @@ function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = false, lo
               const isOpen = openStep === sid
               return (
                 <div key={sid} style={{ marginBottom: 6 }}>
-                  <div onClick={() => setOpenStep(isOpen ? null : sid)} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 0, border: `0.5px solid ${isOpen ? T.pinkDeep : T.border}`, cursor: 'pointer', background: isOpen ? T.pink : T.white }}>
-                    <div style={{ fontSize: 11, fontWeight: 500, color: T.text, flex: 1 }}>{step.label}</div>
+                  <div onClick={() => setOpenStep(isOpen ? null : sid)} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: T.radius.card, border: 'none', cursor: 'pointer', background: isOpen ? T.green : T.creamDark }}>
+                    <div style={{ fontSize: 11, fontWeight: 500, color: T.darkGreen, flex: 1 }}>{step.label}</div>
                     {prod ? (
                       <span style={{ fontSize: 11, color: T.textMuted }}>{prod.name}</span>
                     ) : (
@@ -1123,7 +1123,7 @@ function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = false, lo
         )}
       </div>
 
-      <div style={{ borderTop: `0.5px solid ${T.border}`, paddingTop: 12, marginTop: 14, display: 'flex', gap: 8 }}>
+      <div style={{ paddingTop: 12, marginTop: 18, display: 'flex', gap: 8 }}>
         <Btn variant="primary" onClick={() => canSave && onSave(form)} disabled={!canSave}>
           {lockStartDate ? 'Save changes' : 'Save routine'}
         </Btn>
