@@ -172,7 +172,7 @@ function NotReadyYetLink({ onClick, disabled }) {
   return (
     <div style={{ borderTop: `1px solid ${T.border}`, padding: '10px 16px' }}>
       <button onClick={onClick} disabled={disabled}
-        style={{ padding: '7px 14px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.textMuted, cursor: disabled ? 'default' : 'pointer', fontSize: 11, fontFamily: 'inherit' }}>
+        style={{ padding: '7px 14px', borderRadius: T.radius.pill, border: 'none', background: T.text, color: T.white, cursor: disabled ? 'default' : 'pointer', fontSize: 11, fontFamily: 'inherit' }}>
         {disabled ? 'Saving…' : "I'm not ready yet — add a week"}
       </button>
     </div>

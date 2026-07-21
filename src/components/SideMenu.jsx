@@ -7,8 +7,8 @@ import T from './theme'
 // varying a little per letter — applied on hover via CSS custom properties.
 function ScatterText({ text }) {
   const offsets = useMemo(() => text.split('').map((_, i) => ({
-    ty: (i % 2 === 0 ? -2 : 2).toFixed(1),
-    rot: (Math.random() * 8 - 4).toFixed(1),
+    ty: (i % 2 === 0 ? -1 : 1).toFixed(1),
+    rot: (Math.random() * 5 - 2.5).toFixed(1),
   })), [text])
   return text.split('').map((ch, i) => (
     <span key={i} className="glowup-scatter-letter" style={{ whiteSpace: 'pre', '--ty': `${offsets[i].ty}px`, '--rot': `${offsets[i].rot}deg` }}>

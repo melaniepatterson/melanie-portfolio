@@ -5077,7 +5077,7 @@ export default function GlowUpCalendar({ session }) {
 
       {/* Glow Up logo — desktop only */}
       <div className="glowup-cal-logo" style={{ alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
-        <GlowUpLogo size={32} style={{ color: logoColor.current }} />
+        <GlowUpLogo size={40} style={{ color: logoColor.current }} />
       </div>
 
       {/* Program nudge — for users who built their routine manually and have never enrolled in a program */}
@@ -5171,11 +5171,11 @@ export default function GlowUpCalendar({ session }) {
       )}
 
       {/* Month/year with flanking nav arrows — fixed-width center keeps arrows static */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 6 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 16, marginBottom: 6 }}>
         <button onClick={prevMonth} aria-label="Previous month" style={{ border: 'none', background: 'transparent', padding: '5px 20px', cursor: 'pointer', fontSize: 18, color: T.text, flexShrink: 0 }}>←</button>
         <div style={{ width: 260, textAlign: 'center' }}>
           <div style={{ fontSize: 'clamp(20px, 4vw, 30px)', fontWeight: 500, color: T.text, lineHeight: 1.1, textTransform: 'uppercase' }}>{MONTHS[month]}</div>
-          <div style={{ fontSize: 'clamp(13px, 2.5vw, 18px)', color: T.darkGreen, opacity: 0.7, fontWeight: 400, marginTop: 2 }}>{year}</div>
+          <div style={{ fontSize: 'clamp(13px, 2.5vw, 18px)', color: T.text, opacity: 0.7, fontWeight: 400, marginTop: 2 }}>{year}</div>
         </div>
         <button onClick={nextMonth} aria-label="Next month" style={{ border: 'none', background: 'transparent', padding: '5px 20px', cursor: 'pointer', fontSize: 18, color: T.text, flexShrink: 0 }}>→</button>
       </div>
@@ -5208,10 +5208,10 @@ export default function GlowUpCalendar({ session }) {
             )}
           </button>
           <button onClick={() => setShowMenu(s => !s)} aria-label="Menu"
-            style={{ border: 'none', background: showMenu ? T.pink : 'transparent', borderRadius: T.radius.pill, padding: '5px 10px', cursor: 'pointer', color: T.darkGreen, fontSize: 16, lineHeight: 1, display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', justifyContent: 'center', width: 36, height: 32 }}>
-            <span style={{ display: 'block', width: 14, height: 1.5, background: T.darkGreen, borderRadius: 0 }} />
-            <span style={{ display: 'block', width: 14, height: 1.5, background: T.darkGreen, borderRadius: 0 }} />
-            <span style={{ display: 'block', width: 14, height: 1.5, background: T.darkGreen, borderRadius: 0 }} />
+            style={{ border: 'none', background: showMenu ? T.pink : 'transparent', borderRadius: T.radius.pill, padding: '5px 10px', cursor: 'pointer', color: T.text, fontSize: 16, lineHeight: 1, display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', justifyContent: 'center', width: 36, height: 32 }}>
+            <span style={{ display: 'block', width: 14, height: 1.5, background: T.text, borderRadius: 0 }} />
+            <span style={{ display: 'block', width: 14, height: 1.5, background: T.text, borderRadius: 0 }} />
+            <span style={{ display: 'block', width: 14, height: 1.5, background: T.text, borderRadius: 0 }} />
           </button>
         </div>
       </div>
