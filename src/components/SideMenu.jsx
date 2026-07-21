@@ -1,7 +1,21 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import Avatar from './Avatar'
 import { supabase } from '../lib/supabase'
 import T from './theme'
+
+// Each letter gets a random vertical drift + tilt, applied on hover via
+// CSS custom properties — a true random scatter, not an alternating pattern.
+function ScatterText({ text }) {
+  const offsets = useMemo(() => text.split('').map(() => ({
+    ty: (Math.random() * 16 - 8).toFixed(1),
+    rot: (Math.random() * 16 - 8).toFixed(1),
+  })), [text])
+  return text.split('').map((ch, i) => (
+    <span key={i} className="glowup-scatter-letter" style={{ whiteSpace: 'pre', '--ty': `${offsets[i].ty}px`, '--rot': `${offsets[i].rot}deg` }}>
+      {ch}
+    </span>
+  ))
+}
 
 
 export default function SideMenu({ session, onClose, onFeedback }) {
@@ -53,6 +67,13 @@ export default function SideMenu({ session, onClose, onFeedback }) {
           60%  { transform: scale(1.03); }
           100% { transform: scale(1); }
         }
+        .glowup-scatter-letter {
+          display: inline-block;
+          transition: transform 0.25s cubic-bezier(.34,1.56,.64,1);
+        }
+        .glowup-menu-item:hover .glowup-scatter-letter {
+          transform: translateY(var(--ty)) rotate(var(--rot));
+        }
       `}</style>
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.2)', zIndex: 200 }} />
       <div style={{
@@ -85,14 +106,14 @@ export default function SideMenu({ session, onClose, onFeedback }) {
           {menuItems.map(({ label, href, action, color }) => {
             const isActive = href && currentPath === href
             return (
-              <button key={label}
+              <button key={label} className="glowup-menu-item"
                 onClick={() => { onClose(); if (action) action(); else if (href) window.location.href = href }}
                 style={{
                   display: 'flex', alignItems: 'center', width: '100%',
                   padding: '14px 16px', border: 'none', borderRadius: T.radius.card,
                   background: isActive ? color : 'transparent',
                   cursor: 'pointer', textAlign: 'left', fontSize: 18,
-                  color: T.text,
+                  color: T.text, textTransform: 'uppercase', letterSpacing: '0.02em',
                   fontWeight: isActive ? 700 : 400,
                   fontFamily: 'inherit',
                   animation: isActive ? 'glowupMenuPop 0.3s ease' : 'none',
@@ -101,7 +122,7 @@ export default function SideMenu({ session, onClose, onFeedback }) {
                 onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'rgba(0,0,0,0.08)' }}
                 onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent' }}
               >
-                {label}
+                <ScatterText text={label} />
               </button>
             )
           })}
