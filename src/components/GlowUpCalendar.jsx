@@ -4854,51 +4854,59 @@ export default function GlowUpCalendar({ session }) {
     const cellBorderW    = isToday ? '1.5px' : '0.5px'
 
     // AM badge — tier system, single badge
-    const amBadge = (() => {
+    // Badge content computed as {colorKey, label} pairs first so AM and PM
+    // can be compared — when they'd say the exact same thing, the AM pill
+    // is dropped and just the cell color carries the meaning.
+    const amBadgeData = (() => {
       // Tier 1 — AM treatment
       if (info.isTreatment && treatmentTimeOfDay === 'am') {
         const count = info.allTreatments?.length || 1
         if (count > 1) {
           const names = [...new Set((info.allTreatments || []).map(t => allTypes[t.type]?.label || t.type))]
             .map(n => n.charAt(0).toUpperCase() + n.slice(1).toLowerCase())
-          return <Badge key="t" colorKey={s} label={names.join(', ')} />
+          return { colorKey: s, label: names.join(', ') }
         }
-        return (() => { const lbl = allTypes[s]?.label || s; return <Badge key="t" colorKey={s} label={lbl.charAt(0).toUpperCase() + lbl.slice(1).toLowerCase()} /> })()
+        const lbl = allTypes[s]?.label || s
+        return { colorKey: s, label: lbl.charAt(0).toUpperCase() + lbl.slice(1).toLowerCase() }
       }
       // Recovery AM
       if (s === 'pca' || s === 'recovery')
-        return <Badge key="r" colorKey="recovery" label="Recovery" />
+        return { colorKey: 'recovery', label: 'Recovery' }
       // Pause AM
       if (s === 'pause')
-        return <Badge key="p" colorKey="pause" label="No actives" />
+        return { colorKey: 'pause', label: 'No actives' }
 
       return null
     })()
-    const amBadges = amBadge ? [amBadge] : []
 
     // PM badge — tier system, single badge per half
     // T1: vitamin A / no actives / recovery (always)
     // T2: secondary actives (always)
-    const pmBadge = (() => {
+    const pmBadgeData = (() => {
       if (info.isTreatment) {
         const count = info.allTreatments?.length || 1
         if (count > 1) {
           const names = [...new Set((info.allTreatments || []).map(t => allTypes[t.type]?.label || t.type))]
             .map(n => n.charAt(0).toUpperCase() + n.slice(1).toLowerCase())
-          return <Badge key="t" colorKey={s} label={names.join(', ')} />
+          return { colorKey: s, label: names.join(', ') }
         }
-        if (treatmentTimeOfDay === 'pm')
-          return (() => { const lbl = allTypes[s]?.label || s; return <Badge key="t" colorKey={s} label={lbl.charAt(0).toUpperCase() + lbl.slice(1).toLowerCase()} /> })()
-        return <Badge key="r" colorKey="recovery" label="Recovery" />
+        if (treatmentTimeOfDay === 'pm') {
+          const lbl = allTypes[s]?.label || s
+          return { colorKey: s, label: lbl.charAt(0).toUpperCase() + lbl.slice(1).toLowerCase() }
+        }
+        return { colorKey: 'recovery', label: 'Recovery' }
       }
-      if (s === 'pause')    return <Badge key="p" colorKey="pause"         label="No actives"       />
-      if (s === 'pca')      return <Badge key="p" colorKey="recovery"      label="Recovery" />
-      if (s === 'recovery') return <Badge key="p" colorKey="recovery"      label="Recovery" />
-      if (s === 'tret') { const an = period?.activeName || 'tretinoin'; return <Badge key="p" colorKey="tret" label={an.charAt(0).toUpperCase() + an.slice(1)} /> }
-      if (s === 'bha')  return <Badge key="bha" colorKey="bha" label="AHA/BHA" />
+      if (s === 'pause')    return { colorKey: 'pause',    label: 'No actives' }
+      if (s === 'pca')      return { colorKey: 'recovery', label: 'Recovery' }
+      if (s === 'recovery') return { colorKey: 'recovery', label: 'Recovery' }
+      if (s === 'tret') { const an = period?.activeName || 'tretinoin'; return { colorKey: 'tret', label: an.charAt(0).toUpperCase() + an.slice(1) } }
+      if (s === 'bha')  return { colorKey: 'bha', label: 'AHA/BHA' }
       return null
     })()
-    const pmBadges = pmBadge ? [pmBadge] : []
+
+    const sameBadge = !!(amBadgeData && pmBadgeData && amBadgeData.colorKey === pmBadgeData.colorKey && amBadgeData.label === pmBadgeData.label)
+    const amBadges = (amBadgeData && !sameBadge) ? [<Badge key="am" colorKey={amBadgeData.colorKey} label={amBadgeData.label} />] : []
+    const pmBadges = pmBadgeData ? [<Badge key="pm" colorKey={pmBadgeData.colorKey} label={pmBadgeData.label} />] : []
     const isOpen = dayFlyout?.key === key
     const activePeriod = getActivePeriod(dt, routineHistory)
 
