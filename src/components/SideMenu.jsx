@@ -57,7 +57,7 @@ export default function SideMenu({ session, onClose, onFeedback }) {
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.2)', zIndex: 200 }} />
       <div style={{
         position: 'fixed', top: 0, right: 0, bottom: 0, width: 280,
-        background: T.darkYellow, border: 'none',
+        background: T.yellow, border: 'none',
         zIndex: 201, display: 'flex', flexDirection: 'column',
         fontFamily: 'inherit', boxShadow: '-4px 0 24px rgba(0,0,0,0.2)',
       }}>
@@ -66,17 +66,17 @@ export default function SideMenu({ session, onClose, onFeedback }) {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               {!avatarReady ? (
-                <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'rgba(255,255,255,0.15)', flexShrink: 0 }} />
+                <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'rgba(0,0,0,0.1)', flexShrink: 0 }} />
               ) : (
                 <Avatar avatarUrl={avatarUrl} displayName={displayName} email={email} size={44} />
               )}
               <div style={{ minWidth: 0 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: T.white, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {avatarReady ? displayName : ''}
                 </div>
               </div>
             </div>
-            <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 22, color: T.white, padding: '0 2px', lineHeight: 1, flexShrink: 0 }}>×</button>
+            <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 22, color: T.text, padding: '0 2px', lineHeight: 1, flexShrink: 0 }}>×</button>
           </div>
         </div>
 
@@ -92,14 +92,14 @@ export default function SideMenu({ session, onClose, onFeedback }) {
                   padding: '14px 16px', border: 'none', borderRadius: T.radius.card,
                   background: isActive ? color : 'transparent',
                   cursor: 'pointer', textAlign: 'left', fontSize: 18,
-                  color: isActive ? T.text : T.white,
+                  color: T.text,
                   fontWeight: isActive ? 700 : 400,
                   fontFamily: isActive ? T.fontFamilyAccent : 'inherit',
                   fontStyle: isActive ? T.fontStyleAccent : 'normal',
                   animation: isActive ? 'glowupMenuPop 0.3s ease' : 'none',
                   transition: 'background 0.15s ease',
                 }}
-                onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'rgba(255,255,255,0.1)' }}
+                onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'rgba(0,0,0,0.08)' }}
                 onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent' }}
               >
                 {label}
@@ -113,13 +113,13 @@ export default function SideMenu({ session, onClose, onFeedback }) {
           <button onClick={signOut} style={{
             display: 'flex', alignItems: 'center', width: '100%',
             padding: '10px 0', border: 'none', background: 'transparent',
-            cursor: 'pointer', fontSize: 15, color: 'rgba(255,255,255,0.7)', textAlign: 'left',
+            cursor: 'pointer', fontSize: 15, color: 'rgba(0,0,0,0.6)', textAlign: 'left',
           }}>
             Sign out
           </button>
           <div style={{ display: 'flex', gap: 16, paddingTop: 8 }}>
-            <a href="/privacy" style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', textDecoration: 'none', letterSpacing: '0.04em' }}>Privacy Policy</a>
-            <a href="/privacy#cookies" style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', textDecoration: 'none', letterSpacing: '0.04em' }}>Cookie Policy</a>
+            <a href="/privacy" style={{ fontSize: 10, color: 'rgba(0,0,0,0.45)', textDecoration: 'none', letterSpacing: '0.04em' }}>Privacy Policy</a>
+            <a href="/privacy#cookies" style={{ fontSize: 10, color: 'rgba(0,0,0,0.45)', textDecoration: 'none', letterSpacing: '0.04em' }}>Cookie Policy</a>
           </div>
         </div>
       </div>

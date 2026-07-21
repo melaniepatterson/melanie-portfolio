@@ -31,7 +31,7 @@ import BetaSurvey from './BetaSurvey'
 import { applyProgramPhase, buildStepEntries } from './programOptions'
 import { todayInTz, nowInTz, detectTimezone } from './timezone'
 import { fmtDate, fmtDateTime } from './dateFormat'
-import { programCardColor } from './programColors'
+import { programCardColor, programMidColor } from './programColors'
 import SideMenu from './SideMenu'
 import T from './theme'
 import ProductForm from './shared/ProductForm'
@@ -3273,9 +3273,10 @@ function AddProgramPanel({ session, activeProgram, activePrograms = [], routineP
           const blocker = incompatibleWith(program)
           const isActive = activePrograms.some(p => p.program_id === program.id)
           const cardColor = programCardColor(program)
+          const midColor = programMidColor(program)
           return (
-            <div key={program.id} style={{ background: cardColor, border: 'none', borderRadius: T.radius.card, padding: '16px 18px', marginBottom: 10, opacity: blocker || isActive ? 0.6 : 1 }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: 6 }}>
+            <div key={program.id} style={{ borderRadius: T.radius.card, marginBottom: 10, overflow: 'hidden', opacity: blocker || isActive ? 0.6 : 1 }}>
+              <div style={{ background: cardColor, padding: '14px 18px', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
                 <div style={{ fontFamily: T.fontFamilyAccent, fontStyle: T.fontStyleAccent, fontSize: 13, fontWeight: 600, color: T.white, letterSpacing: '0.02em', textTransform: 'uppercase' }}>
                   {program.name}
                 </div>
@@ -3285,19 +3286,21 @@ function AddProgramPanel({ session, activeProgram, activePrograms = [], routineP
                   </div>
                 )}
               </div>
-              <div style={{ fontSize: 14, color: T.white, lineHeight: 1.6, marginBottom: 14 }}>{program.description}</div>
-              {isActive ? (
-                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.85)', fontStyle: 'italic' }}>Currently active</div>
-              ) : blocker ? (
-                <div style={{ fontSize: 11, color: T.white }}>Complete your current program before starting this one</div>
-              ) : (
-                <button onClick={() => setPreviewingProgram(program)}
-                  style={{ width: '100%', padding: '12px', borderRadius: T.radius.pill, border: 'none', background: T.white, color: cardColor, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 600, transition: 'opacity 150ms ease' }}
-                  onMouseEnter={e => { e.currentTarget.style.opacity = 0.85 }}
-                  onMouseLeave={e => { e.currentTarget.style.opacity = 1 }}>
-                  {completions > 0 ? <>Start <AccentWord>again</AccentWord></> : <>Learn <AccentWord>more</AccentWord> & start</>}
-                </button>
-              )}
+              <div style={{ background: midColor, padding: '16px 18px' }}>
+                <div style={{ fontSize: 14, color: cardColor, lineHeight: 1.6, marginBottom: 14 }}>{program.description}</div>
+                {isActive ? (
+                  <div style={{ fontSize: 11, color: cardColor, fontStyle: 'italic' }}>Currently active</div>
+                ) : blocker ? (
+                  <div style={{ fontSize: 11, color: cardColor }}>Complete your current program before starting this one</div>
+                ) : (
+                  <button onClick={() => setPreviewingProgram(program)}
+                    style={{ width: '100%', padding: '12px', borderRadius: T.radius.pill, border: 'none', background: T.white, color: cardColor, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 600, transition: 'opacity 150ms ease' }}
+                    onMouseEnter={e => { e.currentTarget.style.opacity = 0.85 }}
+                    onMouseLeave={e => { e.currentTarget.style.opacity = 1 }}>
+                    {completions > 0 ? <>Start <AccentWord>again</AccentWord></> : <>Learn <AccentWord>more</AccentWord> & start</>}
+                  </button>
+                )}
+              </div>
             </div>
           )
         })
@@ -3379,8 +3382,8 @@ function NewRoutinePeriodPicker({ routineHistory, dailyHistory, showerHistory, p
   return (
     <div>
       {/* Back link lives inside a wrapper card so it feels contained */}
-      <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: T.radius.modal, marginBottom: 14, overflow: 'hidden' }}>
-        <button onClick={() => setChosen(null)} style={{ border: 'none', borderRadius: 0, background: T.text, fontSize: 12, color: T.white, cursor: 'pointer', padding: '10px 16px', display: 'block', width: '100%', textAlign: 'left' }}>
+      <div style={{ background: T.white, borderRadius: T.radius.modal, marginBottom: 14, overflow: 'hidden' }}>
+        <button onClick={() => setChosen(null)} style={{ border: 'none', borderRadius: 0, background: 'transparent', fontSize: 12, color: T.darkGreen, cursor: 'pointer', padding: '10px 16px', display: 'block', width: '100%', textAlign: 'left' }}>
           ← Back to routine type
         </button>
         <div style={{ padding: '0' }}>
@@ -5353,8 +5356,8 @@ export default function GlowUpCalendar({ session }) {
             <div
               style={{
                 maxWidth: 560, margin: '0 auto', minHeight: '100vh',
-                display: 'flex', flexDirection: 'column', justifyContent: 'center',
-                padding: '48px 20px',
+                display: 'flex', flexDirection: 'column', justifyContent: 'flex-start',
+                padding: '64px 20px 48px',
               }}>
 
             {/* First launch */}
