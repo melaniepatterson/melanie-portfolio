@@ -124,7 +124,7 @@ export function ProductImageUpload({ value, onChange, userId, productName }) {
   return (
     <div>
       {preview && (
-        <div style={{ position: 'relative', marginBottom: 6, display: 'inline-block', borderRadius: 0, overflow: 'hidden', border: `0.5px solid ${T.border}`, background: T.creamDark, verticalAlign: 'top' }}>
+        <div style={{ position: 'relative', marginBottom: 6, display: 'inline-block', borderRadius: T.radius.card, overflow: 'hidden', background: 'rgba(0,0,0,0.06)', verticalAlign: 'top' }}>
           <img src={preview} alt="" style={{ display: 'block', maxHeight: 88, maxWidth: 120, objectFit: 'contain' }} />
           <button
             onClick={() => { setPreview(null); onChange('') }}
@@ -137,7 +137,7 @@ export function ProductImageUpload({ value, onChange, userId, productName }) {
         <button
           onClick={() => ref.current?.click()}
           disabled={uploading}
-          style={{ flex: 1, padding: '6px 10px', borderRadius: 0, border: `0.5px solid ${T.border}`, background: T.creamDark, color: T.textMuted, fontSize: 11, cursor: uploading ? 'default' : 'pointer', fontFamily: 'inherit' }}>
+          style={{ flex: 1, padding: '6px 10px', borderRadius: T.radius.pill, border: 'none', background: 'rgba(0,0,0,0.06)', color: T.textMuted, fontSize: 11, cursor: uploading ? 'default' : 'pointer', fontFamily: 'inherit' }}>
           {uploading ? 'Uploading...' : preview ? '↑ Replace image' : '↑ Upload image'}
         </button>
         <input ref={ref} type="file" accept="image/*" onChange={handleFile} style={{ display: 'none' }} />
@@ -239,11 +239,11 @@ export default function ProductForm({ initial, onSave, onCancel, catalogProducts
 
   function removeTag(t) { set('tags', (form.tags || []).filter(x => x !== t)) }
 
-  const inputStyle = { width: '100%', boxSizing: 'border-box', fontSize: 12, padding: '6px 2px', border: 'none', borderBottom: '1px solid #000000', borderRadius: 0, background: 'transparent', color: T.text, fontFamily: 'inherit', outline: 'none' }
-  const selectStyle = { ...inputStyle, cursor: 'pointer' }
+  const inputStyle = { width: '100%', boxSizing: 'border-box', fontSize: 12, padding: '8px 14px', border: '1px solid rgba(0,0,0,0.15)', borderRadius: T.radius.pill, background: T.white, color: T.text, fontFamily: 'inherit', outline: 'none' }
+  const selectStyle = { ...inputStyle, cursor: 'pointer', paddingRight: 30 }
 
   return (
-    <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 0, padding: '16px 18px', marginBottom: 10, maxWidth: 460 }}>
+    <div style={{ background: T.white, borderRadius: T.radius.modal, padding: '16px 18px', marginBottom: 10, maxWidth: 460, boxShadow: '0 8px 32px rgba(0,0,0,0.15)' }}>
       <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 14 }}>
         {initial?.id ? 'Edit product' : 'Add product'}
       </div>
@@ -253,11 +253,11 @@ export default function ProductForm({ initial, onSave, onCancel, catalogProducts
         <FieldLabel>Product name</FieldLabel>
         <input value={form.name} onChange={e => set('name', e.target.value)} placeholder="e.g. Blueberry Cleanser" style={{ ...inputStyle }} />
         {showSuggestions && suggestions.length > 0 && (
-          <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 100, background: '#fff', border: '0.5px solid ' + T.border, borderRadius: 0, boxShadow: '0 4px 12px rgba(0,0,0,0.08)', maxHeight: 200, overflowY: 'auto' }}>
+          <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 100, background: '#fff', border: '1px solid rgba(0,0,0,0.15)', borderRadius: T.radius.card, boxShadow: '0 4px 12px rgba(0,0,0,0.08)', maxHeight: 200, overflowY: 'auto' }}>
             {suggestions.map(p => (
               <div key={p.id} onMouseDown={() => selectSuggestion(p)}
-                style={{ padding: '8px 12px', cursor: 'pointer', fontSize: 12, borderBottom: '0.5px solid ' + T.border }}
-                onMouseEnter={e => e.currentTarget.style.background = T.creamDark}
+                style={{ padding: '8px 12px', cursor: 'pointer', fontSize: 12, borderBottom: '0.5px solid rgba(0,0,0,0.08)' }}
+                onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,0,0,0.06)'}
                 onMouseLeave={e => e.currentTarget.style.background = '#fff'}>
                 <div style={{ fontWeight: 500, color: T.text }}>{p.name}</div>
                 {p.brand && <div style={{ fontSize: 11, color: T.textMuted }}>{p.brand}</div>}
@@ -275,11 +275,11 @@ export default function ProductForm({ initial, onSave, onCancel, catalogProducts
             onBlur={() => setTimeout(() => setShowBrandSuggestions(false), 150)}
             placeholder="e.g. Glow Recipe" style={inputStyle} />
           {showBrandSuggestions && brandSuggestions.length > 0 && (
-            <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 100, background: '#fff', border: '0.5px solid ' + T.border, borderRadius: 0, boxShadow: '0 4px 12px rgba(0,0,0,0.08)', maxHeight: 180, overflowY: 'auto' }}>
+            <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 100, background: '#fff', border: '1px solid rgba(0,0,0,0.15)', borderRadius: T.radius.card, boxShadow: '0 4px 12px rgba(0,0,0,0.08)', maxHeight: 180, overflowY: 'auto' }}>
               {brandSuggestions.map(b => (
                 <div key={b} onMouseDown={() => { set('brand', b); setShowBrandSuggestions(false) }}
-                  style={{ padding: '7px 12px', cursor: 'pointer', fontSize: 12, borderBottom: '0.5px solid ' + T.border, color: T.text }}
-                  onMouseEnter={e => e.currentTarget.style.background = T.creamDark}
+                  style={{ padding: '7px 12px', cursor: 'pointer', fontSize: 12, borderBottom: '0.5px solid rgba(0,0,0,0.08)', color: T.text }}
+                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,0,0,0.06)'}
                   onMouseLeave={e => e.currentTarget.style.background = '#fff'}>
                   {b}
                 </div>
@@ -310,7 +310,7 @@ export default function ProductForm({ initial, onSave, onCancel, catalogProducts
             const active = !!(form.applicationArea?.[key])
             return (
               <button key={key} onClick={() => set('applicationArea', { ...(form.applicationArea || {}), [key]: !active })}
-                style={{ fontSize: 11, padding: '4px 12px', borderRadius: 0, cursor: 'pointer', border: `1px solid ${active ? T.text : T.border}`, background: active ? T.text : 'transparent', color: active ? '#fff' : T.textMuted, fontFamily: 'inherit' }}>
+                style={{ fontSize: 11, padding: '4px 12px', borderRadius: T.radius.pill, cursor: 'pointer', border: 'none', background: active ? T.text : 'rgba(0,0,0,0.06)', color: active ? '#fff' : T.textMuted, fontFamily: 'inherit' }}>
                 {area}
               </button>
             )
@@ -319,7 +319,7 @@ export default function ProductForm({ initial, onSave, onCancel, catalogProducts
       </div>
 
       {/* PAO + dates */}
-      <div style={{ borderTop: `0.5px solid ${T.border}`, paddingTop: 10, marginBottom: 8 }}>
+      <div style={{ borderTop: '0.5px solid rgba(0,0,0,0.1)', paddingTop: 10, marginBottom: 8 }}>
         <FieldLabel>Purchase & expiry <span style={{ fontWeight: 400, color: T.textLight }}>(optional)</span></FieldLabel>
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 10 }}>
@@ -344,7 +344,7 @@ export default function ProductForm({ initial, onSave, onCancel, catalogProducts
       )}
 
       {/* Ownership & ethics */}
-      <div style={{ borderTop: `0.5px solid ${T.border}`, paddingTop: 10, marginBottom: 8 }}>
+      <div style={{ borderTop: '0.5px solid rgba(0,0,0,0.1)', paddingTop: 10, marginBottom: 8 }}>
         <FieldLabel>Ownership & ethics</FieldLabel>
       </div>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 12 }}>
@@ -364,9 +364,9 @@ export default function ProductForm({ initial, onSave, onCancel, catalogProducts
           { key: 'is_discontinued',   label: '⛔ Discontinued'   },
         ].map(({ key, label }) => (
           <button key={key} type="button" onClick={() => set(key, !form[key])} style={{
-            padding: '4px 10px', borderRadius: 0, fontSize: 11, cursor: 'pointer',
-            border: `1px solid ${form[key] ? T.text : T.border}`,
-            background: form[key] ? T.text : 'transparent',
+            padding: '4px 10px', borderRadius: T.radius.pill, fontSize: 11, cursor: 'pointer',
+            border: 'none',
+            background: form[key] ? T.text : 'rgba(0,0,0,0.06)',
             color: form[key] ? '#fff' : T.textMuted, fontFamily: 'inherit',
           }}>{label}</button>
         ))}
@@ -381,7 +381,7 @@ export default function ProductForm({ initial, onSave, onCancel, catalogProducts
             <span style={{ fontSize: 11, color: T.textMuted }}>Buy again?</span>
             {[['Yes', true], ['No', false], ['—', null]].map(([label, val]) => (
               <button key={label} type="button" onClick={() => set('buyAgain', form.buyAgain === val ? null : val)}
-                style={{ padding: '3px 9px', borderRadius: 0, fontSize: 11, cursor: 'pointer', fontFamily: 'inherit', border: `1px solid ${form.buyAgain === val ? T.text : T.border}`, background: form.buyAgain === val ? T.text : 'transparent', color: form.buyAgain === val ? '#fff' : T.textMuted }}>
+                style={{ padding: '3px 9px', borderRadius: T.radius.pill, fontSize: 11, cursor: 'pointer', fontFamily: 'inherit', border: 'none', background: form.buyAgain === val ? T.text : 'rgba(0,0,0,0.06)', color: form.buyAgain === val ? '#fff' : T.textMuted }}>
                 {label}
               </button>
             ))}
@@ -394,12 +394,12 @@ export default function ProductForm({ initial, onSave, onCancel, catalogProducts
         <FieldLabel>Tags</FieldLabel>
         <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', marginBottom: 6 }}>
           {(form.tags || []).map(t => (
-            <span key={t} style={{ fontSize: 11, padding: '2px 8px', borderRadius: 0, background: T.creamDark, color: T.text, border: `0.5px solid ${T.border}`, cursor: 'pointer' }} onClick={() => removeTag(t)}>{t} ×</span>
+            <span key={t} style={{ fontSize: 11, padding: '2px 8px', borderRadius: T.radius.pill, background: 'rgba(0,0,0,0.06)', color: T.text, border: 'none', cursor: 'pointer' }} onClick={() => removeTag(t)}>{t} ×</span>
           ))}
         </div>
         <div style={{ display: 'flex', gap: 6 }}>
           <input value={tagInput} onChange={e => setTagInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && addTag()} placeholder="e.g. fragrance free" style={{ ...inputStyle, flex: 1 }} />
-          <button type="button" onClick={addTag} style={{ fontSize: 11, padding: '4px 10px', borderRadius: 0, border: '1px solid ' + T.border, background: 'transparent', color: T.text, cursor: 'pointer', fontFamily: 'inherit', flexShrink: 0 }}>Add</button>
+          <button type="button" onClick={addTag} style={{ fontSize: 11, padding: '4px 10px', borderRadius: T.radius.pill, border: 'none', background: 'rgba(0,0,0,0.06)', color: T.text, cursor: 'pointer', fontFamily: 'inherit', flexShrink: 0 }}>Add</button>
         </div>
       </div>
 
@@ -427,16 +427,16 @@ export default function ProductForm({ initial, onSave, onCancel, catalogProducts
       <div style={{ marginBottom: 12 }}>
         <FieldLabel>Notes</FieldLabel>
         <textarea value={form.notes} onChange={e => set('notes', e.target.value)} placeholder="Any notes..." rows={3}
-          style={{ width: '100%', boxSizing: 'border-box', fontSize: 12, padding: '6px 2px', border: 'none', borderBottom: '1px solid #000000', borderRadius: 0, background: 'transparent', color: T.text, resize: 'vertical', fontFamily: 'inherit', outline: 'none' }} />
+          style={{ width: '100%', boxSizing: 'border-box', fontSize: 12, padding: '8px 14px', border: '1px solid rgba(0,0,0,0.15)', borderRadius: T.radius.card, background: T.white, color: T.text, resize: 'vertical', fontFamily: 'inherit', outline: 'none' }} />
       </div>
 
-      <div style={{ display: 'flex', gap: 8, borderTop: `0.5px solid ${T.border}`, paddingTop: 10 }}>
+      <div style={{ display: 'flex', gap: 8, borderTop: '0.5px solid rgba(0,0,0,0.1)', paddingTop: 10 }}>
         <button type="button" onClick={() => form.name && onSave({ ...form, id: form.id || crypto.randomUUID() })} disabled={!form.name}
-          style={{ flex: 1, padding: '9px', borderRadius: 0, border: 'none', background: form.name ? T.text : T.border, color: '#fff', cursor: form.name ? 'pointer' : 'default', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
+          style={{ flex: 1, padding: '9px', borderRadius: T.radius.pill, border: 'none', background: form.name ? T.text : 'rgba(0,0,0,0.15)', color: '#fff', cursor: form.name ? 'pointer' : 'default', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
           {initial?.id ? 'Save changes' : 'Save product'}
         </button>
         <button type="button" onClick={onCancel}
-          style={{ padding: '9px 16px', borderRadius: 0, border: '1px solid ' + T.border, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
+          style={{ padding: '9px 16px', borderRadius: T.radius.pill, border: '1px solid rgba(0,0,0,0.15)', background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
           Cancel
         </button>
       </div>

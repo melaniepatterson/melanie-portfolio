@@ -280,12 +280,12 @@ function PersonalDataForm({ productId, isCatalog, upd, product, onSaveUpd, onClo
   }
 
   const inputStyle = {
-    width: '100%', boxSizing: 'border-box', padding: '6px 2px',
-    borderRadius: 0, border: 'none',
-    borderBottom: '1px solid #000000',
-    background: 'transparent', color: T.text, fontSize: 12,
-    fontFamily: 'inherit', outline: 'none', resize: 'vertical',
+    width: '100%', boxSizing: 'border-box', padding: '8px 14px',
+    borderRadius: T.radius.pill, border: '1px solid rgba(0,0,0,0.15)',
+    background: T.white, color: T.text, fontSize: 12,
+    fontFamily: 'inherit', outline: 'none',
   }
+  const textareaStyle = { ...inputStyle, borderRadius: T.radius.card, resize: 'vertical' }
   const labelStyle = {
     fontSize: 10, fontWeight: 600, color: T.textMuted,
     textTransform: 'uppercase', letterSpacing: '0.06em',
@@ -293,7 +293,7 @@ function PersonalDataForm({ productId, isCatalog, upd, product, onSaveUpd, onClo
   }
 
   return (
-    <div style={{ marginTop: 20, borderTop: `0.5px solid ${T.border}`, paddingTop: 16 }}>
+    <div style={{ marginTop: 20, borderTop: '0.5px solid rgba(0,0,0,0.1)', paddingTop: 16 }}>
       <div style={{ fontSize: 11, fontWeight: 600, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>My notes</div>
 
       {/* Notes */}
@@ -303,7 +303,7 @@ function PersonalDataForm({ productId, isCatalog, upd, product, onSaveUpd, onClo
           onChange={e => setNotes(e.target.value)}
           placeholder="How does this work for you? Any tips..."
           rows={3}
-          style={inputStyle}
+          style={textareaStyle}
         />
       </div>
 
@@ -321,10 +321,10 @@ function PersonalDataForm({ productId, isCatalog, upd, product, onSaveUpd, onClo
             {[['Yes', true], ['No', false], ['—', null]].map(([label, val]) => (
               <button key={label} onClick={() => setBuyAgain(buyAgain === val ? null : val)}
                 style={{
-                  padding: '6px 14px', borderRadius: 0, fontSize: 11,
+                  padding: '6px 14px', borderRadius: T.radius.pill, fontSize: 11,
                   cursor: 'pointer', fontFamily: 'inherit',
-                  border: `0.5px solid ${T.border}`,
-                  background: buyAgain === val ? T.pinkDeep : T.cream,
+                  border: 'none',
+                  background: buyAgain === val ? T.pinkDeep : 'rgba(0,0,0,0.06)',
                   color: buyAgain === val ? '#fff' : T.textMuted,
                 }}>
                 {label}
@@ -353,7 +353,7 @@ function PersonalDataForm({ productId, isCatalog, upd, product, onSaveUpd, onClo
       <div style={{ marginBottom: 12, maxWidth: 160 }}>
         <label style={labelStyle}>PAO (months)</label>
         <select value={paoMonths} onChange={e => setPao(e.target.value)}
-          style={{ width: '100%', fontSize: 12, padding: '6px 2px', border: 'none', borderBottom: '1px solid #000000', borderRadius: 0, background: 'transparent', color: paoMonths ? T.text : T.textMuted, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }}>
+          style={{ width: '100%', fontSize: 12, padding: '8px 30px 8px 14px', border: '1px solid rgba(0,0,0,0.15)', borderRadius: T.radius.pill, background: T.white, color: paoMonths ? T.text : T.textMuted, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }}>
           <option value="">— Select PAO —</option>
           {PAO_OPTIONS.map(m => <option key={m} value={m}>{m} months</option>)}
         </select>
@@ -362,7 +362,7 @@ function PersonalDataForm({ productId, isCatalog, upd, product, onSaveUpd, onClo
       {/* Save */}
       <button onClick={handleSave} disabled={saving}
         style={{
-          width: '100%', padding: '10px', borderRadius: 0, border: 'none',
+          width: '100%', padding: '10px', borderRadius: T.radius.pill, border: 'none',
           background: saved ? '#4caf50' : T.pinkDeep,
           color: '#fff', cursor: saving ? 'default' : 'pointer',
           fontSize: 13, fontFamily: 'inherit', fontWeight: 500,
@@ -442,9 +442,9 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
       {/* X — floats above modal card, outside it */}
       <div style={{ position: 'relative', width: '100%', maxWidth: 760, height: 'min(85vh, 680px)' }}>
-        <button onClick={onClose} style={{ position: 'absolute', top: -12, right: -12, zIndex: 1010, width: 28, height: 28, borderRadius: 0, border: `1px solid ${T.border}`, background: T.white, color: T.text, cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>×</button>
+        <button onClick={onClose} style={{ position: 'absolute', top: -12, right: -12, zIndex: 1010, width: 28, height: 28, borderRadius: T.radius.pill, border: 'none', background: T.white, color: T.text, cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1, boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>×</button>
         <div onClick={e => e.stopPropagation()} style={{
-          background: T.white, borderRadius: 0, width: '100%',
+          background: T.white, borderRadius: T.radius.modal, width: '100%',
           height: '100%',
           display: 'flex', overflow: 'hidden', position: 'relative',
         }}>
@@ -479,7 +479,7 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
           {/* Category — most specific only */}
           {(p.ingredient_form || p.ingredient_category || p.category) && (
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
-              <span style={{ fontSize: 11, background: T.creamDark, color: T.textMuted, borderRadius: 0, padding: '3px 10px' }}>
+              <span style={{ fontSize: 11, background: 'rgba(0,0,0,0.06)', color: T.textMuted, borderRadius: T.radius.pill, padding: '3px 10px' }}>
                 {(p.ingredient_form || p.ingredient_category?.replace(/_/g, ' ') || p.category)?.charAt(0).toUpperCase() + (p.ingredient_form || p.ingredient_category?.replace(/_/g, ' ') || p.category)?.slice(1)}
               </span>
             </div>
@@ -544,30 +544,30 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
               upd?.in_library
                 ? <>
                     <button onClick={handleMarkFinished}
-                      style={{ flex: 1, padding: '9px', borderRadius: 0, border: '0.5px solid ' + T.pinkDeep, background: finishConfetti ? T.pink : 'transparent', color: T.pinkDeep, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 500, transition: 'background 0.3s' }}>
+                      style={{ flex: 1, padding: '9px', borderRadius: T.radius.pill, border: '0.5px solid ' + T.pinkDeep, background: finishConfetti ? T.pink : 'transparent', color: T.pinkDeep, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 500, transition: 'background 0.3s' }}>
                       {finishConfetti ? '✓ Finished!' : finishCount > 0 ? `Mark as finished (${finishCount}×)` : 'Mark as finished'}
                     </button>
                     <button onClick={() => { onRemoveFromLibrary(p.id); onClose() }}
-                      style={{ padding: '9px 14px', borderRadius: 0, border: '0.5px solid ' + T.border, background: 'transparent', color: T.textMuted, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
+                      style={{ padding: '9px 14px', borderRadius: T.radius.pill, border: '1px solid rgba(0,0,0,0.15)', background: 'transparent', color: T.textMuted, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
                       Remove
                     </button>
                   </>
                 : <button onClick={() => { onAddToLibrary(p); onClose() }}
-                    style={{ flex: 1, padding: '9px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 500 }}>
+                    style={{ flex: 1, padding: '9px', borderRadius: T.radius.pill, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 500 }}>
                     + Add to my products
                   </button>
             ) : (
               <>
                 <button onClick={() => { onClose(); onEdit(p) }}
-                  style={{ flex: 1, padding: '9px', borderRadius: 0, border: '0.5px solid ' + T.border, background: T.creamDark, color: T.text, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 500 }}>
+                  style={{ flex: 1, padding: '9px', borderRadius: T.radius.pill, border: 'none', background: 'rgba(0,0,0,0.06)', color: T.text, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 500 }}>
                   Edit
                 </button>
                 <button onClick={handleMarkFinished}
-                  style={{ flex: 1, padding: '9px', borderRadius: 0, border: '0.5px solid ' + T.pinkDeep, background: finishConfetti ? T.pink : 'transparent', color: T.pinkDeep, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 500, transition: 'background 0.3s' }}>
+                  style={{ flex: 1, padding: '9px', borderRadius: T.radius.pill, border: '0.5px solid ' + T.pinkDeep, background: finishConfetti ? T.pink : 'transparent', color: T.pinkDeep, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 500, transition: 'background 0.3s' }}>
                   {finishConfetti ? '✓ Finished!' : finishCount > 0 ? `Mark as finished (${finishCount}×)` : 'Mark as finished'}
                 </button>
                 <button onClick={async () => { if (await confirm({ title: `Delete ${p.name}?`, message: 'This cannot be undone.' })) { onDelete(p); onClose() } }}
-                  style={{ padding: '9px 14px', borderRadius: 0, border: '0.5px solid ' + T.border, background: 'transparent', color: T.textLight, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
+                  style={{ padding: '9px 14px', borderRadius: T.radius.pill, border: '1px solid rgba(0,0,0,0.15)', background: 'transparent', color: T.textLight, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
                   Delete
                 </button>
               </>
@@ -692,7 +692,7 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
   function FilterSection({ title, children, defaultOpen = true }) {
     const [open, setOpen] = useState(defaultOpen)
     return (
-      <div style={{ borderBottom: '0.5px solid ' + T.border, paddingBottom: 12, marginBottom: 12 }}>
+      <div style={{ borderBottom: '0.5px solid rgba(0,0,0,0.1)', paddingBottom: 12, marginBottom: 12 }}>
         <button onClick={() => setOpen(o => !o)} style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0', marginBottom: open ? 8 : 0 }}>
           <span style={{ fontSize: 11, fontWeight: 600, color: T.text, letterSpacing: '0.06em', textTransform: 'uppercase' }}>{title}</span>
           <span style={{ fontSize: 12, color: T.textLight }}>{open ? '−' : '+'}</span>
@@ -706,7 +706,7 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
     const boxColor = brandColorForLabel(label)
     return (
       <label onClick={onChange} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: T.text, cursor: 'pointer', padding: '3px 0', userSelect: 'none' }}>
-        <div style={{ width: 18, height: 18, borderRadius: 5, border: '1.5px solid ' + (checked ? boxColor : T.border), background: checked ? boxColor : 'transparent', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: 18, height: 18, borderRadius: 5, border: '1.5px solid ' + (checked ? boxColor : T.text), background: checked ? boxColor : 'transparent', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           {checked && (
             <svg width="11" height="9" viewBox="0 0 11 9" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M1 4L4 7.5L10 1" stroke={T.text} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
@@ -769,7 +769,7 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
           <CheckItem label="Would buy again" checked={filterBuyAgain} onChange={() => setFilterBuyAgain(s => !s)} />
         </FilterSection>
         {hasFilters && (
-          <button onClick={clearAll} style={{ width: '100%', marginTop: 8, padding: '10px', borderRadius: 0, border: 'none', background: '#000000', color: '#ffffff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
+          <button onClick={clearAll} style={{ width: '100%', marginTop: 8, padding: '10px', borderRadius: T.radius.pill, border: 'none', background: '#000000', color: '#ffffff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
             Clear filters
           </button>
         )}
@@ -786,7 +786,7 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
           <div onClick={() => setFilterSheetOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 100 }} />
           <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 101, background: T.white, borderRadius: '16px 16px 0 0', padding: '0 20px 32px', maxHeight: '75vh', overflowY: 'auto', boxShadow: '0 -4px 24px rgba(0,0,0,0.12)', animation: 'slideUp 0.22s ease' }}>
             <div style={{ display: 'flex', justifyContent: 'center', padding: '12px 0 16px' }}>
-              <div style={{ width: 36, height: 4, borderRadius: 2, background: T.border }} />
+              <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.15)' }} />
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
               <div style={{ fontSize: 14, fontWeight: 600, color: T.text }}>Filters</div>
@@ -806,7 +806,7 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
       )}
 
       {/* ── Left Sidebar — desktop only ──────────────────────── */}
-      {!isMobile && <div style={{ width: 200, flexShrink: 0, background: T.white, color: T.text, borderRight: '0.5px solid ' + T.border, padding: '16px 16px 16px 20px', overflowY: 'auto', position: 'sticky', top: 0, height: '100%' }}>
+      {!isMobile && <div style={{ width: 200, flexShrink: 0, background: T.white, color: T.text, borderRight: '0.5px solid rgba(0,0,0,0.1)', padding: '16px 16px 16px 20px', overflowY: 'auto', position: 'sticky', top: 0, height: '100%' }}>
         <FilterContent />
       </div>}
 
@@ -820,7 +820,7 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
             { key: 'mine',        label: 'My products',   count: Object.keys(products).length + Object.values(catalogProducts || {}).filter(p => (userProductData || {})[p.id]?.in_library).length },
             { key: 'recommended', label: 'Recommended',   count: Object.keys(catalogProducts || {}).length },
           ].map(t => (
-            <button key={t.key} onClick={() => setLibTab(t.key)} style={{ padding: '5px 12px', borderRadius: T.radius.pill, fontSize: 12, cursor: 'pointer', border: '0.5px solid ' + (libTab === t.key ? T.pinkDeep : T.border), background: libTab === t.key ? T.pink : 'transparent', color: T.text, fontFamily: 'inherit' }}>
+            <button key={t.key} onClick={() => setLibTab(t.key)} style={{ padding: '5px 12px', borderRadius: T.radius.pill, fontSize: 12, cursor: 'pointer', border: 'none', background: libTab === t.key ? T.pink : 'rgba(0,0,0,0.06)', color: T.text, fontFamily: 'inherit' }}>
               {t.label} <span style={{ fontSize: 10, color: T.textMuted }}>({t.count})</span>
             </button>
           ))}
@@ -829,12 +829,12 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
         {/* Sort + Search */}
         <div style={{ display: 'flex', gap: 8, marginBottom: 8, alignItems: 'center' }}>
           <span style={{ fontSize: 11, color: T.textMuted, flexShrink: 0 }}>Sort</span>
-          <select value={sortBy} onChange={e => setSortBy(e.target.value)} style={{ padding: '7px 14px', borderRadius: T.radius.pill, border: `0.5px solid ${T.border}`, background: T.white, color: T.text, fontSize: 12, fontFamily: 'inherit', cursor: 'pointer', flexShrink: 0, outline: 'none' }}>
+          <select value={sortBy} onChange={e => setSortBy(e.target.value)} style={{ padding: '7px 30px 7px 14px', borderRadius: T.radius.pill, border: '1px solid rgba(0,0,0,0.15)', background: T.white, color: T.text, fontSize: 12, fontFamily: 'inherit', cursor: 'pointer', flexShrink: 0, outline: 'none' }}>
             <option value="routine">My routine first</option>
             <option value="name">A–Z Product name</option>
             <option value="brand">A–Z Brand name</option>
           </select>
-          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search products..." style={{ flex: 1, fontSize: 12, padding: '7px 14px', border: `0.5px solid ${T.border}`, borderRadius: T.radius.pill, background: T.white, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
+          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search products..." style={{ flex: 1, fontSize: 12, padding: '7px 14px', border: '1px solid rgba(0,0,0,0.15)', borderRadius: T.radius.pill, background: T.white, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
         </div>
 
         {/* Empty state */}
@@ -1238,23 +1238,23 @@ export default function ProductsPage({ session }) {
   }
 
   return (
-    <div style={{ fontFamily: 'inherit', minHeight: '100vh', background: T.cream, paddingBottom: 40 }}>
+    <div style={{ fontFamily: 'inherit', minHeight: '100vh', background: T.white, paddingBottom: 40 }}>
       {/* ── App header ──────────────────────────────────────────── */}
       <div style={{ background: T.text }}>
         {/* Logo row — logo links back to calendar */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px 10px' }}>
           <style>{`.glowup-prodlogo { display: flex }`}</style>
           <a href="/routine" className="glowup-prodlogo" style={{ alignItems: 'baseline', textDecoration: 'none' }}>
-            <GlowUpLogo size={28} style={{ color: T.white }} />
+            <GlowUpLogo size={32} style={{ color: T.white }} />
           </a>
           <div className="glowup-prodlogo" style={{ flex: 1 }} />
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <button onClick={() => setEditingProduct('new')}
-              style={{ border: 'none', background: T.white, color: T.text, borderRadius: 0, padding: '7px 16px', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 500, whiteSpace: 'nowrap' }}>
+              style={{ border: 'none', background: T.white, color: T.text, borderRadius: T.radius.pill, padding: '7px 16px', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 500, whiteSpace: 'nowrap' }}>
               + Add new product
             </button>
             <button onClick={() => setShowMenu(true)}
-              style={{ border: '0.5px solid rgba(255,255,255,0.4)', background: 'transparent', borderRadius: 0, padding: '5px 10px', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', justifyContent: 'center', width: 36, height: 32 }}>
+              style={{ border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '5px 10px', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', justifyContent: 'center', width: 36, height: 32 }}>
               <span style={{ display: 'block', width: 14, height: 1.5, background: T.white }} />
               <span style={{ display: 'block', width: 14, height: 1.5, background: T.white }} />
               <span style={{ display: 'block', width: 14, height: 1.5, background: T.white }} />
@@ -1299,7 +1299,7 @@ export default function ProductsPage({ session }) {
                   const allProds = { ...products, ...Object.fromEntries(Object.entries(catalogProducts)) }
                   const prod = allProds[f.product_id]
                   return (
-                    <div key={f.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 0', borderBottom: `0.5px solid ${T.border}` }}>
+                    <div key={f.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 0', borderBottom: '0.5px solid rgba(0,0,0,0.1)' }}>
                       <div style={{ fontSize: 20 }}>✓</div>
                       <div style={{ flex: 1 }}>
                         <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>{prod?.name || 'Unknown product'}</div>
