@@ -43,10 +43,13 @@ function Layout() {
 
   // GlowUp uses DM Sans everywhere — the rest of the portfolio site sets
   // Bricolage Grotesque on <body>, which otherwise leaks through anywhere
-  // a GlowUp component relies on fontFamily: 'inherit'.
+  // a GlowUp component relies on fontFamily: 'inherit'. Same story for the
+  // portfolio's brand red body color — GlowUp doesn't use it, so anywhere
+  // a component leaves color unset it should inherit black, not red.
   useEffect(() => {
     document.body.style.fontFamily = isRoutine ? T.fontFamily : ''
-    return () => { document.body.style.fontFamily = '' }
+    document.body.style.color = isRoutine ? T.text : ''
+    return () => { document.body.style.fontFamily = ''; document.body.style.color = '' }
   }, [isRoutine])
 
   // Check ?survey=1 param — open modal over whatever page is current

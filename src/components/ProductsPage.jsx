@@ -18,21 +18,41 @@ function brandColorForLabel(label) {
   for (let i = 0; i < label.length; i++) hash = (hash * 31 + label.charCodeAt(i)) | 0
   return FILTER_BRAND_COLORS[Math.abs(hash) % FILTER_BRAND_COLORS.length]
 }
+// Assigns each label its hashed color, but nudges forward through the
+// palette whenever that would repeat the previous item's color — keeps the
+// per-label stability of brandColorForLabel while avoiding same-color
+// neighbors in a rendered list.
+function assignFilterColors(labels) {
+  const colors = []
+  labels.forEach((label, i) => {
+    let color = brandColorForLabel(label)
+    let attempts = 0
+    while (i > 0 && color === colors[i - 1] && attempts < FILTER_BRAND_COLORS.length) {
+      const idx = (FILTER_BRAND_COLORS.indexOf(color) + 1) % FILTER_BRAND_COLORS.length
+      color = FILTER_BRAND_COLORS[idx]
+      attempts++
+    }
+    colors.push(color)
+  })
+  return colors
+}
 
+// Per the STYLES — Product Library spec: each tag gets a flat brand-color
+// fill, black text, no border. LGBTQ+-owned spans all five brand colors.
 const PRODUCT_FLAGS = [
-  { key: 'black_owned',       label: 'Black-owned',       bg: '#1a1a1a', color: '#fff'    },
-  { key: 'indigenous_owned',  label: 'Indigenous-owned',  bg: '#7C3AED', color: '#fff'    },
-  { key: 'poc_owned',         label: 'POC-owned',         bg: '#D97706', color: '#fff'    },
-  { key: 'woman_owned',       label: 'Woman-owned',       bg: '#DB2777', color: '#fff'    },
-  { key: 'lgbtq_owned',       label: 'LGBTQ+-owned',      bg: 'linear-gradient(90deg,#FF6B6B,#FFE66D,#4ECDC4)', color: '#1a1a1a' },
-  { key: 'cruelty_free',      label: '🐰 Cruelty-free',   bg: '#D1FAE5', color: '#065F46' },
-  { key: 'vegan',             label: '🌱 Vegan',           bg: '#ECFDF5', color: '#065F46' },
-  { key: 'certified_organic', label: '🌿 Organic',         bg: '#F0FDF4', color: '#166534' },
-  { key: 'fair_trade',        label: '🤝 Fair trade',      bg: '#FEF3C7', color: '#92400E' },
-  { key: 'is_prescription',    label: '℞ Prescription',      bg: '#FFF7ED', color: '#9A3412' },
-  { key: 'clean_formula',      label: '✨ Clean',             bg: '#FDF4FF', color: '#7E22CE' },
-  { key: 'science_backed',     label: '🔬 Science-backed',    bg: '#EFF6FF', color: '#1D4ED8' },
-  { key: 'is_discontinued',    label: '⛔ Discontinued',      bg: '#FEF2F2', color: '#991B1B' },
+  { key: 'black_owned',       label: 'Black-owned',       bg: T.blue,   color: T.text },
+  { key: 'indigenous_owned',  label: 'Indigenous-owned',  bg: T.green,  color: T.text },
+  { key: 'poc_owned',         label: 'POC-owned',         bg: T.orange, color: T.text },
+  { key: 'woman_owned',       label: 'Woman-owned',       bg: T.pink,   color: T.text },
+  { key: 'lgbtq_owned',       label: 'LGBTQ+-owned',      bg: `linear-gradient(90deg, ${T.pink}, ${T.orange}, ${T.yellow}, ${T.green}, ${T.blue})`, color: T.text },
+  { key: 'cruelty_free',      label: 'Cruelty-free',      bg: T.yellow, color: T.text },
+  { key: 'vegan',             label: 'Vegan',             bg: T.blue,   color: T.text },
+  { key: 'certified_organic', label: 'Organic',           bg: T.green,  color: T.text },
+  { key: 'fair_trade',        label: 'Fair trade',        bg: T.orange, color: T.text },
+  { key: 'is_prescription',    label: 'Prescription',      bg: T.pink,   color: T.text },
+  { key: 'clean_formula',      label: 'Clean',             bg: T.green,  color: T.text },
+  { key: 'science_backed',     label: 'Science-backed',    bg: T.yellow, color: T.text },
+  { key: 'is_discontinued',    label: 'Discontinued',      bg: T.orange, color: T.text },
 ]
 
 const INGREDIENT_CATEGORIES = {
@@ -190,9 +210,9 @@ function ProductFlagBadges({ product, max }) {
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 3, marginTop: 4 }}>
       {shown.map(f => (
         <span key={f.key} style={{
-          fontSize: 9, padding: '2px 6px', borderRadius: 0,
+          fontSize: 9, padding: '2px 8px', borderRadius: T.radius.pill,
           background: f.bg, color: f.color,
-          border: '0.5px solid rgba(0,0,0,0.08)', fontWeight: 500,
+          border: 'none', fontWeight: 500,
           whiteSpace: 'nowrap',
         }}>{f.label}</span>
       ))}
@@ -307,8 +327,8 @@ function PersonalDataForm({ productId, isCatalog, upd, product, onSaveUpd, onClo
         />
       </div>
 
-      {/* Effectiveness + Buy again — stacked on mobile */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 12 }}>
+      {/* Effectiveness + Buy again — same line, wraps on narrow screens */}
+      <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', marginBottom: 12 }}>
         <div>
           <label style={labelStyle}>My rating</label>
           <div style={{ paddingTop: 4 }}>
@@ -324,7 +344,7 @@ function PersonalDataForm({ productId, isCatalog, upd, product, onSaveUpd, onClo
                   padding: '6px 14px', borderRadius: T.radius.pill, fontSize: 11,
                   cursor: 'pointer', fontFamily: 'inherit',
                   border: 'none',
-                  background: buyAgain === val ? T.pinkDeep : 'rgba(0,0,0,0.06)',
+                  background: buyAgain === val ? T.darkPink : 'rgba(0,0,0,0.06)',
                   color: buyAgain === val ? '#fff' : T.textMuted,
                 }}>
                 {label}
@@ -363,7 +383,7 @@ function PersonalDataForm({ productId, isCatalog, upd, product, onSaveUpd, onClo
       <button onClick={handleSave} disabled={saving}
         style={{
           width: '100%', padding: '10px', borderRadius: T.radius.pill, border: 'none',
-          background: saved ? '#4caf50' : T.pinkDeep,
+          background: saved ? '#4caf50' : T.darkPink,
           color: '#fff', cursor: saving ? 'default' : 'pointer',
           fontSize: 13, fontFamily: 'inherit', fontWeight: 500,
           transition: 'background 0.2s',
@@ -511,8 +531,8 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
 
           {/* Our note — curator note, hidden if empty */}
           {p.notes && (
-            <div style={{ margin: '10px 0 12px', padding: '10px 12px', background: T.pink, borderRadius: 0, borderLeft: `3px solid ${T.pinkDeep}` }}>
-              <div style={{ fontSize: 9, fontWeight: 700, color: T.pinkDeep, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Our note</div>
+            <div style={{ margin: '10px 0 12px', padding: '10px 12px', background: T.pink, borderRadius: 0, borderLeft: `3px solid ${T.darkPink}` }}>
+              <div style={{ fontSize: 9, fontWeight: 700, color: T.darkPink, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Our note</div>
               <div style={{ fontSize: 12, color: T.text, lineHeight: 1.7 }}>{p.notes}</div>
             </div>
           )}
@@ -544,7 +564,7 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
               upd?.in_library
                 ? <>
                     <button onClick={handleMarkFinished}
-                      style={{ flex: 1, padding: '9px', borderRadius: T.radius.pill, border: '0.5px solid ' + T.pinkDeep, background: finishConfetti ? T.pink : 'transparent', color: T.pinkDeep, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 500, transition: 'background 0.3s' }}>
+                      style={{ flex: 1, padding: '9px', borderRadius: T.radius.pill, border: '0.5px solid ' + T.darkGreen, background: finishConfetti ? T.green : 'transparent', color: T.darkGreen, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 500, transition: 'background 0.3s' }}>
                       {finishConfetti ? '✓ Finished!' : finishCount > 0 ? `Mark as finished (${finishCount}×)` : 'Mark as finished'}
                     </button>
                     <button onClick={() => { onRemoveFromLibrary(p.id); onClose() }}
@@ -553,7 +573,7 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
                     </button>
                   </>
                 : <button onClick={() => { onAddToLibrary(p); onClose() }}
-                    style={{ flex: 1, padding: '9px', borderRadius: T.radius.pill, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 500 }}>
+                    style={{ flex: 1, padding: '9px', borderRadius: T.radius.pill, border: 'none', background: T.darkPink, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 500 }}>
                     + Add to my products
                   </button>
             ) : (
@@ -563,7 +583,7 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
                   Edit
                 </button>
                 <button onClick={handleMarkFinished}
-                  style={{ flex: 1, padding: '9px', borderRadius: T.radius.pill, border: '0.5px solid ' + T.pinkDeep, background: finishConfetti ? T.pink : 'transparent', color: T.pinkDeep, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 500, transition: 'background 0.3s' }}>
+                  style={{ flex: 1, padding: '9px', borderRadius: T.radius.pill, border: '0.5px solid ' + T.darkGreen, background: finishConfetti ? T.green : 'transparent', color: T.darkGreen, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 500, transition: 'background 0.3s' }}>
                   {finishConfetti ? '✓ Finished!' : finishCount > 0 ? `Mark as finished (${finishCount}×)` : 'Mark as finished'}
                 </button>
                 <button onClick={async () => { if (await confirm({ title: `Delete ${p.name}?`, message: 'This cannot be undone.' })) { onDelete(p); onClose() } }}
@@ -702,8 +722,8 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
     )
   }
 
-  function CheckItem({ label, checked, onChange }) {
-    const boxColor = brandColorForLabel(label)
+  function CheckItem({ label, checked, onChange, color }) {
+    const boxColor = color || brandColorForLabel(label)
     return (
       <label onClick={onChange} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: T.text, cursor: 'pointer', padding: '3px 0', userSelect: 'none' }}>
         <div style={{ width: 18, height: 18, borderRadius: 5, border: '1.5px solid ' + (checked ? boxColor : T.text), background: checked ? boxColor : 'transparent', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -747,26 +767,30 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
   const availableFlags  = ETHICS_FILTERS.filter(({key}) => filterExcluding('flags').some(p => p[key]))
 
   function FilterContent() {
+    const catColors    = assignFilterColors(availableCats.map(formatCatLabel))
+    const brandColors  = assignFilterColors(availableBrands)
+    const flagColors   = assignFilterColors(availableFlags.map(f => f.label))
+    const statusColors = assignFilterColors(['Currently using', 'Would buy again'])
     return (
       <>
         <FilterSection title="Product type">
-          {availableCats.map(cat => (
-            <CheckItem key={cat} label={formatCatLabel(cat)} checked={filterCats.includes(cat)} onChange={() => toggleCat(cat)} />
+          {availableCats.map((cat, i) => (
+            <CheckItem key={cat} label={formatCatLabel(cat)} checked={filterCats.includes(cat)} onChange={() => toggleCat(cat)} color={catColors[i]} />
           ))}
         </FilterSection>
         <FilterSection title="Brand">
-          {availableBrands.map(brand => (
-            <CheckItem key={brand} label={brand} checked={filterBrands.includes(brand)} onChange={() => toggleBrand(brand)} />
+          {availableBrands.map((brand, i) => (
+            <CheckItem key={brand} label={brand} checked={filterBrands.includes(brand)} onChange={() => toggleBrand(brand)} color={brandColors[i]} />
           ))}
         </FilterSection>
         <FilterSection title="Ethics & values">
-          {availableFlags.map(({ key, label }) => (
-            <CheckItem key={key} label={label} checked={filterFlags.includes(key)} onChange={() => toggleFlag(key)} />
+          {availableFlags.map(({ key, label }, i) => (
+            <CheckItem key={key} label={label} checked={filterFlags.includes(key)} onChange={() => toggleFlag(key)} color={flagColors[i]} />
           ))}
         </FilterSection>
         <FilterSection title="Status">
-          <CheckItem label="Currently using" checked={filterUsing} onChange={() => setFilterUsing(s => !s)} />
-          <CheckItem label="Would buy again" checked={filterBuyAgain} onChange={() => setFilterBuyAgain(s => !s)} />
+          <CheckItem label="Currently using" checked={filterUsing} onChange={() => setFilterUsing(s => !s)} color={statusColors[0]} />
+          <CheckItem label="Would buy again" checked={filterBuyAgain} onChange={() => setFilterBuyAgain(s => !s)} color={statusColors[1]} />
         </FilterSection>
         {hasFilters && (
           <button onClick={clearAll} style={{ width: '100%', marginTop: 8, padding: '10px', borderRadius: T.radius.pill, border: 'none', background: '#000000', color: '#ffffff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
@@ -799,7 +823,7 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
 
       {/* ── Mobile filter pill button ────────────────────────── */}
       {isMobile && (
-        <button onClick={() => setFilterSheetOpen(true)} style={{ position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)', zIndex: 99, padding: '10px 20px', borderRadius: 24, background: hasFilters ? T.pinkDeep : T.text, color: '#fff', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 600, fontFamily: 'inherit', boxShadow: '0 4px 16px rgba(0,0,0,0.2)', display: 'flex', alignItems: 'center', gap: 6 }}>
+        <button onClick={() => setFilterSheetOpen(true)} style={{ position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)', zIndex: 99, padding: '10px 20px', borderRadius: 24, background: hasFilters ? T.darkPink : T.text, color: '#fff', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 600, fontFamily: 'inherit', boxShadow: '0 4px 16px rgba(0,0,0,0.2)', display: 'flex', alignItems: 'center', gap: 6 }}>
           <span>⚙︎ Filters</span>
           {hasFilters && <span style={{ background: 'rgba(255,255,255,0.3)', borderRadius: 10, padding: '1px 7px', fontSize: 11 }}>{filterBrands.length + filterCats.length + filterFlags.length + (filterUsing ? 1 : 0) + (filterBuyAgain ? 1 : 0)}</span>}
         </button>
@@ -874,7 +898,7 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
                     <div style={{ fontSize: 12, fontWeight: 600, color: T.text, lineHeight: 1.4, marginBottom: 2 }}>{p.name}</div>
                     {p.brand && <div style={{ fontSize: 11, color: T.textMuted }}>{p.brand}</div>}
                     {p.finish_count > 0 || (userProductData||{})[p.id]?.finish_count > 0 ? (
-                      <div style={{ fontSize: 9, color: T.pinkDeep, marginTop: 3, fontWeight: 600 }}>
+                      <div style={{ fontSize: 9, color: T.darkGreen, marginTop: 3, fontWeight: 600 }}>
                         Finished {((userProductData||{})[p.id]?.finish_count || p.finish_count)}×
                       </div>
                     ) : null}
@@ -1300,7 +1324,7 @@ export default function ProductsPage({ session }) {
                   const prod = allProds[f.product_id]
                   return (
                     <div key={f.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 0', borderBottom: '0.5px solid rgba(0,0,0,0.1)' }}>
-                      <div style={{ fontSize: 20 }}>✓</div>
+                      <div style={{ fontSize: 20, color: T.darkGreen }}>✓</div>
                       <div style={{ flex: 1 }}>
                         <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>{prod?.name || 'Unknown product'}</div>
                         {prod?.brand && <div style={{ fontSize: 11, color: T.textMuted }}>{prod.brand}</div>}
