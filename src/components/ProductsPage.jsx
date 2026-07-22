@@ -10,6 +10,15 @@ import Btn from './shared/Btn'
 import StarRating from './shared/StarRating'
 
 
+// A stable "random" brand color per filter label — hashed so the same
+// checkbox always lands on the same color instead of reshuffling on render.
+const FILTER_BRAND_COLORS = [T.pink, T.blue, T.green, T.yellow, T.orange]
+function brandColorForLabel(label) {
+  let hash = 0
+  for (let i = 0; i < label.length; i++) hash = (hash * 31 + label.charCodeAt(i)) | 0
+  return FILTER_BRAND_COLORS[Math.abs(hash) % FILTER_BRAND_COLORS.length]
+}
+
 const PRODUCT_FLAGS = [
   { key: 'black_owned',       label: 'Black-owned',       bg: '#1a1a1a', color: '#fff'    },
   { key: 'indigenous_owned',  label: 'Indigenous-owned',  bg: '#7C3AED', color: '#fff'    },
@@ -461,10 +470,10 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
 
           {/* Routine badges */}
           {(isCatalog || p._isLinked) && wwu && (
-            <div style={{ display: 'inline-block', fontSize: 11, background: T.pink, color: T.pinkDeep, borderRadius: 0, padding: '3px 10px', fontWeight: 600, marginBottom: 8, marginRight: 6 }}>What we're using!</div>
+            <div style={{ display: 'inline-block', fontSize: 11, background: T.green, color: T.text, borderRadius: T.radius.pill, padding: '3px 10px', fontWeight: 600, marginBottom: 8, marginRight: 6 }}>What we're using!</div>
           )}
           {userUsing && (
-            <div style={{ display: 'inline-block', fontSize: 11, background: T.creamDark, color: T.textMuted, borderRadius: 0, padding: '3px 10px', fontWeight: 600, marginBottom: 8, border: `0.5px solid ${T.border}` }}>In my routine</div>
+            <div style={{ display: 'inline-block', fontSize: 11, background: '#EBFBF2', color: T.darkGreen, borderRadius: T.radius.pill, padding: '3px 10px', fontWeight: 600, marginBottom: 8 }}>In my routine</div>
           )}
 
           {/* Category — most specific only */}
@@ -487,13 +496,13 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', margin: '12px 0' }}>
               {purchaseUrl && (
                 <a href={purchaseUrl} target="_blank" rel="noopener noreferrer"
-                  style={{ fontSize: 11, padding: '5px 12px', borderRadius: 0, background: T.white, color: T.text, textDecoration: 'none', border: `1px solid ${T.text}`, whiteSpace: 'nowrap', fontFamily: 'inherit' }}>
+                  style={{ fontSize: 11, padding: '5px 12px', borderRadius: T.radius.pill, background: T.white, color: T.text, textDecoration: 'none', border: `1px solid ${T.text}`, whiteSpace: 'nowrap', fontFamily: 'inherit' }}>
                   Buy from {storeName || getStoreName(purchaseUrl) || 'affiliate'} ↗
                 </a>
               )}
               {directUrl && (
                 <a href={directUrl} target="_blank" rel="noopener noreferrer"
-                  style={{ fontSize: 11, padding: '5px 12px', borderRadius: 0, background: T.white, color: T.text, textDecoration: 'none', border: `1px solid ${T.text}`, whiteSpace: 'nowrap', fontFamily: 'inherit' }}>
+                  style={{ fontSize: 11, padding: '5px 12px', borderRadius: T.radius.pill, background: T.white, color: T.text, textDecoration: 'none', border: `1px solid ${T.text}`, whiteSpace: 'nowrap', fontFamily: 'inherit' }}>
                   Buy from {directStoreName || getStoreName(directUrl) || 'brand site'} ↗
                 </a>
               )}
@@ -694,12 +703,13 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
   }
 
   function CheckItem({ label, checked, onChange }) {
+    const boxColor = brandColorForLabel(label)
     return (
       <label onClick={onChange} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: T.text, cursor: 'pointer', padding: '3px 0', userSelect: 'none' }}>
-        <div style={{ width: 18, height: 18, borderRadius: 0, border: '1.5px solid ' + (checked ? T.text : T.border), background: checked ? T.text : 'transparent', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: 18, height: 18, borderRadius: 5, border: '1.5px solid ' + (checked ? boxColor : T.border), background: checked ? boxColor : 'transparent', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           {checked && (
             <svg width="11" height="9" viewBox="0 0 11 9" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M1 4L4 7.5L10 1" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M1 4L4 7.5L10 1" stroke={T.text} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           )}
         </div>
@@ -810,21 +820,21 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
             { key: 'mine',        label: 'My products',   count: Object.keys(products).length + Object.values(catalogProducts || {}).filter(p => (userProductData || {})[p.id]?.in_library).length },
             { key: 'recommended', label: 'Recommended',   count: Object.keys(catalogProducts || {}).length },
           ].map(t => (
-            <button key={t.key} onClick={() => setLibTab(t.key)} style={{ padding: '5px 12px', borderRadius: 0, fontSize: 12, cursor: 'pointer', border: '0.5px solid ' + (libTab === t.key ? T.pinkDeep : T.border), background: libTab === t.key ? T.pink : 'transparent', color: T.text, fontFamily: 'inherit' }}>
+            <button key={t.key} onClick={() => setLibTab(t.key)} style={{ padding: '5px 12px', borderRadius: T.radius.pill, fontSize: 12, cursor: 'pointer', border: '0.5px solid ' + (libTab === t.key ? T.pinkDeep : T.border), background: libTab === t.key ? T.pink : 'transparent', color: T.text, fontFamily: 'inherit' }}>
               {t.label} <span style={{ fontSize: 10, color: T.textMuted }}>({t.count})</span>
             </button>
           ))}
         </div>
 
         {/* Sort + Search */}
-        <div style={{ display: 'flex', gap: 8, marginBottom: 8, alignItems: 'baseline' }}>
+        <div style={{ display: 'flex', gap: 8, marginBottom: 8, alignItems: 'center' }}>
           <span style={{ fontSize: 11, color: T.textMuted, flexShrink: 0 }}>Sort</span>
-          <select value={sortBy} onChange={e => setSortBy(e.target.value)} style={{ padding: '7px 2px', borderRadius: 0, border: 'none', borderBottom: '1px solid #000000', background: 'transparent', color: T.text, fontSize: 12, fontFamily: 'inherit', cursor: 'pointer', flexShrink: 0, outline: 'none' }}>
+          <select value={sortBy} onChange={e => setSortBy(e.target.value)} style={{ padding: '7px 14px', borderRadius: T.radius.pill, border: `0.5px solid ${T.border}`, background: T.white, color: T.text, fontSize: 12, fontFamily: 'inherit', cursor: 'pointer', flexShrink: 0, outline: 'none' }}>
             <option value="routine">My routine first</option>
             <option value="name">A–Z Product name</option>
             <option value="brand">A–Z Brand name</option>
           </select>
-          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search products..." style={{ flex: 1, fontSize: 12, padding: '7px 2px', border: 'none', borderBottom: '1px solid #000000', borderRadius: 0, background: 'transparent', color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
+          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search products..." style={{ flex: 1, fontSize: 12, padding: '7px 14px', border: `0.5px solid ${T.border}`, borderRadius: T.radius.pill, background: T.white, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
         </div>
 
         {/* Empty state */}
@@ -853,8 +863,8 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
                   {/* Routine badges — top right */}
                   {(wwu || userUsing) && (
                     <div style={{ position: 'absolute', top: 6, right: 6, display: 'flex', flexDirection: 'column', gap: 3 }}>
-                      {wwu && <span style={{ fontSize: 8, background: T.pinkDeep, color: '#fff', borderRadius: T.radius.pill, padding: '2px 6px', fontWeight: 700, whiteSpace: 'nowrap' }}>What we're using!</span>}
-                      {userUsing && <span style={{ fontSize: 8, background: 'rgba(255,255,255,0.93)', color: T.text, borderRadius: T.radius.pill, padding: '2px 6px', fontWeight: 600, whiteSpace: 'nowrap', border: '0.5px solid ' + T.border }}>In my routine</span>}
+                      {wwu && <span style={{ fontSize: 8, background: T.green, color: T.text, borderRadius: T.radius.pill, padding: '2px 6px', fontWeight: 700, whiteSpace: 'nowrap' }}>What we're using!</span>}
+                      {userUsing && <span style={{ fontSize: 8, background: 'rgba(255,255,255,0.93)', color: T.darkGreen, borderRadius: T.radius.pill, padding: '2px 6px', fontWeight: 600, whiteSpace: 'nowrap' }}>In my routine</span>}
                     </div>
                   )}
                 </div>
@@ -874,13 +884,13 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginTop: 8 }} onClick={e => e.stopPropagation()}>
                       {p.purchaseUrl && (
                         <a href={p.purchaseUrl} target="_blank" rel="noopener noreferrer"
-                          style={{ display: 'block', fontSize: 9, padding: '4px 8px', borderRadius: 0, background: 'transparent', color: T.text, textDecoration: 'none', border: '0.5px solid ' + T.textMuted, textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'inherit', boxSizing: 'border-box' }}>
+                          style={{ display: 'block', fontSize: 9, padding: '4px 8px', borderRadius: T.radius.pill, background: 'transparent', color: T.text, textDecoration: 'none', border: '0.5px solid ' + T.textMuted, textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'inherit', boxSizing: 'border-box' }}>
                           Buy from {p.store_name || 'affiliate'} ↗
                         </a>
                       )}
                       {p.direct_url && (
                         <a href={p.direct_url} target="_blank" rel="noopener noreferrer"
-                          style={{ display: 'block', fontSize: 9, padding: '4px 8px', borderRadius: 0, background: 'transparent', color: T.text, textDecoration: 'none', border: '0.5px solid ' + T.textMuted, textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'inherit', boxSizing: 'border-box' }}>
+                          style={{ display: 'block', fontSize: 9, padding: '4px 8px', borderRadius: T.radius.pill, background: 'transparent', color: T.text, textDecoration: 'none', border: '0.5px solid ' + T.textMuted, textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'inherit', boxSizing: 'border-box' }}>
                           Buy from {p.direct_store_name || 'brand site'} ↗
                         </a>
                       )}
@@ -1235,12 +1245,12 @@ export default function ProductsPage({ session }) {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px 10px' }}>
           <style>{`.glowup-prodlogo { display: flex }`}</style>
           <a href="/routine" className="glowup-prodlogo" style={{ alignItems: 'baseline', textDecoration: 'none' }}>
-            <GlowUpLogo style={{ color: T.white }} />
+            <GlowUpLogo size={28} style={{ color: T.white }} />
           </a>
           <div className="glowup-prodlogo" style={{ flex: 1 }} />
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <button onClick={() => setEditingProduct('new')}
-              style={{ border: 'none', background: T.pinkDeep, color: '#fff', borderRadius: 0, padding: '7px 16px', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 500, whiteSpace: 'nowrap' }}>
+              style={{ border: 'none', background: T.white, color: T.text, borderRadius: 0, padding: '7px 16px', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 500, whiteSpace: 'nowrap' }}>
               + Add new product
             </button>
             <button onClick={() => setShowMenu(true)}
