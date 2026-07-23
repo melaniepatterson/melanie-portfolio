@@ -145,10 +145,10 @@ export default function Auth() {
           {screen === 'email' && (
             <form onSubmit={handleEmailSubmit}>
               <div style={{ fontSize: 16, fontWeight: 600, color: T.text, marginBottom: 6 }}>
-                Sign in
+                Sign in or join the waitlist
               </div>
               <div style={{ fontSize: 13, color: T.textMuted, marginBottom: 20, lineHeight: 1.5 }}>
-                Enter your email and we'll send you a magic link — no password needed.
+                Enter your email — we'll send a magic link if you're already approved, or add you to the waitlist if you're new here.
               </div>
               <input
                 type="email" required autoFocus
