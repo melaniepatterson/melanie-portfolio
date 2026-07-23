@@ -1291,6 +1291,7 @@ export default function ProductsPage({ session }) {
         </div>
         {/* Page title row with tabs */}
         <div style={{ padding: '0 20px 0' }}>
+          <div style={{ fontSize: 15, fontWeight: 600, color: T.white, marginBottom: 10 }}>Product Library</div>
           <div style={{ display: 'flex', gap: 20, borderBottom: '1px solid rgba(255,255,255,0.25)' }}>
             {[['library', 'My Products'], ['history', 'Finish History']].map(([key, label]) => (
               <button key={key} onClick={() => setActiveTab(key)}

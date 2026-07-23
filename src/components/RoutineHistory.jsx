@@ -190,23 +190,28 @@ export default function RoutineHistory({ session }) {
   return (
     <div style={{ fontFamily: 'inherit', minHeight: '100vh', background: T.cream, paddingBottom: 40 }}>
       {/* Header — arrow + logo both link back to calendar, matching Product Library */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 20px 38px', background: T.text }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <a href="/routine" style={{ border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.white, textDecoration: 'none', display: 'inline-block' }}>←</a>
-          <a href="/routine" style={{ display: 'flex', alignItems: 'baseline', textDecoration: 'none' }}>
-            <GlowUpLogo size={32} style={{ color: T.white }} />
-          </a>
+      <div style={{ background: T.text }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px 10px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <a href="/routine" style={{ border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.white, textDecoration: 'none', display: 'inline-block' }}>←</a>
+            <a href="/routine" style={{ display: 'flex', alignItems: 'baseline', textDecoration: 'none' }}>
+              <GlowUpLogo size={32} style={{ color: T.white }} />
+            </a>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Btn variant="primary" style={{ background: T.darkGreen, color: T.white }} onClick={openNewForm}>+ Start new routine</Btn>
+            <button onClick={() => setShowMenu(true)}
+              style={{ border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '5px 10px', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', justifyContent: 'center', width: 36, height: 32 }}>
+              <span style={{ display: 'block', width: 14, height: 1.5, background: T.white }} />
+              <span style={{ display: 'block', width: 14, height: 1.5, background: T.white }} />
+              <span style={{ display: 'block', width: 14, height: 1.5, background: T.white }} />
+            </button>
+          </div>
+          {showMenu && <SideMenu session={session} onClose={() => setShowMenu(false)} />}
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Btn variant="primary" style={{ background: T.darkGreen, color: T.white }} onClick={openNewForm}>+ Start new routine</Btn>
-          <button onClick={() => setShowMenu(true)}
-            style={{ border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '5px 10px', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', justifyContent: 'center', width: 36, height: 32 }}>
-            <span style={{ display: 'block', width: 14, height: 1.5, background: T.white }} />
-            <span style={{ display: 'block', width: 14, height: 1.5, background: T.white }} />
-            <span style={{ display: 'block', width: 14, height: 1.5, background: T.white }} />
-          </button>
+        <div style={{ padding: '0 20px 14px' }}>
+          <div style={{ fontSize: 15, fontWeight: 600, color: T.white }}>Routine History</div>
         </div>
-        {showMenu && <SideMenu session={session} onClose={() => setShowMenu(false)} />}
       </div>
 
       {/* Tabs */}
