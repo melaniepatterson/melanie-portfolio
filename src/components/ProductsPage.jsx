@@ -844,8 +844,8 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
             { key: 'mine',        label: 'My products',   count: Object.keys(products).length + Object.values(catalogProducts || {}).filter(p => (userProductData || {})[p.id]?.in_library).length },
             { key: 'recommended', label: 'Recommended',   count: Object.keys(catalogProducts || {}).length },
           ].map(t => (
-            <button key={t.key} onClick={() => setLibTab(t.key)} style={{ padding: '5px 12px', borderRadius: T.radius.pill, fontSize: 12, cursor: 'pointer', border: 'none', background: libTab === t.key ? T.pink : 'rgba(0,0,0,0.06)', color: T.text, fontFamily: 'inherit' }}>
-              {t.label} <span style={{ fontSize: 10, color: T.textMuted }}>({t.count})</span>
+            <button key={t.key} onClick={() => setLibTab(t.key)} style={{ padding: '5px 12px', borderRadius: T.radius.pill, fontSize: 12, cursor: 'pointer', border: 'none', background: libTab === t.key ? T.darkGreen : '#EBFBF2', color: libTab === t.key ? T.white : T.text, fontFamily: 'inherit' }}>
+              {t.label} <span style={{ fontSize: 10, color: libTab === t.key ? 'rgba(255,255,255,0.75)' : T.textMuted }}>({t.count})</span>
             </button>
           ))}
         </div>
@@ -1265,16 +1265,19 @@ export default function ProductsPage({ session }) {
     <div style={{ fontFamily: 'inherit', minHeight: '100vh', background: T.white, paddingBottom: 40 }}>
       {/* ── App header ──────────────────────────────────────────── */}
       <div style={{ background: T.text }}>
-        {/* Logo row — logo links back to calendar */}
+        {/* Logo row — arrow + logo both link back to calendar */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px 10px' }}>
           <style>{`.glowup-prodlogo { display: flex }`}</style>
-          <a href="/routine" className="glowup-prodlogo" style={{ alignItems: 'baseline', textDecoration: 'none' }}>
-            <GlowUpLogo size={32} style={{ color: T.white }} />
-          </a>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <a href="/routine" style={{ border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.white, textDecoration: 'none', display: 'inline-block' }}>←</a>
+            <a href="/routine" className="glowup-prodlogo" style={{ alignItems: 'baseline', textDecoration: 'none' }}>
+              <GlowUpLogo size={32} style={{ color: T.white }} />
+            </a>
+          </div>
           <div className="glowup-prodlogo" style={{ flex: 1 }} />
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <button onClick={() => setEditingProduct('new')}
-              style={{ border: 'none', background: T.white, color: T.text, borderRadius: T.radius.pill, padding: '7px 16px', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 500, whiteSpace: 'nowrap' }}>
+              style={{ border: 'none', background: T.darkGreen, color: T.white, borderRadius: T.radius.pill, padding: '7px 16px', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 500, whiteSpace: 'nowrap' }}>
               + Add new product
             </button>
             <button onClick={() => setShowMenu(true)}

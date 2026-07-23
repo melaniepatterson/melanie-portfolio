@@ -189,11 +189,13 @@ export default function RoutineHistory({ session }) {
 
   return (
     <div style={{ fontFamily: 'inherit', minHeight: '100vh', background: T.cream, paddingBottom: 40 }}>
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 20px 16px', background: T.text }}>
+      {/* Header — arrow + logo both link back to calendar, matching Product Library */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 20px 38px', background: T.text }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <button onClick={() => window.history.back()} style={{ border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.white }}>←</button>
-          <GlowUpLogo size={32} style={{ color: T.white }} />
+          <a href="/routine" style={{ border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.white, textDecoration: 'none', display: 'inline-block' }}>←</a>
+          <a href="/routine" style={{ display: 'flex', alignItems: 'baseline', textDecoration: 'none' }}>
+            <GlowUpLogo size={32} style={{ color: T.white }} />
+          </a>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <Btn variant="primary" style={{ background: T.darkGreen, color: T.white }} onClick={openNewForm}>+ Start new routine</Btn>
