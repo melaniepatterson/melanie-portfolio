@@ -421,7 +421,7 @@ function reconcileTretFrequencyHistory(form) {
   return [{ start_date: form.tretStartDate, frequency: form.tretFrequency }]
 }
 
-function getActivePeriod(dt, history) {
+export function getActivePeriod(dt, history) {
   const key = dateKey(dt)
   const sorted = [...history].sort((a, b) => a.startDate.localeCompare(b.startDate))
   let active = null
@@ -892,7 +892,7 @@ function CurrentRoutineSummary({ steps }) {
   )
 }
 
-function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = false, lockStartDate = false, allPeriods = [], onEditConflict, products = {}, onSaveProduct, userId }) {
+export function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = false, lockStartDate = false, allPeriods = [], onEditConflict, products = {}, onSaveProduct, userId }) {
   const catalogProducts = Object.fromEntries(Object.entries(products).filter(([, p]) => p._isCatalog))
   const [form, setForm] = useState({ ...DEFAULT_PERIOD, ...initial, products: initial?.products || {} })
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
@@ -1333,7 +1333,7 @@ const EXTRAS_PRESETS = [
 function uid() { return crypto.randomUUID() }
 
 // Active daily period helper — same pattern as getActivePeriod
-function getActiveDailyPeriod(dt, history) {
+export function getActiveDailyPeriod(dt, history) {
   const key = dateKey(dt)
   const sorted = [...history].sort((a, b) => a.startDate.localeCompare(b.startDate))
   let active = null
@@ -1441,7 +1441,7 @@ function DraggableItem({ item, index, total, onRemove, isDragging, onDragStart, 
 }
 
 // DailyEditor — add/remove/reorder extras items, set start/end date
-function DailyEditor({ initial, onSave, onCancel, lockStartDate = false, allPeriods = [], onEditConflict, products = {}, onSaveProduct, userId }) {
+export function DailyEditor({ initial, onSave, onCancel, lockStartDate = false, allPeriods = [], onEditConflict, products = {}, onSaveProduct, userId }) {
   const catalogProducts = Object.fromEntries(Object.entries(products).filter(([, p]) => p._isCatalog))
   const [startDate,    setStartDate]    = useState(initial?.startDate    || '')
   const [endDate,      setEndDate]      = useState(initial?.endDate      || '')
@@ -1947,7 +1947,7 @@ function isShowerItemActive(dt, item, periodStartDate) {
   }
 }
 
-function getActiveShowerPeriod(dt, history) {
+export function getActiveShowerPeriod(dt, history) {
   const key = dateKey(dt)
   const sorted = [...history].sort((a, b) => a.startDate.localeCompare(b.startDate))
   let active = null
@@ -2015,7 +2015,7 @@ function DraggableShowerItem({ item, index, onRemove, onFreqChange, onWeekStartC
 }
 
 // ShowerEditor — add/remove/reorder shower items with frequency settings
-function ShowerEditor({ initial, onSave, onCancel, allPeriods = [], onEditConflict, products = {}, onSaveProduct, userId }) {
+export function ShowerEditor({ initial, onSave, onCancel, allPeriods = [], onEditConflict, products = {}, onSaveProduct, userId }) {
   const catalogProducts = Object.fromEntries(Object.entries(products).filter(([, p]) => p._isCatalog))
   const [startDate,    setStartDate]    = useState(initial?.startDate    || '')
   const [endDate,      setEndDate]      = useState(initial?.endDate      || '')

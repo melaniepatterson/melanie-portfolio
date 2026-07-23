@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import GlowUpLogo from './GlowUpWordmark'
 import SideMenu from './SideMenu'
 import { supabase } from '../lib/supabase'
@@ -7,10 +7,15 @@ import { useConfirm } from './shared/useConfirm'
 import Btn from './shared/Btn'
 import { fmtDate, fmtDateTime } from './dateFormat'
 import InfoTooltip from './shared/InfoTooltip'
+import {
+  RoutinePeriodForm, DailyEditor, ShowerEditor,
+  getActivePeriod, getActiveDailyPeriod, getActiveShowerPeriod,
+} from './GlowUpCalendar'
 
 
 const TOOLTIP_TEXT = "Add a new routine when your approach is changing — it preserves your history and lets you track what you used before. Edit when you're correcting a mistake. Think of each routine as a chapter."
 
+const CONTENT_WIDTH = 900 // matches the calendar page's content column
 
 
 function getPeriodLabel(p) {
@@ -22,6 +27,8 @@ function getPeriodLabel(p) {
   return `${fmtDate(p.startDate)} — ${p.endDate ? fmtDate(p.endDate) : '—'}`
 }
 
+// Editing an existing period still hands off to the Calendar page — it
+// already owns the day-by-day view that makes an edit meaningful to see.
 function navigate(type, data) {
   sessionStorage.setItem('glowup-history-action', JSON.stringify({ type, data }))
   window.location.href = '/routine'
@@ -32,37 +39,121 @@ export default function RoutineHistory({ session }) {
   const [routineHistory, setRoutineHistory] = useState([])
   const [dailyHistory,   setDailyHistory]   = useState([])
   const [showerHistory,  setShowerHistory]  = useState([])
+  const [products,       setProducts]       = useState({})
   const [loading, setLoading] = useState(true)
   const [tab, setTab] = useState('skincare')
   const [showMenu, setShowMenu] = useState(false)
+  const [newForm, setNewForm] = useState(null) // { type: 'skincare'|'daily'|'shower', editing }
+  const catalogIds = useRef(new Set())
   const userId = session?.user?.id
+
+  async function load() {
+    const [{ data: rp }, { data: ep }, { data: sp }, { data: pr }] = await Promise.all([
+      supabase.from('routine_periods').select('*').eq('user_id', userId).order('start_date', { ascending: false }),
+      supabase.from('extras_periods').select('*').eq('user_id', userId).order('start_date', { ascending: false }),
+      supabase.from('shower_periods').select('*').eq('user_id', userId).order('start_date', { ascending: false }),
+      supabase.from('products').select('*').or(`is_catalog.eq.true,user_id.eq.${userId}`),
+    ])
+    setRoutineHistory((rp||[]).map(p => ({
+      startDate: p.start_date, endDate: p.end_date, activeName: p.active_name,
+      tretEnabled: p.tret_enabled, tretFrequency: p.tret_frequency, tretStartDate: p.tret_start_date,
+      tretFrequencyHistory: p.tret_frequency_history || [],
+      secondaryActives: p.secondary_actives || [], products: p.products || {},
+      bhaEnabled: p.bha_enabled || false, bhaFrequency: p.bha_frequency || 1, bhaStartDay: p.bha_start_day ?? 6,
+      steps: p.steps || null, _dbId: p.id, createdAt: p.created_at, updatedAt: p.updated_at,
+    })))
+    setDailyHistory((ep||[]).map(p => ({
+      id: p.id, startDate: p.start_date, endDate: p.end_date,
+      items: p.items || [], createdAt: p.created_at, updatedAt: p.updated_at,
+    })))
+    setShowerHistory((sp||[]).map(p => ({
+      id: p.id, startDate: p.start_date, endDate: p.end_date,
+      items: p.items || [], createdAt: p.created_at, updatedAt: p.updated_at,
+    })))
+    const prodMap = {}
+    catalogIds.current = new Set()
+    ;(pr || []).forEach(p => {
+      if (p.is_catalog) catalogIds.current.add(p.id)
+      prodMap[p.id] = {
+        id: p.id, name: p.name, brand: p.brand, category: p.category,
+        imageUrl: p.image_url, purchaseUrl: p.purchase_url, bdsCompliant: p.bds_compliant,
+        effectivenessAvg: p.effectiveness_avg || 0,
+        tags: (p.tags || []).map(t => t ? t.charAt(0).toUpperCase() + t.slice(1) : t),
+        notes: p.notes || '', ingredient_category: p.ingredient_category || '', ingredient_form: p.ingredient_form || '',
+        black_owned: p.black_owned || false, indigenous_owned: p.indigenous_owned || false, poc_owned: p.poc_owned || false,
+        woman_owned: p.woman_owned || false, lgbtq_owned: p.lgbtq_owned || false, cruelty_free: p.cruelty_free || false,
+        vegan: p.vegan || false, certified_organic: p.certified_organic || false, fair_trade: p.fair_trade || false,
+        clean_formula: p.clean_formula || false, science_backed: p.science_backed || false, is_prescription: p.is_prescription || false,
+        _isCatalog: p.is_catalog || false, store_name: p.store_name || '', direct_url: p.direct_url || '',
+        direct_store_name: p.direct_store_name || '', description: p.description || '', ingredients: p.ingredients || '',
+      }
+    })
+    setProducts(prodMap)
+    setLoading(false)
+  }
 
   useEffect(() => {
     if (!userId) return
-    async function load() {
-      const [{ data: rp }, { data: ep }, { data: sp }] = await Promise.all([
-        supabase.from('routine_periods').select('*').eq('user_id', userId).order('start_date', { ascending: false }),
-        supabase.from('extras_periods').select('*').eq('user_id', userId).order('start_date', { ascending: false }),
-        supabase.from('shower_periods').select('*').eq('user_id', userId).order('start_date', { ascending: false }),
-      ])
-      setRoutineHistory((rp||[]).map(p => ({
-        startDate: p.start_date, endDate: p.end_date, activeName: p.active_name,
-        tretEnabled: p.tret_enabled, tretFrequency: p.tret_frequency,
-        secondaryActives: p.secondary_actives || [], products: p.products || {},
-        steps: p.steps || null, _dbId: p.id, createdAt: p.created_at, updatedAt: p.updated_at,
-      })))
-      setDailyHistory((ep||[]).map(p => ({
-        id: p.id, startDate: p.start_date, endDate: p.end_date,
-        items: p.items || [], createdAt: p.created_at, updatedAt: p.updated_at,
-      })))
-      setShowerHistory((sp||[]).map(p => ({
-        id: p.id, startDate: p.start_date, endDate: p.end_date,
-        items: p.items || [], createdAt: p.created_at, updatedAt: p.updated_at,
-      })))
-      setLoading(false)
-    }
     load()
   }, [userId])
+
+  async function saveProduct(product) {
+    if (catalogIds.current.has(product.id)) return
+    const row = {
+      id: product.id || undefined, user_id: userId, is_catalog: false,
+      name: product.name, brand: product.brand || '', category: product.category,
+      image_url: product.imageUrl, purchase_url: product.purchaseUrl, bds_compliant: product.bdsCompliant,
+      tags: product.tags || [], notes: product.notes || '',
+      ingredient_category: product.ingredient_category || null, ingredient_form: product.ingredient_form || null,
+      store_name: product.store_name || null, direct_url: product.direct_url || null, direct_store_name: product.direct_store_name || null,
+      description: product.description || null, ingredients: product.ingredients || null,
+      black_owned: product.black_owned || false, indigenous_owned: product.indigenous_owned || false, poc_owned: product.poc_owned || false,
+      woman_owned: product.woman_owned || false, lgbtq_owned: product.lgbtq_owned || false, cruelty_free: product.cruelty_free || false,
+      vegan: product.vegan || false, certified_organic: product.certified_organic || false, fair_trade: product.fair_trade || false,
+      clean_formula: product.clean_formula || false, science_backed: product.science_backed || false, is_prescription: product.is_prescription || false,
+    }
+    const { data: saved } = await supabase.from('products').upsert(row, { onConflict: 'name,brand' }).select().single()
+    if (saved) setProducts(p => ({ ...p, [saved.id]: { ...product, id: saved.id, _isCatalog: false } }))
+  }
+
+  // Opens the full-page "start new routine" overlay for whichever tab is active
+  function openNewForm() {
+    if (tab === 'skincare') setNewForm({ type: 'skincare', editing: null })
+    else if (tab === 'extras') {
+      const current = getActiveDailyPeriod(new Date(), dailyHistory)
+      setNewForm({ type: 'daily', editing: current ? { ...current, startDate: '', endDate: null, id: null } : null })
+    } else {
+      const current = getActiveShowerPeriod(new Date(), showerHistory)
+      setNewForm({ type: 'shower', editing: current ? { ...current, startDate: '', endDate: null, id: null } : null })
+    }
+  }
+
+  async function saveNewSkincare(form) {
+    const row = {
+      user_id: userId, start_date: form.startDate, end_date: form.endDate || null,
+      active_name: form.activeName, tret_enabled: form.tretEnabled,
+      tret_frequency: form.tretFrequency, tret_start_date: form.tretStartDate || null,
+      secondary_actives: form.secondaryActives || [], products: form.products || {},
+      steps: form.steps || null,
+    }
+    await supabase.from('routine_periods').insert(row)
+    setNewForm(null)
+    load()
+  }
+  async function saveNewDaily(form) {
+    const id = form.id || crypto.randomUUID()
+    const row = { id, user_id: userId, start_date: form.startDate, end_date: form.endDate || null, items: form.items || [], updated_at: new Date().toISOString() }
+    await supabase.from('extras_periods').upsert(row)
+    setNewForm(null)
+    load()
+  }
+  async function saveNewShower(form) {
+    const id = form.id || crypto.randomUUID()
+    const row = { id, user_id: userId, start_date: form.startDate, end_date: form.endDate || null, items: form.items || [], updated_at: new Date().toISOString() }
+    await supabase.from('shower_periods').upsert(row)
+    setNewForm(null)
+    load()
+  }
 
   async function deleteSkincare(p) {
     if (!await confirm({ title: 'Delete this skincare routine?', message: 'This cannot be undone.' })) return
@@ -99,33 +190,36 @@ export default function RoutineHistory({ session }) {
   return (
     <div style={{ fontFamily: 'inherit', minHeight: '100vh', background: T.cream, paddingBottom: 40 }}>
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 20px 16px', background: T.darkGreen }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 20px 16px', background: T.text }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <button onClick={() => window.history.back()} style={{ border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.white }}>←</button>
-          <GlowUpLogo style={{ color: T.white }} />
+          <GlowUpLogo size={32} style={{ color: T.white }} />
         </div>
-        <button onClick={() => setShowMenu(true)}
-          style={{ border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '5px 10px', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', justifyContent: 'center', width: 36, height: 32 }}>
-          <span style={{ display: 'block', width: 14, height: 1.5, background: T.white }} />
-          <span style={{ display: 'block', width: 14, height: 1.5, background: T.white }} />
-          <span style={{ display: 'block', width: 14, height: 1.5, background: T.white }} />
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Btn variant="primary" style={{ background: T.darkGreen, color: T.white }} onClick={openNewForm}>+ Start new routine</Btn>
+          <button onClick={() => setShowMenu(true)}
+            style={{ border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '5px 10px', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', justifyContent: 'center', width: 36, height: 32 }}>
+            <span style={{ display: 'block', width: 14, height: 1.5, background: T.white }} />
+            <span style={{ display: 'block', width: 14, height: 1.5, background: T.white }} />
+            <span style={{ display: 'block', width: 14, height: 1.5, background: T.white }} />
+          </button>
+        </div>
         {showMenu && <SideMenu session={session} onClose={() => setShowMenu(false)} />}
       </div>
 
       {/* Tabs */}
-      <div style={{ display: 'flex', gap: 6, padding: '16px 20px 8px' }}>
+      <div style={{ display: 'flex', gap: 6, padding: '16px 20px 8px', maxWidth: CONTENT_WIDTH, margin: '0 auto', boxSizing: 'border-box' }}>
         {tabs.map(t => (
           <button key={t.key} onClick={() => setTab(t.key)} style={{
             padding: '6px 14px', borderRadius: T.radius.pill, fontSize: 12, cursor: 'pointer',
             border: 'none',
-            background: tab === t.key ? T.pink : '#EBFBF2',
-            color: T.text, fontFamily: 'inherit',
-          }}>{t.label} {t.count > 0 && <span style={{ fontSize: 10, color: T.textMuted }}>({t.count})</span>}</button>
+            background: tab === t.key ? T.darkGreen : '#EBFBF2',
+            color: tab === t.key ? T.white : T.text, fontFamily: 'inherit',
+          }}>{t.label} {t.count > 0 && <span style={{ fontSize: 10, color: tab === t.key ? 'rgba(255,255,255,0.75)' : T.textMuted }}>({t.count})</span>}</button>
         ))}
       </div>
 
-      <div style={{ padding: '8px 20px' }}>
+      <div style={{ padding: '8px 20px', maxWidth: CONTENT_WIDTH, margin: '0 auto', boxSizing: 'border-box' }}>
         {loading ? (
           <div style={{ fontSize: 13, color: T.textMuted, padding: '20px 0' }}>Loading...</div>
         ) : (
@@ -136,7 +230,6 @@ export default function RoutineHistory({ session }) {
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
                   <div style={{ fontSize: 11, fontWeight: 600, color: T.green, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Skincare</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                    <Btn variant="primary" style={{ background: T.darkGreen, color: T.white }} onClick={() => navigate('new-skincare', null)}>+ Start new routine</Btn>
                     <InfoTooltip text={TOOLTIP_TEXT} />
                   </div>
                 </div>
@@ -188,7 +281,6 @@ export default function RoutineHistory({ session }) {
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
                   <div style={{ fontSize: 11, fontWeight: 600, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Extras</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                    <Btn variant="primary" style={{ background: T.darkGreen, color: T.white }} onClick={() => navigate('new-daily', null)}>+ Start new routine</Btn>
                     <InfoTooltip text={TOOLTIP_TEXT} />
                   </div>
                 </div>
@@ -217,7 +309,6 @@ export default function RoutineHistory({ session }) {
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
                   <div style={{ fontSize: 11, fontWeight: 600, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Shower</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                    <Btn variant="primary" style={{ background: T.darkGreen, color: T.white }} onClick={() => navigate('new-shower', null)}>+ Start new routine</Btn>
                     <InfoTooltip text={TOOLTIP_TEXT} />
                   </div>
                 </div>
@@ -242,6 +333,51 @@ export default function RoutineHistory({ session }) {
           </>
         )}
       </div>
+
+      {/* "+ Start new routine" — fullscreen takeover, no border, mint green */}
+      {newForm && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: T.green, overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
+          <div style={{ maxWidth: 560, margin: '0 auto', padding: '64px 20px 48px' }}>
+            {newForm.type === 'skincare' && (
+              <RoutinePeriodForm
+                initial={{ ...(newForm.editing || getActivePeriod(new Date(), routineHistory)), startDate: '' }}
+                onSave={saveNewSkincare}
+                onCancel={() => setNewForm(null)}
+                isFirst={routineHistory.length === 0}
+                allPeriods={routineHistory}
+                products={products}
+                onSaveProduct={saveProduct}
+                onEditConflict={(p) => setNewForm({ type: 'skincare', editing: p })}
+                userId={userId}
+              />
+            )}
+            {newForm.type === 'daily' && (
+              <DailyEditor
+                initial={newForm.editing}
+                onSave={saveNewDaily}
+                onCancel={() => setNewForm(null)}
+                allPeriods={dailyHistory}
+                onEditConflict={(p) => setNewForm({ type: 'daily', editing: p })}
+                products={products}
+                onSaveProduct={saveProduct}
+                userId={userId}
+              />
+            )}
+            {newForm.type === 'shower' && (
+              <ShowerEditor
+                initial={newForm.editing}
+                onSave={saveNewShower}
+                onCancel={() => setNewForm(null)}
+                allPeriods={showerHistory}
+                onEditConflict={(p) => setNewForm({ type: 'shower', editing: p })}
+                products={products}
+                onSaveProduct={saveProduct}
+                userId={userId}
+              />
+            )}
+          </div>
+        </div>
+      )}
       {confirmDialog}
     </div>
   )
