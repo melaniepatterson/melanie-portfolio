@@ -48,6 +48,9 @@ const FITZPATRICK = [
   { n: 6, color: '#3B1F0E', label: 'Type VI',  sub: 'Deep brown, never burns' },
 ]
 
+const CHECK_COLORS = [T.pink, T.blue, T.green, T.yellow, T.orange]
+const randomCheckColor = () => CHECK_COLORS[Math.floor(Math.random() * CHECK_COLORS.length)]
+
 function SectionLabel({ children }) {
   return (
     <div style={{ fontSize: 11, fontWeight: 600, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
@@ -68,15 +71,28 @@ function PillButton({ active, onClick, children, sub }) {
   return (
     <button onClick={onClick} style={{
       padding: sub ? '6px 12px' : '6px 14px',
-      borderRadius: 0, fontSize: 12, cursor: 'pointer',
-      border: `0.5px solid ${active ? T.pinkDeep : T.border}`,
-      background: active ? T.pink : T.white,
-      color: T.text, fontFamily: 'inherit',
+      borderRadius: T.radius.pill, fontSize: 12, cursor: 'pointer',
+      border: 'none',
+      background: active ? T.darkGreen : '#EBFBF2',
+      color: active ? T.white : T.text, fontFamily: 'inherit',
       display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1,
     }}>
       <span>{children}</span>
-      {sub && <span style={{ fontSize: 9, color: T.textMuted }}>{sub}</span>}
+      {sub && <span style={{ fontSize: 9, color: active ? 'rgba(255,255,255,0.75)' : T.textMuted }}>{sub}</span>}
     </button>
+  )
+}
+
+// Custom checkbox that reshuffles to a random brand color every time it's toggled
+function RandomCheckbox({ checked, color }) {
+  return (
+    <div style={{ width: 18, height: 18, marginTop: 2, borderRadius: 5, border: '1.5px solid ' + (checked ? color : T.text), background: checked ? color : 'transparent', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      {checked && (
+        <svg width="11" height="9" viewBox="0 0 11 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M1 4L4 7.5L10 1" stroke={T.text} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      )}
+    </div>
   )
 }
 
@@ -94,8 +110,10 @@ export default function Profile({ session, onOpenSurvey }) {
   const [climate,       setClimate]       = useState('')
   const [timezone,      setTimezone]      = useState(() => detectTimezone())
   const [betaTester,    setBetaTester]    = useState(false)
+  const [betaColor,     setBetaColor]     = useState(randomCheckColor)
   const [savedBetaTester, setSavedBetaTester] = useState(false)
   const [newsletterOptIn, setNewsletterOptIn] = useState(false)
+  const [newsletterColor, setNewsletterColor] = useState(randomCheckColor)
   const [avatarUrl,     setAvatarUrl]     = useState(null)
   const [cropSrc,       setCropSrc]       = useState(null)
   const [uploading,     setUploading]     = useState(false)
@@ -227,6 +245,16 @@ export default function Profile({ session, onOpenSurvey }) {
     setter(prev => prev.includes(val) ? prev.filter(x => x !== val) : [...prev, val])
   }
 
+  function toggleBetaTester() {
+    setBetaTester(v => !v)
+    setBetaColor(randomCheckColor())
+  }
+
+  function toggleNewsletter() {
+    setNewsletterOptIn(v => !v)
+    setNewsletterColor(randomCheckColor())
+  }
+
   async function handleSave() {
     setSaving(true)
     await supabase.from('profiles').upsert({
@@ -258,34 +286,30 @@ export default function Profile({ session, onOpenSurvey }) {
 
   return (
     <>
-    <div style={{ fontFamily: 'inherit', minHeight: '100vh', background: T.cream, padding: '0 0 60px' }}>
+    <div style={{ fontFamily: 'inherit', minHeight: '100vh', background: T.white, padding: '0 0 60px' }}>
       {cropSrc && (
         <CropModal imageSrc={cropSrc} onConfirm={handleCropConfirm} onCancel={handleCropCancel} uploading={uploading} />
       )}
 
-      {/* Header */}
-      <div style={{ background: T.white, borderBottom: `0.5px solid ${T.border}`, position: 'sticky', top: 0, zIndex: 10 }}>
-        <style>{`.glowup-profile-logo { display: flex } @media (max-width: 639px) { .glowup-profile-logo { display: none } }`}</style>
-        {/* Logo row — desktop only */}
-        <div className="glowup-profile-logo" style={{ alignItems: 'baseline', padding: '12px 20px 8px' }}>
-          <GlowUpLogo />
-        </div>
-        {/* Nav row */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 20px 14px' }}>
+      {/* Header — arrow + logo both link back to calendar, matching Product Library / Routine History */}
+      <div style={{ background: T.text, position: 'sticky', top: 0, zIndex: 10 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px 10px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <button onClick={() => window.location.href = '/routine'}
-              style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 0, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.text }}>
-              ←
-            </button>
-            <div style={{ fontSize: 15, fontWeight: 600, color: T.text }}>Account & settings</div>
+            <a href="/routine" style={{ border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.white, textDecoration: 'none', display: 'inline-block' }}>←</a>
+            <a href="/routine" style={{ display: 'flex', alignItems: 'baseline', textDecoration: 'none' }}>
+              <GlowUpLogo size={32} style={{ color: T.white }} />
+            </a>
           </div>
           <button onClick={() => setShowMenu(true)}
-            style={{ border: `0.5px solid ${T.border}`, background: 'transparent', borderRadius: 0, padding: '5px 10px', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', justifyContent: 'center', width: 36, height: 32 }}>
-            <span style={{ display: 'block', width: 14, height: 1.5, background: T.text }} />
-            <span style={{ display: 'block', width: 14, height: 1.5, background: T.text }} />
-            <span style={{ display: 'block', width: 14, height: 1.5, background: T.text }} />
+            style={{ border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '5px 10px', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', justifyContent: 'center', width: 36, height: 32 }}>
+            <span style={{ display: 'block', width: 14, height: 1.5, background: T.white }} />
+            <span style={{ display: 'block', width: 14, height: 1.5, background: T.white }} />
+            <span style={{ display: 'block', width: 14, height: 1.5, background: T.white }} />
           </button>
           {showMenu && <SideMenu session={session} onClose={() => setShowMenu(false)} />}
+        </div>
+        <div style={{ padding: '0 20px 14px' }}>
+          <div style={{ fontSize: 15, fontWeight: 600, color: T.white }}>Account &amp; settings</div>
         </div>
       </div>
 
@@ -296,7 +320,7 @@ export default function Profile({ session, onOpenSurvey }) {
           <div style={{ position: 'relative', width: 88, height: 88 }}>
             <Avatar avatarUrl={avatarUrl} displayName={displayName} email={email} size={88}
               onClick={() => !uploading && fileInputRef.current?.click()}
-              style={{ opacity: uploading ? 0.6 : 1, transition: 'opacity 0.2s', border: `2px solid ${T.border}`, cursor: uploading ? 'default' : 'pointer' }} />
+              style={{ opacity: uploading ? 0.6 : 1, transition: 'opacity 0.2s', cursor: uploading ? 'default' : 'pointer', border: 'none' }} />
             {!uploading && (
               <div onClick={() => fileInputRef.current?.click()}
                 style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: 'rgba(0,0,0,0)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'background 0.15s' }}
@@ -316,16 +340,16 @@ export default function Profile({ session, onOpenSurvey }) {
         <div style={{ marginBottom: 20 }}>
           <SectionLabel>Display name</SectionLabel>
           <input type="text" value={displayName} onChange={e => setDisplayName(e.target.value)} placeholder="Your name"
-            style={{ width: '100%', fontSize: 13, padding: '10px 12px', border: `0.5px solid ${T.border}`, borderRadius: 0, background: T.white, color: T.text, boxSizing: 'border-box', outline: 'none', fontFamily: 'inherit' }} />
+            style={{ width: '100%', fontSize: 13, padding: '10px 14px', border: 'none', borderRadius: T.radius.pill, background: '#EBFBF2', color: T.text, boxSizing: 'border-box', outline: 'none', fontFamily: 'inherit' }} />
         </div>
 
         {/* Email */}
         <div style={{ marginBottom: 24 }}>
           <SectionLabel>Email</SectionLabel>
-          <div style={{ fontSize: 13, color: T.textMuted, padding: '10px 12px', background: T.creamDark, borderRadius: 0, border: `0.5px solid ${T.border}` }}>{email}</div>
+          <div style={{ fontSize: 13, color: T.text, padding: '10px 14px', background: '#EBFBF2', borderRadius: T.radius.card }}>{email}</div>
         </div>
 
-        <div style={{ height: 1, background: T.border, marginBottom: 24 }} />
+        <div style={{ height: 1, background: 'rgba(0,0,0,0.08)', marginBottom: 24 }} />
 
         {/* Fitzpatrick skin tone */}
         <div style={{ marginBottom: 24 }}>
@@ -339,9 +363,9 @@ export default function Profile({ session, onOpenSurvey }) {
                 title={`${f.label} — ${f.sub}`}
                 style={{
                   display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
-                  padding: '8px 10px', borderRadius: 0, cursor: 'pointer', fontFamily: 'inherit',
-                  border: `2px solid ${fitzpatrick === f.n ? T.pinkDeep : T.border}`,
-                  background: fitzpatrick === f.n ? T.pink : T.white,
+                  padding: '8px 10px', borderRadius: T.radius.card, cursor: 'pointer', fontFamily: 'inherit',
+                  border: `2px solid ${fitzpatrick === f.n ? T.darkGreen : 'transparent'}`,
+                  background: fitzpatrick === f.n ? '#EBFBF2' : '#F7F7F7',
                   minWidth: 54,
                 }}>
                 <div style={{ width: 28, height: 28, borderRadius: '50%', background: f.color, border: '0.5px solid rgba(0,0,0,0.15)' }} />
@@ -389,7 +413,7 @@ export default function Profile({ session, onOpenSurvey }) {
         {/* Specific concerns */}
         <div style={{ marginBottom: 24 }}>
           <SectionLabel>What I'm managing <OptionalTag /></SectionLabel>
-          
+
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
             {SKIN_CONCERNS.map(c => (
               <PillButton key={c} active={skinConcerns.includes(c)} onClick={() => toggleArr(setSkinConcerns, c)}>{c}</PillButton>
@@ -422,7 +446,7 @@ export default function Profile({ session, onOpenSurvey }) {
         </div>
 
         {/* Timezone */}
-        <div style={{ marginBottom: 24, padding: '14px 16px', background: T.white, borderRadius: 0, border: `0.5px solid ${T.border}` }}>
+        <div style={{ marginBottom: 24, padding: '14px 16px', background: '#EBFBF2', borderRadius: T.radius.card }}>
           <div style={{ fontSize: 12, fontWeight: 700, color: T.text, marginBottom: 4 }}>Time zone</div>
           <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 12, lineHeight: 1.6 }}>
             Used to determine what day it is for your calendar — important if you use the app near midnight.
@@ -431,7 +455,7 @@ export default function Profile({ session, onOpenSurvey }) {
             <select
               value={timezone}
               onChange={e => setTimezone(e.target.value)}
-              style={{ flex: 1, minWidth: 0, fontSize: 12, padding: '8px 10px', border: `1px solid ${T.border}`, borderRadius: 0, background: T.white, color: T.text, fontFamily: 'inherit', cursor: 'pointer' }}
+              style={{ flex: 1, minWidth: 0, fontSize: 12, padding: '8px 14px', border: 'none', borderRadius: T.radius.pill, background: T.white, color: T.text, fontFamily: 'inherit', cursor: 'pointer' }}
             >
               {TIMEZONE_OPTIONS.map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -443,7 +467,7 @@ export default function Profile({ session, onOpenSurvey }) {
             </select>
             <button
               onClick={() => setTimezone(detectTimezone())}
-              style={{ padding: '8px 12px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.textMuted, cursor: 'pointer', fontSize: 11, fontFamily: 'inherit', whiteSpace: 'nowrap' }}>
+              style={{ padding: '8px 14px', borderRadius: T.radius.pill, border: 'none', background: T.white, color: T.darkGreen, cursor: 'pointer', fontSize: 11, fontFamily: 'inherit', whiteSpace: 'nowrap' }}>
               Auto-detect
             </button>
           </div>
@@ -455,16 +479,9 @@ export default function Profile({ session, onOpenSurvey }) {
         </div>
 
         {/* Newsletter opt-in */}
-        <div style={{ marginBottom: 24, padding: '14px 16px', background: T.white, borderRadius: 0, border: `0.5px solid ${T.border}` }}>
-          <label style={{ display: 'flex', alignItems: 'flex-start', gap: 12, cursor: 'pointer' }}>
-            <div style={{ position: 'relative', flexShrink: 0, marginTop: 2 }}>
-              <input
-                type="checkbox"
-                checked={newsletterOptIn}
-                onChange={e => setNewsletterOptIn(e.target.checked)}
-                style={{ width: 18, height: 18, accentColor: T.pinkDeep, cursor: 'pointer', marginTop: 0 }}
-              />
-            </div>
+        <div style={{ marginBottom: 24, padding: '14px 16px', background: '#EBFBF2', borderRadius: T.radius.card }}>
+          <div onClick={toggleNewsletter} style={{ display: 'flex', alignItems: 'flex-start', gap: 12, cursor: 'pointer', userSelect: 'none' }}>
+            <RandomCheckbox checked={newsletterOptIn} color={newsletterColor} />
             <div>
               <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 3 }}>
                 Subscribe to the newsletter
@@ -473,29 +490,28 @@ export default function Profile({ session, onOpenSurvey }) {
                 Occasional updates on new products, routine tips, and what we're loving. No spam, unsubscribe any time.
               </div>
             </div>
-          </label>
+          </div>
         </div>
 
         {/* Privacy note */}
-        <div style={{ fontSize: 11, color: T.textLight, lineHeight: 1.6, padding: '12px 14px', background: T.creamDark, borderRadius: 0, border: `0.5px solid ${T.border}`, marginBottom: 20 }}>
+        <div style={{ fontSize: 11, color: T.textLight, lineHeight: 1.6, padding: '12px 14px', background: '#EBFBF2', borderRadius: T.radius.card, marginBottom: 20 }}>
           Your data is never sold or shared. Optional fields help us understand which products work best for different skin tones, types, and concerns — so recommendations get better for everyone.
         </div>
 
         {/* Beta tester + feedback */}
-        <div style={{ borderTop: `0.5px solid ${T.border}`, paddingTop: 16, marginBottom: 16 }}>
+        <div style={{ borderTop: '1px solid rgba(0,0,0,0.08)', paddingTop: 16, marginBottom: 16 }}>
           <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 10 }}>
             Beta program
           </div>
-          <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer', marginBottom: 14 }}>
-            <input type="checkbox" checked={betaTester} onChange={e => setBetaTester(e.target.checked)}
-              style={{ marginTop: 3, accentColor: T.pinkDeep, flexShrink: 0 }} />
+          <div onClick={toggleBetaTester} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer', marginBottom: 14, userSelect: 'none' }}>
+            <RandomCheckbox checked={betaTester} color={betaColor} />
             <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.7 }}>
               <strong style={{ color: T.text }}>I'm interested in being a beta tester</strong> — you may hear from us about new features, early previews, and occasional check-ins. No spam, ever.
             </div>
-          </label>
+          </div>
           {savedBetaTester && (
             <button onClick={() => setShowSurvey(true)}
-              style={{ fontSize: 12, color: T.pinkDeep, fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit' }}>
+              style={{ fontSize: 12, color: T.darkGreen, fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit' }}>
               Share feedback about the app →
             </button>
           )}
@@ -503,12 +519,12 @@ export default function Profile({ session, onOpenSurvey }) {
 
         {/* Save */}
         <button onClick={handleSave} disabled={saving}
-          style={{ width: '100%', padding: '12px', borderRadius: 0, border: 'none', background: saved ? '#4ADE80' : T.pinkDeep, color: saved ? '#14532D' : T.white, fontSize: 13, fontWeight: 600, cursor: saving ? 'default' : 'pointer', opacity: saving ? 0.7 : 1, transition: 'background 0.2s', fontFamily: 'inherit', marginBottom: 16 }}>
+          style={{ width: '100%', padding: '13px', borderRadius: T.radius.pill, border: 'none', background: saved ? T.green : T.darkGreen, color: saved ? T.darkGreen : T.white, fontSize: 13, fontWeight: 600, cursor: saving ? 'default' : 'pointer', opacity: saving ? 0.7 : 1, transition: 'background 0.2s', fontFamily: 'inherit', marginBottom: 16 }}>
           {saved ? '✓ Saved' : saving ? 'Saving...' : 'Save profile'}
         </button>
 
         {/* Export */}
-        <div style={{ borderTop: `0.5px solid ${T.border}`, paddingTop: 16, marginBottom: 16 }}>
+        <div style={{ borderTop: '1px solid rgba(0,0,0,0.08)', paddingTop: 16, marginBottom: 16 }}>
           <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 10 }}>
             Export
           </div>
@@ -516,23 +532,23 @@ export default function Profile({ session, onOpenSurvey }) {
             Export your routine as a calendar file (.ics) to add to Apple Calendar, Google Calendar, or any other calendar app.
           </div>
           <a href="/routine?export=1"
-            style={{ display: 'inline-block', padding: '9px 16px', borderRadius: 0, border: `0.5px solid ${T.border}`, background: 'transparent', color: T.text, fontSize: 12, fontFamily: 'inherit', cursor: 'pointer', textDecoration: 'none' }}>
+            style={{ display: 'inline-block', padding: '9px 18px', borderRadius: T.radius.pill, border: 'none', background: '#EBFBF2', color: T.darkGreen, fontSize: 12, fontFamily: 'inherit', cursor: 'pointer', textDecoration: 'none' }}>
             Open export options →
           </a>
         </div>
 
         {/* Danger zone */}
-        <div style={{ borderTop: `0.5px solid ${T.border}`, paddingTop: 16, marginBottom: 16 }}>
+        <div style={{ borderTop: '1px solid rgba(0,0,0,0.08)', paddingTop: 16, marginBottom: 16 }}>
           <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 10 }}>
             Account
           </div>
 
           {actionError && (
-            <div style={{ fontSize: 12, color: T.pinkDeep, marginBottom: 10 }}>{actionError}</div>
+            <div style={{ fontSize: 12, color: T.darkPink, marginBottom: 10 }}>{actionError}</div>
           )}
 
           <button onClick={() => setResetConfirm(true)}
-            style={{ width: '100%', padding: '11px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', fontSize: 13, color: T.text, cursor: 'pointer', fontFamily: 'inherit', marginBottom: 8 }}>
+            style={{ width: '100%', padding: '11px', borderRadius: T.radius.pill, border: 'none', background: '#EBFBF2', fontSize: 13, color: T.text, cursor: 'pointer', fontFamily: 'inherit', marginBottom: 8 }}>
             Reset my routine
           </button>
           <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.6, marginBottom: 16 }}>
@@ -540,7 +556,7 @@ export default function Profile({ session, onOpenSurvey }) {
           </div>
 
           <button onClick={() => setDeleteConfirm(true)}
-            style={{ width: '100%', padding: '11px', borderRadius: 0, border: `1px solid ${T.pinkDeep}`, background: 'transparent', fontSize: 13, color: T.pinkDeep, cursor: 'pointer', fontFamily: 'inherit', marginBottom: 8 }}>
+            style={{ width: '100%', padding: '11px', borderRadius: T.radius.pill, border: 'none', background: T.recovery.bg, color: T.darkPink, cursor: 'pointer', fontFamily: 'inherit', fontSize: 13, marginBottom: 8 }}>
             Delete my account
           </button>
           <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.6 }}>
@@ -551,18 +567,18 @@ export default function Profile({ session, onOpenSurvey }) {
         {/* Reset confirmation modal */}
         {resetConfirm && (
           <div onClick={() => !resetting && setResetConfirm(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-            <div onClick={e => e.stopPropagation()} style={{ background: T.white, border: `1px solid ${T.border}`, borderRadius: 0, width: '100%', maxWidth: 400, padding: '24px 20px' }}>
+            <div onClick={e => e.stopPropagation()} style={{ background: T.white, borderRadius: T.radius.modal, boxShadow: '0 8px 32px rgba(0,0,0,0.15)', width: '100%', maxWidth: 400, padding: '24px 20px' }}>
               <h3 style={{ fontSize: 16, fontWeight: 700, color: T.text, margin: '0 0 10px' }}>Reset your routine?</h3>
               <p style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.7, margin: '0 0 20px' }}>
                 This deletes your routine, treatments, and program progress so you can go through onboarding again. Your products and profile info are kept. This can't be undone.
               </p>
               <div style={{ display: 'flex', gap: 8 }}>
                 <button onClick={() => setResetConfirm(false)} disabled={resetting}
-                  style={{ flex: 1, padding: '10px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit' }}>
+                  style={{ flex: 1, padding: '10px', borderRadius: T.radius.pill, border: 'none', background: '#EBFBF2', color: T.text, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit' }}>
                   Cancel
                 </button>
                 <button onClick={resetRoutine} disabled={resetting}
-                  style={{ flex: 1, padding: '10px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 600 }}>
+                  style={{ flex: 1, padding: '10px', borderRadius: T.radius.pill, border: 'none', background: T.darkPink, color: '#fff', cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 600 }}>
                   {resetting ? 'Resetting…' : 'Reset routine'}
                 </button>
               </div>
@@ -573,21 +589,21 @@ export default function Profile({ session, onOpenSurvey }) {
         {/* Delete account confirmation modal */}
         {deleteConfirm && (
           <div onClick={() => !deleting && setDeleteConfirm(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-            <div onClick={e => e.stopPropagation()} style={{ background: T.white, border: `1px solid ${T.border}`, borderRadius: 0, width: '100%', maxWidth: 400, padding: '24px 20px' }}>
-              <h3 style={{ fontSize: 16, fontWeight: 700, color: T.pinkDeep, margin: '0 0 10px' }}>Delete your account?</h3>
+            <div onClick={e => e.stopPropagation()} style={{ background: T.white, borderRadius: T.radius.modal, boxShadow: '0 8px 32px rgba(0,0,0,0.15)', width: '100%', maxWidth: 400, padding: '24px 20px' }}>
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: T.darkPink, margin: '0 0 10px' }}>Delete your account?</h3>
               <p style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.7, margin: '0 0 16px' }}>
                 This permanently deletes your account and everything in it — routine, treatments, products, profile. This cannot be undone.
               </p>
               <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 6 }}>Type DELETE to confirm</div>
               <input value={deleteText} onChange={e => setDeleteText(e.target.value)}
-                style={{ width: '100%', boxSizing: 'border-box', fontSize: 13, padding: '8px 2px', border: 'none', borderBottom: '1px solid #000000', borderRadius: 0, background: 'transparent', color: T.text, fontFamily: 'inherit', outline: 'none', marginBottom: 20 }} />
+                style={{ width: '100%', boxSizing: 'border-box', fontSize: 13, padding: '8px 14px', border: '1px solid rgba(0,0,0,0.15)', borderRadius: T.radius.pill, background: T.white, color: T.text, fontFamily: 'inherit', outline: 'none', marginBottom: 20 }} />
               <div style={{ display: 'flex', gap: 8 }}>
                 <button onClick={() => { setDeleteConfirm(false); setDeleteText('') }} disabled={deleting}
-                  style={{ flex: 1, padding: '10px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit' }}>
+                  style={{ flex: 1, padding: '10px', borderRadius: T.radius.pill, border: 'none', background: '#EBFBF2', color: T.text, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit' }}>
                   Cancel
                 </button>
                 <button onClick={deleteAccount} disabled={deleting || deleteText !== 'DELETE'}
-                  style={{ flex: 1, padding: '10px', borderRadius: 0, border: 'none', background: deleteText === 'DELETE' ? T.pinkDeep : T.border, color: '#fff', cursor: deleteText === 'DELETE' ? 'pointer' : 'default', fontSize: 13, fontFamily: 'inherit', fontWeight: 600 }}>
+                  style={{ flex: 1, padding: '10px', borderRadius: T.radius.pill, border: 'none', background: deleteText === 'DELETE' ? T.darkPink : 'rgba(0,0,0,0.15)', color: '#fff', cursor: deleteText === 'DELETE' ? 'pointer' : 'default', fontSize: 13, fontFamily: 'inherit', fontWeight: 600 }}>
                   {deleting ? 'Deleting…' : 'Delete account'}
                 </button>
               </div>
@@ -597,7 +613,7 @@ export default function Profile({ session, onOpenSurvey }) {
 
         {/* Sign out */}
         <button onClick={async () => { await supabase.auth.signOut(); window.location.href = '/routine' }}
-          style={{ width: '100%', padding: '12px', borderRadius: 0, border: `0.5px solid ${T.border}`, background: 'transparent', fontSize: 13, color: T.textMuted, cursor: 'pointer', fontFamily: 'inherit' }}>
+          style={{ width: '100%', padding: '12px', borderRadius: T.radius.pill, border: 'none', background: '#EBFBF2', fontSize: 13, color: T.text, cursor: 'pointer', fontFamily: 'inherit' }}>
           Sign out
         </button>
       </div>
