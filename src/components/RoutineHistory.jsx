@@ -7,6 +7,7 @@ import { useConfirm } from './shared/useConfirm'
 import Btn from './shared/Btn'
 import { fmtDate, fmtDateTime } from './dateFormat'
 import InfoTooltip from './shared/InfoTooltip'
+import FeedbackPanel from './shared/FeedbackPanel'
 import {
   RoutinePeriodForm, DailyEditor, ShowerEditor,
   getActivePeriod, getActiveDailyPeriod, getActiveShowerPeriod,
@@ -43,6 +44,7 @@ export default function RoutineHistory({ session }) {
   const [loading, setLoading] = useState(true)
   const [tab, setTab] = useState('skincare')
   const [showMenu, setShowMenu] = useState(false)
+  const [showFeedback, setShowFeedback] = useState(false)
   const [newForm, setNewForm] = useState(null) // { type: 'skincare'|'daily'|'shower', editing }
   const catalogIds = useRef(new Set())
   const userId = session?.user?.id
@@ -207,7 +209,11 @@ export default function RoutineHistory({ session }) {
               <span style={{ display: 'block', width: 14, height: 1.5, background: T.white }} />
             </button>
           </div>
-          {showMenu && <SideMenu session={session} onClose={() => setShowMenu(false)} />}
+          {showMenu && (
+            <SideMenu session={session} onClose={() => setShowMenu(false)}
+              onFeedback={() => { setShowMenu(false); setShowFeedback(true) }} />
+          )}
+          {showFeedback && <FeedbackPanel onClose={() => setShowFeedback(false)} />}
         </div>
         <div style={{ padding: '0 20px 14px' }}>
           <div style={{ fontSize: 15, fontWeight: 600, color: T.white }}>Routine History</div>

@@ -51,7 +51,7 @@ export default function SideMenu({ session, onClose, onFeedback }) {
     { label: 'Routine history',    href: '/routine/history',  color: T.green },
     { label: 'Product library',    href: '/routine/products', color: T.pink },
     { label: 'Account & settings', href: '/routine/profile',  color: T.orange },
-    { label: 'Send feedback', color: T.blue, action: onFeedback || (() => { window.location.href = '/routine?feedback=1' }) },
+    { label: 'Send feedback', color: T.blue, action: onFeedback },
   ]
 
   async function signOut() {

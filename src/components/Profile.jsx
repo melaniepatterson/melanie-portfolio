@@ -9,6 +9,7 @@ import BetaSurvey from './BetaSurvey'
 import { detectTimezone, TIMEZONE_OPTIONS } from './timezone'
 import T from './theme'
 import { useAlert } from './shared/useConfirm'
+import FeedbackPanel from './shared/FeedbackPanel'
 
 
 
@@ -121,6 +122,7 @@ export default function Profile({ session, onOpenSurvey }) {
   const [saving,        setSaving]        = useState(false)
   const [saved,         setSaved]         = useState(false)
   const [showMenu,      setShowMenu]      = useState(false)
+  const [showFeedback,  setShowFeedback]  = useState(false)
   const fileInputRef = useRef(null)
 
   const userId = session?.user?.id
@@ -306,7 +308,11 @@ export default function Profile({ session, onOpenSurvey }) {
             <span style={{ display: 'block', width: 14, height: 1.5, background: T.white }} />
             <span style={{ display: 'block', width: 14, height: 1.5, background: T.white }} />
           </button>
-          {showMenu && <SideMenu session={session} onClose={() => setShowMenu(false)} />}
+          {showMenu && (
+            <SideMenu session={session} onClose={() => setShowMenu(false)}
+              onFeedback={() => { setShowMenu(false); setShowFeedback(true) }} />
+          )}
+          {showFeedback && <FeedbackPanel onClose={() => setShowFeedback(false)} />}
         </div>
         <div style={{ padding: '0 20px 14px' }}>
           <div style={{ fontSize: 15, fontWeight: 600, color: T.white }}>Account &amp; settings</div>

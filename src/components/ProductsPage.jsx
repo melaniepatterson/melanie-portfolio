@@ -8,6 +8,7 @@ import ProductForm, { PRODUCT_CATEGORIES, formatCatLabel, PAO_OPTIONS } from './
 import { useConfirm, useAlert } from './shared/useConfirm'
 import Btn from './shared/Btn'
 import StarRating from './shared/StarRating'
+import FeedbackPanel from './shared/FeedbackPanel'
 
 
 // A stable "random" brand color per filter label — hashed so the same
@@ -959,6 +960,7 @@ export default function ProductsPage({ session }) {
   const [activeTab, setActiveTab] = useState('library') // library | history
   const [finishHistory, setFinishHistory] = useState([])
   const [showMenu, setShowMenu] = useState(false)
+  const [showFeedback, setShowFeedback] = useState(false)
   const [activeRoutineNames, setActiveRoutineNames] = useState(new Set())
   const [userRoutineNames, setUserRoutineNames] = useState(new Set())
   const userId = session?.user?.id
@@ -1286,7 +1288,11 @@ export default function ProductsPage({ session }) {
               <span style={{ display: 'block', width: 14, height: 1.5, background: T.white }} />
               <span style={{ display: 'block', width: 14, height: 1.5, background: T.white }} />
             </button>
-            {showMenu && <SideMenu session={session} onClose={() => setShowMenu(false)} />}
+            {showMenu && (
+              <SideMenu session={session} onClose={() => setShowMenu(false)}
+                onFeedback={() => { setShowMenu(false); setShowFeedback(true) }} />
+            )}
+            {showFeedback && <FeedbackPanel onClose={() => setShowFeedback(false)} />}
           </div>
         </div>
         {/* Page title row with tabs */}

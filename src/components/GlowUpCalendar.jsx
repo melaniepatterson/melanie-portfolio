@@ -40,6 +40,7 @@ import { useConfirm, useAlert } from './shared/useConfirm'
 import Btn from './shared/Btn'
 import AccentWord from './shared/AccentWord'
 import StarRating from './shared/StarRating'
+import FeedbackPanel from './shared/FeedbackPanel'
 
 // ─── DESIGN TOKENS ───────────────────────────────────────────
 
@@ -3916,83 +3917,6 @@ function UpcomingTreatmentsPanel({ treatments, allTypes, routineHistory, onClose
           )}
         </>
       )}
-    </div>
-  )
-}
-
-
-
-// ─── FEEDBACK PANEL ───────────────────────────────────────────
-function FeedbackPanel({ onClose }) {
-  const [type,    setType]    = useState('general')
-  const [message, setMessage] = useState('')
-  const [sending, setSending] = useState(false)
-  const [sent,    setSent]    = useState(false)
-
-  const types = [
-    { key: 'bug',     label: '🐛 Bug report' },
-    { key: 'feature', label: '✨ Feature idea' },
-    { key: 'general', label: '💬 General' },
-  ]
-
-  async function handleSend() {
-    if (!message.trim()) return
-    setSending(true)
-    // user_id intentionally omitted — feedback is anonymous
-    await supabase.from('feedback').insert({ type, message: message.trim() })
-    setSending(false)
-    setSent(true)
-    setTimeout(() => { setSent(false); setMessage(''); onClose() }, 2000)
-  }
-
-  return (
-    <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 0, padding: '16px 18px', marginBottom: 14 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-        <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>Send feedback</div>
-        <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 18, color: T.textMuted, lineHeight: 1 }}>×</button>
-      </div>
-
-      {/* Anonymity notice */}
-      <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.6, padding: '8px 10px', background: T.creamDark, borderRadius: 0, marginBottom: 12, border: `0.5px solid ${T.border}` }}>
-        🔒 Feedback is completely anonymous. Your name, account, and identity are never attached to what you write here.
-      </div>
-
-      {/* Type picker */}
-      <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
-        {types.map(t => (
-          <button key={t.key} onClick={() => setType(t.key)} style={{
-            flex: 1, padding: '6px 8px', borderRadius: 0, fontSize: 11, cursor: 'pointer',
-            border: `0.5px solid ${type === t.key ? T.pinkDeep : T.border}`,
-            background: type === t.key ? T.pink : 'transparent', color: T.text, fontFamily: 'inherit',
-          }}>{t.label}</button>
-        ))}
-      </div>
-
-      {/* Message */}
-      <textarea
-        value={message}
-        onChange={e => setMessage(e.target.value)}
-        placeholder="What's on your mind? Be as specific as you can — steps to reproduce a bug, or what you wish the app did differently."
-        rows={5}
-        style={{
-          width: '100%', fontSize: 12, padding: '10px 12px', border: `0.5px solid ${T.border}`,
-          borderRadius: 0, background: T.cream, color: T.text, resize: 'vertical',
-          fontFamily: 'inherit', boxSizing: 'border-box', outline: 'none', lineHeight: 1.6,
-          marginBottom: 10,
-        }}
-      />
-
-      <button
-        onClick={handleSend}
-        disabled={sending || !message.trim()}
-        style={{
-          width: '100%', padding: '10px', borderRadius: 0, border: 'none',
-          background: sent ? '#4ADE80' : T.pinkDeep,
-          color: sent ? '#14532D' : T.white,
-          fontSize: 12, fontWeight: 600, cursor: sending || !message.trim() ? 'default' : 'pointer',
-          opacity: !message.trim() ? 0.5 : 1, transition: 'background 0.2s', fontFamily: 'inherit',
-        }}
-      >{sent ? '✓ Sent — thank you!' : sending ? 'Sending...' : 'Send feedback'}</button>
     </div>
   )
 }

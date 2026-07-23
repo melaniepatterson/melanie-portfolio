@@ -9,6 +9,7 @@ const COPY = {
     buttonBg: T.text,
     linkColor: T.darkGreen,
     border: 'none',
+    buttonRadius: T.radius.pill,
   },
   portfolio: {
     storageKey: 'portfolio_cookie_notice_dismissed',
@@ -17,6 +18,7 @@ const COPY = {
     buttonBg: T.pinkDeep,
     linkColor: T.pinkDeep,
     border: `1px solid ${T.border}`,
+    buttonRadius: 8,
   },
 }
 
@@ -53,7 +55,7 @@ export default function CookieNotice({ variant = 'glowup' }) {
         )}
       </div>
       <button onClick={dismiss}
-        style={{ alignSelf: 'flex-start', padding: '8px 18px', borderRadius: 8, border: 'none', background: copy.buttonBg, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
+        style={{ alignSelf: 'flex-start', padding: '8px 18px', borderRadius: copy.buttonRadius, border: 'none', background: copy.buttonBg, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
         Got it
       </button>
     </div>
