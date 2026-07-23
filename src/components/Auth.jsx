@@ -6,6 +6,8 @@ import GlowUpLogo from './GlowUpWordmark'
 
 const SKIN_TYPES = ['Dry', 'Oily', 'Combination', 'Normal', 'Sensitive', 'Not sure yet']
 const HOW_HEARD  = ['Instagram', 'TikTok', 'Word of mouth', 'Melanie\'s portfolio', 'Twitter / X', 'Other']
+const CHECK_COLORS = [T.pink, T.blue, T.green, T.yellow, T.orange]
+const randomCheckColor = () => CHECK_COLORS[Math.floor(Math.random() * CHECK_COLORS.length)]
 
 // ── Screens ──────────────────────────────────────────────────────────────────
 // 'email'     → enter email
@@ -20,6 +22,7 @@ export default function Auth() {
   const [skinType,  setSkinType]  = useState('')
   const [howHeard,  setHowHeard]  = useState('')
   const [betaTester, setBetaTester] = useState(false)
+  const [betaColor, setBetaColor] = useState(randomCheckColor)
   const [loading,   setLoading]   = useState(false)
   const [errorMsg,  setErrorMsg]  = useState('')
   const [alreadyOnList, setAlreadyOnList] = useState(false)
@@ -86,42 +89,56 @@ export default function Auth() {
     }
   }
 
+  function toggleBetaTester() {
+    setBetaTester(v => !v)
+    setBetaColor(randomCheckColor())
+  }
+
   // ── Shared styles ─────────────────────────────────────────────────────────
   const btnStyle = (active = true) => ({
-    width: '100%', padding: '13px', borderRadius: 10, border: 'none',
-    background: active ? T.pinkDeep : T.creamDark,
-    color: active ? '#fff' : T.textMuted,
+    width: '100%', padding: '13px', borderRadius: T.radius.pill, border: 'none',
+    background: active ? T.darkGreen : '#EBFBF2',
+    color: active ? T.white : T.darkGreen,
     fontSize: 14, fontWeight: 600, cursor: active ? 'pointer' : 'default',
     fontFamily: 'inherit', transition: 'opacity 0.15s',
     opacity: loading ? 0.7 : 1,
   })
   const pillStyle = (active) => ({
-    padding: '7px 14px', borderRadius: 20, fontSize: 12,
-    cursor: 'pointer', fontFamily: 'inherit',
-    border: `0.5px solid ${active ? T.pinkDeep : T.border}`,
-    background: active ? T.pink : T.white,
-    color: T.text,
+    padding: '7px 14px', borderRadius: T.radius.pill, fontSize: 12,
+    cursor: 'pointer', fontFamily: 'inherit', border: 'none',
+    background: active ? T.darkGreen : '#EBFBF2',
+    color: active ? T.white : T.text,
   })
 
   return (
     <div style={{
-      minHeight: '100vh', background: T.cream,
+      minHeight: '100vh', background: T.darkGreen,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       padding: '24px 20px', fontFamily: 'inherit',
     }}>
+      <style>{`
+        @keyframes glowupAuthFloat {
+          0%, 100% { transform: translateY(-8px); }
+          50%      { transform: translateY(8px); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .glowup-auth-logo { animation: none !important; }
+        }
+      `}</style>
+
       <div style={{ width: '100%', maxWidth: 400 }}>
 
-        {/* Logo / wordmark */}
+        {/* Logo / wordmark — floats in white, like the load screen */}
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
-          <GlowUpLogo size={22} style={{ display: 'inline-block' }} />
-          <div style={{ fontSize: 12, color: T.textMuted, marginTop: 4 }}>
+          <GlowUpLogo size={40} className="glowup-auth-logo" style={{ display: 'inline-block', color: T.white, animation: 'glowupAuthFloat 3s cubic-bezier(0.445, 0.05, 0.55, 0.95) infinite' }} />
+          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.75)', marginTop: 8 }}>
             Your skincare routine, organized.
           </div>
         </div>
 
         <div style={{
           background: T.white, borderRadius: 16, padding: '28px 24px',
-          border: `0.5px solid ${T.border}`,
+          boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
         }}>
 
           {/* ── SCREEN: email ── */}
@@ -142,7 +159,7 @@ export default function Auth() {
                 style={{ marginBottom: 12 }}
               />
               {errorMsg && (
-                <div style={{ fontSize: 12, color: T.pinkDeep, marginBottom: 10 }}>{errorMsg}</div>
+                <div style={{ fontSize: 12, color: T.darkPink, marginBottom: 10 }}>{errorMsg}</div>
               )}
               <button type="submit" disabled={loading || !email.trim()} style={btnStyle(!!email.trim())}>
                 {loading ? 'Checking...' : 'Continue →'}
@@ -160,7 +177,7 @@ export default function Auth() {
                 Glow Up is in private beta. Add yourself to the waitlist and we'll reach out when your spot is ready.
               </div>
 
-              <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 12, padding: '10px 12px', background: T.creamDark, borderRadius: 8, border: `0.5px solid ${T.border}` }}>
+              <div style={{ fontSize: 11, color: T.text, marginBottom: 12, padding: '10px 12px', background: '#EBFBF2', borderRadius: 8 }}>
                 {email}
               </div>
 
@@ -197,24 +214,29 @@ export default function Auth() {
               </div>
 
               {errorMsg && (
-                <div style={{ fontSize: 12, color: T.pinkDeep, marginBottom: 10 }}>{errorMsg}</div>
+                <div style={{ fontSize: 12, color: T.darkPink, marginBottom: 10 }}>{errorMsg}</div>
               )}
 
-              {/* Beta tester opt-in */}
-              <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer', marginBottom: 20, padding: '12px', background: T.creamDark, borderRadius: 8, border: `0.5px solid ${T.border}` }}>
-                <input type="checkbox" checked={betaTester} onChange={e => setBetaTester(e.target.checked)}
-                  style={{ marginTop: 3, accentColor: T.pinkDeep, flexShrink: 0 }} />
+              {/* Beta tester opt-in — checkbox reshuffles to a random color on every toggle */}
+              <div onClick={toggleBetaTester} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer', marginBottom: 20, padding: '12px', background: '#EBFBF2', borderRadius: 8, userSelect: 'none' }}>
+                <div style={{ width: 18, height: 18, marginTop: 3, borderRadius: 5, border: '1.5px solid ' + (betaTester ? betaColor : T.text), background: betaTester ? betaColor : 'transparent', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {betaTester && (
+                    <svg width="11" height="9" viewBox="0 0 11 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M1 4L4 7.5L10 1" stroke={T.text} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  )}
+                </div>
                 <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.7 }}>
                   <strong style={{ color: T.text }}>I'd like to be a beta tester</strong> — I'm happy to give feedback, try new features early, and help shape the app. No spam, just occasional check-ins.
                 </div>
-              </label>
+              </div>
 
               <button type="submit" disabled={loading} style={btnStyle(true)}>
                 {loading ? 'Joining...' : 'Join the waitlist'}
               </button>
 
               <button type="button" onClick={() => setScreen('email')}
-                style={{ marginTop: 10, width: '100%', padding: '10px', borderRadius: 10, border: `0.5px solid ${T.border}`, background: 'transparent', color: T.textMuted, fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>
+                style={{ marginTop: 10, width: '100%', padding: '10px', borderRadius: T.radius.pill, border: 'none', background: '#EBFBF2', color: T.darkGreen, fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>
                 ← Use a different email
               </button>
             </form>
@@ -234,7 +256,7 @@ export default function Auth() {
                 }
               </div>
               <button onClick={() => { setScreen('email'); setEmail('') }}
-                style={{ ...btnStyle(false), marginTop: 20, color: T.textMuted }}>
+                style={{ ...btnStyle(false), marginTop: 20 }}>
                 Back
               </button>
             </div>
@@ -254,7 +276,7 @@ export default function Auth() {
                 No email? Check your spam folder or try again below.
               </div>
               <button onClick={() => setScreen('email')}
-                style={{ ...btnStyle(false), marginTop: 16, color: T.textMuted }}>
+                style={{ ...btnStyle(false), marginTop: 16 }}>
                 Try a different email
               </button>
             </div>
@@ -263,7 +285,7 @@ export default function Auth() {
         </div>
 
         {/* Footer */}
-        <div style={{ textAlign: 'center', marginTop: 20, fontSize: 11, color: T.textLight }}>
+        <div style={{ textAlign: 'center', marginTop: 20, fontSize: 11, color: 'rgba(255,255,255,0.6)' }}>
           Your data is never sold. <span style={{ margin: '0 6px' }}>·</span> Glow Up by Melanie
         </div>
       </div>
