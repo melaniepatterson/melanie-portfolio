@@ -131,7 +131,7 @@ export default function Auth() {
         {/* Logo / wordmark — floats in white, like the load screen */}
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
           <GlowUpLogo size={40} className="glowup-auth-logo" style={{ display: 'inline-block', color: T.white, animation: 'glowupAuthFloat 3s cubic-bezier(0.445, 0.05, 0.55, 0.95) infinite' }} />
-          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.75)', marginTop: 8 }}>
+          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.75)', marginTop: 22 }}>
             Your skincare routine, organized.
           </div>
         </div>
@@ -245,7 +245,23 @@ export default function Auth() {
           {/* ── SCREEN: joined waitlist ── */}
           {screen === 'joined' && (
             <div style={{ textAlign: 'center', padding: '8px 0' }}>
-              <div style={{ fontSize: 32, marginBottom: 12 }}>{alreadyOnList ? '🌸' : '✨'}</div>
+              <div style={{ marginBottom: 12 }}>
+                {alreadyOnList ? (
+                  <svg width="32" height="32" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <g fill={T.darkGreen}>
+                      <ellipse cx="12" cy="6" rx="3" ry="5" />
+                      <ellipse cx="12" cy="6" rx="3" ry="5" transform="rotate(72 12 12)" />
+                      <ellipse cx="12" cy="6" rx="3" ry="5" transform="rotate(144 12 12)" />
+                      <ellipse cx="12" cy="6" rx="3" ry="5" transform="rotate(216 12 12)" />
+                      <ellipse cx="12" cy="6" rx="3" ry="5" transform="rotate(288 12 12)" />
+                    </g>
+                  </svg>
+                ) : (
+                  <svg width="32" height="32" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2 L14.5 9.5 L22 12 L14.5 14.5 L12 22 L9.5 14.5 L2 12 L9.5 9.5 Z" fill={T.darkGreen} />
+                  </svg>
+                )}
+              </div>
               <div style={{ fontSize: 16, fontWeight: 600, color: T.text, marginBottom: 8 }}>
                 {alreadyOnList ? "You're already on the list" : "You're on the list"}
               </div>
