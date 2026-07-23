@@ -2,17 +2,28 @@ import { useState } from 'react'
 import { supabase } from '../lib/supabase'
 import T from './theme'
 
+const CHECK_COLORS = [T.pink, T.blue, T.green, T.yellow, T.orange]
+const randomCheckColor = () => CHECK_COLORS[Math.floor(Math.random() * CHECK_COLORS.length)]
+
+function CloseButton({ onClose }) {
+  return (
+    <button onClick={onClose}
+      style={{ position: 'fixed', top: 20, right: 20, zIndex: 810, width: 36, height: 36, borderRadius: T.radius.pill, border: 'none', background: 'rgba(255,255,255,0.18)', cursor: 'pointer', fontSize: 18, color: T.white, lineHeight: 1, fontFamily: 'inherit' }}>
+      ×
+    </button>
+  )
+}
 
 function StarRow({ value, onChange }) {
   return (
-    <div style={{ display: 'flex', gap: 6 }}>
+    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
       {[1, 2, 3, 4, 5].map(n => (
         <button key={n} onClick={() => onChange(n)}
-          style={{ width: 36, height: 36, borderRadius: 0, border: `1px solid ${n <= value ? T.pinkDeep : T.border}`, background: n <= value ? T.pink : 'transparent', cursor: 'pointer', fontSize: 13, fontWeight: 600, color: n <= value ? T.pinkDeep : T.textMuted, fontFamily: 'inherit' }}>
+          style={{ width: 36, height: 36, borderRadius: T.radius.pill, border: 'none', background: n <= value ? T.white : 'rgba(255,255,255,0.15)', cursor: 'pointer', fontSize: 13, fontWeight: 600, color: n <= value ? T.darkPink : T.white, fontFamily: 'inherit' }}>
           {n}
         </button>
       ))}
-      <span style={{ fontSize: 11, color: T.textMuted, alignSelf: 'center', marginLeft: 6 }}>
+      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)', marginLeft: 6 }}>
         {value === 1 ? 'Really hard' : value === 2 ? 'Tricky' : value === 3 ? 'Okay' : value === 4 ? 'Pretty easy' : value === 5 ? 'Super easy' : ''}
       </span>
     </div>
@@ -24,10 +35,23 @@ function PillRow({ options, value, onChange }) {
     <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
       {options.map(o => (
         <button key={o.value} onClick={() => onChange(o.value)}
-          style={{ padding: '7px 14px', borderRadius: 0, border: `1px solid ${value === o.value ? T.text : T.border}`, background: value === o.value ? T.text : 'transparent', color: value === o.value ? '#fff' : T.textMuted, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
+          style={{ padding: '7px 14px', borderRadius: T.radius.pill, border: 'none', background: value === o.value ? T.white : 'rgba(255,255,255,0.15)', color: value === o.value ? T.darkPink : T.white, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
           {o.label}
         </button>
       ))}
+    </div>
+  )
+}
+
+// Custom checkbox that reshuffles to a random brand color every time it's toggled
+function RandomCheckbox({ checked, color }) {
+  return (
+    <div style={{ width: 18, height: 18, marginTop: 2, borderRadius: 5, border: '1.5px solid ' + (checked ? color : T.white), background: checked ? color : 'transparent', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      {checked && (
+        <svg width="11" height="9" viewBox="0 0 11 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M1 4L4 7.5L10 1" stroke={T.text} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      )}
     </div>
   )
 }
@@ -39,10 +63,16 @@ export default function BetaSurvey({ session, onClose, onSubmitted, betaTester, 
   const [pacing,          setPacing]          = useState('')
   const [tellFriend,      setTellFriend]      = useState('')
   const [anonymous,       setAnonymous]       = useState(false)
+  const [anonymousColor,  setAnonymousColor]  = useState(randomCheckColor)
   const [submitting,      setSubmitting]      = useState(false)
   const [error,           setError]           = useState('')
 
   const canSubmit = setupEase > 0 && changedThinking && tellFriend.trim().length > 0
+
+  function toggleAnonymous() {
+    setAnonymous(v => !v)
+    setAnonymousColor(randomCheckColor())
+  }
 
   async function handleSubmit() {
     if (!canSubmit) { setError('Please answer all required questions.'); return }
@@ -72,15 +102,17 @@ export default function BetaSurvey({ session, onClose, onSubmitted, betaTester, 
 
   if (!betaTester) return null
 
+  const textareaStyle = { width: '100%', boxSizing: 'border-box', fontSize: 12, padding: '10px 14px', border: 'none', borderRadius: T.radius.card, background: T.white, color: T.text, fontFamily: 'inherit', resize: 'vertical', outline: 'none', lineHeight: 1.6 }
+
   // Already submitted — show thank you instead of form
   if (alreadySubmitted) return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-      <div style={{ background: T.white, border: `1px solid ${T.border}`, borderRadius: 0, width: '100%', maxWidth: 420, padding: '36px 28px', textAlign: 'center' }}>
-        <div style={{ fontSize: 32, marginBottom: 12 }}>💌</div>
-        <div style={{ fontSize: 18, fontWeight: 700, color: T.text, marginBottom: 8 }}>You've already shared feedback</div>
-        <div style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.7, marginBottom: 24 }}>Thank you — your response is in and we've read it. We'll be in touch if we have follow-up questions.</div>
+    <div style={{ position: 'fixed', inset: 0, background: T.darkPink, zIndex: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, overflowY: 'auto' }}>
+      <CloseButton onClose={onClose} />
+      <div style={{ width: '100%', maxWidth: 420, textAlign: 'center' }}>
+        <div style={{ fontSize: 18, fontWeight: 700, color: T.white, marginBottom: 8 }}>You've already shared feedback</div>
+        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, marginBottom: 24 }}>Thank you — your response is in and we've read it. We'll be in touch if we have follow-up questions.</div>
         <button onClick={onClose}
-          style={{ padding: '10px 24px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
+          style={{ padding: '10px 24px', borderRadius: T.radius.pill, border: 'none', background: T.white, color: T.darkPink, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
           Close
         </button>
       </div>
@@ -88,33 +120,29 @@ export default function BetaSurvey({ session, onClose, onSubmitted, betaTester, 
   )
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-      <div style={{ background: T.white, border: `1px solid ${T.border}`, borderRadius: 0, width: '100%', maxWidth: 500, maxHeight: '90vh', overflowY: 'auto', padding: '28px 24px' }}>
+    <div style={{ position: 'fixed', inset: 0, background: T.darkPink, zIndex: 800, overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
+      <CloseButton onClose={onClose} />
+      <div style={{ width: '100%', maxWidth: 500, margin: '0 auto', padding: '64px 20px 48px', boxSizing: 'border-box' }}>
 
         {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 6 }}>
-          <div>
-            <div style={{ fontSize: 9, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 6 }}>Beta feedback</div>
-            <div style={{ fontSize: 20, fontWeight: 800, color: T.text, letterSpacing: '-0.03em' }}>How's it going so far?</div>
-          </div>
-          <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 20, color: T.textMuted, lineHeight: 1, padding: '0 0 0 16px' }}>×</button>
-        </div>
-        <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.7, marginBottom: 24 }}>
+        <div style={{ fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.75)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 6 }}>Beta feedback</div>
+        <div style={{ fontSize: 20, fontWeight: 800, color: T.white, letterSpacing: '-0.03em', marginBottom: 6 }}>How's it going so far?</div>
+        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, marginBottom: 24 }}>
           You've completed your first phase — we'd love to know what you think. Takes about 2 minutes.
         </div>
 
         {/* Q1 */}
         <div style={{ marginBottom: 20 }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 8 }}>
-            How easy was it to set up your first routine? <span style={{ color: T.pinkDeep }}>*</span>
+          <div style={{ fontSize: 13, fontWeight: 600, color: T.white, marginBottom: 8 }}>
+            How easy was it to set up your first routine? <span style={{ color: 'rgba(255,255,255,0.75)' }}>*</span>
           </div>
           <StarRow value={setupEase} onChange={setSetupEase} />
         </div>
 
         {/* Q2 */}
         <div style={{ marginBottom: 20 }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 8 }}>
-            Has the app changed how you think about your skincare routine? <span style={{ color: T.pinkDeep }}>*</span>
+          <div style={{ fontSize: 13, fontWeight: 600, color: T.white, marginBottom: 8 }}>
+            Has the app changed how you think about your skincare routine? <span style={{ color: 'rgba(255,255,255,0.75)' }}>*</span>
           </div>
           <PillRow
             value={changedThinking}
@@ -129,21 +157,21 @@ export default function BetaSurvey({ session, onClose, onSubmitted, betaTester, 
 
         {/* Q3 */}
         <div style={{ marginBottom: 20 }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 4 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: T.white, marginBottom: 4 }}>
             What's missing that would make this worth paying for?
           </div>
-          <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 8 }}>Optional</div>
+          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)', marginBottom: 8 }}>Optional</div>
           <textarea value={missing} onChange={e => setMissing(e.target.value)} rows={3}
             placeholder="Anything — features, content, integrations..."
-            style={{ width: '100%', boxSizing: 'border-box', fontSize: 12, padding: '8px 10px', border: `1px solid ${T.border}`, borderRadius: 0, background: 'transparent', color: T.text, fontFamily: 'inherit', resize: 'vertical', outline: 'none', lineHeight: 1.6 }} />
+            style={textareaStyle} />
         </div>
 
         {/* Q4 */}
         <div style={{ marginBottom: 20 }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 4 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: T.white, marginBottom: 4 }}>
             If you enrolled in a program: did the pacing feel right?
           </div>
-          <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 8 }}>Optional — skip if you haven't enrolled in one</div>
+          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)', marginBottom: 8 }}>Optional — skip if you haven't enrolled in one</div>
           <PillRow
             value={pacing}
             onChange={setPacing}
@@ -157,34 +185,33 @@ export default function BetaSurvey({ session, onClose, onSubmitted, betaTester, 
 
         {/* Q5 */}
         <div style={{ marginBottom: 24 }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 8 }}>
-            What would you tell a friend about this app? <span style={{ color: T.pinkDeep }}>*</span>
+          <div style={{ fontSize: 13, fontWeight: 600, color: T.white, marginBottom: 8 }}>
+            What would you tell a friend about this app? <span style={{ color: 'rgba(255,255,255,0.75)' }}>*</span>
           </div>
           <textarea value={tellFriend} onChange={e => setTellFriend(e.target.value)} rows={3}
             placeholder="Be honest — good or bad, it all helps."
-            style={{ width: '100%', boxSizing: 'border-box', fontSize: 12, padding: '8px 10px', border: `1px solid ${T.border}`, borderRadius: 0, background: 'transparent', color: T.text, fontFamily: 'inherit', resize: 'vertical', outline: 'none', lineHeight: 1.6 }} />
+            style={textareaStyle} />
         </div>
 
         {/* Anonymous toggle + disclosure */}
-        <div style={{ padding: '12px 14px', background: T.creamDark, border: `0.5px solid ${T.border}`, marginBottom: 16 }}>
-          <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer' }}>
-            <input type="checkbox" checked={anonymous} onChange={e => setAnonymous(e.target.checked)}
-              style={{ marginTop: 2, accentColor: T.pinkDeep, flexShrink: 0 }} />
-            <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.7 }}>
-              <strong style={{ color: T.text }}>Submit anonymously</strong> — by default your responses are linked to your account so we can follow up and improve your experience specifically. Check this to send without any identifying info. We never share your data either way.
+        <div onClick={toggleAnonymous} style={{ padding: '12px 14px', background: 'rgba(255,255,255,0.12)', borderRadius: T.radius.card, marginBottom: 16, cursor: 'pointer' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, userSelect: 'none' }}>
+            <RandomCheckbox checked={anonymous} color={anonymousColor} />
+            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7 }}>
+              <strong style={{ color: T.white }}>Submit anonymously</strong> — by default your responses are linked to your account so we can follow up and improve your experience specifically. Check this to send without any identifying info. We never share your data either way.
             </div>
-          </label>
+          </div>
         </div>
 
-        {error && <div style={{ fontSize: 12, color: T.pinkDeep, marginBottom: 12 }}>{error}</div>}
+        {error && <div style={{ fontSize: 12, color: T.white, fontWeight: 600, marginBottom: 12 }}>{error}</div>}
 
         <div style={{ display: 'flex', gap: 8 }}>
           <button onClick={onClose}
-            style={{ flex: 1, padding: '11px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
+            style={{ flex: 1, padding: '11px', borderRadius: T.radius.pill, border: 'none', background: 'rgba(255,255,255,0.15)', color: T.white, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
             Maybe later
           </button>
           <button onClick={handleSubmit} disabled={submitting || !canSubmit}
-            style={{ flex: 2, padding: '11px', borderRadius: 0, border: 'none', background: canSubmit ? T.pinkDeep : T.border, color: '#fff', cursor: canSubmit ? 'pointer' : 'default', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
+            style={{ flex: 2, padding: '11px', borderRadius: T.radius.pill, border: 'none', background: canSubmit ? T.white : 'rgba(255,255,255,0.3)', color: T.darkPink, cursor: canSubmit ? 'pointer' : 'default', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
             {submitting ? 'Submitting…' : 'Submit feedback'}
           </button>
         </div>
