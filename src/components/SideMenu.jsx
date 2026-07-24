@@ -145,8 +145,8 @@ export default function SideMenu({ session, onClose, onFeedback }) {
             Sign out
           </button>
           <div style={{ display: 'flex', gap: 16, paddingTop: 8 }}>
-            <a href="/privacy" style={{ fontSize: 10, color: 'rgba(0,0,0,0.45)', textDecoration: 'none', letterSpacing: '0.04em' }}>Privacy Policy</a>
-            <a href="/privacy#cookies" style={{ fontSize: 10, color: 'rgba(0,0,0,0.45)', textDecoration: 'none', letterSpacing: '0.04em' }}>Cookie Policy</a>
+            <a href="/privacy" style={{ fontSize: 10, color: 'rgba(0,0,0,0.75)', textDecoration: 'none', letterSpacing: '0.04em' }}>Privacy Policy</a>
+            <a href="/privacy#cookies" style={{ fontSize: 10, color: 'rgba(0,0,0,0.75)', textDecoration: 'none', letterSpacing: '0.04em' }}>Cookie Policy</a>
           </div>
         </div>
       </div>

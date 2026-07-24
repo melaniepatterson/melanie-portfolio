@@ -304,7 +304,7 @@ export default function Auth() {
         </div>
 
         {/* Footer */}
-        <div style={{ textAlign: 'center', marginTop: 20, fontSize: 11, color: 'rgba(255,255,255,0.6)' }}>
+        <div style={{ textAlign: 'center', marginTop: 20, fontSize: 11, color: 'rgba(255,255,255,0.8)' }}>
           Your data is never sold. <span style={{ margin: '0 6px' }}>·</span> Glow Up by Melanie
         </div>
       </div>
