@@ -97,7 +97,7 @@ export default function SideMenu({ session, onClose, onFeedback }) {
                 </div>
               </div>
             </div>
-            <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 22, color: T.text, padding: '0 2px', lineHeight: 1, flexShrink: 0 }}>×</button>
+            <button onClick={onClose} aria-label="Close menu" style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 22, color: T.text, padding: '0 2px', lineHeight: 1, flexShrink: 0 }}>×</button>
           </div>
         </div>
 

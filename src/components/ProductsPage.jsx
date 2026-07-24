@@ -463,7 +463,7 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
       {/* X — floats above modal card, outside it */}
       <div style={{ position: 'relative', width: '100%', maxWidth: 760, height: 'min(85vh, 680px)' }}>
-        <button onClick={onClose} style={{ position: 'absolute', top: -12, right: -12, zIndex: 1010, width: 28, height: 28, borderRadius: T.radius.pill, border: 'none', background: T.white, color: T.text, cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1, boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>×</button>
+        <button onClick={onClose} aria-label="Close" style={{ position: 'absolute', top: -12, right: -12, zIndex: 1010, width: 28, height: 28, borderRadius: T.radius.pill, border: 'none', background: T.white, color: T.text, cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1, boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>×</button>
         <div onClick={e => e.stopPropagation()} style={{
           background: T.white, borderRadius: T.radius.modal, width: '100%',
           height: '100%',
@@ -817,7 +817,7 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
               <div style={{ fontSize: 14, fontWeight: 600, color: T.text }}>Filters</div>
-              <button onClick={() => setFilterSheetOpen(false)} style={{ border: 'none', background: 'transparent', fontSize: 20, color: T.textMuted, cursor: 'pointer', padding: '0 2px', lineHeight: 1 }}>×</button>
+              <button onClick={() => setFilterSheetOpen(false)} aria-label="Close filters" style={{ border: 'none', background: 'transparent', fontSize: 20, color: T.textMuted, cursor: 'pointer', padding: '0 2px', lineHeight: 1 }}>×</button>
             </div>
             <FilterContent />
           </div>
@@ -1273,7 +1273,7 @@ export default function ProductsPage({ session }) {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px 10px' }}>
           <style>{`.glowup-prodlogo { display: flex }`}</style>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <a href="/routine" style={{ border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.white, textDecoration: 'none', display: 'inline-block' }}>←</a>
+            <a href="/routine" aria-label="Back to calendar" style={{ border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.white, textDecoration: 'none', display: 'inline-block' }}>←</a>
             <a href="/routine" className="glowup-prodlogo" style={{ alignItems: 'baseline', textDecoration: 'none' }}>
               <GlowUpLogo size={32} style={{ color: T.white }} />
             </a>

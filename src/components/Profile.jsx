@@ -297,7 +297,7 @@ export default function Profile({ session, onOpenSurvey }) {
       <div style={{ background: T.text, position: 'sticky', top: 0, zIndex: 10 }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px 10px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <a href="/routine" style={{ border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.white, textDecoration: 'none', display: 'inline-block' }}>←</a>
+            <a href="/routine" aria-label="Back to calendar" style={{ border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.white, textDecoration: 'none', display: 'inline-block' }}>←</a>
             <a href="/routine" style={{ display: 'flex', alignItems: 'baseline', textDecoration: 'none' }}>
               <GlowUpLogo size={32} style={{ color: T.white }} />
             </a>

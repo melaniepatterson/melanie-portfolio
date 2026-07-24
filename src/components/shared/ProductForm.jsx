@@ -128,6 +128,7 @@ export function ProductImageUpload({ value, onChange, userId, productName }) {
           <img src={preview} alt="" style={{ display: 'block', maxHeight: 88, maxWidth: 120, objectFit: 'contain' }} />
           <button
             onClick={() => { setPreview(null); onChange('') }}
+            aria-label="Remove photo"
             style={{ position: 'absolute', top: 3, right: 3, background: 'rgba(0,0,0,0.5)', border: 'none', borderRadius: '50%', width: 18, height: 18, color: '#fff', cursor: 'pointer', fontSize: 11, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>
             ×
           </button>

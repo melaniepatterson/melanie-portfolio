@@ -1223,6 +1223,7 @@ function TreatmentSelectorPanel({ selector, treatments, allTypes, customTypes, s
               </div>
               <div style={{ display: 'flex', gap: 6 }}>
                 <button onClick={() => onRemove(e._dbId)}
+                  aria-label={`Remove ${allTypes[e.type]?.label || e.type}`}
                   style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 16, padding: '0 4px', lineHeight: 1 }}>×</button>
               </div>
             </div>
@@ -1562,7 +1563,7 @@ export function DailyEditor({ initial, onSave, onCancel, lockStartDate = false, 
                         <span style={{ fontSize: 11, color: T.textLight, fontStyle: 'italic' }}>Tap to assign product</span>
                       )}
                     </div>
-                    {prod && <button onClick={e => { e.stopPropagation(); setItems(it => it.map((x,idx) => idx===i ? {...x,productId:null} : x)) }} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 13, padding: '0 2px', lineHeight: 1 }}>×</button>}
+                    {prod && <button onClick={e => { e.stopPropagation(); setItems(it => it.map((x,idx) => idx===i ? {...x,productId:null} : x)) }} aria-label="Remove assigned product" style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 13, padding: '0 2px', lineHeight: 1 }}>×</button>}
                     <span style={{ fontSize: 10, color: T.textLight, flexShrink: 0 }}>{isOpen ? '▲' : '▼'}</span>
                   </div>
                   {isOpen && (
@@ -1771,7 +1772,7 @@ function ProductPicker({ stepKey, currentProductId, products, onSelect, onAddNew
     <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 0, padding: '12px 14px', marginTop: 4 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
         <div style={{ fontSize: 11, fontWeight: 500, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Select product</div>
-        <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 14, color: T.textLight }}>×</button>
+        <button onClick={onClose} aria-label="Close product picker" style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 14, color: T.textLight }}>×</button>
       </div>
 
       <div style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
@@ -2010,7 +2011,7 @@ function DraggableShowerItem({ item, index, onRemove, onFreqChange, onWeekStartC
           </div>
         )}
       </div>
-      <button onClick={() => onRemove(index)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 14, padding: '0 2px', flexShrink: 0 }}>×</button>
+      <button onClick={() => onRemove(index)} aria-label={`Remove ${item.label}`} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 14, padding: '0 2px', flexShrink: 0 }}>×</button>
     </div>
   )
 }
@@ -2106,7 +2107,7 @@ export function ShowerEditor({ initial, onSave, onCancel, allPeriods = [], onEdi
                         <span style={{ fontSize: 11, color: T.textLight, fontStyle: 'italic' }}>Tap to assign product</span>
                       )}
                     </div>
-                    {prod && <button onClick={e => { e.stopPropagation(); setItems(it => it.map((x,idx) => idx===i ? {...x,productId:null} : x)) }} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 13, padding: '0 2px', lineHeight: 1 }}>×</button>}
+                    {prod && <button onClick={e => { e.stopPropagation(); setItems(it => it.map((x,idx) => idx===i ? {...x,productId:null} : x)) }} aria-label="Remove assigned product" style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 13, padding: '0 2px', lineHeight: 1 }}>×</button>}
                     <span style={{ fontSize: 10, color: T.textLight, flexShrink: 0 }}>{isOpen ? '▲' : '▼'}</span>
                   </div>
                   {isOpen && (
@@ -2461,7 +2462,7 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
                     } else {
                       onUpdatePeriodSteps?.(period.startDate, stepKey, false)
                     }
-                  }} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 14, padding: '0 2px', lineHeight: 1, flexShrink: 0 }} title="Remove this step">×</button>
+                  }} aria-label="Remove this step" style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 14, padding: '0 2px', lineHeight: 1, flexShrink: 0 }} title="Remove this step">×</button>
                 )}
               </div>
               {product ? (
@@ -2592,7 +2593,7 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
             ? <Btn onClick={() => onAddTreatment(flyout.allTreatments?.[0]?._dbId)} style={{ fontSize: 11, padding: '4px 10px', whiteSpace: 'nowrap' }}>Edit treatment</Btn>
             : <Btn onClick={onAddTreatment} style={{ fontSize: 11, padding: '4px 10px', whiteSpace: 'nowrap' }}>+ Add treatment</Btn>
           }
-          <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 16, color: T.textMuted, padding: '0 4px', lineHeight: 1 }}>×</button>
+          <button onClick={onClose} aria-label="Close day details" style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 16, color: T.textMuted, padding: '0 4px', lineHeight: 1 }}>×</button>
         </div>
       </div>
       {/* Color-coded day type banner */}
@@ -3613,7 +3614,7 @@ function ExportPanel({ routineHistory, treatments, allTypes, products, dailyHist
     <div style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 0, padding: '16px 18px', marginBottom: 14 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
         <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>Export</div>
-        <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 18, color: T.textMuted, padding: '0 2px', lineHeight: 1 }}>×</button>
+        <button onClick={onClose} aria-label="Close export panel" style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 18, color: T.textMuted, padding: '0 2px', lineHeight: 1 }}>×</button>
       </div>
 
       {/* Notion */}
@@ -3684,7 +3685,7 @@ function RecoveryRoutineEditor({ typeKey, typeLabel, steps, products, allProduct
           <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>Recovery routine</div>
           <div style={{ fontSize: 11, color: T.textMuted, marginTop: 2 }}>{typeLabel}</div>
         </div>
-        <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 18, color: T.textMuted, lineHeight: 1 }}>×</button>
+        <button onClick={onClose} aria-label="Close recovery routine editor" style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 18, color: T.textMuted, lineHeight: 1 }}>×</button>
       </div>
 
       <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.6, padding: '8px 10px', background: T.creamDark, borderRadius: 0, marginBottom: 14, border: `0.5px solid ${T.border}` }}>
@@ -3804,7 +3805,7 @@ function UpcomingTreatmentsPanel({ treatments, allTypes, routineHistory, onClose
                 </div>
                 {!isPast && (
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8, flexShrink: 0 }}>
-                    <button onClick={() => onRemove(tv._dbId)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: cardText, opacity: 0.55, fontSize: 18, padding: 0, lineHeight: 1 }}>×</button>
+                    <button onClick={() => onRemove(tv._dbId)} aria-label={`Remove ${typeLabel}`} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: cardText, opacity: 0.55, fontSize: 18, padding: 0, lineHeight: 1 }}>×</button>
                     <button onClick={() => onEdit(key)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: cardText, opacity: 0.7, fontSize: 12, fontWeight: 600, fontFamily: 'inherit', padding: 0, whiteSpace: 'nowrap' }}>Edit</button>
                   </div>
                 )}
@@ -3873,7 +3874,7 @@ function UpcomingTreatmentsPanel({ treatments, allTypes, routineHistory, onClose
         <div style={{ fontSize: 13, fontWeight: 600, color: T.white }}>Treatments</div>
         <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
 
-          <button onClick={onClose} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 18, color: T.white, padding: '0 2px', lineHeight: 1 }}>×</button>
+          <button onClick={onClose} aria-label="Close treatments panel" style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 18, color: T.white, padding: '0 2px', lineHeight: 1 }}>×</button>
         </div>
       </div>
 
@@ -5246,7 +5247,7 @@ export default function GlowUpCalendar({ session }) {
                   <div style={{ fontSize: 14, fontWeight: 600, color: flyoutHeaderInk }}>{fmt.format(dayFlyout.date)}</div>
                 </div>
                 <button onClick={goToNextDay} style={{ border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '5px 12px', cursor: 'pointer', fontSize: 14, color: flyoutHeaderInk, flexShrink: 0 }}>→</button>
-                <button onClick={() => setDayFlyout(null)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 18, color: flyoutHeaderInk, opacity: 0.8, padding: '0 2px', lineHeight: 1, flexShrink: 0 }}>×</button>
+                <button onClick={() => setDayFlyout(null)} aria-label="Close day details" style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 18, color: flyoutHeaderInk, opacity: 0.8, padding: '0 2px', lineHeight: 1, flexShrink: 0 }}>×</button>
               </div>
               {/* Scrollable content */}
               <div style={{ overflowY: 'auto', WebkitOverflowScrolling: 'touch', flex: 1, background: flyoutBodyBg }}>
