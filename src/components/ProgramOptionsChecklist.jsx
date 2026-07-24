@@ -28,6 +28,7 @@ export default function ProgramOptionsChecklist({ options, selected, onToggle, s
           <div key={opt.id} style={{ marginBottom: 8 }}>
             <button onClick={() => !disabled && onToggle(opt)}
               disabled={disabled}
+              aria-pressed={isOn}
               style={{
                 width: '100%', textAlign: 'left', display: 'flex', alignItems: 'flex-start', gap: 10,
                 padding: '14px 16px', borderRadius: T.radius.card, cursor: disabled ? 'default' : 'pointer', fontFamily: 'inherit',
@@ -63,6 +64,7 @@ export default function ProgramOptionsChecklist({ options, selected, onToggle, s
 
       {skipOption && (
         <button onClick={() => onToggle(skipOption)}
+          aria-pressed={selected.has(skipOption.id)}
           style={{
             width: '100%', textAlign: 'left', display: 'block', marginTop: 8, marginBottom: 8,
             padding: '14px 16px', borderRadius: T.radius.card, cursor: 'pointer', fontFamily: 'inherit',

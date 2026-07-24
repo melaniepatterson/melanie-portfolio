@@ -194,7 +194,9 @@ export default function BetaSurvey({ session, onClose, onSubmitted, betaTester, 
         </div>
 
         {/* Anonymous toggle + disclosure */}
-        <div onClick={toggleAnonymous} style={{ padding: '12px 14px', background: 'rgba(255,255,255,0.12)', borderRadius: T.radius.card, marginBottom: 16, cursor: 'pointer' }}>
+        <div onClick={toggleAnonymous} role="checkbox" aria-checked={anonymous} tabIndex={0}
+          onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleAnonymous() } }}
+          style={{ padding: '12px 14px', background: 'rgba(255,255,255,0.12)', borderRadius: T.radius.card, marginBottom: 16, cursor: 'pointer' }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, userSelect: 'none' }}>
             <RandomCheckbox checked={anonymous} color={anonymousColor} />
             <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7 }}>

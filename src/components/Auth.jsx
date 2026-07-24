@@ -218,7 +218,9 @@ export default function Auth() {
               )}
 
               {/* Beta tester opt-in — checkbox reshuffles to a random color on every toggle */}
-              <div onClick={toggleBetaTester} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer', marginBottom: 20, padding: '12px', background: '#EBFBF2', borderRadius: 8, userSelect: 'none' }}>
+              <div onClick={toggleBetaTester} role="checkbox" aria-checked={betaTester} tabIndex={0}
+                onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleBetaTester() } }}
+                style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer', marginBottom: 20, padding: '12px', background: '#EBFBF2', borderRadius: 8, userSelect: 'none' }}>
                 <div style={{ width: 18, height: 18, marginTop: 3, borderRadius: 5, border: '1.5px solid ' + (betaTester ? betaColor : T.text), background: betaTester ? betaColor : 'transparent', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   {betaTester && (
                     <svg width="11" height="9" viewBox="0 0 11 9" fill="none" xmlns="http://www.w3.org/2000/svg">

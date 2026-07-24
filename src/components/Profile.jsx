@@ -486,7 +486,9 @@ export default function Profile({ session, onOpenSurvey }) {
 
         {/* Newsletter opt-in */}
         <div style={{ marginBottom: 24, padding: '14px 16px', background: '#EBFBF2', borderRadius: T.radius.card }}>
-          <div onClick={toggleNewsletter} style={{ display: 'flex', alignItems: 'flex-start', gap: 12, cursor: 'pointer', userSelect: 'none' }}>
+          <div onClick={toggleNewsletter} role="checkbox" aria-checked={newsletterOptIn} tabIndex={0}
+            onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleNewsletter() } }}
+            style={{ display: 'flex', alignItems: 'flex-start', gap: 12, cursor: 'pointer', userSelect: 'none' }}>
             <RandomCheckbox checked={newsletterOptIn} color={newsletterColor} />
             <div>
               <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 3 }}>
@@ -509,7 +511,9 @@ export default function Profile({ session, onOpenSurvey }) {
           <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 10 }}>
             Beta program
           </div>
-          <div onClick={toggleBetaTester} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer', marginBottom: 14, userSelect: 'none' }}>
+          <div onClick={toggleBetaTester} role="checkbox" aria-checked={betaTester} tabIndex={0}
+            onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleBetaTester() } }}
+            style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer', marginBottom: 14, userSelect: 'none' }}>
             <RandomCheckbox checked={betaTester} color={betaColor} />
             <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.7 }}>
               <strong style={{ color: T.text }}>I'm interested in being a beta tester</strong> — you may hear from us about new features, early previews, and occasional check-ins. No spam, ever.

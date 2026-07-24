@@ -726,7 +726,9 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
   function CheckItem({ label, checked, onChange, color }) {
     const boxColor = color || brandColorForLabel(label)
     return (
-      <label onClick={onChange} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: T.text, cursor: 'pointer', padding: '3px 0', userSelect: 'none' }}>
+      <div onClick={onChange} role="checkbox" aria-checked={checked} tabIndex={0}
+        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onChange() } }}
+        style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: T.text, cursor: 'pointer', padding: '3px 0', userSelect: 'none' }}>
         <div style={{ width: 18, height: 18, borderRadius: 5, border: '1.5px solid ' + (checked ? boxColor : T.text), background: checked ? boxColor : 'transparent', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           {checked && (
             <svg width="11" height="9" viewBox="0 0 11 9" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -735,7 +737,7 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
           )}
         </div>
         {label}
-      </label>
+      </div>
     )
   }
 
