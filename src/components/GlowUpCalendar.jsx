@@ -933,8 +933,8 @@ export function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = fa
       )}
 
       <div style={{ marginBottom: 10 }}>
-        <FieldLabel>{isFirst ? 'Routine start date' : 'Effective from'}</FieldLabel>
-        <DateInput value={form.startDate} onChange={e => set('startDate', e.target.value)} />
+        <FieldLabel htmlFor="rp-start-date">{isFirst ? 'Routine start date' : 'Effective from'}</FieldLabel>
+        <DateInput id="rp-start-date" value={form.startDate} onChange={e => set('startDate', e.target.value)} />
       </div>
 
       {conflict && <ConflictMessage conflict={conflict} onEditConflict={onEditConflict} />}
@@ -959,8 +959,9 @@ export function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = fa
       {form.tretEnabled && (
         <div style={{ marginLeft: 12, marginBottom: 8, paddingLeft: 12 }}>
           <div style={{ marginBottom: 8, marginTop: 8 }}>
-            <FieldLabel>Which one?</FieldLabel>
+            <FieldLabel htmlFor="rp-active-name">Which one?</FieldLabel>
             <select
+              id="rp-active-name"
               value={MAIN_ACTIVE_OPTIONS.find(o => o.value === form.activeName) ? form.activeName : 'tretinoin'}
               onChange={e => set('activeName', e.target.value)}
               style={{ fontSize: 12, padding: '5px 8px', border: 'none', borderRadius: T.radius.card, background: T.creamDark, color: T.darkGreen }}
@@ -970,18 +971,18 @@ export function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = fa
           </div>
           {(form.activeName === 'other' || !MAIN_ACTIVE_OPTIONS.find(o => o.value === form.activeName)) && (
             <div style={{ marginBottom: 8 }}>
-              <FieldLabel>Name it</FieldLabel>
-              <TextInput value={MAIN_ACTIVE_OPTIONS.find(o => o.value === form.activeName) ? '' : form.activeName} onChange={e => set('activeName', e.target.value)} placeholder="e.g. clindamycin, azelaic" width={200} />
+              <FieldLabel htmlFor="rp-active-custom">Name it</FieldLabel>
+              <TextInput id="rp-active-custom" value={MAIN_ACTIVE_OPTIONS.find(o => o.value === form.activeName) ? '' : form.activeName} onChange={e => set('activeName', e.target.value)} placeholder="e.g. clindamycin, azelaic" width={200} />
             </div>
           )}
           <div style={{ marginBottom: 8 }}>
-            <FieldLabel>When did you start?</FieldLabel>
-            <DateInput value={form.tretStartDate} onChange={e => set('tretStartDate', e.target.value)} />
+            <FieldLabel htmlFor="rp-tret-start">When did you start?</FieldLabel>
+            <DateInput id="rp-tret-start" value={form.tretStartDate} onChange={e => set('tretStartDate', e.target.value)} />
           </div>
           <FieldLabel>How often?</FieldLabel>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 6, marginBottom: 6 }}>
             {TRET_FREQUENCIES.map(f => (
-              <button key={f.key} onClick={() => set('tretFrequency', f.key)} style={{ border: 'none', borderRadius: T.radius.card, padding: '8px 10px', cursor: 'pointer', background: form.tretFrequency === f.key ? T.green : T.creamDark, textAlign: 'left' }}>
+              <button key={f.key} onClick={() => set('tretFrequency', f.key)} aria-pressed={form.tretFrequency === f.key} style={{ border: 'none', borderRadius: T.radius.card, padding: '8px 10px', cursor: 'pointer', background: form.tretFrequency === f.key ? T.green : T.creamDark, textAlign: 'left' }}>
                 <div style={{ fontSize: 12, fontWeight: 600, color: T.darkGreen }}>{f.label}</div>
                 <div style={{ fontSize: 10, color: T.textLight }}>{f.description}</div>
               </button>
@@ -1236,7 +1237,7 @@ function TreatmentSelectorPanel({ selector, treatments, allTypes, customTypes, s
       )}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 6, marginBottom: 12 }}>
         {Object.entries(allTypes).map(([k, v]) => (
-          <button key={k} onClick={() => { setSelType(k); setTreatArea(v.area || 'face'); setCustomPre(v.pre ?? 0); setCustomPost(v.post ?? 0) }} style={{ border: `0.5px solid ${selType === k ? T.pinkDeep : T.border}`, borderRadius: 0, padding: '8px 10px', cursor: 'pointer', background: selType === k ? T.pink : T.white, textAlign: 'left' }}>
+          <button key={k} onClick={() => { setSelType(k); setTreatArea(v.area || 'face'); setCustomPre(v.pre ?? 0); setCustomPost(v.post ?? 0) }} aria-pressed={selType === k} style={{ border: `0.5px solid ${selType === k ? T.pinkDeep : T.border}`, borderRadius: 0, padding: '8px 10px', cursor: 'pointer', background: selType === k ? T.pink : T.white, textAlign: 'left' }}>
             <div style={{ fontSize: 12, fontWeight: 600, color: T.text }}>{v.label}</div>
             <div style={{ fontSize: 10, color: T.textLight }}>Pause exfoliants & retinoids {v.pre} days before</div>
             <div style={{ fontSize: 10, color: T.textLight }}>Recovery for {v.post} days after</div>
@@ -1257,15 +1258,15 @@ function TreatmentSelectorPanel({ selector, treatments, allTypes, customTypes, s
       <div style={{ marginBottom: 10 }}>
         <FieldLabel>Time of day</FieldLabel>
         <div style={{ display: 'flex', gap: 6 }}>
-          <button onClick={() => setTimeOfDay('am')} style={{ padding: '5px 16px', borderRadius: 0, border: `0.5px solid ${timeOfDay === 'am' ? T.pinkDeep : T.border}`, background: timeOfDay === 'am' ? T.pink : 'transparent', fontSize: 12, fontWeight: timeOfDay === 'am' ? 500 : 400, cursor: 'pointer', color: T.text }}>Morning (AM)</button>
-          <button onClick={() => setTimeOfDay('pm')} style={{ padding: '5px 16px', borderRadius: 0, border: `0.5px solid ${timeOfDay === 'pm' ? T.pinkDeep : T.border}`, background: timeOfDay === 'pm' ? T.pink : 'transparent', fontSize: 12, fontWeight: timeOfDay === 'pm' ? 500 : 400, cursor: 'pointer', color: T.text }}>Evening (PM)</button>
+          <button onClick={() => setTimeOfDay('am')} aria-pressed={timeOfDay === 'am'} style={{ padding: '5px 16px', borderRadius: 0, border: `0.5px solid ${timeOfDay === 'am' ? T.pinkDeep : T.border}`, background: timeOfDay === 'am' ? T.pink : 'transparent', fontSize: 12, fontWeight: timeOfDay === 'am' ? 500 : 400, cursor: 'pointer', color: T.text }}>Morning (AM)</button>
+          <button onClick={() => setTimeOfDay('pm')} aria-pressed={timeOfDay === 'pm'} style={{ padding: '5px 16px', borderRadius: 0, border: `0.5px solid ${timeOfDay === 'pm' ? T.pinkDeep : T.border}`, background: timeOfDay === 'pm' ? T.pink : 'transparent', fontSize: 12, fontWeight: timeOfDay === 'pm' ? 500 : 400, cursor: 'pointer', color: T.text }}>Evening (PM)</button>
         </div>
       </div>
       <div style={{ marginBottom: 10 }}>
         <FieldLabel>Treatment area</FieldLabel>
         <div style={{ display: 'flex', gap: 6 }}>
           {[{key:'face',label:'Face'},{key:'body',label:'Body'},{key:'both',label:'Both'}].map(a => (
-            <button key={a.key} onClick={() => setTreatArea(a.key)} style={{ padding: '5px 14px', borderRadius: 0, border: `0.5px solid ${treatArea === a.key ? T.pinkDeep : T.border}`, background: treatArea === a.key ? T.pink : 'transparent', fontSize: 12, fontWeight: treatArea === a.key ? 500 : 400, cursor: 'pointer', color: T.text }}>{a.label}</button>
+            <button key={a.key} onClick={() => setTreatArea(a.key)} aria-pressed={treatArea === a.key} style={{ padding: '5px 14px', borderRadius: 0, border: `0.5px solid ${treatArea === a.key ? T.pinkDeep : T.border}`, background: treatArea === a.key ? T.pink : 'transparent', fontSize: 12, fontWeight: treatArea === a.key ? 500 : 400, cursor: 'pointer', color: T.text }}>{a.label}</button>
           ))}
         </div>
         <div style={{ fontSize: 10, color: T.textLight, marginTop: 4 }}>
@@ -1277,14 +1278,14 @@ function TreatmentSelectorPanel({ selector, treatments, allTypes, customTypes, s
           <div style={{ fontSize: 12, fontWeight: 500, color: T.text, marginBottom: 8 }}>Pause and recovery window</div>
           <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
             <div>
-              <FieldLabel>Days before — pause exfoliants & retinoids</FieldLabel>
+              <FieldLabel htmlFor="tw-pre">Days before — pause exfoliants & retinoids</FieldLabel>
               <div style={{ fontSize: 10, color: T.textLight, marginBottom: 4 }}>How many days before this treatment should you stop using actives (retinoids, acids, etc.)?</div>
-              <NumberInput value={customPre} onChange={e => setCustomPre(+e.target.value)} min={0} max={30} width={70} />
+              <NumberInput id="tw-pre" value={customPre} onChange={e => setCustomPre(+e.target.value)} min={0} max={30} width={70} />
             </div>
             <div>
-              <FieldLabel>Days after — recovery period</FieldLabel>
+              <FieldLabel htmlFor="tw-post">Days after — recovery period</FieldLabel>
               <div style={{ fontSize: 10, color: T.textLight, marginBottom: 4 }}>How many days of recovery before resuming your normal routine?</div>
-              <NumberInput value={customPost} onChange={e => setCustomPost(+e.target.value)} min={0} max={30} width={70} />
+              <NumberInput id="tw-post" value={customPost} onChange={e => setCustomPost(+e.target.value)} min={0} max={30} width={70} />
             </div>
           </div>
         </div>
@@ -1409,6 +1410,7 @@ function DraggableItem({ item, index, total, onRemove, isDragging, onDragStart, 
           <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap', marginBottom: 2 }}>
             {(freqOptions || SHOWER_FREQUENCIES).map(f => (
               <button key={f.key} onClick={e => { e.stopPropagation(); onFreqChange(index, f.key) }}
+                aria-pressed={(item.frequency||'daily') === f.key}
                 style={{ fontSize: 9, padding: '1px 5px', borderRadius: 0, cursor: 'pointer', border: `0.5px solid ${(item.frequency||'daily') === f.key ? T.pinkDeep : T.border}`, background: (item.frequency||'daily') === f.key ? T.pink : 'transparent', color: (item.frequency||'daily') === f.key ? T.text : T.textLight, whiteSpace: 'nowrap' }}>
                 {f.label}
               </button>
@@ -1421,6 +1423,7 @@ function DraggableItem({ item, index, total, onRemove, isDragging, onDragStart, 
             <span style={{ fontSize: 9, color: T.textLight }}>cycle starts:</span>
             {DAYS.map((d, i) => (
               <button key={i} onClick={e => { e.stopPropagation(); onWeekStartChange(index, i) }}
+                aria-pressed={(item.weekStartDay ?? 1) === i}
                 style={{ fontSize: 9, padding: '1px 4px', borderRadius: 0, cursor: 'pointer', border: `0.5px solid ${(item.weekStartDay ?? 1) === i ? T.orange : T.border}`, background: (item.weekStartDay ?? 1) === i ? T.orangeLight : 'transparent', color: (item.weekStartDay ?? 1) === i ? '#9A3412' : T.textLight }}>
                 {d}
               </button>
@@ -1432,6 +1435,7 @@ function DraggableItem({ item, index, total, onRemove, isDragging, onDragStart, 
           <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
             {TIME_OF_DAY_OPTIONS.map(t => (
               <button key={t.key} onClick={e => { e.stopPropagation(); onTimeChange(index, t.key) }}
+                aria-pressed={(item.timeOfDay||'both') === t.key}
                 style={{ fontSize: 9, padding: '1px 5px', borderRadius: 0, cursor: 'pointer', border: `0.5px solid ${(item.timeOfDay||'both') === t.key ? T.pinkDeep : T.border}`, background: (item.timeOfDay||'both') === t.key ? T.pink : 'transparent', color: (item.timeOfDay||'both') === t.key ? T.text : T.textLight }}>
                 {t.label}
               </button>
@@ -1507,12 +1511,12 @@ export function DailyEditor({ initial, onSave, onCancel, lockStartDate = false, 
 
       <div style={{ display: 'flex', gap: 10, marginBottom: 10, flexWrap: 'wrap' }}>
         <div>
-          <FieldLabel>Start date</FieldLabel>
-          <DateInput value={startDate} onChange={e => setStartDate(e.target.value)} />
+          <FieldLabel htmlFor="daily-start">Start date</FieldLabel>
+          <DateInput id="daily-start" value={startDate} onChange={e => setStartDate(e.target.value)} />
         </div>
         <div>
-          <FieldLabel>End date (leave blank if still active)</FieldLabel>
-          <DateInput value={endDate} onChange={e => setEndDate(e.target.value)} />
+          <FieldLabel htmlFor="daily-end">End date (leave blank if still active)</FieldLabel>
+          <DateInput id="daily-end" value={endDate} onChange={e => setEndDate(e.target.value)} />
         </div>
       </div>
 
@@ -1648,8 +1652,8 @@ export function DailyEditor({ initial, onSave, onCancel, lockStartDate = false, 
         <div><FieldLabel htmlFor="daily-item">Item</FieldLabel><TextInput id="daily-item" value={newLabel} onChange={e => setNewLabel(e.target.value)} placeholder="e.g. Minoxidil" width={110} /></div>
         <div><FieldLabel htmlFor="daily-note">Note</FieldLabel><TextInput id="daily-note" value={newNote} onChange={e => setNewNote(e.target.value)} placeholder="optional" width={90} /></div>
         <div>
-          <FieldLabel>How often</FieldLabel>
-          <select value={newFreq} onChange={e => setNewFreq(e.target.value)} style={{ fontSize: 12, padding: '5px 8px', border: `0.5px solid ${T.border}`, borderRadius: 0, background: T.cream, color: T.text }}>
+          <FieldLabel htmlFor="daily-freq">How often</FieldLabel>
+          <select id="daily-freq" value={newFreq} onChange={e => setNewFreq(e.target.value)} style={{ fontSize: 12, padding: '5px 8px', border: `0.5px solid ${T.border}`, borderRadius: 0, background: T.cream, color: T.text }}>
             {EXTRAS_FREQUENCIES.map(f => <option key={f.key} value={f.key}>{f.label}</option>)}
           </select>
         </div>
@@ -1657,7 +1661,7 @@ export function DailyEditor({ initial, onSave, onCancel, lockStartDate = false, 
           <FieldLabel>When</FieldLabel>
           <div style={{ display: 'flex', gap: 4 }}>
             {TIME_OF_DAY_OPTIONS.map(t => (
-              <button key={t.key} onClick={() => setNewTimeOfDay(t.key)} style={{ fontSize: 10, padding: '5px 8px', borderRadius: 0, cursor: 'pointer', border: `0.5px solid ${newTimeOfDay === t.key ? T.pinkDeep : T.border}`, background: newTimeOfDay === t.key ? T.pink : 'transparent', color: newTimeOfDay === t.key ? T.text : T.textLight }}>
+              <button key={t.key} onClick={() => setNewTimeOfDay(t.key)} aria-pressed={newTimeOfDay === t.key} style={{ fontSize: 10, padding: '5px 8px', borderRadius: 0, cursor: 'pointer', border: `0.5px solid ${newTimeOfDay === t.key ? T.pinkDeep : T.border}`, background: newTimeOfDay === t.key ? T.pink : 'transparent', color: newTimeOfDay === t.key ? T.text : T.textLight }}>
                 {t.label}
               </button>
             ))}
@@ -2008,6 +2012,7 @@ function DraggableShowerItem({ item, index, onRemove, onFreqChange, onWeekStartC
         <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 3 }}>
           {SHOWER_FREQUENCIES.map(f => (
             <button key={f.key} onClick={e => { e.stopPropagation(); onFreqChange(index, f.key) }}
+              aria-pressed={item.frequency === f.key}
               style={{ fontSize: 9, padding: '1px 6px', borderRadius: 0, cursor: 'pointer', border: `0.5px solid ${item.frequency === f.key ? T.pinkDeep : T.border}`, background: item.frequency === f.key ? T.pink : 'transparent', color: item.frequency === f.key ? T.text : T.textLight, fontWeight: item.frequency === f.key ? 500 : 400 }}
             >{f.label}</button>
           ))}
@@ -2017,6 +2022,7 @@ function DraggableShowerItem({ item, index, onRemove, onFreqChange, onWeekStartC
             <span style={{ fontSize: 9, color: T.textLight }}>{item.frequency === 'alternate' ? 'starts on:' : 'cycle starts:'}</span>
             {DAYS.map((d, i) => (
               <button key={i} onClick={e => { e.stopPropagation(); onWeekStartChange(index, i) }}
+                aria-pressed={(item.weekStartDay ?? 1) === i}
                 style={{ fontSize: 9, padding: '1px 5px', borderRadius: 0, cursor: 'pointer', border: `0.5px solid ${(item.weekStartDay ?? 1) === i ? T.orange : T.border}`, background: (item.weekStartDay ?? 1) === i ? T.orangeLight : 'transparent', color: (item.weekStartDay ?? 1) === i ? '#9A3412' : T.textLight }}
               >{d}</button>
             ))}
@@ -2199,8 +2205,8 @@ export function ShowerEditor({ initial, onSave, onCancel, allPeriods = [], onEdi
           <div><FieldLabel htmlFor="shower-item">Item</FieldLabel><TextInput id="shower-item" value={newLabel} onChange={e => setNewLabel(e.target.value)} placeholder="e.g. BP wash" width={100} /></div>
           <div><FieldLabel htmlFor="shower-note">Note</FieldLabel><TextInput id="shower-note" value={newNote} onChange={e => setNewNote(e.target.value)} placeholder="optional" width={80} /></div>
           <div>
-            <FieldLabel>Frequency</FieldLabel>
-            <select value={newFreq} onChange={e => setNewFreq(e.target.value)} style={{ fontSize: 12, padding: '5px 8px', border: `0.5px solid ${T.border}`, borderRadius: 0, background: T.cream, color: T.text }}>
+            <FieldLabel htmlFor="shower-freq">Frequency</FieldLabel>
+            <select id="shower-freq" value={newFreq} onChange={e => setNewFreq(e.target.value)} style={{ fontSize: 12, padding: '5px 8px', border: `0.5px solid ${T.border}`, borderRadius: 0, background: T.cream, color: T.text }}>
               {SHOWER_FREQUENCIES.map(f => <option key={f.key} value={f.key}>{f.label}</option>)}
             </select>
           </div>
@@ -2647,8 +2653,8 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
 
       {/* 2. Morning / Night tabs */}
       <div style={{ display: 'flex', gap: 6, marginBottom: 8, marginTop: 10 }}>
-        <button onClick={() => switchTab('am')} style={{ padding: '4px 14px', borderRadius: 0, border: `0.5px solid ${tab === 'am' ? T.pinkDeep : T.border}`, background: tab === 'am' ? T.pink : 'transparent', fontSize: 12, fontWeight: tab === 'am' ? 500 : 400, cursor: 'pointer', color: T.text }}>Morning (AM)</button>
-        <button onClick={() => switchTab('pm')} style={{ padding: '4px 14px', borderRadius: 0, border: `0.5px solid ${tab === 'pm' ? T.pinkDeep : T.border}`, background: tab === 'pm' ? T.pink : 'transparent', fontSize: 12, fontWeight: tab === 'pm' ? 500 : 400, cursor: 'pointer', color: T.text }}>Evening (PM)</button>
+        <button onClick={() => switchTab('am')} aria-pressed={tab === 'am'} style={{ padding: '4px 14px', borderRadius: 0, border: `0.5px solid ${tab === 'am' ? T.pinkDeep : T.border}`, background: tab === 'am' ? T.pink : 'transparent', fontSize: 12, fontWeight: tab === 'am' ? 500 : 400, cursor: 'pointer', color: T.text }}>Morning (AM)</button>
+        <button onClick={() => switchTab('pm')} aria-pressed={tab === 'pm'} style={{ padding: '4px 14px', borderRadius: 0, border: `0.5px solid ${tab === 'pm' ? T.pinkDeep : T.border}`, background: tab === 'pm' ? T.pink : 'transparent', fontSize: 12, fontWeight: tab === 'pm' ? 500 : 400, cursor: 'pointer', color: T.text }}>Evening (PM)</button>
       </div>
 
       {/* 3. Extras — filtered by frequency + current tab, hidden when nothing matches */}
@@ -3581,7 +3587,7 @@ function TimeGrid({ label, mode, setMode, times, setTimes, singleTime, setSingle
         <FieldLabel>{label}</FieldLabel>
         <div style={{ display: 'flex', gap: 4 }}>
           {[['same','Same every day'],['custom','Per day of week']].map(([k,l]) => (
-            <button key={k} onClick={() => setMode(k)} style={{ fontSize: 9, padding: '2px 7px', borderRadius: 0, cursor: 'pointer', border: `0.5px solid ${mode===k ? T.pinkDeep : T.border}`, background: mode===k ? T.pink : 'transparent', color: mode===k ? T.text : T.textLight }}>{l}</button>
+            <button key={k} onClick={() => setMode(k)} aria-pressed={mode===k} style={{ fontSize: 9, padding: '2px 7px', borderRadius: 0, cursor: 'pointer', border: `0.5px solid ${mode===k ? T.pinkDeep : T.border}`, background: mode===k ? T.pink : 'transparent', color: mode===k ? T.text : T.textLight }}>{l}</button>
           ))}
         </div>
       </div>
@@ -3651,7 +3657,7 @@ function ExportPanel({ routineHistory, treatments, allTypes, products, dailyHist
         <FieldLabel>Event format</FieldLabel>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 12 }}>
           {formats.map(f => (
-            <button key={f.key} onClick={() => setFormat(f.key)} style={{ padding: '8px 12px', borderRadius: 0, border: `0.5px solid ${format===f.key ? T.pinkDeep : T.border}`, background: format===f.key ? T.pink : 'transparent', fontSize: 11, cursor: 'pointer', color: T.text, textAlign: 'left' }}>
+            <button key={f.key} onClick={() => setFormat(f.key)} aria-pressed={format===f.key} style={{ padding: '8px 12px', borderRadius: 0, border: `0.5px solid ${format===f.key ? T.pinkDeep : T.border}`, background: format===f.key ? T.pink : 'transparent', fontSize: 11, cursor: 'pointer', color: T.text, textAlign: 'left' }}>
               <span style={{ fontWeight: 500 }}>{f.label}</span>
               <span style={{ color: T.textMuted }}> — {f.desc}</span>
             </button>
@@ -3662,7 +3668,7 @@ function ExportPanel({ routineHistory, treatments, allTypes, products, dailyHist
         <FieldLabel>How far ahead</FieldLabel>
         <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
           {[30,60,90].map(d => (
-            <button key={d} onClick={() => setDaysAhead(d)} style={{ padding: '5px 14px', borderRadius: 0, border: `0.5px solid ${daysAhead===d ? T.pinkDeep : T.border}`, background: daysAhead===d ? T.pink : 'transparent', fontSize: 11, cursor: 'pointer', color: T.text }}>{d} days</button>
+            <button key={d} onClick={() => setDaysAhead(d)} aria-pressed={daysAhead===d} style={{ padding: '5px 14px', borderRadius: 0, border: `0.5px solid ${daysAhead===d ? T.pinkDeep : T.border}`, background: daysAhead===d ? T.pink : 'transparent', fontSize: 11, cursor: 'pointer', color: T.text }}>{d} days</button>
           ))}
         </div>
 
