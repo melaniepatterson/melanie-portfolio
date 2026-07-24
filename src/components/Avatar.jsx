@@ -2,7 +2,9 @@
 // Used in Profile page and SideMenu drawer.
 import T from './theme'
 
-const BRAND_COLORS = [T.pink, T.blue, T.green, T.yellow, T.orange]
+// No yellow — the SideMenu drawer background is yellow, and a yellow
+// avatar would disappear into it there.
+const BRAND_COLORS = [T.pink, T.blue, T.green, T.orange]
 
 // One color picked once per session (module load) — every Avatar
 // instance shares the same solid color for the rest of the session.
