@@ -49,7 +49,8 @@ function Layout() {
   useEffect(() => {
     document.body.style.fontFamily = isRoutine ? T.fontFamily : ''
     document.body.style.color = isRoutine ? T.text : ''
-    return () => { document.body.style.fontFamily = ''; document.body.style.color = '' }
+    document.body.classList.toggle('glowup-app', isRoutine)
+    return () => { document.body.style.fontFamily = ''; document.body.style.color = ''; document.body.classList.remove('glowup-app') }
   }, [isRoutine])
 
   // Check ?survey=1 param — open modal over whatever page is current

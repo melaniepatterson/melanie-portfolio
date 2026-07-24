@@ -19,3 +19,12 @@ html {
 p, h1, h2, h3 {
   text-wrap: pretty;
 }
+
+/* Accessibility: GlowUp's inline styles set outline:none on most inputs/
+   buttons/selects for the custom pill look, which erases the keyboard-focus
+   indicator entirely. Inline styles beat external CSS on specificity alone,
+   so this needs !important to win. Color mirrors theme.js T.darkGreen. */
+body.glowup-app :focus-visible {
+  outline: 2px solid #197A3C !important;
+  outline-offset: 2px !important;
+}
