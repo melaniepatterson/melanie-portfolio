@@ -617,6 +617,7 @@ export default function Profile({ session, onOpenSurvey }) {
               </p>
               <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 6 }}>Type DELETE to confirm</div>
               <input value={deleteText} onChange={e => setDeleteText(e.target.value)}
+                aria-label="Type DELETE to confirm"
                 style={{ width: '100%', boxSizing: 'border-box', fontSize: 13, padding: '8px 14px', border: '1px solid rgba(0,0,0,0.15)', borderRadius: T.radius.pill, background: T.white, color: T.text, fontFamily: 'inherit', outline: 'none', marginBottom: 20 }} />
               <div style={{ display: 'flex', gap: 8 }}>
                 <button onClick={() => { setDeleteConfirm(false); setDeleteText('') }} disabled={deleting}

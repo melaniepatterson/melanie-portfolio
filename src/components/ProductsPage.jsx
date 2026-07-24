@@ -873,7 +873,7 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
             <option value="name">A–Z Product name</option>
             <option value="brand">A–Z Brand name</option>
           </select>
-          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search products..." style={{ flex: 1, fontSize: 12, padding: '7px 14px', border: '1px solid rgba(0,0,0,0.15)', borderRadius: T.radius.pill, background: T.white, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
+          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search products..." aria-label="Search products" style={{ flex: 1, fontSize: 12, padding: '7px 14px', border: '1px solid rgba(0,0,0,0.15)', borderRadius: T.radius.pill, background: T.white, color: T.text, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' }} />
         </div>
 
         {/* Empty state */}

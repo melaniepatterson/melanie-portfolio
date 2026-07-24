@@ -152,6 +152,7 @@ export default function Auth() {
               </div>
               <input
                 type="email" required autoFocus
+                aria-label="Email address"
                 placeholder="your@email.com"
                 value={email}
                 onChange={e => setEmail(e.target.value)}

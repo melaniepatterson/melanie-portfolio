@@ -174,6 +174,7 @@ export default function BetaSurvey({ session, onClose, onSubmitted, betaTester, 
           <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)', marginBottom: 8 }}>Optional</div>
           <textarea value={missing} onChange={e => setMissing(e.target.value)} rows={3}
             placeholder="Anything — features, content, integrations..."
+            aria-label="What's missing that would make this worth paying for?"
             style={textareaStyle} />
         </div>
 
@@ -201,6 +202,7 @@ export default function BetaSurvey({ session, onClose, onSubmitted, betaTester, 
           </div>
           <textarea value={tellFriend} onChange={e => setTellFriend(e.target.value)} rows={3}
             placeholder="Be honest — good or bad, it all helps."
+            aria-label="What would you tell a friend about this app?"
             style={textareaStyle} />
         </div>
 

@@ -547,20 +547,21 @@ function SectionLabel({ children, style }) {
   return <div style={{ fontSize: 11, fontWeight: 600, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8, marginTop: 14, paddingTop: 12, borderTop: `0.5px solid ${T.border}`, ...style }}>{children}</div>
 }
 
-function FieldLabel({ children }) {
-  return <div style={{ fontSize: 11, color: T.textLight, marginBottom: 3 }}>{children}</div>
+function FieldLabel({ children, htmlFor }) {
+  const Tag = htmlFor ? 'label' : 'div'
+  return <Tag htmlFor={htmlFor} style={{ fontSize: 11, color: T.textLight, marginBottom: 3, display: 'block' }}>{children}</Tag>
 }
 
-function TextInput({ value, onChange, placeholder, width = 140 }) {
-  return <input type="text" value={value} onChange={onChange} placeholder={placeholder} style={{ width, fontSize: 12, padding: '5px 2px', border: 'none', borderBottom: `1px solid ${T.darkGreen}`, borderRadius: 0, background: 'transparent', color: T.darkGreen, outline: 'none' }} />
+function TextInput({ id, value, onChange, placeholder, width = 140 }) {
+  return <input id={id} type="text" value={value} onChange={onChange} placeholder={placeholder} style={{ width, fontSize: 12, padding: '5px 2px', border: 'none', borderBottom: `1px solid ${T.darkGreen}`, borderRadius: 0, background: 'transparent', color: T.darkGreen, outline: 'none' }} />
 }
 
-function NumberInput({ value, onChange, min = 0, max = 14, width = 60 }) {
-  return <input type="number" value={value} onChange={onChange} min={min} max={max} style={{ width, fontSize: 12, padding: '5px 2px', border: 'none', borderBottom: `1px solid ${T.darkGreen}`, borderRadius: 0, background: 'transparent', color: T.darkGreen, outline: 'none' }} />
+function NumberInput({ id, value, onChange, min = 0, max = 14, width = 60 }) {
+  return <input id={id} type="number" value={value} onChange={onChange} min={min} max={max} style={{ width, fontSize: 12, padding: '5px 2px', border: 'none', borderBottom: `1px solid ${T.darkGreen}`, borderRadius: 0, background: 'transparent', color: T.darkGreen, outline: 'none' }} />
 }
 
-function DateInput({ value, onChange, disabled = false }) {
-  return <input type="date" value={value} onChange={onChange} disabled={disabled} style={{ fontSize: 12, padding: '5px 2px', border: 'none', borderBottom: `1px solid ${T.darkGreen}`, borderRadius: 0, background: 'transparent', color: disabled ? T.textMuted : T.darkGreen, outline: 'none', cursor: disabled ? 'not-allowed' : 'auto' }} />
+function DateInput({ id, value, onChange, disabled = false }) {
+  return <input id={id} type="date" value={value} onChange={onChange} disabled={disabled} style={{ fontSize: 12, padding: '5px 2px', border: 'none', borderBottom: `1px solid ${T.darkGreen}`, borderRadius: 0, background: 'transparent', color: disabled ? T.textMuted : T.darkGreen, outline: 'none', cursor: disabled ? 'not-allowed' : 'auto' }} />
 }
 
 // ─── CONFLICT MESSAGE ────────────────────────────────────────
@@ -1296,9 +1297,9 @@ function TreatmentSelectorPanel({ selector, treatments, allTypes, customTypes, s
       </div>
       <SectionLabel>Add a new treatment type</SectionLabel>
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
-        <div><FieldLabel>Name</FieldLabel><TextInput value={newName} onChange={e => setNewName(e.target.value)} placeholder="e.g. LED therapy" /></div>
-        <div><FieldLabel>Days before — pause exfoliants & retinoids</FieldLabel><NumberInput value={newPre} onChange={e => setNewPre(+e.target.value)} /></div>
-        <div><FieldLabel>Days after — recovery period</FieldLabel><NumberInput value={newPost} onChange={e => setNewPost(+e.target.value)} /></div>
+        <div><FieldLabel htmlFor="tt-name">Name</FieldLabel><TextInput id="tt-name" value={newName} onChange={e => setNewName(e.target.value)} placeholder="e.g. LED therapy" /></div>
+        <div><FieldLabel htmlFor="tt-pre">Days before — pause exfoliants & retinoids</FieldLabel><NumberInput id="tt-pre" value={newPre} onChange={e => setNewPre(+e.target.value)} /></div>
+        <div><FieldLabel htmlFor="tt-post">Days after — recovery period</FieldLabel><NumberInput id="tt-post" value={newPost} onChange={e => setNewPost(+e.target.value)} /></div>
         <Btn variant="secondary" onClick={addCustomType}>Add</Btn>
       </div>
       {confirmDialog}
@@ -1644,8 +1645,8 @@ export function DailyEditor({ initial, onSave, onCancel, lockStartDate = false, 
         </div>
 
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'flex-end' }}>
-        <div><FieldLabel>Item</FieldLabel><TextInput value={newLabel} onChange={e => setNewLabel(e.target.value)} placeholder="e.g. Minoxidil" width={110} /></div>
-        <div><FieldLabel>Note</FieldLabel><TextInput value={newNote} onChange={e => setNewNote(e.target.value)} placeholder="optional" width={90} /></div>
+        <div><FieldLabel htmlFor="daily-item">Item</FieldLabel><TextInput id="daily-item" value={newLabel} onChange={e => setNewLabel(e.target.value)} placeholder="e.g. Minoxidil" width={110} /></div>
+        <div><FieldLabel htmlFor="daily-note">Note</FieldLabel><TextInput id="daily-note" value={newNote} onChange={e => setNewNote(e.target.value)} placeholder="optional" width={90} /></div>
         <div>
           <FieldLabel>How often</FieldLabel>
           <select value={newFreq} onChange={e => setNewFreq(e.target.value)} style={{ fontSize: 12, padding: '5px 8px', border: `0.5px solid ${T.border}`, borderRadius: 0, background: T.cream, color: T.text }}>
@@ -2075,8 +2076,8 @@ export function ShowerEditor({ initial, onSave, onCancel, allPeriods = [], onEdi
         Body washes, hair treatments, and anything else that happens in the shower. Set how often each one runs.
       </div>
       <div style={{ display: 'flex', gap: 10, marginBottom: 10, flexWrap: 'wrap' }}>
-        <div><FieldLabel>Start date</FieldLabel><DateInput value={startDate} onChange={e => setStartDate(e.target.value)} /></div>
-        <div><FieldLabel>End date (leave blank if active)</FieldLabel><DateInput value={endDate} onChange={e => setEndDate(e.target.value)} /></div>
+        <div><FieldLabel htmlFor="shower-start">Start date</FieldLabel><DateInput id="shower-start" value={startDate} onChange={e => setStartDate(e.target.value)} /></div>
+        <div><FieldLabel htmlFor="shower-end">End date (leave blank if active)</FieldLabel><DateInput id="shower-end" value={endDate} onChange={e => setEndDate(e.target.value)} /></div>
       </div>
 
       {conflict && <ConflictMessage conflict={conflict} onEditConflict={onEditConflict} />}
@@ -2195,8 +2196,8 @@ export function ShowerEditor({ initial, onSave, onCancel, allPeriods = [], onEdi
         </div>
 
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'flex-end' }}>
-          <div><FieldLabel>Item</FieldLabel><TextInput value={newLabel} onChange={e => setNewLabel(e.target.value)} placeholder="e.g. BP wash" width={100} /></div>
-          <div><FieldLabel>Note</FieldLabel><TextInput value={newNote} onChange={e => setNewNote(e.target.value)} placeholder="optional" width={80} /></div>
+          <div><FieldLabel htmlFor="shower-item">Item</FieldLabel><TextInput id="shower-item" value={newLabel} onChange={e => setNewLabel(e.target.value)} placeholder="e.g. BP wash" width={100} /></div>
+          <div><FieldLabel htmlFor="shower-note">Note</FieldLabel><TextInput id="shower-note" value={newNote} onChange={e => setNewNote(e.target.value)} placeholder="optional" width={80} /></div>
           <div>
             <FieldLabel>Frequency</FieldLabel>
             <select value={newFreq} onChange={e => setNewFreq(e.target.value)} style={{ fontSize: 12, padding: '5px 8px', border: `0.5px solid ${T.border}`, borderRadius: 0, background: T.cream, color: T.text }}>

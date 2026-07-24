@@ -64,6 +64,7 @@ export default function FeedbackPanel({ onClose }) {
           value={message}
           onChange={e => setMessage(e.target.value)}
           placeholder="What's on your mind? Be as specific as you can — steps to reproduce a bug, or what you wish the app did differently."
+          aria-label="Feedback message"
           rows={6}
           style={{
             width: '100%', fontSize: 12, padding: '12px 14px', border: 'none',

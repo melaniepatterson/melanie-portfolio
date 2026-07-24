@@ -44,8 +44,9 @@ export const PRODUCT_INGREDIENT_CATEGORIES = {
   kojic_acid:      { label: 'Kojic acid',           forms: ['Kojic acid serum','Other'] },
 }
 
-function FieldLabel({ children }) {
-  return <div style={{ fontSize: 11, color: T.textLight, marginBottom: 3 }}>{children}</div>
+function FieldLabel({ children, htmlFor }) {
+  const Tag = htmlFor ? 'label' : 'div'
+  return <Tag htmlFor={htmlFor} style={{ fontSize: 11, color: T.textLight, marginBottom: 3, display: 'block' }}>{children}</Tag>
 }
 
 
@@ -251,8 +252,8 @@ export default function ProductForm({ initial, onSave, onCancel, catalogProducts
 
       {/* Name — full width with autocomplete */}
       <div style={{ position: 'relative', marginBottom: 10 }}>
-        <FieldLabel>Product name</FieldLabel>
-        <input value={form.name} onChange={e => set('name', e.target.value)} placeholder="e.g. Blueberry Cleanser" style={{ ...inputStyle }} />
+        <FieldLabel htmlFor="pf-name">Product name</FieldLabel>
+        <input id="pf-name" value={form.name} onChange={e => set('name', e.target.value)} placeholder="e.g. Blueberry Cleanser" style={{ ...inputStyle }} />
         {showSuggestions && suggestions.length > 0 && (
           <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 100, background: '#fff', border: '1px solid rgba(0,0,0,0.15)', borderRadius: T.radius.card, boxShadow: '0 4px 12px rgba(0,0,0,0.08)', maxHeight: 200, overflowY: 'auto' }}>
             {suggestions.map(p => (
@@ -271,8 +272,8 @@ export default function ProductForm({ initial, onSave, onCancel, catalogProducts
       {/* Brand + Category side by side */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 10 }}>
         <div style={{ position: 'relative' }}>
-          <FieldLabel>Brand</FieldLabel>
-          <input value={form.brand} onChange={e => set('brand', e.target.value)}
+          <FieldLabel htmlFor="pf-brand">Brand</FieldLabel>
+          <input id="pf-brand" value={form.brand} onChange={e => set('brand', e.target.value)}
             onBlur={() => setTimeout(() => setShowBrandSuggestions(false), 150)}
             placeholder="e.g. Glow Recipe" style={inputStyle} />
           {showBrandSuggestions && brandSuggestions.length > 0 && (
@@ -289,8 +290,8 @@ export default function ProductForm({ initial, onSave, onCancel, catalogProducts
           )}
         </div>
         <div>
-          <FieldLabel>Category</FieldLabel>
-          <select value={form.category} onChange={e => set('category', e.target.value)} style={selectStyle}>
+          <FieldLabel htmlFor="pf-category">Category</FieldLabel>
+          <select id="pf-category" value={form.category} onChange={e => set('category', e.target.value)} style={selectStyle}>
             {PRODUCT_CATEGORIES.map(c => <option key={c} value={c}>{formatCatLabel(c)}</option>)}
           </select>
         </div>
@@ -324,15 +325,15 @@ export default function ProductForm({ initial, onSave, onCancel, catalogProducts
         <FieldLabel>Purchase & expiry <span style={{ fontWeight: 400, color: T.textLight }}>(optional)</span></FieldLabel>
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 10 }}>
-        <div><FieldLabel>Purchased</FieldLabel>
-          <input type="date" value={form.purchased_at || ''} onChange={e => set('purchased_at', e.target.value)} style={inputStyle} /></div>
-        <div><FieldLabel>Opened</FieldLabel>
-          <input type="date" value={form.opened_at || ''} onChange={e => set('opened_at', e.target.value)} style={inputStyle} /></div>
-        <div><FieldLabel>Expires</FieldLabel>
-          <input type="date" value={form.expires_at || ''} onChange={e => set('expires_at', e.target.value)} style={inputStyle} /></div>
+        <div><FieldLabel htmlFor="pf-purchased">Purchased</FieldLabel>
+          <input id="pf-purchased" type="date" value={form.purchased_at || ''} onChange={e => set('purchased_at', e.target.value)} style={inputStyle} /></div>
+        <div><FieldLabel htmlFor="pf-opened">Opened</FieldLabel>
+          <input id="pf-opened" type="date" value={form.opened_at || ''} onChange={e => set('opened_at', e.target.value)} style={inputStyle} /></div>
+        <div><FieldLabel htmlFor="pf-expires">Expires</FieldLabel>
+          <input id="pf-expires" type="date" value={form.expires_at || ''} onChange={e => set('expires_at', e.target.value)} style={inputStyle} /></div>
         <div>
-          <FieldLabel><span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><PaoIcon months={form.pao_months} size={14} /> PAO <InfoTooltip text="Period After Opening" /></span></FieldLabel>
-          <select value={form.pao_months || ''} onChange={e => set('pao_months', e.target.value ? Number(e.target.value) : null)} style={selectStyle}>
+          <FieldLabel htmlFor="pf-pao"><span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><PaoIcon months={form.pao_months} size={14} /> PAO <InfoTooltip text="Period After Opening" /></span></FieldLabel>
+          <select id="pf-pao" value={form.pao_months || ''} onChange={e => set('pao_months', e.target.value ? Number(e.target.value) : null)} style={selectStyle}>
             <option value="">— Select PAO —</option>
             {PAO_OPTIONS.map(m => <option key={m} value={m}>{m} months</option>)}
           </select>
@@ -392,7 +393,7 @@ export default function ProductForm({ initial, onSave, onCancel, catalogProducts
 
       {/* Tags */}
       <div style={{ marginBottom: 10 }}>
-        <FieldLabel>Tags</FieldLabel>
+        <FieldLabel htmlFor="pf-tag-input">Tags</FieldLabel>
         <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', marginBottom: 6 }}>
           {(form.tags || []).map(t => (
             <span key={t} role="button" tabIndex={0} aria-label={`Remove tag ${t}`}
@@ -401,23 +402,23 @@ export default function ProductForm({ initial, onSave, onCancel, catalogProducts
           ))}
         </div>
         <div style={{ display: 'flex', gap: 6 }}>
-          <input value={tagInput} onChange={e => setTagInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && addTag()} placeholder="e.g. fragrance free" style={{ ...inputStyle, flex: 1 }} />
+          <input id="pf-tag-input" value={tagInput} onChange={e => setTagInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && addTag()} placeholder="e.g. fragrance free" style={{ ...inputStyle, flex: 1 }} />
           <button type="button" onClick={addTag} style={{ fontSize: 11, padding: '4px 10px', borderRadius: T.radius.pill, border: 'none', background: 'rgba(0,0,0,0.06)', color: T.text, cursor: 'pointer', fontFamily: 'inherit', flexShrink: 0 }}>Add</button>
         </div>
       </div>
 
       {/* Ingredient category */}
       <div style={{ marginBottom: 10 }}>
-        <FieldLabel>Ingredient category <span style={{ fontWeight: 400, color: T.textLight }}>(optional)</span></FieldLabel>
-        <select value={form.ingredient_category || ''} onChange={e => set('ingredient_category', e.target.value)} style={{ ...selectStyle, marginBottom: 8 }}>
+        <FieldLabel htmlFor="pf-ingredient-category">Ingredient category <span style={{ fontWeight: 400, color: T.textLight }}>(optional)</span></FieldLabel>
+        <select id="pf-ingredient-category" value={form.ingredient_category || ''} onChange={e => set('ingredient_category', e.target.value)} style={{ ...selectStyle, marginBottom: 8 }}>
           <option value="">— Select category —</option>
           {Object.entries(PRODUCT_INGREDIENT_CATEGORIES).map(([key, cat]) => (
             <option key={key} value={key}>{cat.label}</option>
           ))}
         </select>
         {form.ingredient_category && PRODUCT_INGREDIENT_CATEGORIES[form.ingredient_category]?.forms?.length > 0 && (<>
-          <FieldLabel>Ingredient form <span style={{ fontWeight: 400, color: T.textLight }}>(optional)</span></FieldLabel>
-          <select value={form.ingredient_form || ''} onChange={e => set('ingredient_form', e.target.value)} style={{ ...selectStyle, marginBottom: 8 }}>
+          <FieldLabel htmlFor="pf-ingredient-form">Ingredient form <span style={{ fontWeight: 400, color: T.textLight }}>(optional)</span></FieldLabel>
+          <select id="pf-ingredient-form" value={form.ingredient_form || ''} onChange={e => set('ingredient_form', e.target.value)} style={{ ...selectStyle, marginBottom: 8 }}>
             <option value="">— Select form —</option>
             {PRODUCT_INGREDIENT_CATEGORIES[form.ingredient_category].forms.map(f => (
               <option key={f} value={f}>{f}</option>
@@ -428,8 +429,8 @@ export default function ProductForm({ initial, onSave, onCancel, catalogProducts
 
       {/* Notes */}
       <div style={{ marginBottom: 12 }}>
-        <FieldLabel>Notes</FieldLabel>
-        <textarea value={form.notes} onChange={e => set('notes', e.target.value)} placeholder="Any notes..." rows={3}
+        <FieldLabel htmlFor="pf-notes">Notes</FieldLabel>
+        <textarea id="pf-notes" value={form.notes} onChange={e => set('notes', e.target.value)} placeholder="Any notes..." rows={3}
           style={{ width: '100%', boxSizing: 'border-box', fontSize: 12, padding: '8px 14px', border: '1px solid rgba(0,0,0,0.15)', borderRadius: T.radius.card, background: T.white, color: T.text, resize: 'vertical', fontFamily: 'inherit', outline: 'none' }} />
       </div>
 
