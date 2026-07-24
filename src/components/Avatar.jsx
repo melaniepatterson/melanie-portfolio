@@ -4,10 +4,9 @@ import T from './theme'
 
 const BRAND_COLORS = [T.pink, T.blue, T.green, T.yellow, T.orange]
 
-// Two colors picked once per session (module load) — every Avatar
-// instance shares the same gradient for the rest of the session.
-const shuffled = [...BRAND_COLORS].sort(() => Math.random() - 0.5)
-const [sessionColorA, sessionColorB] = shuffled
+// One color picked once per session (module load) — every Avatar
+// instance shares the same solid color for the rest of the session.
+const sessionColor = BRAND_COLORS[Math.floor(Math.random() * BRAND_COLORS.length)]
 
 export const AVATAR_SIZES = { large: 90, medium: 64, small: 32 }
 
@@ -28,7 +27,7 @@ export default function Avatar({ avatarUrl, displayName, email, size = AVATAR_SI
     justifyContent: 'center',
     border: `0.5px solid ${T.border}`,
     cursor: onClick ? 'pointer' : 'default',
-    background: avatarUrl ? 'transparent' : `linear-gradient(135deg, ${sessionColorA}, ${sessionColorB})`,
+    background: avatarUrl ? 'transparent' : sessionColor,
     ...style,
   }
 
