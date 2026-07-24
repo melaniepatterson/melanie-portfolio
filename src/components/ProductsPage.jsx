@@ -434,6 +434,12 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
   const [finishConfetti, setFinishConfetti] = useState(false)
   const [finishCount, setFinishCount] = useState(upd?.finish_count || p.finish_count || 0)
 
+  useEffect(() => {
+    function handleKey(e) { if (e.key === 'Escape') onClose() }
+    document.addEventListener('keydown', handleKey)
+    return () => document.removeEventListener('keydown', handleKey)
+  }, [onClose])
+
   async function handleMarkFinished() {
     setFinishConfetti(true)
     setFinishCount(c => c + 1)
@@ -464,7 +470,7 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
       {/* X — floats above modal card, outside it */}
       <div style={{ position: 'relative', width: '100%', maxWidth: 760, height: 'min(85vh, 680px)' }}>
         <button onClick={onClose} aria-label="Close" style={{ position: 'absolute', top: -12, right: -12, zIndex: 1010, width: 28, height: 28, borderRadius: T.radius.pill, border: 'none', background: T.white, color: T.text, cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1, boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>×</button>
-        <div onClick={e => e.stopPropagation()} style={{
+        <div onClick={e => e.stopPropagation()} role="dialog" aria-modal="true" aria-label={p.name || 'Product details'} style={{
           background: T.white, borderRadius: T.radius.modal, width: '100%',
           height: '100%',
           display: 'flex', overflow: 'hidden', position: 'relative',
@@ -641,6 +647,12 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
     window.addEventListener('resize', onResize)
     return () => window.removeEventListener('resize', onResize)
   }, [])
+  useEffect(() => {
+    if (!filterSheetOpen) return
+    function handleKey(e) { if (e.key === 'Escape') setFilterSheetOpen(false) }
+    document.addEventListener('keydown', handleKey)
+    return () => document.removeEventListener('keydown', handleKey)
+  }, [filterSheetOpen])
 
   // Stable random order — generated once per session, routine products always float first
   const shuffleKeys = useRef(new Map())
@@ -811,12 +823,12 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
       {isMobile && filterSheetOpen && (
         <>
           <div onClick={() => setFilterSheetOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 100 }} />
-          <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 101, background: T.white, borderRadius: '16px 16px 0 0', padding: '0 20px 32px', maxHeight: '75vh', overflowY: 'auto', boxShadow: '0 -4px 24px rgba(0,0,0,0.12)', animation: 'slideUp 0.22s ease' }}>
+          <div role="dialog" aria-modal="true" aria-labelledby="filter-sheet-title" style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 101, background: T.white, borderRadius: '16px 16px 0 0', padding: '0 20px 32px', maxHeight: '75vh', overflowY: 'auto', boxShadow: '0 -4px 24px rgba(0,0,0,0.12)', animation: 'slideUp 0.22s ease' }}>
             <div style={{ display: 'flex', justifyContent: 'center', padding: '12px 0 16px' }}>
               <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.15)' }} />
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-              <div style={{ fontSize: 14, fontWeight: 600, color: T.text }}>Filters</div>
+              <div id="filter-sheet-title" style={{ fontSize: 14, fontWeight: 600, color: T.text }}>Filters</div>
               <button onClick={() => setFilterSheetOpen(false)} aria-label="Close filters" style={{ border: 'none', background: 'transparent', fontSize: 20, color: T.textMuted, cursor: 'pointer', padding: '0 2px', lineHeight: 1 }}>×</button>
             </div>
             <FilterContent />
@@ -967,6 +979,13 @@ export default function ProductsPage({ session }) {
   const [userRoutineNames, setUserRoutineNames] = useState(new Set())
   const userId = session?.user?.id
   const CURATOR_ID = '27fbf9cd-5cfe-4032-9594-398e96fd0ccf'
+
+  useEffect(() => {
+    if (!editingProduct) return
+    function handleKey(e) { if (e.key === 'Escape') setEditingProduct(null) }
+    document.addEventListener('keydown', handleKey)
+    return () => document.removeEventListener('keydown', handleKey)
+  }, [editingProduct])
 
   useEffect(() => {
     if (!userId) return
@@ -1313,7 +1332,7 @@ export default function ProductsPage({ session }) {
 
       {editingProduct && (
         <div onClick={() => setEditingProduct(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', overflowY: 'auto' }}>
-          <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 460, maxHeight: '90vh', overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
+          <div onClick={e => e.stopPropagation()} role="dialog" aria-modal="true" aria-label={editingProduct === 'new' ? 'Add new product' : 'Edit product'} style={{ width: '100%', maxWidth: 460, maxHeight: '90vh', overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
             <ProductForm
               initial={editingProduct === 'new' ? undefined : editingProduct}
               onSave={saveProduct}

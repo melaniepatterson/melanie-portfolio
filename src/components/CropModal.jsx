@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import Cropper from 'react-easy-crop'
 import T from './theme'
 
@@ -53,15 +53,21 @@ export default function CropModal({ imageSrc, onConfirm, onCancel, uploading }) 
     }
   }
 
+  useEffect(() => {
+    function handleKey(e) { if (e.key === 'Escape' && !uploading) onCancel() }
+    document.addEventListener('keydown', handleKey)
+    return () => document.removeEventListener('keydown', handleKey)
+  }, [uploading, onCancel])
+
   return (
-    <div style={{
+    <div role="dialog" aria-modal="true" aria-labelledby="crop-modal-title" style={{
       position: 'fixed', inset: 0, zIndex: 1000,
       background: 'rgba(0,0,0,0.85)',
       display: 'flex', flexDirection: 'column',
       alignItems: 'center', justifyContent: 'center',
     }}>
       {/* Title */}
-      <div style={{ color: '#fff', fontSize: 14, fontWeight: 600, marginBottom: 16, fontFamily: 'inherit' }}>
+      <div id="crop-modal-title" style={{ color: '#fff', fontSize: 14, fontWeight: 600, marginBottom: 16, fontFamily: 'inherit' }}>
         Drag and zoom to crop
       </div>
 
@@ -94,6 +100,7 @@ export default function CropModal({ imageSrc, onConfirm, onCancel, uploading }) 
         <input
           type="range" min={1} max={3} step={0.05}
           value={zoom} onChange={e => setZoom(Number(e.target.value))}
+          aria-label="Zoom"
           style={{ flex: 1, accentColor: T.pinkDeep, cursor: 'pointer' }}
         />
         <span style={{ fontSize: 11, color: '#aaa', fontFamily: 'inherit', flexShrink: 0, width: 28, textAlign: 'right' }}>

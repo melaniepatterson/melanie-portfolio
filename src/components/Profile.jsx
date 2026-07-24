@@ -187,6 +187,17 @@ export default function Profile({ session, onOpenSurvey }) {
 
 
   useEffect(() => {
+    if (!resetConfirm && !deleteConfirm) return
+    function handleKey(e) {
+      if (e.key !== 'Escape') return
+      if (resetConfirm && !resetting) setResetConfirm(false)
+      if (deleteConfirm && !deleting) setDeleteConfirm(false)
+    }
+    document.addEventListener('keydown', handleKey)
+    return () => document.removeEventListener('keydown', handleKey)
+  }, [resetConfirm, deleteConfirm, resetting, deleting])
+
+  useEffect(() => {
     if (!userId) return
     supabase.from('profiles').select('*').eq('id', userId).single()
       .then(({ data }) => {
@@ -577,8 +588,8 @@ export default function Profile({ session, onOpenSurvey }) {
         {/* Reset confirmation modal */}
         {resetConfirm && (
           <div onClick={() => !resetting && setResetConfirm(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-            <div onClick={e => e.stopPropagation()} style={{ background: T.white, borderRadius: T.radius.modal, boxShadow: '0 8px 32px rgba(0,0,0,0.15)', width: '100%', maxWidth: 400, padding: '24px 20px' }}>
-              <h3 style={{ fontSize: 16, fontWeight: 700, color: T.text, margin: '0 0 10px' }}>Reset your routine?</h3>
+            <div onClick={e => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="reset-routine-title" style={{ background: T.white, borderRadius: T.radius.modal, boxShadow: '0 8px 32px rgba(0,0,0,0.15)', width: '100%', maxWidth: 400, padding: '24px 20px' }}>
+              <h3 id="reset-routine-title" style={{ fontSize: 16, fontWeight: 700, color: T.text, margin: '0 0 10px' }}>Reset your routine?</h3>
               <p style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.7, margin: '0 0 20px' }}>
                 This deletes your routine, treatments, and program progress so you can go through onboarding again. Your products and profile info are kept. This can't be undone.
               </p>
@@ -599,8 +610,8 @@ export default function Profile({ session, onOpenSurvey }) {
         {/* Delete account confirmation modal */}
         {deleteConfirm && (
           <div onClick={() => !deleting && setDeleteConfirm(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-            <div onClick={e => e.stopPropagation()} style={{ background: T.white, borderRadius: T.radius.modal, boxShadow: '0 8px 32px rgba(0,0,0,0.15)', width: '100%', maxWidth: 400, padding: '24px 20px' }}>
-              <h3 style={{ fontSize: 16, fontWeight: 700, color: T.darkPink, margin: '0 0 10px' }}>Delete your account?</h3>
+            <div onClick={e => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="delete-account-title" style={{ background: T.white, borderRadius: T.radius.modal, boxShadow: '0 8px 32px rgba(0,0,0,0.15)', width: '100%', maxWidth: 400, padding: '24px 20px' }}>
+              <h3 id="delete-account-title" style={{ fontSize: 16, fontWeight: 700, color: T.darkPink, margin: '0 0 10px' }}>Delete your account?</h3>
               <p style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.7, margin: '0 0 16px' }}>
                 This permanently deletes your account and everything in it — routine, treatments, products, profile. This cannot be undone.
               </p>

@@ -38,6 +38,12 @@ export default function SideMenu({ session, onClose, onFeedback }) {
     img.src = url
   }, [profile?.avatar_url])
 
+  useEffect(() => {
+    function handleKey(e) { if (e.key === 'Escape') onClose() }
+    document.addEventListener('keydown', handleKey)
+    return () => document.removeEventListener('keydown', handleKey)
+  }, [onClose])
+
   const displayName = profile?.display_name || email.split('@')[0]
   const avatarUrl = profile?.avatar_url || null
   const avatarReady = profile !== null && imageReady
@@ -76,7 +82,7 @@ export default function SideMenu({ session, onClose, onFeedback }) {
         }
       `}</style>
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.2)', zIndex: 200 }} />
-      <div style={{
+      <div role="dialog" aria-modal="true" aria-label="Main menu" style={{
         position: 'fixed', top: 0, right: 0, bottom: 0, width: 280,
         background: T.yellow, border: 'none',
         zIndex: 201, display: 'flex', flexDirection: 'column',

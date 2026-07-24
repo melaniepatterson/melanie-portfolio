@@ -99,6 +99,13 @@ export default function RoutineHistory({ session }) {
     load()
   }, [userId])
 
+  useEffect(() => {
+    if (!newForm) return
+    function handleKey(e) { if (e.key === 'Escape') setNewForm(null) }
+    document.addEventListener('keydown', handleKey)
+    return () => document.removeEventListener('keydown', handleKey)
+  }, [newForm])
+
   async function saveProduct(product) {
     if (catalogIds.current.has(product.id)) return
     const row = {
@@ -349,7 +356,7 @@ export default function RoutineHistory({ session }) {
 
       {/* "+ Start new routine" — fullscreen takeover, no border, mint green */}
       {newForm && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: T.green, overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
+        <div role="dialog" aria-modal="true" aria-label="Start new routine" style={{ position: 'fixed', inset: 0, zIndex: 300, background: T.green, overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
           <div style={{ maxWidth: 560, margin: '0 auto', padding: '64px 20px 48px' }}>
             {newForm.type === 'skincare' && (
               <RoutinePeriodForm

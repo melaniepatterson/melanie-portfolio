@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
 import T from '../theme'
 
@@ -25,16 +25,22 @@ export default function FeedbackPanel({ onClose }) {
     setTimeout(() => { setSent(false); setMessage(''); onClose() }, 2000)
   }
 
+  useEffect(() => {
+    function handleKey(e) { if (e.key === 'Escape') onClose() }
+    document.addEventListener('keydown', handleKey)
+    return () => document.removeEventListener('keydown', handleKey)
+  }, [onClose])
+
   return (
-    <div style={{ position: 'fixed', inset: 0, background: T.darkYellow, zIndex: 800, overflowY: 'auto', WebkitOverflowScrolling: 'touch', fontFamily: 'inherit' }}>
-      <button onClick={onClose}
+    <div role="dialog" aria-modal="true" aria-labelledby="feedback-panel-title" style={{ position: 'fixed', inset: 0, background: T.darkYellow, zIndex: 800, overflowY: 'auto', WebkitOverflowScrolling: 'touch', fontFamily: 'inherit' }}>
+      <button onClick={onClose} aria-label="Close"
         style={{ position: 'fixed', top: 20, right: 20, zIndex: 810, width: 36, height: 36, borderRadius: T.radius.pill, border: 'none', background: 'rgba(255,255,255,0.18)', cursor: 'pointer', fontSize: 18, color: T.white, lineHeight: 1, fontFamily: 'inherit' }}>
         ×
       </button>
 
       <div style={{ width: '100%', maxWidth: 460, margin: '0 auto', padding: '64px 20px 48px', boxSizing: 'border-box' }}>
 
-        <div style={{ fontSize: 20, fontWeight: 800, color: T.white, letterSpacing: '-0.03em', marginBottom: 16 }}>Send feedback</div>
+        <div id="feedback-panel-title" style={{ fontSize: 20, fontWeight: 800, color: T.white, letterSpacing: '-0.03em', marginBottom: 16 }}>Send feedback</div>
 
         {/* Anonymity notice */}
         <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.85)', lineHeight: 1.6, padding: '10px 14px', background: 'rgba(255,255,255,0.15)', borderRadius: T.radius.card, marginBottom: 16 }}>

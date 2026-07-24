@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import T from './theme'
 
@@ -7,11 +7,20 @@ const randomCheckColor = () => CHECK_COLORS[Math.floor(Math.random() * CHECK_COL
 
 function CloseButton({ onClose }) {
   return (
-    <button onClick={onClose}
+    <button onClick={onClose} aria-label="Close"
       style={{ position: 'fixed', top: 20, right: 20, zIndex: 810, width: 36, height: 36, borderRadius: T.radius.pill, border: 'none', background: 'rgba(255,255,255,0.18)', cursor: 'pointer', fontSize: 18, color: T.white, lineHeight: 1, fontFamily: 'inherit' }}>
       ×
     </button>
   )
+}
+
+// Escape closes the survey overlay, matching native dialog behavior
+function useEscapeToClose(onClose) {
+  useEffect(() => {
+    function handleKey(e) { if (e.key === 'Escape') onClose() }
+    document.addEventListener('keydown', handleKey)
+    return () => document.removeEventListener('keydown', handleKey)
+  }, [onClose])
 }
 
 function StarRow({ value, onChange }) {
@@ -100,16 +109,18 @@ export default function BetaSurvey({ session, onClose, onSubmitted, betaTester, 
     onSubmitted()
   }
 
+  useEscapeToClose(onClose)
+
   if (!betaTester) return null
 
   const textareaStyle = { width: '100%', boxSizing: 'border-box', fontSize: 12, padding: '10px 14px', border: 'none', borderRadius: T.radius.card, background: T.white, color: T.text, fontFamily: 'inherit', resize: 'vertical', outline: 'none', lineHeight: 1.6 }
 
   // Already submitted — show thank you instead of form
   if (alreadySubmitted) return (
-    <div style={{ position: 'fixed', inset: 0, background: T.darkPink, zIndex: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, overflowY: 'auto' }}>
+    <div role="dialog" aria-modal="true" aria-labelledby="beta-survey-done-title" style={{ position: 'fixed', inset: 0, background: T.darkPink, zIndex: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, overflowY: 'auto' }}>
       <CloseButton onClose={onClose} />
       <div style={{ width: '100%', maxWidth: 420, textAlign: 'center' }}>
-        <div style={{ fontSize: 18, fontWeight: 700, color: T.white, marginBottom: 8 }}>You've already shared feedback</div>
+        <div id="beta-survey-done-title" style={{ fontSize: 18, fontWeight: 700, color: T.white, marginBottom: 8 }}>You've already shared feedback</div>
         <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, marginBottom: 24 }}>Thank you — your response is in and we've read it. We'll be in touch if we have follow-up questions.</div>
         <button onClick={onClose}
           style={{ padding: '10px 24px', borderRadius: T.radius.pill, border: 'none', background: T.white, color: T.darkPink, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
@@ -120,13 +131,13 @@ export default function BetaSurvey({ session, onClose, onSubmitted, betaTester, 
   )
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: T.darkPink, zIndex: 800, overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
+    <div role="dialog" aria-modal="true" aria-labelledby="beta-survey-title" style={{ position: 'fixed', inset: 0, background: T.darkPink, zIndex: 800, overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
       <CloseButton onClose={onClose} />
       <div style={{ width: '100%', maxWidth: 500, margin: '0 auto', padding: '64px 20px 48px', boxSizing: 'border-box' }}>
 
         {/* Header */}
         <div style={{ fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.75)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 6 }}>Beta feedback</div>
-        <div style={{ fontSize: 20, fontWeight: 800, color: T.white, letterSpacing: '-0.03em', marginBottom: 6 }}>How's it going so far?</div>
+        <div id="beta-survey-title" style={{ fontSize: 20, fontWeight: 800, color: T.white, letterSpacing: '-0.03em', marginBottom: 6 }}>How's it going so far?</div>
         <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, marginBottom: 24 }}>
           You've completed your first phase — we'd love to know what you think. Takes about 2 minutes.
         </div>

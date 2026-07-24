@@ -4240,6 +4240,17 @@ export default function GlowUpCalendar({ session }) {
   const [showMenu,          setShowMenu]          = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
   const [treatmentWarning,  setTreatmentWarning]  = useState(null) // { key, date } pending selector
+
+  useEffect(() => {
+    if (!dayFlyout && !treatmentWarning) return
+    function handleKey(e) {
+      if (e.key !== 'Escape') return
+      if (treatmentWarning) setTreatmentWarning(null)
+      else if (dayFlyout) setDayFlyout(null)
+    }
+    document.addEventListener('keydown', handleKey)
+    return () => document.removeEventListener('keydown', handleKey)
+  }, [dayFlyout, treatmentWarning])
   const [showFeedback,  setShowFeedback]  = useState(() => {
     const has = new URLSearchParams(window.location.search).get('feedback') === '1'
     if (has) window.history.replaceState({}, '', window.location.pathname)
@@ -5171,12 +5182,12 @@ export default function GlowUpCalendar({ session }) {
         const actives = getActiveIngredients(activePeriod)
         const activeList = actives.join(', ')
         return (
-          <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
-            <div style={{ background: T.white, border: `1px solid ${T.border}`, borderRadius: 0, padding: '24px 20px', width: '100%', maxWidth: 420 }}>
+          <div onClick={() => setTreatmentWarning(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+            <div onClick={e => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="treatment-warning-title" style={{ background: T.white, border: `1px solid ${T.border}`, borderRadius: 0, padding: '24px 20px', width: '100%', maxWidth: 420 }}>
               <div style={{ fontSize: 9, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 10 }}>
                 Heads up
               </div>
-              <div style={{ fontSize: 14, fontWeight: 700, color: T.text, marginBottom: 12 }}>
+              <div id="treatment-warning-title" style={{ fontSize: 14, fontWeight: 700, color: T.text, marginBottom: 12 }}>
                 This treatment will pause your active ingredients
               </div>
               <div style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.8, marginBottom: 20 }}>
@@ -5225,6 +5236,7 @@ export default function GlowUpCalendar({ session }) {
             <div
               data-day-flyout="true"
               onClick={e => e.stopPropagation()}
+              role="dialog" aria-modal="true" aria-labelledby="day-flyout-title"
               style={{
                 position: 'fixed',
                 top: '50%', left: '50%',
@@ -5242,11 +5254,11 @@ export default function GlowUpCalendar({ session }) {
             >
               {/* Sticky header: prev/next day arrows + date + close */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 14px 10px', flexShrink: 0, background: flyoutHeaderBg }}>
-                <button onClick={goToPrevDay} style={{ border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '5px 12px', cursor: 'pointer', fontSize: 14, color: flyoutHeaderInk, flexShrink: 0 }}>←</button>
+                <button onClick={goToPrevDay} aria-label="Previous day" style={{ border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '5px 12px', cursor: 'pointer', fontSize: 14, color: flyoutHeaderInk, flexShrink: 0 }}>←</button>
                 <div style={{ flex: 1, textAlign: 'center' }}>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: flyoutHeaderInk }}>{fmt.format(dayFlyout.date)}</div>
+                  <div id="day-flyout-title" style={{ fontSize: 14, fontWeight: 600, color: flyoutHeaderInk }}>{fmt.format(dayFlyout.date)}</div>
                 </div>
-                <button onClick={goToNextDay} style={{ border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '5px 12px', cursor: 'pointer', fontSize: 14, color: flyoutHeaderInk, flexShrink: 0 }}>→</button>
+                <button onClick={goToNextDay} aria-label="Next day" style={{ border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '5px 12px', cursor: 'pointer', fontSize: 14, color: flyoutHeaderInk, flexShrink: 0 }}>→</button>
                 <button onClick={() => setDayFlyout(null)} aria-label="Close day details" style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 18, color: flyoutHeaderInk, opacity: 0.8, padding: '0 2px', lineHeight: 1, flexShrink: 0 }}>×</button>
               </div>
               {/* Scrollable content */}
