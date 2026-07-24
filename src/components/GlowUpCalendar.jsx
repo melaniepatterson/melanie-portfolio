@@ -4066,6 +4066,18 @@ const STATUS_COLORS = {
   microneedling_home: { fill: T.orange, dark: T.darkOrange },
   hydrafacial:        { fill: T.orange, dark: T.darkOrange },
 }
+
+// AM/PM cell labels render directly on the saturated STATUS_COLORS fill
+// (not the light badge tint), so the badges' own `.text` tokens — tuned for
+// contrast against a pale tint — fall short of 4.5:1 here. These are darkened
+// versions used only for that label, so the badge pill colors elsewhere stay
+// untouched.
+const CELL_LABEL_TEXT = {
+  tret: '#186438', bha: '#1D2D8A', pause: '#6B4800', recovery: '#5F123F', treatment: '#521C00',
+}
+for (const k of ['microneedling', 'massage', 'hairTreatment', 'peel', 'electrolysis', 'facial', 'microderm', 'custom', 'laser', 'dermaplaning', 'botox', 'led', 'microneedling_home', 'hydrafacial']) {
+  CELL_LABEL_TEXT[k] = CELL_LABEL_TEXT.treatment
+}
 // Statuses that are strictly a nighttime concept (actives applied PM
 // only) — the AM half stays neutral. Pause ("no actives") applies to both
 // halves, so it's excluded here.
@@ -4799,7 +4811,7 @@ export default function GlowUpCalendar({ session }) {
     function cellFillFor(statusKey) {
       const key = statusKey === 'pca' ? 'recovery' : statusKey
       if (!key || !T[key] || !STATUS_COLORS[key]) return null
-      return { bg: STATUS_COLORS[key].fill, text: T[key].text }
+      return { bg: STATUS_COLORS[key].fill, text: CELL_LABEL_TEXT[key] }
     }
 
     const amFill = cellFillFor(amStatusKey)
@@ -4886,7 +4898,7 @@ export default function GlowUpCalendar({ session }) {
           onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); isOpen && dayFlyout?.tab === 'am' ? setDayFlyout(null) : openDayFlyout(key, dt, 'am') } }}
           style={{ flex: 1, background: isOpen && dayFlyout?.tab === 'am' ? `linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), ${amCellBg}` : amCellBg, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'space-between', padding: '3px 4px', cursor: 'pointer', borderBottom: `0.5px solid ${lowerDivider}`, gap: 2, overflow: 'visible', transition: 'background 0.15s', position: 'relative', zIndex: 1 }}
         >
-          <div style={{ fontSize: 9, fontWeight: 600, color: isOpen && dayFlyout?.tab === 'am' ? T.text : (amFill?.text || T.darkGreen), opacity: 0.8, letterSpacing: '0.04em' }}>AM</div>
+          <div style={{ fontSize: 9, fontWeight: 600, color: isOpen && dayFlyout?.tab === 'am' ? T.text : (amFill?.text || T.darkGreen), letterSpacing: '0.04em' }}>AM</div>
           {amBadges}
         </div>
         {/* PM half */}
@@ -4896,7 +4908,7 @@ export default function GlowUpCalendar({ session }) {
           onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); isOpen && dayFlyout?.tab === 'pm' ? setDayFlyout(null) : openDayFlyout(key, dt, 'pm') } }}
           style={{ flex: 1, background: isOpen && dayFlyout?.tab === 'pm' ? `linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), ${pmCellBg}` : pmCellBg, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'space-between', padding: '3px 4px', cursor: 'pointer', gap: 2, overflow: 'visible', transition: 'background 0.15s', position: 'relative', zIndex: 1 }}
         >
-          <div style={{ fontSize: 9, fontWeight: 600, color: isOpen && dayFlyout?.tab === 'pm' ? T.text : (pmFill?.text || T.darkGreen), opacity: 0.8, letterSpacing: '0.04em' }}>PM</div>
+          <div style={{ fontSize: 9, fontWeight: 600, color: isOpen && dayFlyout?.tab === 'pm' ? T.text : (pmFill?.text || T.darkGreen), letterSpacing: '0.04em' }}>PM</div>
           {pmBadges}
         </div>
       </div>
