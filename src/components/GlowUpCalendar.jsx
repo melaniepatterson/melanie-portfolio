@@ -1086,7 +1086,10 @@ export function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = fa
               const isOpen = openStep === sid
               return (
                 <div key={sid} style={{ marginBottom: 6 }}>
-                  <div onClick={() => setOpenStep(isOpen ? null : sid)} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: T.radius.card, border: 'none', cursor: 'pointer', background: isOpen ? T.green : T.creamDark }}>
+                  <div onClick={() => setOpenStep(isOpen ? null : sid)}
+                    role="button" tabIndex={0} aria-expanded={isOpen}
+                    onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenStep(isOpen ? null : sid) } }}
+                    style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: T.radius.card, border: 'none', cursor: 'pointer', background: isOpen ? T.green : T.creamDark }}>
                     <div style={{ fontSize: 11, fontWeight: 500, color: T.darkGreen, flex: 1 }}>{step.label}</div>
                     {prod ? (
                       <span style={{ fontSize: 11, color: T.textMuted }}>{prod.name}</span>
@@ -1546,6 +1549,8 @@ export function DailyEditor({ initial, onSave, onCancel, lockStartDate = false, 
                 <div style={{ marginLeft: 8, marginBottom: 4 }}>
                   <div
                     onClick={() => setItems(it => it.map((x,idx) => idx===i ? {...x,_pickingProduct:!x._pickingProduct} : x))}
+                    role="button" tabIndex={0} aria-expanded={isOpen}
+                    onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setItems(it => it.map((x,idx) => idx===i ? {...x,_pickingProduct:!x._pickingProduct} : x)) } }}
                     style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 0, cursor: 'pointer', background: isOpen ? T.pink : 'transparent', border: `0.5px solid ${isOpen ? T.pinkDeep : T.border}`, marginBottom: isOpen ? 4 : 0 }}
                   >
                     <div style={{ width: 6, height: 6, borderRadius: '50%', background: T.pinkDeep, flexShrink: 0 }} />
@@ -1709,6 +1714,8 @@ function DailySection({ dt, dailyHistory, onEditDaily, tab, products, onUpdateDa
             {/* Product slot — matches skincare renderSteps pattern */}
             <div
               onClick={() => setOpenItemId(isOpen ? null : item.id)}
+              role="button" tabIndex={0} aria-expanded={isOpen}
+              onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenItemId(isOpen ? null : item.id) } }}
               style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '7px 0', borderBottom: `0.5px solid ${T.border}`, cursor: 'pointer', opacity: prod ? 1 : 0.45 }}
             >
               <div style={{ width: 8, height: 8, borderRadius: '50%', background: T.pinkDeep, flexShrink: 0 }} />
@@ -1782,7 +1789,7 @@ function ProductPicker({ stepKey, currentProductId, products, onSelect, onAddNew
 
       {catLabel && !showAll && (
         <div style={{ fontSize: 10, color: T.textMuted, marginBottom: 6, fontStyle: 'italic' }}>
-          Showing {catLabel} products · <span style={{ cursor: 'pointer', textDecoration: 'underline' }} onClick={() => setShowAll(true)}>show all</span>
+          Showing {catLabel} products · <span role="button" tabIndex={0} style={{ cursor: 'pointer', textDecoration: 'underline' }} onClick={() => setShowAll(true)} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowAll(true) } }}>show all</span>
         </div>
       )}
       {filtered.length === 0 && (
@@ -1795,6 +1802,8 @@ function ProductPicker({ stepKey, currentProductId, products, onSelect, onAddNew
         {currentProductId && (
           <div
             onClick={() => onSelect(null)}
+            role="button" tabIndex={0}
+            onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect(null) } }}
             style={{ padding: '6px 8px', borderRadius: 0, fontSize: 12, cursor: 'pointer', color: '#9F1239', marginBottom: 3, background: '#FFF0F0' }}
           >
             Remove assignment
@@ -1804,6 +1813,8 @@ function ProductPicker({ stepKey, currentProductId, products, onSelect, onAddNew
           <div
             key={p.id}
             onClick={() => onSelect(p.id)}
+            role="button" tabIndex={0} aria-label={p.name}
+            onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect(p.id) } }}
             style={{
               display: 'flex', alignItems: 'center', gap: 8,
               padding: '6px 8px', borderRadius: 0, fontSize: 12, cursor: 'pointer', marginBottom: 2,
@@ -2090,6 +2101,8 @@ export function ShowerEditor({ initial, onSave, onCancel, allPeriods = [], onEdi
                 <div style={{ marginLeft: 8, marginBottom: 4 }}>
                   <div
                     onClick={() => setItems(it => it.map((x,idx) => idx===i ? {...x,_pickingProduct:!x._pickingProduct} : x))}
+                    role="button" tabIndex={0} aria-expanded={isOpen}
+                    onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setItems(it => it.map((x,idx) => idx===i ? {...x,_pickingProduct:!x._pickingProduct} : x)) } }}
                     style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 0, cursor: 'pointer', background: isOpen ? T.pink : 'transparent', border: `0.5px solid ${isOpen ? T.pinkDeep : T.border}`, marginBottom: isOpen ? 4 : 0 }}
                   >
                     <div style={{ width: 6, height: 6, borderRadius: '50%', background: T.pinkDeep, flexShrink: 0 }} />
@@ -2235,6 +2248,8 @@ function ShowerSection({ dt, showerHistory, onEditShower, products, onUpdateShow
               {/* Product slot — matches skincare renderSteps pattern */}
               <div
                 onClick={() => setOpenItemId(isOpen ? null : item.id)}
+                role="button" tabIndex={0} aria-expanded={isOpen}
+                onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenItemId(isOpen ? null : item.id) } }}
                 style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '7px 0', borderBottom: `0.5px solid ${T.border}`, cursor: 'pointer', opacity: prod ? 1 : 0.45 }}
               >
                 <div style={{ width: 8, height: 8, borderRadius: '50%', background: T.pinkDeep, flexShrink: 0 }} />
@@ -2443,6 +2458,8 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
         <div key={stepKey}>
           <div
             onClick={() => period && setOpenStepKey(isThisOpen ? null : stepKey)}
+            role="button" tabIndex={period ? 0 : undefined} aria-expanded={isThisOpen}
+            onKeyDown={e => { if (period && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); setOpenStepKey(isThisOpen ? null : stepKey) } }}
             style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 0', borderBottom: `0.5px solid ${T.border}`, cursor: period ? 'pointer' : 'default', opacity: product ? 1 : 0.45, position: 'relative', minHeight: 44 }}
           >
             <div style={{ width: 8, height: 8, borderRadius: '50%', background: dotColor, flexShrink: 0 }} />
@@ -3702,6 +3719,8 @@ function RecoveryRoutineEditor({ typeKey, typeLabel, steps, products, allProduct
             <div key={step.id}>
               <div
                 onClick={() => setOpenStepKey(isOpen ? null : step.id)}
+                role="button" tabIndex={0} aria-expanded={isOpen}
+                onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenStepKey(isOpen ? null : step.id) } }}
                 style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                   padding: '10px 12px', borderRadius: 0, cursor: 'pointer',
@@ -4856,6 +4875,8 @@ export default function GlowUpCalendar({ session }) {
         {/* AM half */}
         <div
           onClick={e => { e.stopPropagation(); isOpen && dayFlyout?.tab === 'am' ? setDayFlyout(null) : openDayFlyout(key, dt, 'am') }}
+          role="button" tabIndex={0} aria-label={`Open AM routine for day ${d}`}
+          onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); isOpen && dayFlyout?.tab === 'am' ? setDayFlyout(null) : openDayFlyout(key, dt, 'am') } }}
           style={{ flex: 1, background: isOpen && dayFlyout?.tab === 'am' ? `linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), ${amCellBg}` : amCellBg, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'space-between', padding: '3px 4px', cursor: 'pointer', borderBottom: `0.5px solid ${lowerDivider}`, gap: 2, overflow: 'visible', transition: 'background 0.15s', position: 'relative', zIndex: 1 }}
         >
           <div style={{ fontSize: 9, fontWeight: 600, color: isOpen && dayFlyout?.tab === 'am' ? T.text : (amFill?.text || T.darkGreen), opacity: 0.8, letterSpacing: '0.04em' }}>AM</div>
@@ -4864,6 +4885,8 @@ export default function GlowUpCalendar({ session }) {
         {/* PM half */}
         <div
           onClick={e => { e.stopPropagation(); isOpen && dayFlyout?.tab === 'pm' ? setDayFlyout(null) : openDayFlyout(key, dt, 'pm') }}
+          role="button" tabIndex={0} aria-label={`Open PM routine for day ${d}`}
+          onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); isOpen && dayFlyout?.tab === 'pm' ? setDayFlyout(null) : openDayFlyout(key, dt, 'pm') } }}
           style={{ flex: 1, background: isOpen && dayFlyout?.tab === 'pm' ? `linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), ${pmCellBg}` : pmCellBg, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'space-between', padding: '3px 4px', cursor: 'pointer', gap: 2, overflow: 'visible', transition: 'background 0.15s', position: 'relative', zIndex: 1 }}
         >
           <div style={{ fontSize: 9, fontWeight: 600, color: isOpen && dayFlyout?.tab === 'pm' ? T.text : (pmFill?.text || T.darkGreen), opacity: 0.8, letterSpacing: '0.04em' }}>PM</div>

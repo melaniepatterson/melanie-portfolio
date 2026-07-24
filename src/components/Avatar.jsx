@@ -34,7 +34,11 @@ export default function Avatar({ avatarUrl, displayName, email, size = AVATAR_SI
   }
 
   return (
-    <div style={baseStyle} onClick={onClick}>
+    <div style={baseStyle} onClick={onClick}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      aria-label={onClick ? 'Change profile photo' : undefined}
+      onKeyDown={onClick ? (e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick() } }) : undefined}>
       {avatarUrl ? (
         <img
           src={avatarUrl}

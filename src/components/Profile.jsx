@@ -339,7 +339,7 @@ export default function Profile({ session, onOpenSurvey }) {
               onClick={() => !uploading && fileInputRef.current?.click()}
               style={{ opacity: uploading ? 0.6 : 1, transition: 'opacity 0.2s', cursor: uploading ? 'default' : 'pointer', border: 'none' }} />
             {!uploading && (
-              <div onClick={() => fileInputRef.current?.click()}
+              <div onClick={() => fileInputRef.current?.click()} aria-hidden="true"
                 style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: 'rgba(0,0,0,0)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'background 0.15s' }}
                 onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.32)'; e.currentTarget.querySelector('span').style.opacity = '1' }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,0,0,0)'; e.currentTarget.querySelector('span').style.opacity = '0' }}>

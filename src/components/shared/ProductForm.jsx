@@ -395,7 +395,9 @@ export default function ProductForm({ initial, onSave, onCancel, catalogProducts
         <FieldLabel>Tags</FieldLabel>
         <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', marginBottom: 6 }}>
           {(form.tags || []).map(t => (
-            <span key={t} style={{ fontSize: 11, padding: '2px 8px', borderRadius: T.radius.pill, background: 'rgba(0,0,0,0.06)', color: T.text, border: 'none', cursor: 'pointer' }} onClick={() => removeTag(t)}>{t} ×</span>
+            <span key={t} role="button" tabIndex={0} aria-label={`Remove tag ${t}`}
+              onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); removeTag(t) } }}
+              style={{ fontSize: 11, padding: '2px 8px', borderRadius: T.radius.pill, background: 'rgba(0,0,0,0.06)', color: T.text, border: 'none', cursor: 'pointer' }} onClick={() => removeTag(t)}>{t} ×</span>
           ))}
         </div>
         <div style={{ display: 'flex', gap: 6 }}>

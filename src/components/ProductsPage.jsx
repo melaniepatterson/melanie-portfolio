@@ -891,6 +891,8 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
             const img = p.imageUrl || p.image_url
             return (
               <div key={p.id} onClick={() => setSelectedProduct(p)}
+                role="button" tabIndex={0} aria-label={p.name}
+                onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedProduct(p) } }}
                 style={{ cursor: 'pointer', position: 'relative', background: T.white, display: 'flex', flexDirection: 'column', borderRadius: T.radius.card, overflow: 'hidden' }}>
                 {/* Portrait image — paddingBottom keeps 3:4 ratio consistent across all cards */}
                 <div style={{ position: 'relative', paddingBottom: '133.33%', overflow: 'hidden', background: getBrandColor(p.brand, p.id), flexShrink: 0 }}>
