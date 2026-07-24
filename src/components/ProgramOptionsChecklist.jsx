@@ -30,21 +30,21 @@ export default function ProgramOptionsChecklist({ options, selected, onToggle, s
               disabled={disabled}
               style={{
                 width: '100%', textAlign: 'left', display: 'flex', alignItems: 'flex-start', gap: 10,
-                padding: '14px 16px', borderRadius: 0, cursor: disabled ? 'default' : 'pointer', fontFamily: 'inherit',
-                border: `1px solid ${isAlreadyAdded ? T.border : isOn ? T.text : T.border}`,
-                background: isAlreadyAdded ? T.cream : isOn ? T.text : 'transparent',
+                padding: '14px 16px', borderRadius: T.radius.card, cursor: disabled ? 'default' : 'pointer', fontFamily: 'inherit',
+                border: 'none',
+                background: isAlreadyAdded ? '#F0F0F0' : isOn ? T.darkGreen : '#EBFBF2',
                 opacity: disabledByOtherActive ? 0.4 : 1,
               }}>
-              <div style={{ width: 16, height: 16, border: `1.5px solid ${isAlreadyAdded ? T.border : isOn ? '#fff' : T.border}`, background: isAlreadyAdded ? T.border : isOn ? '#fff' : 'transparent', flexShrink: 0, marginTop: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ width: 18, height: 18, borderRadius: '50%', border: `1.5px solid ${isAlreadyAdded ? 'rgba(0,0,0,0.25)' : isOn ? '#fff' : T.text}`, background: isAlreadyAdded ? 'rgba(0,0,0,0.15)' : isOn ? '#fff' : 'transparent', flexShrink: 0, marginTop: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 {isAlreadyAdded && <svg width="10" height="8" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke={T.textMuted} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>}
-                {!isAlreadyAdded && isOn && <svg width="10" height="8" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke={T.text} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                {!isAlreadyAdded && isOn && <svg width="10" height="8" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke={T.darkGreen} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>}
               </div>
               <div>
                 <div style={{ fontSize: 13, fontWeight: 600, color: isAlreadyAdded ? T.textMuted : isOn ? '#fff' : T.text, marginBottom: 3 }}>
                   {opt.label}
                   {isAlreadyAdded
                     ? <span style={{ fontSize: 9, fontWeight: 700, color: T.textMuted, marginLeft: 8, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Already in your routine</span>
-                    : isActive && <span style={{ fontSize: 9, fontWeight: 700, color: isOn ? 'rgba(255,255,255,0.7)' : T.pinkDeep, marginLeft: 8, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Introduce slowly</span>
+                    : isActive && <span style={{ fontSize: 9, fontWeight: 700, color: isOn ? 'rgba(255,255,255,0.7)' : T.darkGreen, marginLeft: 8, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Introduce slowly</span>
                   }
                 </div>
                 <div style={{ fontSize: 12, color: isAlreadyAdded ? T.textMuted : isOn ? 'rgba(255,255,255,0.75)' : T.textMuted, lineHeight: 1.6 }}>
@@ -53,7 +53,7 @@ export default function ProgramOptionsChecklist({ options, selected, onToggle, s
               </div>
             </button>
             {skinNote && (
-              <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.6, padding: '8px 12px', background: T.cream, border: `0.5px solid ${T.border}`, borderTop: 'none' }}>
+              <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.6, padding: '8px 12px', background: '#EBFBF2', borderRadius: T.radius.card, marginTop: 4 }}>
                 {skinNote}
               </div>
             )}
@@ -65,10 +65,9 @@ export default function ProgramOptionsChecklist({ options, selected, onToggle, s
         <button onClick={() => onToggle(skipOption)}
           style={{
             width: '100%', textAlign: 'left', display: 'block', marginTop: 8, marginBottom: 8,
-            padding: '14px 16px', borderRadius: 0, cursor: 'pointer', fontFamily: 'inherit',
-            border: `1px solid ${selected.has(skipOption.id) ? T.text : T.border}`,
-            background: selected.has(skipOption.id) ? T.text : 'transparent',
-            borderTop: `1px solid ${T.border}`,
+            padding: '14px 16px', borderRadius: T.radius.card, cursor: 'pointer', fontFamily: 'inherit',
+            border: 'none',
+            background: selected.has(skipOption.id) ? T.darkGreen : '#EBFBF2',
           }}>
           <div style={{ fontSize: 13, fontWeight: 600, color: selected.has(skipOption.id) ? '#fff' : T.text, marginBottom: 3 }}>
             {skipOption.label}

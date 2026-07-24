@@ -10,7 +10,7 @@ function StepDot({ active, done }) {
   return (
     <div style={{
       width: 8, height: 8, borderRadius: '50%', flexShrink: 0,
-      background: done ? T.text : active ? T.pinkDeep : T.border,
+      background: done ? T.white : active ? T.green : 'rgba(255,255,255,0.3)',
       transition: 'background 0.2s',
     }} />
   )
@@ -27,7 +27,7 @@ function StepList({ steps, tod }) {
       </div>
       {filtered.sort((a, b) => a.position - b.position).map((s, i) => (
         <div key={s.id} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', marginBottom: 10 }}>
-          <div style={{ width: 20, height: 20, borderRadius: 0, border: `1px solid ${T.border}`, background: T.creamDark, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: T.textMuted, marginTop: 1 }}>
+          <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#EBFBF2', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: T.darkGreen, marginTop: 1 }}>
             {i + 1}
           </div>
           <div>
@@ -50,89 +50,95 @@ function Phase2StartScreen({ phase2, phase1Steps, phase2Options, skinType, onBac
   const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
 
   if (bhaStep) return (
-    <div style={{ maxWidth: 480, margin: '0 auto', padding: '48px 24px' }}>
-      <div style={{ fontSize: 11, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>AHA/BHA Onboarding</div>
-      <h2 style={{ fontSize: 24, fontWeight: 800, color: T.text, letterSpacing: '-0.03em', margin: '0 0 8px' }}>One more step</h2>
-      <p style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.7, margin: '0 0 20px' }}>
-        AHA/BHA needs a slow ramp-up to avoid irritation — we'll track it through the AHA/BHA Onboarding program. Pick which night works best and we'll handle the rest.
-      </p>
-      <div style={{ fontSize: 11, color: T.textLight, marginBottom: 8 }}>Your exfoliation night</div>
-      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
-        {DAYS.map((d, i) => (
-          <button key={i} onClick={() => setBhaDay(i)}
-            style={{ padding: '6px 12px', borderRadius: 0, border: `1px solid ${bhaDay === i ? T.text : T.border}`, background: bhaDay === i ? T.text : 'transparent', color: bhaDay === i ? '#fff' : T.textMuted, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
-            {d}
-          </button>
-        ))}
+    <div style={{ minHeight: '100vh', background: T.darkGreen, padding: '48px 24px', boxSizing: 'border-box' }}>
+      <div style={{ maxWidth: 480, margin: '0 auto' }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.75)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>AHA/BHA Onboarding</div>
+        <h2 style={{ fontSize: 24, fontWeight: 800, color: T.white, letterSpacing: '-0.03em', margin: '0 0 8px' }}>One more step</h2>
+        <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.85)', lineHeight: 1.7, margin: '0 0 20px' }}>
+          AHA/BHA needs a slow ramp-up to avoid irritation — we'll track it through the AHA/BHA Onboarding program. Pick which night works best and we'll handle the rest.
+        </p>
+        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)', marginBottom: 8 }}>Your exfoliation night</div>
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
+          {DAYS.map((d, i) => (
+            <button key={i} onClick={() => setBhaDay(i)}
+              style={{ padding: '6px 12px', borderRadius: T.radius.pill, border: 'none', background: bhaDay === i ? T.white : 'rgba(255,255,255,0.15)', color: bhaDay === i ? T.darkGreen : T.white, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
+              {d}
+            </button>
+          ))}
+        </div>
+        <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.7)', marginBottom: 24, lineHeight: 1.6 }}>
+          Phase 1 → {DAYS[bhaDay]} only · Phase 2 → {DAYS[bhaDay]} + {DAYS[(bhaDay + 3) % 7]} · Maintenance → {DAYS[bhaDay]} + {DAYS[(bhaDay + 2) % 7]} + {DAYS[(bhaDay + 4) % 7]}
+        </div>
+        <button disabled={saving} onClick={async () => {
+          setSaving(true)
+          await onConfirm(chosenItems, bhaDay)
+          setSaving(false)
+        }}
+          style={{ width: '100%', padding: '13px', borderRadius: T.radius.pill, border: 'none', background: T.white, color: T.darkGreen, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 600 }}>
+          {saving ? 'Starting…' : 'Start AHA/BHA Onboarding'}
+        </button>
       </div>
-      <div style={{ fontSize: 10, color: T.textMuted, marginBottom: 24, lineHeight: 1.6 }}>
-        Phase 1 → {DAYS[bhaDay]} only · Phase 2 → {DAYS[bhaDay]} + {DAYS[(bhaDay + 3) % 7]} · Maintenance → {DAYS[bhaDay]} + {DAYS[(bhaDay + 2) % 7]} + {DAYS[(bhaDay + 4) % 7]}
-      </div>
-      <button disabled={saving} onClick={async () => {
-        setSaving(true)
-        await onConfirm(chosenItems, bhaDay)
-        setSaving(false)
-      }}
-        style={{ width: '100%', padding: '12px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 600 }}>
-        {saving ? 'Starting…' : 'Start AHA/BHA Onboarding'}
-      </button>
     </div>
   )
 
   return (
-    <div style={{ maxWidth: 480, margin: '0 auto', padding: '48px 24px' }}>
-      <button onClick={onBack}
-        style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.textMuted, fontSize: 13, padding: 0, marginBottom: 32, fontFamily: 'inherit' }}>
-        ← Back
-      </button>
+    <div style={{ minHeight: '100vh', background: T.darkGreen, padding: '48px 24px', boxSizing: 'border-box' }}>
+      <div style={{ maxWidth: 480, margin: '0 auto' }}>
+        <button onClick={onBack}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.8)', fontSize: 13, padding: 0, marginBottom: 32, fontFamily: 'inherit' }}>
+          ← Back
+        </button>
 
-      <div style={{ fontSize: 11, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 12 }}>
-        Starting at Phase 2
-      </div>
-      <h2 style={{ fontSize: 24, fontWeight: 800, color: T.text, letterSpacing: '-0.03em', margin: '0 0 6px' }}>
-        What do you want to add?
-      </h2>
-      <p style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.7, margin: '0 0 16px' }}>
-        We'll start your routine with the basics — cleanser, moisturizer, SPF — already in place, plus whatever you pick here. Pick as many as you're ready for.
-      </p>
-
-      {/* Baseline reminder */}
-      <div style={{ background: T.cream, border: `1px solid ${T.border}`, borderRadius: 0, padding: '12px 16px', marginBottom: 20 }}>
-        <div style={{ fontSize: 10, fontWeight: 700, color: T.textMuted, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 6 }}>Already in your routine</div>
-        <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.6 }}>
-          {phase1Steps.map(s => s.label).filter((v, i, a) => a.indexOf(v) === i).join(' · ')}
+        <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.75)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 12 }}>
+          Starting at Phase 2
         </div>
+        <h2 style={{ fontSize: 24, fontWeight: 800, color: T.white, letterSpacing: '-0.03em', margin: '0 0 6px' }}>
+          What do you want to add?
+        </h2>
+        <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.85)', lineHeight: 1.7, margin: '0 0 16px' }}>
+          We'll start your routine with the basics — cleanser, moisturizer, SPF — already in place, plus whatever you pick here. Pick as many as you're ready for.
+        </p>
+
+        {/* Baseline reminder */}
+        <div style={{ background: 'rgba(255,255,255,0.12)', borderRadius: T.radius.card, padding: '12px 16px', marginBottom: 20 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.7)', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 6 }}>Already in your routine</div>
+          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.85)', lineHeight: 1.6 }}>
+            {phase1Steps.map(s => s.label).filter((v, i, a) => a.indexOf(v) === i).join(' · ')}
+          </div>
+        </div>
+
+        <div style={{ background: T.white, borderRadius: T.radius.modal, padding: 16, boxShadow: '0 8px 32px rgba(0,0,0,0.15)' }}>
+          <ProgramOptionsChecklist
+            options={phase2Options}
+            selected={selected}
+            onToggle={opt => setSelected(prev => toggleOption(prev, opt, phase2Options))}
+            skinType={skinType}
+          />
+        </div>
+
+        <button
+          disabled={selected.size === 0 || saving}
+          onClick={async () => {
+            const chosen = phase2Options.filter(o => selected.has(o.id))
+            const hasExfoliant = chosen.some(o => o.step_key === 'exfoliant' && !o.is_skip_option)
+            if (hasExfoliant) {
+              setChosenItems(chosen)
+              setBhaStep(true)
+            } else {
+              setSaving(true)
+              await onConfirm(chosen, null)
+              setSaving(false)
+            }
+          }}
+          style={{ width: '100%', padding: '13px', borderRadius: T.radius.pill, border: 'none', background: selected.size > 0 ? T.white : 'rgba(255,255,255,0.3)', color: T.darkGreen, cursor: selected.size > 0 ? 'pointer' : 'default', fontSize: 13, fontFamily: 'inherit', fontWeight: 600, marginTop: 16 }}>
+          {saving ? 'Setting up…' : (() => {
+            if (selected.size === 0) return 'Choose at least one'
+            const realCount = phase2Options.filter(o => selected.has(o.id) && !o.is_skip_option).length
+            if (realCount === 0) return 'Start with the basics'
+            return realCount > 1 ? `Start with ${realCount} added` : 'Start with 1 added'
+          })()}
+        </button>
       </div>
-
-      <ProgramOptionsChecklist
-        options={phase2Options}
-        selected={selected}
-        onToggle={opt => setSelected(prev => toggleOption(prev, opt, phase2Options))}
-        skinType={skinType}
-      />
-
-      <button
-        disabled={selected.size === 0 || saving}
-        onClick={async () => {
-          const chosen = phase2Options.filter(o => selected.has(o.id))
-          const hasExfoliant = chosen.some(o => o.step_key === 'exfoliant' && !o.is_skip_option)
-          if (hasExfoliant) {
-            setChosenItems(chosen)
-            setBhaStep(true)
-          } else {
-            setSaving(true)
-            await onConfirm(chosen, null)
-            setSaving(false)
-          }
-        }}
-        style={{ width: '100%', padding: '12px', borderRadius: 0, border: 'none', background: selected.size > 0 ? T.pinkDeep : T.border, color: '#fff', cursor: selected.size > 0 ? 'pointer' : 'default', fontSize: 13, fontFamily: 'inherit', fontWeight: 600, marginTop: 16 }}>
-        {saving ? 'Setting up…' : (() => {
-          if (selected.size === 0) return 'Choose at least one'
-          const realCount = phase2Options.filter(o => selected.has(o.id) && !o.is_skip_option).length
-          if (realCount === 0) return 'Start with the basics'
-          return realCount > 1 ? `Start with ${realCount} added` : 'Start with 1 added'
-        })()}
-      </button>
     </div>
   )
 }
@@ -356,154 +362,160 @@ export default function Onboarding({ session, onEnrolled, onSkipToBuilder }) {
 
   // ── DISCLAIMER ───────────────────────────────────────────────
   if (screen === 'disclaimer') return (
-    <div style={{ maxWidth: 480, margin: '0 auto', padding: '64px 24px' }}>
-      <div style={{ fontSize: 11, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 12 }}>
-        Before you start
+    <div style={{ minHeight: '100vh', background: T.darkGreen, padding: '64px 24px', boxSizing: 'border-box' }}>
+      <div style={{ maxWidth: 480, margin: '0 auto' }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.75)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 12 }}>
+          Before you start
+        </div>
+        <h2 style={{ fontSize: 26, fontWeight: 800, color: T.white, letterSpacing: '-0.03em', margin: '0 0 20px' }}>
+          Glow Up is a tracking tool, not medical advice
+        </h2>
+        <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', lineHeight: 1.8, margin: '0 0 14px' }}>
+          Everything in this app — routines, programs, ingredient notes, skin type suggestions — is here to help you track and build your own practice. It's not a substitute for advice from a dermatologist or other medical professional.
+        </p>
+        <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', lineHeight: 1.8, margin: '0 0 32px' }}>
+          This is especially true for prescription treatments like tretinoin. If you have questions about what's right for your skin, please talk to your dermatologist.
+        </p>
+        <button
+          onClick={async () => {
+            // Record acceptance, then advance to entry
+            await supabase
+              .from('profiles')
+              .update({ disclaimer_accepted_at: new Date().toISOString() })
+              .eq('id', session.user.id)
+            setScreen('entry')
+          }}
+          style={{ width: '100%', padding: '14px', borderRadius: T.radius.pill, border: 'none', background: T.white, color: T.darkGreen, cursor: 'pointer', fontSize: 14, fontFamily: 'inherit', fontWeight: 700 }}>
+          Got it — let's get started
+        </button>
       </div>
-      <h2 style={{ fontSize: 26, fontWeight: 800, color: T.text, letterSpacing: '-0.03em', margin: '0 0 20px' }}>
-        Glow Up is a tracking tool, not medical advice
-      </h2>
-      <p style={{ fontSize: 14, color: T.textMuted, lineHeight: 1.8, margin: '0 0 14px' }}>
-        Everything in this app — routines, programs, ingredient notes, skin type suggestions — is here to help you track and build your own practice. It's not a substitute for advice from a dermatologist or other medical professional.
-      </p>
-      <p style={{ fontSize: 14, color: T.textMuted, lineHeight: 1.8, margin: '0 0 32px' }}>
-        This is especially true for prescription treatments like tretinoin. If you have questions about what's right for your skin, please talk to your dermatologist.
-      </p>
-      <button
-        onClick={async () => {
-          // Record acceptance, then advance to entry
-          await supabase
-            .from('profiles')
-            .update({ disclaimer_accepted_at: new Date().toISOString() })
-            .eq('id', session.user.id)
-          setScreen('entry')
-        }}
-        style={{ width: '100%', padding: '14px', borderRadius: 0, border: 'none', background: T.text, color: '#fff', cursor: 'pointer', fontSize: 14, fontFamily: 'inherit', fontWeight: 700 }}>
-        Got it — let's get started
-      </button>
     </div>
   )
 
   if (loading) return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', color: T.textMuted, fontSize: 13 }}>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: T.darkGreen, color: 'rgba(255,255,255,0.85)', fontSize: 13 }}>
       Loading…
     </div>
   )
 
   if (error) return (
-    <div style={{ padding: 24, color: T.pinkDeep, fontSize: 13 }}>
-      Something went wrong: {error}
+    <div style={{ minHeight: '100vh', background: T.darkGreen, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24, boxSizing: 'border-box' }}>
+      <div style={{ color: T.white, fontSize: 13, fontWeight: 600, textAlign: 'center' }}>Something went wrong: {error}</div>
     </div>
   )
 
   // ── ENTRY ─────────────────────────────────────────────────
   if (screen === 'entry') return (
-    <div style={{ maxWidth: 480, margin: '0 auto', padding: '48px 24px' }}>
-      <div style={{ marginBottom: 40 }}>
-        <div style={{ fontSize: 11, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 12 }}>
-          Welcome
+    <div style={{ minHeight: '100vh', background: T.darkGreen, padding: '48px 24px', boxSizing: 'border-box' }}>
+      <div style={{ maxWidth: 480, margin: '0 auto' }}>
+        <div style={{ marginBottom: 40 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.75)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 12 }}>
+            Welcome
+          </div>
+          <h1 style={{ fontSize: 28, fontWeight: 800, color: T.white, letterSpacing: '-0.03em', lineHeight: 1.2, margin: '0 0 12px' }}>
+            Let's get your routine set up.
+          </h1>
+          <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', lineHeight: 1.7, margin: 0 }}>
+            Glow Up tracks your skincare routine, schedules your treatments, and walks you through introducing new products safely.
+          </p>
         </div>
-        <h1 style={{ fontSize: 28, fontWeight: 800, color: T.text, letterSpacing: '-0.03em', lineHeight: 1.2, margin: '0 0 12px' }}>
-          Let's get your routine set up.
-        </h1>
-        <p style={{ fontSize: 14, color: T.textMuted, lineHeight: 1.7, margin: 0 }}>
-          Glow Up tracks your skincare routine, schedules your treatments, and walks you through introducing new products safely.
-        </p>
+
+        <div style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.75)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 14 }}>
+          Where are you starting from?
+        </div>
+
+        {/* Option A — fresh start */}
+        <button onClick={() => setScreen('program')}
+          style={{ width: '100%', textAlign: 'left', background: T.white, border: 'none', borderRadius: T.radius.modal, padding: '18px 20px', cursor: 'pointer', marginBottom: 10, display: 'block', fontFamily: 'inherit', boxShadow: '0 4px 16px rgba(0,0,0,0.12)' }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: T.text, marginBottom: 4 }}>
+            I'm starting fresh →
+          </div>
+          <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.6 }}>
+            Build a routine from scratch. We'll walk you through it step by step.
+          </div>
+        </button>
+
+        {/* Option B — already doing the basics */}
+        <button onClick={() => setScreen('phase2start')}
+          style={{ width: '100%', textAlign: 'left', background: T.white, border: 'none', borderRadius: T.radius.modal, padding: '18px 20px', cursor: 'pointer', marginBottom: 10, display: 'block', fontFamily: 'inherit', boxShadow: '0 4px 16px rgba(0,0,0,0.12)' }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: T.text, marginBottom: 4 }}>
+            I already do the basics →
+          </div>
+          <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.6 }}>
+            Cleanse, moisturize, SPF — that's covered. Start at Phase 2 and choose what to add next.
+          </div>
+        </button>
+
+        {/* Option C — already have a routine */}
+        <button onClick={onSkipToBuilder}
+          style={{ width: '100%', textAlign: 'left', background: T.white, border: 'none', borderRadius: T.radius.modal, padding: '18px 20px', cursor: 'pointer', display: 'block', fontFamily: 'inherit', boxShadow: '0 4px 16px rgba(0,0,0,0.12)' }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: T.text, marginBottom: 4 }}>
+            I already have a routine →
+          </div>
+          <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.6 }}>
+            Skip ahead and build your current routine manually.
+          </div>
+        </button>
       </div>
-
-      <div style={{ fontSize: 12, fontWeight: 600, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 14 }}>
-        Where are you starting from?
-      </div>
-
-      {/* Option A — fresh start */}
-      <button onClick={() => setScreen('program')}
-        style={{ width: '100%', textAlign: 'left', background: T.white, border: `1px solid ${T.border}`, borderRadius: 0, padding: '18px 20px', cursor: 'pointer', marginBottom: 10, display: 'block', fontFamily: 'inherit' }}>
-        <div style={{ fontSize: 14, fontWeight: 600, color: T.text, marginBottom: 4 }}>
-          I'm starting fresh →
-        </div>
-        <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.6 }}>
-          Build a routine from scratch. We'll walk you through it step by step.
-        </div>
-      </button>
-
-      {/* Option B — already doing the basics */}
-      <button onClick={() => setScreen('phase2start')}
-        style={{ width: '100%', textAlign: 'left', background: 'transparent', border: `1px solid ${T.border}`, borderRadius: 0, padding: '18px 20px', cursor: 'pointer', marginBottom: 10, display: 'block', fontFamily: 'inherit' }}>
-        <div style={{ fontSize: 14, fontWeight: 600, color: T.text, marginBottom: 4 }}>
-          I already do the basics →
-        </div>
-        <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.6 }}>
-          Cleanse, moisturize, SPF — that's covered. Start at Phase 2 and choose what to add next.
-        </div>
-      </button>
-
-      {/* Option C — already have a routine */}
-      <button onClick={onSkipToBuilder}
-        style={{ width: '100%', textAlign: 'left', background: 'transparent', border: `1px solid ${T.border}`, borderRadius: 0, padding: '18px 20px', cursor: 'pointer', display: 'block', fontFamily: 'inherit' }}>
-        <div style={{ fontSize: 14, fontWeight: 600, color: T.text, marginBottom: 4 }}>
-          I already have a routine →
-        </div>
-        <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.6 }}>
-          Skip ahead and build your current routine manually.
-        </div>
-      </button>
     </div>
   )
 
   // ── PROGRAM SELECTION ────────────────────────────────────
   if (screen === 'program') return (
-    <div style={{ maxWidth: 480, margin: '0 auto', padding: '48px 24px' }}>
-      <button onClick={() => setScreen('entry')}
-        style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.textMuted, fontSize: 13, padding: 0, marginBottom: 32, fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 6 }}>
-        ← Back
-      </button>
+    <div style={{ minHeight: '100vh', background: T.darkGreen, padding: '48px 24px', boxSizing: 'border-box' }}>
+      <div style={{ maxWidth: 480, margin: '0 auto' }}>
+        <button onClick={() => setScreen('entry')}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.8)', fontSize: 13, padding: 0, marginBottom: 32, fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 6 }}>
+          ← Back
+        </button>
 
-      <div style={{ fontSize: 11, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 12 }}>
-        Your program
-      </div>
-      <h2 style={{ fontSize: 24, fontWeight: 800, color: T.text, letterSpacing: '-0.03em', margin: '0 0 24px' }}>
-        We'll start with the basics.
-      </h2>
-
-      {/* Program card */}
-      <div style={{ background: T.white, border: `1px solid ${T.border}`, borderRadius: 0, padding: '20px 20px 24px', marginBottom: 24 }}>
-        <div style={{ fontSize: 16, fontWeight: 700, color: T.text, marginBottom: 8 }}>{program.name}</div>
-        <div style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.7, marginBottom: 20 }}>
-          {program.description}
+        <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.75)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 12 }}>
+          Your program
         </div>
+        <h2 style={{ fontSize: 24, fontWeight: 800, color: T.white, letterSpacing: '-0.03em', margin: '0 0 24px' }}>
+          We'll start with the basics.
+        </h2>
 
-        {/* Phase timeline */}
-        <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 14 }}>
-          What to expect
-        </div>
-        {phases.map((ph, i) => (
-          <div key={ph.id} style={{ display: 'flex', gap: 14, marginBottom: 14 }}>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0 }}>
-              <div style={{ width: 24, height: 24, borderRadius: 0, background: i === 0 ? T.text : T.creamDark, border: `1px solid ${i === 0 ? T.text : T.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: i === 0 ? '#fff' : T.textMuted, flexShrink: 0 }}>
-                {ph.phase_number}
-              </div>
-              {i < phases.length - 1 && (
-                <div style={{ width: 1, height: 16, background: T.border, marginTop: 4 }} />
-              )}
-            </div>
-            <div style={{ paddingTop: 3 }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 2 }}>
-                Phase {ph.phase_number}
-              </div>
-              <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>
-                {ph.name}
-                {ph.duration_days && <span style={{ fontWeight: 400, color: T.textMuted, marginLeft: 8 }}>{ph.duration_days} days</span>}
-              </div>
-              <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.6, marginTop: 2 }}>{ph.description}</div>
-            </div>
+        {/* Program card */}
+        <div style={{ background: T.white, borderRadius: T.radius.modal, padding: '20px 20px 24px', marginBottom: 24, boxShadow: '0 8px 32px rgba(0,0,0,0.15)' }}>
+          <div style={{ fontSize: 16, fontWeight: 700, color: T.text, marginBottom: 8 }}>{program.name}</div>
+          <div style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.7, marginBottom: 20 }}>
+            {program.description}
           </div>
-        ))}
-      </div>
 
-      <button onClick={() => setScreen('phase1')}
-        style={{ width: '100%', padding: '12px', borderRadius: 0, border: 'none', background: T.text, color: '#fff', cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 600 }}>
-        See what Phase 1 looks like →
-      </button>
+          {/* Phase timeline */}
+          <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 14 }}>
+            What to expect
+          </div>
+          {phases.map((ph, i) => (
+            <div key={ph.id} style={{ display: 'flex', gap: 14, marginBottom: 14 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0 }}>
+                <div style={{ width: 24, height: 24, borderRadius: '50%', background: i === 0 ? T.darkGreen : '#EBFBF2', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: i === 0 ? T.white : T.darkGreen, flexShrink: 0 }}>
+                  {ph.phase_number}
+                </div>
+                {i < phases.length - 1 && (
+                  <div style={{ width: 1, height: 16, background: 'rgba(0,0,0,0.12)', marginTop: 4 }} />
+                )}
+              </div>
+              <div style={{ paddingTop: 3 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: T.darkGreen, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 2 }}>
+                  Phase {ph.phase_number}
+                </div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>
+                  {ph.name}
+                  {ph.duration_days && <span style={{ fontWeight: 400, color: T.textMuted, marginLeft: 8 }}>{ph.duration_days} days</span>}
+                </div>
+                <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.6, marginTop: 2 }}>{ph.description}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <button onClick={() => setScreen('phase1')}
+          style={{ width: '100%', padding: '13px', borderRadius: T.radius.pill, border: 'none', background: T.white, color: T.darkGreen, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 600 }}>
+          See what Phase 1 looks like →
+        </button>
+      </div>
     </div>
   )
 
@@ -511,57 +523,59 @@ export default function Onboarding({ session, onEnrolled, onSkipToBuilder }) {
   if (screen === 'phase1') {
     const phase1 = phases.find(p => p.phase_number === 1)
     return (
-      <div style={{ maxWidth: 480, margin: '0 auto', padding: '48px 24px' }}>
-        <button onClick={() => setScreen('program')}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.textMuted, fontSize: 13, padding: 0, marginBottom: 32, fontFamily: 'inherit' }}>
-          ← Back
-        </button>
+      <div style={{ minHeight: '100vh', background: T.darkGreen, padding: '48px 24px', boxSizing: 'border-box' }}>
+        <div style={{ maxWidth: 480, margin: '0 auto' }}>
+          <button onClick={() => setScreen('program')}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.8)', fontSize: 13, padding: 0, marginBottom: 32, fontFamily: 'inherit' }}>
+            ← Back
+          </button>
 
-        {/* Phase label */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-            Phase 1 of {phases.length}
+          {/* Phase label */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.75)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+              Phase 1 of {phases.length}
+            </div>
+            <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+              {phases.map((ph, i) => (
+                <StepDot key={ph.id} active={i === 0} done={false} />
+              ))}
+            </div>
           </div>
-          <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-            {phases.map((ph, i) => (
-              <StepDot key={ph.id} active={i === 0} done={false} />
-            ))}
+
+          <h2 style={{ fontSize: 24, fontWeight: 800, color: T.white, letterSpacing: '-0.03em', margin: '0 0 6px' }}>
+            {phase1.name}
+          </h2>
+          <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.85)', lineHeight: 1.7, margin: '0 0 28px' }}>
+            {phase1.description}
+          </p>
+
+          {/* Step preview */}
+          <div style={{ background: T.white, borderRadius: T.radius.modal, padding: 20, marginBottom: 24, boxShadow: '0 8px 32px rgba(0,0,0,0.15)' }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 16 }}>
+              Your routine for the next {phase1.duration_days} days
+            </div>
+            <StepList steps={phase1Steps} tod="am" />
+            <div style={{ height: 1, background: 'rgba(0,0,0,0.1)', margin: '16px 0' }} />
+            <StepList steps={phase1Steps} tod="pm" />
           </div>
+
+          {/* What happens next */}
+          <div style={{ background: 'rgba(255,255,255,0.12)', borderRadius: T.radius.card, padding: '14px 16px', marginBottom: 24 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.7)', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 6 }}>After 2 weeks — Phase 2</div>
+            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.85)', lineHeight: 1.6 }}>
+              You'll get a prompt to advance to Phase 2, where you choose what to add to your routine — you can pick more than one. You'll tap to confirm when you're ready.
+            </div>
+          </div>
+
+          <button onClick={enroll}
+            style={{ width: '100%', padding: '13px', borderRadius: T.radius.pill, border: 'none', background: T.white, color: T.darkGreen, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 600, marginBottom: 12 }}>
+            Start Phase 1 — Foundation
+          </button>
+          <button onClick={onSkipToBuilder}
+            style={{ width: '100%', padding: '11px', borderRadius: T.radius.pill, border: 'none', background: 'rgba(255,255,255,0.15)', color: T.white, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
+            Skip — I'll build my routine manually
+          </button>
         </div>
-
-        <h2 style={{ fontSize: 24, fontWeight: 800, color: T.text, letterSpacing: '-0.03em', margin: '0 0 6px' }}>
-          {phase1.name}
-        </h2>
-        <p style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.7, margin: '0 0 28px' }}>
-          {phase1.description}
-        </p>
-
-        {/* Step preview */}
-        <div style={{ background: T.white, border: `1px solid ${T.border}`, borderRadius: 0, padding: '20px' , marginBottom: 24 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 16 }}>
-            Your routine for the next {phase1.duration_days} days
-          </div>
-          <StepList steps={phase1Steps} tod="am" />
-          <div style={{ height: 1, background: T.border, margin: '16px 0' }} />
-          <StepList steps={phase1Steps} tod="pm" />
-        </div>
-
-        {/* What happens next */}
-        <div style={{ background: T.cream, border: `1px solid ${T.border}`, borderRadius: 0, padding: '14px 16px', marginBottom: 24 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 6 }}>After 2 weeks — Phase 2</div>
-          <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.6 }}>
-            You'll get a prompt to advance to Phase 2, where you choose what to add to your routine — you can pick more than one. You'll tap to confirm when you're ready.
-          </div>
-        </div>
-
-        <button onClick={enroll}
-          style={{ width: '100%', padding: '12px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 600, marginBottom: 12 }}>
-          Start Phase 1 — Foundation
-        </button>
-        <button onClick={onSkipToBuilder}
-          style={{ width: '100%', padding: '10px', borderRadius: 0, border: `1px solid ${T.border}`, background: 'transparent', color: T.textMuted, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
-          Skip — I'll build my routine manually
-        </button>
       </div>
     )
   }
@@ -583,8 +597,8 @@ export default function Onboarding({ session, onEnrolled, onSkipToBuilder }) {
 
 
   if (screen === 'enrolling') return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', flexDirection: 'column', gap: 12 }}>
-      <div style={{ fontSize: 13, color: T.textMuted }}>Setting up your routine…</div>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: T.darkGreen, flexDirection: 'column', gap: 12 }}>
+      <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.85)' }}>Setting up your routine…</div>
     </div>
   )
 
