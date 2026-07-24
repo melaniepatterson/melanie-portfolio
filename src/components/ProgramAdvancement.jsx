@@ -48,6 +48,7 @@ export function Phase2Picker({ options, onChoose, onClose, skinType, alreadyAdde
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
           {DAYS.map((d, i) => (
             <button key={i} onClick={() => setBhaDay(i)}
+              aria-pressed={bhaDay === i}
               style={{ padding: '6px 12px', borderRadius: 0, border: `1px solid ${bhaDay === i ? T.text : T.border}`, background: bhaDay === i ? T.text : 'transparent', color: bhaDay === i ? '#fff' : T.textMuted, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
               {d}
             </button>
@@ -610,6 +611,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
         <div style={{ padding: '10px 14px' }}>
           {/* Header row — always visible */}
           <button onClick={toggleCollapsed}
+            aria-expanded={!collapsed}
             style={{ width: '100%', minWidth: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, background: 'transparent', border: 'none', padding: 0, cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left', boxSizing: 'border-box' }}>
             <style>{`
               .gu-progress-inline { display: flex; }
