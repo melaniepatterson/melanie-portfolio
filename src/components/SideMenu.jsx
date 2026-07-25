@@ -105,29 +105,30 @@ export default function SideMenu({ session, onClose, onFeedback }) {
         zIndex: 201, display: 'flex', flexDirection: 'column',
         fontFamily: 'inherit', boxShadow: '-4px 0 24px rgba(0,0,0,0.2)',
       }}>
-        {/* Header */}
-        <div style={{ padding: '20px 20px 16px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              {!avatarReady ? (
-                <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'rgba(0,0,0,0.1)', flexShrink: 0 }} />
-              ) : (
-                <Avatar avatarUrl={avatarUrl} displayName={displayName} email={email} size={44} />
-              )}
-              <div style={{ minWidth: 0 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {avatarReady ? displayName : ''}
-                </div>
-              </div>
-              <a href="/routine/profile" aria-label="Account & settings" onClick={onClose}
-                style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.text, padding: 4, lineHeight: 1, flexShrink: 0, display: 'flex' }}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="3" />
-                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-                </svg>
-              </a>
-            </div>
+        {/* Header — close button gets its own line up top so it isn't
+            crowded against the gear icon on the identity row below. */}
+        <div style={{ padding: '14px 20px 16px' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
             <button onClick={onClose} aria-label="Close menu" style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 22, color: T.text, padding: '0 2px', lineHeight: 1, flexShrink: 0 }}>×</button>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 10 }}>
+            {!avatarReady ? (
+              <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'rgba(0,0,0,0.1)', flexShrink: 0 }} />
+            ) : (
+              <Avatar avatarUrl={avatarUrl} displayName={displayName} email={email} size={44} />
+            )}
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {avatarReady ? displayName : ''}
+              </div>
+            </div>
+            <a href="/routine/profile" aria-label="Account & settings" onClick={onClose}
+              style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.text, padding: 4, lineHeight: 1, flexShrink: 0, display: 'flex' }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="3" />
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+              </svg>
+            </a>
           </div>
         </div>
 

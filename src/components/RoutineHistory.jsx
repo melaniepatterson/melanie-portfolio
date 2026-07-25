@@ -197,7 +197,7 @@ export default function RoutineHistory({ session }) {
   }
 
   return (
-    <div style={{ fontFamily: 'inherit', minHeight: '100vh', background: T.cream, paddingBottom: 40 }}>
+    <div style={{ fontFamily: 'inherit', minHeight: '100vh', background: T.white, paddingBottom: 40 }}>
       {/* Header — arrow + logo both link back to calendar, matching Product Library */}
       <div style={{ background: T.text }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px 10px' }}>
@@ -307,7 +307,7 @@ export default function RoutineHistory({ session }) {
                 {dailyHistory.length === 0
                   ? <div style={{ fontSize: 13, color: T.textMuted, fontStyle: 'italic' }}>No extras routines yet.</div>
                   : dailyHistory.map((p, i) => (
-                    <div key={i} style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 0, padding: '12px 14px', marginBottom: 10 }}>
+                    <div key={i} style={{ background: T.white, border: `0.5px solid ${T.hairline}`, borderRadius: 0, padding: '12px 14px', marginBottom: 10 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
                         <div style={{ fontSize: 12, fontWeight: 600, color: T.text }}>{getPeriodLabel(p)}</div>
                         <div style={{ display: 'flex', gap: 4 }}>
@@ -335,7 +335,7 @@ export default function RoutineHistory({ session }) {
                 {showerHistory.length === 0
                   ? <div style={{ fontSize: 13, color: T.textMuted, fontStyle: 'italic' }}>No shower routines yet.</div>
                   : showerHistory.map((p, i) => (
-                    <div key={i} style={{ background: T.white, border: `0.5px solid ${T.border}`, borderRadius: 0, padding: '12px 14px', marginBottom: 10 }}>
+                    <div key={i} style={{ background: T.white, border: `0.5px solid ${T.hairline}`, borderRadius: 0, padding: '12px 14px', marginBottom: 10 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
                         <div style={{ fontSize: 12, fontWeight: 600, color: T.text }}>{getPeriodLabel(p)}</div>
                         <div style={{ display: 'flex', gap: 4 }}>

@@ -38,7 +38,7 @@ export function Phase2Picker({ options, onChoose, onClose, skinType, alreadyAdde
 
   if (bhaStep) return (
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-      <div onClick={e => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="bha-onboarding-title" style={{ background: T.white, border: `1px solid ${T.border}`, borderRadius: 0, width: '100%', maxWidth: 460, padding: '28px 24px' }}>
+      <div onClick={e => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="bha-onboarding-title" style={{ background: T.white, border: `1px solid ${T.hairline}`, borderRadius: 0, width: '100%', maxWidth: 460, padding: '28px 24px' }}>
         <div style={{ fontSize: 11, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>AHA/BHA Onboarding</div>
         <h3 id="bha-onboarding-title" style={{ fontSize: 18, fontWeight: 800, color: T.text, letterSpacing: '-0.03em', margin: '0 0 8px' }}>One more step</h3>
         <p style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.7, margin: '0 0 20px' }}>
@@ -49,7 +49,7 @@ export function Phase2Picker({ options, onChoose, onClose, skinType, alreadyAdde
           {DAYS.map((d, i) => (
             <button key={i} onClick={() => setBhaDay(i)}
               aria-pressed={bhaDay === i}
-              style={{ padding: '6px 12px', borderRadius: 0, border: `1px solid ${bhaDay === i ? T.text : T.border}`, background: bhaDay === i ? T.text : 'transparent', color: bhaDay === i ? '#fff' : T.textMuted, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
+              style={{ padding: '6px 12px', borderRadius: 0, border: `1px solid ${bhaDay === i ? T.text : T.hairline}`, background: bhaDay === i ? T.text : 'transparent', color: bhaDay === i ? '#fff' : T.textMuted, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
               {d}
             </button>
           ))}
@@ -71,9 +71,9 @@ export function Phase2Picker({ options, onChoose, onClose, skinType, alreadyAdde
 
   return (
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-      <div onClick={e => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="phase2-picker-title" style={{ position: 'relative', background: T.white, border: `1px solid ${T.border}`, borderRadius: 0, width: '100%', maxWidth: 460, maxHeight: '85vh', overflowY: 'auto', padding: '24px 20px' }}>
+      <div onClick={e => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="phase2-picker-title" style={{ position: 'relative', background: T.white, border: `1px solid ${T.hairline}`, borderRadius: 0, width: '100%', maxWidth: 460, maxHeight: '85vh', overflowY: 'auto', padding: '24px 20px' }}>
         <button onClick={onClose} aria-label="Close"
-          style={{ position: 'absolute', top: 16, right: 16, width: 28, height: 28, border: `1px solid ${T.border}`, background: 'transparent', borderRadius: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: T.textMuted, fontSize: 14, lineHeight: 1, fontFamily: 'inherit', padding: 0 }}>
+          style={{ position: 'absolute', top: 16, right: 16, width: 28, height: 28, border: `1px solid ${T.hairline}`, background: 'transparent', borderRadius: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: T.textMuted, fontSize: 14, lineHeight: 1, fontFamily: 'inherit', padding: 0 }}>
           ×
         </button>
 
@@ -113,7 +113,7 @@ export function Phase2Picker({ options, onChoose, onClose, skinType, alreadyAdde
               setSaving(false)
             }
           }}
-          style={{ width: '100%', padding: '12px', borderRadius: 0, border: 'none', background: selected.size > 0 ? T.pinkDeep : T.border, color: '#fff', cursor: selected.size > 0 ? 'pointer' : 'default', fontSize: 13, fontFamily: 'inherit', fontWeight: 600, marginTop: 12 }}>
+          style={{ width: '100%', padding: '12px', borderRadius: 0, border: 'none', background: selected.size > 0 ? T.pinkDeep : T.hairline, color: '#fff', cursor: selected.size > 0 ? 'pointer' : 'default', fontSize: 13, fontFamily: 'inherit', fontWeight: 600, marginTop: 12 }}>
           {saving ? 'Saving…' : (() => {
             if (selected.size === 0) return 'Select an option to continue'
             const realCount = options.filter(o => selected.has(o.id) && !o.is_skip_option).length
@@ -133,7 +133,7 @@ function GraduationModal({ onConfirm, onClose }) {
   useEscapeToClose(onClose)
   return (
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-      <div onClick={e => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="graduation-modal-title" style={{ background: T.white, border: `1px solid ${T.border}`, borderRadius: 0, width: '100%', maxWidth: 420, padding: '24px 20px', textAlign: 'center' }}>
+      <div onClick={e => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="graduation-modal-title" style={{ background: T.white, border: `1px solid ${T.hairline}`, borderRadius: 0, width: '100%', maxWidth: 420, padding: '24px 20px', textAlign: 'center' }}>
         <div style={{ fontSize: 11, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>
           Graduation
         </div>
@@ -161,7 +161,7 @@ function LinearAdvanceModal({ nextPhase, isGraduation, onConfirm, onClose }) {
   useEscapeToClose(onClose)
   return (
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-      <div onClick={e => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="linear-advance-title" style={{ background: T.white, border: `1px solid ${T.border}`, borderRadius: 0, width: '100%', maxWidth: 420, padding: '24px 20px' }}>
+      <div onClick={e => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="linear-advance-title" style={{ background: T.white, border: `1px solid ${T.hairline}`, borderRadius: 0, width: '100%', maxWidth: 420, padding: '24px 20px' }}>
         <div style={{ fontSize: 11, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>
           {isGraduation ? 'Graduation' : `Phase ${nextPhase.phase_number}`}
         </div>
@@ -184,7 +184,7 @@ function LinearAdvanceModal({ nextPhase, isGraduation, onConfirm, onClose }) {
 // without forcing a decision. Shown under every ready-banner.
 function NotReadyYetLink({ onClick, disabled }) {
   return (
-    <div style={{ borderTop: `1px solid ${T.border}`, padding: '10px 16px' }}>
+    <div style={{ borderTop: `1px solid ${T.hairline}`, padding: '10px 16px' }}>
       <button onClick={onClick} disabled={disabled}
         style={{ padding: '7px 14px', borderRadius: T.radius.pill, border: 'none', background: T.text, color: T.white, cursor: disabled ? 'default' : 'pointer', fontSize: 11, fontFamily: 'inherit' }}>
         {disabled ? 'Saving…' : "I'm not ready yet — add a week"}
@@ -674,7 +674,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
 
               {/* Buttons inside the chip for Basic Skincare */}
               {program.slug === 'basic-skincare' && (
-                <div style={{ display: 'flex', gap: 8, borderTop: `1px solid ${T.border}`, marginTop: 10, paddingTop: 10 }}>
+                <div style={{ display: 'flex', gap: 8, borderTop: `1px solid ${T.hairline}`, marginTop: 10, paddingTop: 10 }}>
                   {currentPhase.phase_number >= 2 && (
                     <Btn variant="primary" onClick={e => { e.stopPropagation(); setShowAddMore(true) }}>
                       Add to my <AccentWord>routine</AccentWord>
@@ -691,7 +691,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
                 <div onClick={() => setEndFoundationConfirm(false)}
                   style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 400, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
                   <div onClick={e => e.stopPropagation()} role="dialog" aria-modal="true" aria-label="End this program early?"
-                    style={{ background: T.white, border: `1px solid ${T.border}`, borderRadius: 0, padding: '24px 20px', width: '100%', maxWidth: 420 }}>
+                    style={{ background: T.white, border: `1px solid ${T.hairline}`, borderRadius: 0, padding: '24px 20px', width: '100%', maxWidth: 420 }}>
                     <div style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.7, marginBottom: 20 }}>
                       This locks in your current routine exactly as it is — no more Basic Skincare phases. Whether you're happy with it or just ready to move on, your routine stays as-is and you can keep adjusting it manually or add a new program (like Tretinoin Onboarding) anytime.
                     </div>

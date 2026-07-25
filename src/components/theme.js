@@ -35,11 +35,12 @@ const T = {
   orangeLight: '#FEE9D5',   // light orange tint — day-of-week pickers, light fills needing an orange accent
 
   // ── Neutrals ─────────────────────────────────────────────────
-  white:      '#FFFFFF',       // inputs, text areas, max contrast surfaces
-  creamLight: '#FDF8F0',       // modals, cards, panels
-  cream:      '#FFFFFF',       // page background — plain white
-  creamDark:  '#EDE2C2',       // secondary surfaces, tags, dividers
-  border:     '#D4C9A8',       // all borders
+  // cream/creamLight/creamDark/border (all tan-toned) are retired — the
+  // app doesn't use warm cream tones anywhere anymore. surfaceMuted and
+  // hairline replace creamDark/border with neutral, hue-free equivalents.
+  white:        '#FFFFFF',              // inputs, text areas, max contrast surfaces, page background
+  surfaceMuted: '#F0F0EE',              // secondary surfaces, tags — was creamDark
+  hairline:     'rgba(0, 0, 0, 0.15)',  // dividers, hairline borders — was border
 
   // ── Text ─────────────────────────────────────────────────────
   text:      '#000000',                  // primary text — 100%

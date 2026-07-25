@@ -37,5 +37,5 @@ const MID_BY_DARK = {
 }
 
 export function programMidColor(program) {
-  return MID_BY_DARK[programCardColor(program)] || T.creamDark
+  return MID_BY_DARK[programCardColor(program)] || T.surfaceMuted
 }

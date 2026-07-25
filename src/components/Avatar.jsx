@@ -27,7 +27,7 @@ export default function Avatar({ avatarUrl, displayName, email, size = AVATAR_SI
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    border: `0.5px solid ${T.border}`,
+    border: `0.5px solid ${T.hairline}`,
     cursor: onClick ? 'pointer' : 'default',
     background: avatarUrl ? 'transparent' : sessionColor,
     ...style,

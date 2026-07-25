@@ -190,7 +190,7 @@ function FieldLabel({ children }) {
 
 function Toggle({ checked, onChange, label }) {
   return (
-    <label style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', borderRadius: 8, cursor: 'pointer', background: T.creamDark, border: `0.5px solid ${T.border}`, fontSize: 12, color: T.text, marginBottom: 6 }}>
+    <label style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', borderRadius: 8, cursor: 'pointer', background: T.surfaceMuted, border: `0.5px solid ${T.hairline}`, fontSize: 12, color: T.text, marginBottom: 6 }}>
       <input type="checkbox" checked={checked} onChange={onChange} style={{ width: 14, height: 14, cursor: 'pointer', accentColor: T.pinkDeep }} />
       {label}
     </label>
@@ -198,7 +198,7 @@ function Toggle({ checked, onChange, label }) {
 }
 
 function TextInput({ value, onChange, placeholder, width = 140 }) {
-  return <input type="text" value={value} onChange={onChange} placeholder={placeholder} style={{ width, fontSize: 12, padding: '5px 8px', border: `0.5px solid ${T.border}`, borderRadius: 6, background: T.cream, color: T.text }} />
+  return <input type="text" value={value} onChange={onChange} placeholder={placeholder} style={{ width, fontSize: 12, padding: '5px 8px', border: `0.5px solid ${T.hairline}`, borderRadius: 6, background: T.white, color: T.text }} />
 }
 
 

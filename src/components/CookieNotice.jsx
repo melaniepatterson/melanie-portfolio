@@ -17,7 +17,7 @@ const COPY = {
     privacyLink: null,
     buttonBg: T.pinkDeep,
     linkColor: T.pinkDeep,
-    border: `1px solid ${T.border}`,
+    border: `1px solid ${T.hairline}`,
     buttonRadius: 8,
   },
 }

@@ -35,14 +35,14 @@ function shuffle(arr) {
 // background-repeat and scrolled by exactly one UNIT width for a seamless loop.
 function buildBarGradient() {
   const order = shuffle(BAR_COLORS)
-  const stops = [`${T.creamLight} 0px`]
+  const stops = [`${T.white} 0px`]
   order.forEach((color, i) => {
     const center = i * SLOT + SLOT / 2
-    stops.push(`${T.creamLight} ${center - BAND_HALF}px`)
+    stops.push(`${T.white} ${center - BAND_HALF}px`)
     stops.push(`${color} ${center}px`)
-    stops.push(`${T.creamLight} ${center + BAND_HALF}px`)
+    stops.push(`${T.white} ${center + BAND_HALF}px`)
   })
-  stops.push(`${T.creamLight} ${UNIT}px`)
+  stops.push(`${T.white} ${UNIT}px`)
   return `linear-gradient(90deg, ${stops.join(', ')})`
 }
 
@@ -115,7 +115,7 @@ export default function GlowUpLoader() {
         glow up.
       </div>
 
-      <div style={{ width: 200, height: 6, borderRadius: T.radius.pill, overflow: 'hidden', background: T.creamLight }}>
+      <div style={{ width: 200, height: 6, borderRadius: T.radius.pill, overflow: 'hidden', background: T.white }}>
         <div className="glowup-loader-bar" style={{
           width: '100%', height: '100%',
           backgroundImage: barGradient.current,

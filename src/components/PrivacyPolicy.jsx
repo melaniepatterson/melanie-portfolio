@@ -27,7 +27,7 @@ function Ul({ items }) {
 
 export default function PrivacyPolicy() {
   return (
-    <div style={{ minHeight: '100vh', background: T.cream, padding: '40px 20px' }}>
+    <div style={{ minHeight: '100vh', background: T.white, padding: '40px 20px' }}>
       <div style={{ maxWidth: 640, margin: '0 auto' }}>
 
         {/* Header */}
@@ -44,7 +44,7 @@ export default function PrivacyPolicy() {
           <div style={{ fontSize: 12, color: T.textMuted }}>Last updated: June 25, 2026</div>
         </div>
 
-        <div style={{ borderTop: `1px solid ${T.border}`, paddingTop: 32 }}>
+        <div style={{ borderTop: `1px solid ${T.hairline}`, paddingTop: 32 }}>
 
           <Section title="What we collect">
             <P><strong style={{ color: T.text }}>Account information</strong> — Your email address, used only for authentication (magic link sign-in). We don't use it for marketing.</P>

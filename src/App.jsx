@@ -147,7 +147,7 @@ function Layout() {
         {!isHome && !isRoutine && <Nav isWork={isWork || isWorkDetail} />}
         <Logo isWork={isWork || isWorkDetail} isHidden={isRoutine} />
         <div className="page-wrapper" style={{
-          backgroundColor: isWork || isWorkDetail ? "#C93500" : isRoutine ? T.cream : "#FAF7F2",
+          backgroundColor: isWork || isWorkDetail ? "#C93500" : isRoutine ? T.white : "#FAF7F2",
           ...(isRoutine && {
             display: 'flex',
             alignItems: 'center',

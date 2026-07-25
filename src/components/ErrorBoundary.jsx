@@ -8,7 +8,7 @@ function ErrorScreen({ error, onRetry, type = 'boundary' }) {
       position: isLoad ? 'fixed' : 'relative',
       inset: isLoad ? 0 : undefined,
       minHeight: isLoad ? undefined : '60vh',
-      background: T.cream,
+      background: T.white,
       display: 'flex', flexDirection: 'column',
       alignItems: 'center', justifyContent: 'center',
       fontFamily: 'inherit', padding: '32px 24px',
@@ -42,7 +42,7 @@ function ErrorScreen({ error, onRetry, type = 'boundary' }) {
           <summary style={{ fontSize: 11, color: T.textLight, cursor: 'pointer', userSelect: 'none' }}>
             Show error details
           </summary>
-          <div style={{ marginTop: 8, padding: '8px 10px', background: T.creamDark, borderRadius: 8, border: `0.5px solid ${T.border}`, fontSize: 11, color: T.textMuted, fontFamily: 'monospace', wordBreak: 'break-all', lineHeight: 1.6 }}>
+          <div style={{ marginTop: 8, padding: '8px 10px', background: T.surfaceMuted, borderRadius: 8, border: `0.5px solid ${T.hairline}`, fontSize: 11, color: T.textMuted, fontFamily: 'monospace', wordBreak: 'break-all', lineHeight: 1.6 }}>
             {error.message}
           </div>
         </details>
