@@ -223,7 +223,7 @@ export default function RoutineHistory({ session }) {
           )}
           {showFeedback && <FeedbackPanel onClose={() => setShowFeedback(false)} />}
         </div>
-        <div style={{ padding: '0 20px 14px', textAlign: 'center' }}>
+        <div style={{ padding: '0 20px 14px' }}>
           <div style={{ fontSize: 15, fontWeight: 600, color: T.white }}>Routine History</div>
         </div>
       </div>

@@ -554,15 +554,27 @@ function FieldLabel({ children, htmlFor }) {
   return <Tag htmlFor={htmlFor} style={{ fontSize: 11, color: T.textLight, marginBottom: 3, display: 'block' }}>{children}</Tag>
 }
 
-function TextInput({ id, value, onChange, placeholder, width = 140 }) {
+// variant="pill" — solid white pill, for use directly on a full-color page
+// (matches the day-flyout / ColorPagePill convention). Default stays the
+// green-underline treatment used everywhere else (white backgrounds).
+function TextInput({ id, value, onChange, placeholder, width = 140, variant }) {
+  if (variant === 'pill') {
+    return <input id={id} type="text" value={value} onChange={onChange} placeholder={placeholder} style={{ width, fontSize: 12, padding: '7px 14px', border: 'none', borderRadius: T.radius.pill, background: T.white, color: T.text, outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }} />
+  }
   return <input id={id} type="text" value={value} onChange={onChange} placeholder={placeholder} style={{ width, fontSize: 12, padding: '5px 2px', border: 'none', borderBottom: `1px solid ${T.darkGreen}`, borderRadius: 0, background: 'transparent', color: T.darkGreen, outline: 'none' }} />
 }
 
-function NumberInput({ id, value, onChange, min = 0, max = 14, width = 60 }) {
+function NumberInput({ id, value, onChange, min = 0, max = 14, width = 60, variant }) {
+  if (variant === 'pill') {
+    return <input id={id} type="number" value={value} onChange={onChange} min={min} max={max} style={{ width, fontSize: 12, padding: '7px 10px', border: 'none', borderRadius: T.radius.pill, background: T.white, color: T.text, outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }} />
+  }
   return <input id={id} type="number" value={value} onChange={onChange} min={min} max={max} style={{ width, fontSize: 12, padding: '5px 2px', border: 'none', borderBottom: `1px solid ${T.darkGreen}`, borderRadius: 0, background: 'transparent', color: T.darkGreen, outline: 'none' }} />
 }
 
-function DateInput({ id, value, onChange, disabled = false }) {
+function DateInput({ id, value, onChange, disabled = false, variant }) {
+  if (variant === 'pill') {
+    return <input id={id} type="date" value={value} onChange={onChange} disabled={disabled} style={{ fontSize: 12, padding: '7px 14px', border: 'none', borderRadius: T.radius.pill, background: disabled ? 'rgba(255,255,255,0.4)' : T.white, color: T.text, outline: 'none', cursor: disabled ? 'not-allowed' : 'pointer', fontFamily: 'inherit' }} />
+  }
   return <input id={id} type="date" value={value} onChange={onChange} disabled={disabled} style={{ fontSize: 12, padding: '5px 2px', border: 'none', borderBottom: `1px solid ${T.darkGreen}`, borderRadius: 0, background: 'transparent', color: disabled ? T.textMuted : T.darkGreen, outline: 'none', cursor: disabled ? 'not-allowed' : 'auto' }} />
 }
 
@@ -1197,57 +1209,69 @@ function TreatmentSelectorPanel({ selector, treatments, allTypes, customTypes, s
 
   const hasAnyConflict = conflicts.length > 0 || !!ingredientConflicts
 
+  // Active-ingredient heads-up — inline now instead of a separate modal that
+  // used to pop up over the calendar before this panel even opened.
+  const activeIngredients = getActiveIngredients(getActivePeriod(new Date(dateKey + 'T00:00:00'), routineHistory || []))
+
   return (
-    <div style={{ background: T.white, border: `0.5px solid ${T.hairline}`, borderRadius: 0, padding: '16px 18px', marginBottom: 14 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12, flexWrap: 'wrap' }}>
-        <div style={{ fontSize: 13, fontWeight: 600, color: T.text, flexShrink: 0 }}>
+    <div style={{ background: 'transparent', padding: 0 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 4 }}>
+        <div style={{ fontSize: 15, fontWeight: 700, color: T.white }}>
           {editingEntry ? 'Edit treatment' : existingEntries.length > 0 ? 'Add another treatment' : 'Add treatment'}
         </div>
-        <input
-          type="date"
-          value={dateKey}
-          onChange={e => setDateKey(e.target.value)}
-          style={{ fontSize: 12, padding: '4px 6px', border: 'none', borderBottom: `1px solid ${T.hairline}`, borderRadius: 0, background: 'transparent', color: T.text, fontFamily: 'inherit', outline: 'none', cursor: 'pointer' }}
-        />
+        <button onClick={onClose} aria-label="Close treatment picker" style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 20, color: T.white, opacity: 0.85, padding: '0 2px', lineHeight: 1 }}>×</button>
+      </div>
+      <div style={{ marginBottom: 14 }}>
+        <DateInput variant="pill" value={dateKey} onChange={e => setDateKey(e.target.value)} />
       </div>
 
+      {/* Active-ingredient heads up — only when relevant, folded into the
+          same view instead of a separate modal. */}
+      {activeIngredients.length > 0 && (
+        <div style={{ fontSize: 12, color: T.white, lineHeight: 1.7, padding: '10px 14px', background: 'rgba(255,255,255,0.18)', borderRadius: T.radius.card, marginBottom: 12 }}>
+          <strong>Heads up</strong> — your routine currently includes <strong>{activeIngredients.join(', ')}</strong>. Adding a treatment pauses these for its pre-treatment and recovery windows; your program timer extends to match and resumes right where it left off.
+        </div>
+      )}
+
       {/* Disclaimer */}
-      <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.7, padding: '8px 10px', background: T.surfaceMuted, border: `0.5px solid ${T.hairline}`, marginBottom: 12 }}>
-        ⚠️ Treatments pause active ingredients (retinoids, exfoliants, vitamin C) during pre-treatment and recovery windows. If you're on a program, your timer pauses too and resumes where it left off. Always consult your dermatologist before scheduling a treatment.
+      <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, padding: '10px 14px', background: 'rgba(255,255,255,0.12)', borderRadius: T.radius.card, marginBottom: 14 }}>
+        Treatments pause active ingredients (retinoids, exfoliants, vitamin C) during pre-treatment and recovery windows. Always consult your dermatologist before scheduling a treatment.
       </div>
 
       {/* Existing treatments on this day */}
       {existingEntries.length > 0 && (
         <div style={{ marginBottom: 14 }}>
-          <div style={{ fontSize: 10, fontWeight: 700, color: T.textMuted, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 6 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.75)', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 6 }}>
             Already logged this day
           </div>
           {existingEntries.map(e => (
-            <div key={e._dbId} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, padding: '6px 0', borderTop: `0.5px solid ${T.hairline}` }}>
-              <div style={{ fontSize: 12, color: T.text }}>
+            <div key={e._dbId} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, padding: '8px 0', borderTop: '0.5px solid rgba(255,255,255,0.3)' }}>
+              <div style={{ fontSize: 12, color: T.white }}>
                 {allTypes[e.type]?.label || e.type}
-                <span style={{ color: T.textMuted, marginLeft: 6 }}>{e.area} · {e.timeOfDay === 'am' ? 'Morning (AM)' : 'Evening (PM)'}</span>
+                <span style={{ opacity: 0.75, marginLeft: 6 }}>{e.area} · {e.timeOfDay === 'am' ? 'Morning (AM)' : 'Evening (PM)'}</span>
               </div>
-              <div style={{ display: 'flex', gap: 6 }}>
-                <button onClick={() => onRemove(e._dbId)}
-                  aria-label={`Remove ${allTypes[e.type]?.label || e.type}`}
-                  style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 16, padding: '0 4px', lineHeight: 1 }}>×</button>
-              </div>
+              <button onClick={() => onRemove(e._dbId)}
+                aria-label={`Remove ${allTypes[e.type]?.label || e.type}`}
+                style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.white, opacity: 0.7, fontSize: 16, padding: '0 4px', lineHeight: 1 }}>×</button>
             </div>
           ))}
         </div>
       )}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 6, marginBottom: 12 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 8, marginBottom: 14 }}>
         {Object.entries(allTypes).map(([k, v]) => (
-          <button key={k} onClick={() => { setSelType(k); setTreatArea(v.area || 'face'); setCustomPre(v.pre ?? 0); setCustomPost(v.post ?? 0) }} aria-pressed={selType === k} style={{ border: `0.5px solid ${selType === k ? T.pinkDeep : T.hairline}`, borderRadius: 0, padding: '8px 10px', cursor: 'pointer', background: selType === k ? T.pink : T.white, textAlign: 'left' }}>
-            <div style={{ fontSize: 12, fontWeight: 600, color: T.text }}>{v.label}</div>
-            <div style={{ fontSize: 10, color: T.textLight }}>Pause exfoliants & retinoids {v.pre} days before</div>
-            <div style={{ fontSize: 10, color: T.textLight }}>Recovery for {v.post} days after</div>
-          </button>
+          <ColorPagePill key={k} active={selType === k} accent={T.darkOrange}
+            onClick={() => { setSelType(k); setTreatArea(v.area || 'face'); setCustomPre(v.pre ?? 0); setCustomPost(v.post ?? 0) }}
+            style={{ padding: '10px 12px', display: 'block' }}>
+            <div style={{ fontSize: 12, fontWeight: 600 }}>{v.label}</div>
+            <div style={{ fontSize: 10, opacity: 0.8, marginTop: 2 }}>Pause exfoliants & retinoids {v.pre} days before</div>
+            <div style={{ fontSize: 10, opacity: 0.8 }}>Recovery for {v.post} days after</div>
+          </ColorPagePill>
         ))}
       </div>
 
-      {/* Conflict block — scheduling + ingredient conflicts */}
+      {/* Conflict block — scheduling + ingredient conflicts (kept as its
+          own light card even on the orange page — it's a blocking-error
+          state, distinct from the page theme) */}
       {(conflicts.length > 0 || ingredientConflicts) && (
         <TreatmentConflictBlock
           conflicts={conflicts}
@@ -1257,53 +1281,72 @@ function TreatmentSelectorPanel({ selector, treatments, allTypes, customTypes, s
         />
       )}
 
-      <div style={{ marginBottom: 10 }}>
-        <FieldLabel>Time of day</FieldLabel>
-        <div style={{ display: 'flex', gap: 6 }}>
-          <button onClick={() => setTimeOfDay('am')} aria-pressed={timeOfDay === 'am'} style={{ padding: '5px 16px', borderRadius: 0, border: `0.5px solid ${timeOfDay === 'am' ? T.pinkDeep : T.hairline}`, background: timeOfDay === 'am' ? T.pink : 'transparent', fontSize: 12, fontWeight: timeOfDay === 'am' ? 500 : 400, cursor: 'pointer', color: T.text }}>Morning (AM)</button>
-          <button onClick={() => setTimeOfDay('pm')} aria-pressed={timeOfDay === 'pm'} style={{ padding: '5px 16px', borderRadius: 0, border: `0.5px solid ${timeOfDay === 'pm' ? T.pinkDeep : T.hairline}`, background: timeOfDay === 'pm' ? T.pink : 'transparent', fontSize: 12, fontWeight: timeOfDay === 'pm' ? 500 : 400, cursor: 'pointer', color: T.text }}>Evening (PM)</button>
+      <div style={{ marginBottom: 12 }}>
+        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)', marginBottom: 6 }}>Time of day</div>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <ColorPagePill active={timeOfDay === 'am'} accent={T.darkOrange} onClick={() => setTimeOfDay('am')}>Morning (AM)</ColorPagePill>
+          <ColorPagePill active={timeOfDay === 'pm'} accent={T.darkOrange} onClick={() => setTimeOfDay('pm')}>Evening (PM)</ColorPagePill>
         </div>
       </div>
-      <div style={{ marginBottom: 10 }}>
-        <FieldLabel>Treatment area</FieldLabel>
-        <div style={{ display: 'flex', gap: 6 }}>
+      <div style={{ marginBottom: 12 }}>
+        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)', marginBottom: 6 }}>Treatment area</div>
+        <div style={{ display: 'flex', gap: 8 }}>
           {[{key:'face',label:'Face'},{key:'body',label:'Body'},{key:'both',label:'Both'}].map(a => (
-            <button key={a.key} onClick={() => setTreatArea(a.key)} aria-pressed={treatArea === a.key} style={{ padding: '5px 14px', borderRadius: 0, border: `0.5px solid ${treatArea === a.key ? T.pinkDeep : T.hairline}`, background: treatArea === a.key ? T.pink : 'transparent', fontSize: 12, fontWeight: treatArea === a.key ? 500 : 400, cursor: 'pointer', color: T.text }}>{a.label}</button>
+            <ColorPagePill key={a.key} active={treatArea === a.key} accent={T.darkOrange} onClick={() => setTreatArea(a.key)}>{a.label}</ColorPagePill>
           ))}
         </div>
-        <div style={{ fontSize: 10, color: T.textLight, marginTop: 4 }}>
+        <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.7)', marginTop: 6 }}>
           Body products (BP wash, body salicylic) only conflict with body treatments.
         </div>
       </div>
       {selType && (
-        <div style={{ marginBottom: 10, padding: '10px 12px', background: T.surfaceMuted, borderRadius: 0, border: `0.5px solid ${T.hairline}` }}>
-          <div style={{ fontSize: 12, fontWeight: 500, color: T.text, marginBottom: 8 }}>Pause and recovery window</div>
-          <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
+        <div style={{ marginBottom: 12, padding: '12px 14px', background: 'rgba(255,255,255,0.12)', borderRadius: T.radius.card }}>
+          <div style={{ fontSize: 12, fontWeight: 600, color: T.white, marginBottom: 10 }}>Pause and recovery window</div>
+          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
             <div>
-              <FieldLabel htmlFor="tw-pre">Days before — pause exfoliants & retinoids</FieldLabel>
-              <div style={{ fontSize: 10, color: T.textLight, marginBottom: 4 }}>How many days before this treatment should you stop using actives (retinoids, acids, etc.)?</div>
-              <NumberInput id="tw-pre" value={customPre} onChange={e => setCustomPre(+e.target.value)} min={0} max={30} width={70} />
+              <label htmlFor="tw-pre" style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)', marginBottom: 3, display: 'block' }}>Days before — pause exfoliants & retinoids</label>
+              <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.7)', marginBottom: 6 }}>How many days before this treatment should you stop using actives (retinoids, acids, etc.)?</div>
+              <NumberInput variant="pill" id="tw-pre" value={customPre} onChange={e => setCustomPre(+e.target.value)} min={0} max={30} width={70} />
             </div>
             <div>
-              <FieldLabel htmlFor="tw-post">Days after — recovery period</FieldLabel>
-              <div style={{ fontSize: 10, color: T.textLight, marginBottom: 4 }}>How many days of recovery before resuming your normal routine?</div>
-              <NumberInput id="tw-post" value={customPost} onChange={e => setCustomPost(+e.target.value)} min={0} max={30} width={70} />
+              <label htmlFor="tw-post" style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)', marginBottom: 3, display: 'block' }}>Days after — recovery period</label>
+              <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.7)', marginBottom: 6 }}>How many days of recovery before resuming your normal routine?</div>
+              <NumberInput variant="pill" id="tw-post" value={customPost} onChange={e => setCustomPost(+e.target.value)} min={0} max={30} width={70} />
             </div>
           </div>
         </div>
       )}
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', borderTop: `0.5px solid ${T.hairline}`, paddingTop: 10, marginTop: 4 }}>
-        <Btn variant="primary" onClick={() => { if (selType && conflicts.length === 0) onApply(selType, false, timeOfDay, treatArea, customPre, customPost, dateKey) }} disabled={!selType || conflicts.length > 0}>Save</Btn>
-        {conflicts.length > 0 && safeDate && <div style={{ fontSize: 11, color: '#166534', padding: '4px 0' }}>Move to {new Date(safeDate + 'T00:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })} to save.</div>}
-        <Btn onClick={onClose}>Cancel</Btn>
-        {editingEntry && <Btn variant="danger" onClick={async () => { if (await confirm({ title: 'Remove this treatment?', message: 'This cannot be undone.' })) onRemove(editingEntry._dbId) }}>Remove treatment</Btn>}
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', borderTop: '0.5px solid rgba(255,255,255,0.3)', paddingTop: 14, marginTop: 4 }}>
+        <button onClick={() => { if (selType && conflicts.length === 0) onApply(selType, false, timeOfDay, treatArea, customPre, customPost, dateKey) }} disabled={!selType || conflicts.length > 0}
+          style={{ padding: '9px 20px', borderRadius: T.radius.pill, border: 'none', background: (!selType || conflicts.length > 0) ? 'rgba(0,0,0,0.2)' : T.text, color: T.white, cursor: (!selType || conflicts.length > 0) ? 'default' : 'pointer', fontSize: 13, fontWeight: 600, fontFamily: 'inherit' }}>
+          Save
+        </button>
+        {conflicts.length > 0 && safeDate && <div style={{ fontSize: 11, color: T.white, padding: '4px 0' }}>Move to {new Date(safeDate + 'T00:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })} to save.</div>}
+        <button onClick={onClose} style={{ padding: '9px 18px', borderRadius: T.radius.pill, border: 'none', background: 'rgba(255,255,255,0.18)', color: T.white, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit' }}>Cancel</button>
+        {editingEntry && (
+          <button onClick={async () => { if (await confirm({ title: 'Remove this treatment?', message: 'This cannot be undone.' })) onRemove(editingEntry._dbId) }}
+            style={{ padding: '9px 18px', borderRadius: T.radius.pill, border: 'none', background: T.white, color: T.warn, cursor: 'pointer', fontSize: 13, fontWeight: 600, fontFamily: 'inherit' }}>
+            Remove treatment
+          </button>
+        )}
       </div>
-      <SectionLabel>Add a new treatment type</SectionLabel>
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
-        <div><FieldLabel htmlFor="tt-name">Name</FieldLabel><TextInput id="tt-name" value={newName} onChange={e => setNewName(e.target.value)} placeholder="e.g. LED therapy" /></div>
-        <div><FieldLabel htmlFor="tt-pre">Days before — pause exfoliants & retinoids</FieldLabel><NumberInput id="tt-pre" value={newPre} onChange={e => setNewPre(+e.target.value)} /></div>
-        <div><FieldLabel htmlFor="tt-post">Days after — recovery period</FieldLabel><NumberInput id="tt-post" value={newPost} onChange={e => setNewPost(+e.target.value)} /></div>
-        <Btn variant="secondary" onClick={addCustomType}>Add</Btn>
+      <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.75)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10, marginTop: 18, paddingTop: 16, borderTop: '0.5px solid rgba(255,255,255,0.3)' }}>
+        Add a new treatment type
+      </div>
+      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'flex-end' }}>
+        <div>
+          <label htmlFor="tt-name" style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)', marginBottom: 3, display: 'block' }}>Name</label>
+          <TextInput variant="pill" id="tt-name" value={newName} onChange={e => setNewName(e.target.value)} placeholder="e.g. LED therapy" />
+        </div>
+        <div>
+          <label htmlFor="tt-pre" style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)', marginBottom: 3, display: 'block' }}>Days before</label>
+          <NumberInput variant="pill" id="tt-pre" value={newPre} onChange={e => setNewPre(+e.target.value)} />
+        </div>
+        <div>
+          <label htmlFor="tt-post" style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)', marginBottom: 3, display: 'block' }}>Days after</label>
+          <NumberInput variant="pill" id="tt-post" value={newPost} onChange={e => setNewPost(+e.target.value)} />
+        </div>
+        <button onClick={addCustomType} style={{ padding: '9px 18px', borderRadius: T.radius.pill, border: 'none', background: T.white, color: T.darkOrange, cursor: 'pointer', fontSize: 12, fontWeight: 600, fontFamily: 'inherit' }}>Add</button>
       </div>
       {confirmDialog}
     </div>
@@ -3601,27 +3644,45 @@ const DOW_LABELS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
 const DEFAULT_AM = { 0:'09:00',1:'07:00',2:'07:00',3:'07:00',4:'07:00',5:'07:00',6:'09:00' }
 const DEFAULT_PM = { 0:'22:30',1:'22:30',2:'22:30',3:'22:30',4:'22:30',5:'22:30',6:'22:30' }
 
+// Selection pill shared by ExportPanel's format/day-range buttons, the
+// TreatmentSelectorPanel's type/time/area buttons, and TimeGrid's mode
+// toggle — solid white when active, translucent white when not, since it
+// always sits directly on a solid brand-color full page. `accent` sets the
+// active-state text color to match whichever page it's on (pink for
+// Export, orange for the treatment picker).
+function ColorPagePill({ active, onClick, children, style, accent = T.darkPink }) {
+  return (
+    <button onClick={onClick} aria-pressed={active} style={{
+      padding: '7px 16px', borderRadius: T.radius.pill, border: 'none', cursor: 'pointer',
+      background: active ? T.white : 'rgba(255,255,255,0.18)',
+      color: active ? accent : T.white,
+      fontSize: 12, fontFamily: 'inherit', textAlign: 'left',
+      ...style,
+    }}>{children}</button>
+  )
+}
+
 function TimeGrid({ label, mode, setMode, times, setTimes, singleTime, setSingleTime, defaultSingle }) {
   return (
-    <div style={{ marginBottom: 12 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-        <FieldLabel>{label}</FieldLabel>
+    <div style={{ marginBottom: 14 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6, flexWrap: 'wrap', gap: 6 }}>
+        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)' }}>{label}</div>
         <div style={{ display: 'flex', gap: 4 }}>
           {[['same','Same every day'],['custom','Per day of week']].map(([k,l]) => (
-            <button key={k} onClick={() => setMode(k)} aria-pressed={mode===k} style={{ fontSize: 9, padding: '2px 7px', borderRadius: 0, cursor: 'pointer', border: `0.5px solid ${mode===k ? T.pinkDeep : T.hairline}`, background: mode===k ? T.pink : 'transparent', color: mode===k ? T.text : T.textLight }}>{l}</button>
+            <ColorPagePill key={k} active={mode===k} onClick={() => setMode(k)} style={{ fontSize: 10, padding: '4px 10px' }}>{l}</ColorPagePill>
           ))}
         </div>
       </div>
       {mode === 'same' ? (
         <input type="time" value={singleTime} onChange={e => setSingleTime(e.target.value)}
-          style={{ fontSize: 12, padding: '5px 8px', border: `0.5px solid ${T.hairline}`, borderRadius: 0, background: T.white, color: T.text }} />
+          style={{ fontSize: 12, padding: '7px 14px', border: 'none', borderRadius: T.radius.pill, background: T.white, color: T.text, fontFamily: 'inherit' }} />
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 3 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 4 }}>
           {[0,1,2,3,4,5,6].map(d => (
             <div key={d} style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: 9, fontWeight: 600, color: T.textMuted, marginBottom: 2 }}>{DOW_LABELS[d]}</div>
+              <div style={{ fontSize: 9, fontWeight: 600, color: 'rgba(255,255,255,0.75)', marginBottom: 3 }}>{DOW_LABELS[d]}</div>
               <input type="time" value={times[d]} onChange={e => setTimes(t => ({ ...t, [d]: e.target.value }))}
-                style={{ width: '100%', fontSize: 9, padding: '2px 1px', border: `0.5px solid ${T.hairline}`, borderRadius: 0, background: T.white, color: T.text }} />
+                style={{ width: '100%', fontSize: 9, padding: '4px 1px', border: 'none', borderRadius: T.radius.pill, background: T.white, color: T.text, boxSizing: 'border-box', fontFamily: 'inherit' }} />
             </div>
           ))}
         </div>
@@ -3656,40 +3717,42 @@ function ExportPanel({ routineHistory, treatments, allTypes, products, dailyHist
   }
 
   return (
-    <div style={{ background: T.white, border: `0.5px solid ${T.hairline}`, borderRadius: 0, padding: '16px 18px', marginBottom: 14 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-        <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>Export</div>
-        <button onClick={onClose} aria-label="Close export panel" style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 18, color: T.textMuted, padding: '0 2px', lineHeight: 1 }}>×</button>
+    <div style={{ background: 'transparent', padding: 0 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
+        <div style={{ fontSize: 15, fontWeight: 700, color: T.white }}>Export</div>
+        <button onClick={onClose} aria-label="Close export panel" style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 20, color: T.white, opacity: 0.85, padding: '0 2px', lineHeight: 1 }}>×</button>
       </div>
 
       {/* Notion */}
-      <div style={{ marginBottom: 14, paddingBottom: 14, borderBottom: `0.5px solid ${T.hairline}` }}>
-        <div style={{ fontSize: 12, fontWeight: 500, color: T.text, marginBottom: 4 }}>Copy to Notion</div>
-        <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 8 }}>Copies a markdown summary of your treatments and routine history.</div>
-        <Btn onClick={onNotion} style={{ fontSize: 11, padding: '5px 12px' }}>Copy Notion markdown</Btn>
+      <div style={{ marginBottom: 18, paddingBottom: 18, borderBottom: '0.5px solid rgba(255,255,255,0.3)' }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: T.white, marginBottom: 4 }}>Copy to Notion</div>
+        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.75)', marginBottom: 10 }}>Copies a markdown summary of your treatments and routine history.</div>
+        <button onClick={onNotion} style={{ padding: '8px 18px', borderRadius: T.radius.pill, border: 'none', background: T.white, color: T.darkPink, cursor: 'pointer', fontSize: 12, fontWeight: 600, fontFamily: 'inherit' }}>
+          Copy Notion markdown
+        </button>
       </div>
 
       {/* Calendar .ics */}
       <div>
-        <div style={{ fontSize: 12, fontWeight: 500, color: T.text, marginBottom: 4 }}>Add to calendar (.ics)</div>
-        <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 12 }}>Imports into Google Calendar, Apple Calendar, or Outlook. Each event includes your steps and assigned products for that day.</div>
+        <div style={{ fontSize: 13, fontWeight: 600, color: T.white, marginBottom: 4 }}>Add to calendar (.ics)</div>
+        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.75)', marginBottom: 14 }}>Imports into Google Calendar, Apple Calendar, or Outlook. Each event includes your steps and assigned products for that day.</div>
 
         {/* Event format */}
-        <FieldLabel>Event format</FieldLabel>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 12 }}>
+        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)', marginBottom: 6 }}>Event format</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 14 }}>
           {formats.map(f => (
-            <button key={f.key} onClick={() => setFormat(f.key)} aria-pressed={format===f.key} style={{ padding: '8px 12px', borderRadius: 0, border: `0.5px solid ${format===f.key ? T.pinkDeep : T.hairline}`, background: format===f.key ? T.pink : 'transparent', fontSize: 11, cursor: 'pointer', color: T.text, textAlign: 'left' }}>
-              <span style={{ fontWeight: 500 }}>{f.label}</span>
-              <span style={{ color: T.textMuted }}> — {f.desc}</span>
-            </button>
+            <ColorPagePill key={f.key} active={format===f.key} onClick={() => setFormat(f.key)} style={{ padding: '10px 14px' }}>
+              <span style={{ fontWeight: 600 }}>{f.label}</span>
+              <span style={{ opacity: 0.8 }}> — {f.desc}</span>
+            </ColorPagePill>
           ))}
         </div>
 
         {/* Date range */}
-        <FieldLabel>How far ahead</FieldLabel>
-        <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
+        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)', marginBottom: 6 }}>How far ahead</div>
+        <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
           {[30,60,90].map(d => (
-            <button key={d} onClick={() => setDaysAhead(d)} aria-pressed={daysAhead===d} style={{ padding: '5px 14px', borderRadius: 0, border: `0.5px solid ${daysAhead===d ? T.pinkDeep : T.hairline}`, background: daysAhead===d ? T.pink : 'transparent', fontSize: 11, cursor: 'pointer', color: T.text }}>{d} days</button>
+            <ColorPagePill key={d} active={daysAhead===d} onClick={() => setDaysAhead(d)}>{d} days</ColorPagePill>
           ))}
         </div>
 
@@ -3701,9 +3764,9 @@ function ExportPanel({ routineHistory, treatments, allTypes, products, dailyHist
           </>
         )}
 
-        <Btn variant="primary" onClick={handleDownload} style={{ width: '100%', textAlign: 'center', fontSize: 12, padding: '8px', marginTop: 4 }}>
+        <button onClick={handleDownload} style={{ width: '100%', textAlign: 'center', fontSize: 13, fontWeight: 600, padding: '13px', borderRadius: T.radius.pill, border: 'none', background: T.text, color: T.white, cursor: 'pointer', fontFamily: 'inherit', marginTop: 6 }}>
           Download .ics file
-        </Btn>
+        </button>
       </div>
     </div>
   )
@@ -3815,7 +3878,6 @@ function RecoveryRoutineEditor({ typeKey, typeLabel, steps, products, allProduct
 
 function UpcomingTreatmentsPanel({ treatments, allTypes, routineHistory, onClose, onEdit, onRemove, onAddNew, recoveryRoutines, onUpdateRecoveryProducts, onUpdateRecoverySteps, getRecoveryStepsForType, products, timezone }) {
   const now = nowInTz(timezone)
-  const [addingDate, setAddingDate] = useState('')
   const [editingRecovery, setEditingRecovery] = useState(null) // typeKey being edited
   const sorted = Object.entries(treatments).sort(([a],[b]) => a.localeCompare(b))
   const upcoming = sorted.filter(([k]) => new Date(k+'T00:00:00') >= now)
@@ -3927,21 +3989,13 @@ function UpcomingTreatmentsPanel({ treatments, allTypes, routineHistory, onClose
         </div>
       </div>
 
-      {/* Add new treatment */}
+      {/* Add new treatment — goes straight to the treatment picker (which
+          has its own date field) instead of asking for a date here first
+          and then again there. */}
       <div style={{ marginBottom: 14, paddingBottom: 14, borderBottom: '0.5px solid rgba(255,255,255,0.3)' }}>
-        {addingDate ? (
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-            <DateInput value={addingDate} onChange={e => setAddingDate(e.target.value)} />
-            <Btn variant="primary" disabled={!addingDate} onClick={() => { onAddNew(addingDate); setAddingDate('') }} style={{ fontSize: 11, padding: '5px 12px', background: T.white, color: T.darkOrange }}>
-              Choose type →
-            </Btn>
-            <Btn onClick={() => setAddingDate('')} style={{ fontSize: 11, padding: '5px 10px', borderColor: T.white, color: T.white }}>Cancel</Btn>
-          </div>
-        ) : (
-          <Btn variant="primary" onClick={() => setAddingDate(dateKey(new Date()))} style={{ fontSize: 11, padding: '5px 12px', background: T.white, color: T.darkOrange }}>
-            + Add a treatment
-          </Btn>
-        )}
+        <Btn variant="primary" onClick={() => onAddNew(dateKey(new Date()))} style={{ fontSize: 11, padding: '5px 12px', background: T.white, color: T.darkOrange }}>
+          + Add a treatment
+        </Btn>
       </div>
 
       {Object.keys(treatments).length === 0 ? (
@@ -4240,18 +4294,15 @@ export default function GlowUpCalendar({ session }) {
   const [routineChooserOpen, setRoutineChooserOpen] = useState(false)
   const [showMenu,          setShowMenu]          = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
-  const [treatmentWarning,  setTreatmentWarning]  = useState(null) // { key, date } pending selector
 
   useEffect(() => {
-    if (!dayFlyout && !treatmentWarning) return
+    if (!dayFlyout) return
     function handleKey(e) {
-      if (e.key !== 'Escape') return
-      if (treatmentWarning) setTreatmentWarning(null)
-      else if (dayFlyout) setDayFlyout(null)
+      if (e.key === 'Escape') setDayFlyout(null)
     }
     document.addEventListener('keydown', handleKey)
     return () => document.removeEventListener('keydown', handleKey)
-  }, [dayFlyout, treatmentWarning])
+  }, [dayFlyout])
   const [showFeedback,  setShowFeedback]  = useState(() => {
     const has = new URLSearchParams(window.location.search).get('feedback') === '1'
     if (has) window.history.replaceState({}, '', window.location.pathname)
@@ -5197,40 +5248,6 @@ export default function GlowUpCalendar({ session }) {
       </div>
 
 
-      {/* Treatment warning modal — shown when adding a treatment during an active-ingredient phase */}
-      {treatmentWarning && (() => {
-        const activePeriod = getActivePeriod(new Date(treatmentWarning.key + 'T00:00:00'), routineHistory)
-        const actives = getActiveIngredients(activePeriod)
-        const activeList = actives.join(', ')
-        return (
-          <div onClick={() => setTreatmentWarning(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
-            <div onClick={e => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="treatment-warning-title" style={{ background: T.white, border: `1px solid ${T.hairline}`, borderRadius: 0, padding: '24px 20px', width: '100%', maxWidth: 420 }}>
-              <div style={{ fontSize: 9, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 10 }}>
-                Heads up
-              </div>
-              <div id="treatment-warning-title" style={{ fontSize: 14, fontWeight: 700, color: T.text, marginBottom: 12 }}>
-                This treatment will pause your active ingredients
-              </div>
-              <div style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.8, marginBottom: 20 }}>
-                Your routine currently includes <strong style={{ color: T.text }}>{activeList}</strong>. Adding a treatment pauses these actives for any pre-treatment and recovery windows — your program timer extends to match, so you don't lose any progress. Everything picks back up right where you left off once the recovery period ends.
-              </div>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <button onClick={() => setTreatmentWarning(null)}
-                  style={{ flex: 1, padding: '10px', borderRadius: 0, border: `1px solid ${T.hairline}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
-                  Cancel
-                </button>
-                <button onClick={() => {
-                  setSelector({ key: treatmentWarning.key, date: treatmentWarning.date })
-                  setTreatmentWarning(null)
-                }}
-                  style={{ flex: 2, padding: '10px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
-                  Got it — add treatment
-                </button>
-              </div>
-            </div>
-          </div>
-        )
-      })()}
       {dayFlyout && (() => {
         const activePeriodFlyout = getActivePeriod(dayFlyout.date, routineHistory)
         const fmt = new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'long', day: 'numeric' })
@@ -5305,15 +5322,8 @@ export default function GlowUpCalendar({ session }) {
                   onClose={() => setDayFlyout(null)}
                   onTabChange={(t) => setDayFlyout(f => ({ ...f, tab: t }))}
                   onAddTreatment={(editingDbId) => {
-                    const activePeriod = getActivePeriod(dayFlyout.date, routineHistory)
-                    const activeIngredients = getActiveIngredients(activePeriod)
-                    if (activeIngredients.length > 0 && !editingDbId) {
-                      setTreatmentWarning({ key: dayFlyout.key, date: dayFlyout.date })
-                      setDayFlyout(null)
-                    } else {
-                      setSelector({ key: dayFlyout.key, date: dayFlyout.date, ...(editingDbId && { editingDbId }) })
-                      setDayFlyout(null)
-                    }
+                    setSelector({ key: dayFlyout.key, date: dayFlyout.date, ...(editingDbId && { editingDbId }) })
+                    setDayFlyout(null)
                   }}
                   onEditDaily={() => openDailyEditor(getActiveDailyPeriod(dayFlyout.date, dailyHistory))}
                   onEditShower={() => openShowerEditor(getActiveShowerPeriod(dayFlyout.date, showerHistory))}
@@ -5366,7 +5376,7 @@ export default function GlowUpCalendar({ session }) {
             style={{
               position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
               zIndex: 50,
-              background: showTreatments ? T.orange : routineChooserOpen ? T.blue : T.white,
+              background: (showTreatments || selector) ? T.orange : showExport ? T.pink : routineChooserOpen ? T.blue : T.white,
               animation: 'panelIn 0.2s ease',
               overflowY: 'auto',
               WebkitOverflowScrolling: 'touch',
@@ -5498,13 +5508,7 @@ export default function GlowUpCalendar({ session }) {
                 onAddNew={(dateStr) => {
                   const [y,m,d] = dateStr.split('-').map(Number)
                   const dt = new Date(y,m-1,d)
-                  const activePeriod = getActivePeriod(dt, routineHistory)
-                  const activeIngredients = getActiveIngredients(activePeriod)
-                  if (activeIngredients.length > 0) {
-                    setTreatmentWarning({ key: dateStr, date: dt })
-                  } else {
-                    setSelector({ key: dateStr, date: dt })
-                  }
+                  setSelector({ key: dateStr, date: dt })
                   setShowTreatments(false)
                 }}
               />
