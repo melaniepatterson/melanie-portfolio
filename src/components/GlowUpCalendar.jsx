@@ -2590,7 +2590,7 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
               <div style={{ fontSize: 12, color: T.textMuted }}>{s.label}</div>
               <button
                 onClick={() => onUpdatePeriodSteps?.(period.startDate, s.id, true)}
-                style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.pinkDeep, fontSize: 16, padding: '0 4px', lineHeight: 1, fontWeight: 600 }}
+                style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.darkGreen, fontSize: 16, padding: '0 4px', lineHeight: 1, fontWeight: 600 }}
                 title="Restore this step"
               >+</button>
             </div>
@@ -2602,12 +2602,46 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
     return result
   }
 
+  // Step-dot color per day type — same tokens as the calendar cells and
+  // the badge above, instead of a hardcoded default/ternary that didn't
+  // track dayType (previously left BHA/pause/treatment nights showing the
+  // wrong color).
+  function dotColorFor(key) {
+    if (!key) return T.darkGreen
+    if (key === 'pca') return T.recovery.text
+    return T[key]?.text || T.darkGreen
+  }
+
   return (
     <div style={{ background: 'transparent', padding: '12px 14px', marginBottom: 14 }}>
-      {/* Date + actions */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-        <div style={{ fontSize: 13, fontWeight: 500, color: T.text }}>
-          {MONTHS[date.getMonth()]} {date.getDate()}
+      {/* Day-type badge + treatment actions — same row. Badge uses the
+          white-bg / dark-text badge treatment (STYLES spec), colored per
+          the same tokens as the calendar cells so tret/bha/pause/recovery
+          stay consistent everywhere instead of an ad-hoc local palette. */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, marginBottom: 10, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+          {(() => {
+            const banners = {
+              tret:     { colorKey: 'tret',     label: `${period?.activeName ? period.activeName.charAt(0).toUpperCase() + period.activeName.slice(1) : 'Tretinoin'} night` },
+              bha:      { colorKey: 'bha',      label: 'BHA night' },
+              pause:    { colorKey: 'pause',    label: 'Pre-treatment pause' },
+              pca:      { colorKey: 'recovery', label: 'Recovery products' },
+              recovery: { colorKey: 'recovery', label: 'Recovery' },
+            }
+            const key = isTreatment ? null : dayType
+            const b = banners[key]
+            if (!b && !isTreatment) return null
+            if (isTreatment && allTreatments?.length > 1) {
+              return allTreatments.map(t => {
+                const lbl = allTypes?.[t.type]?.label || t.type
+                const c = T[t.type] || T.treatment
+                return <div key={t._dbId} style={{ fontSize: 13, fontWeight: 700, padding: '5px 12px', borderRadius: T.radius.pill, background: T.white, color: c.text, display: 'inline-block' }}>{lbl.charAt(0).toUpperCase() + lbl.slice(1).toLowerCase()}</div>
+              })
+            }
+            const label = isTreatment ? (allTypes?.[dayType]?.label || dayType) : b.label
+            const c = isTreatment ? (T[dayType] || T.treatment) : T[b.colorKey]
+            return <div style={{ fontSize: 13, fontWeight: 700, padding: '5px 12px', borderRadius: T.radius.pill, background: T.white, color: c.text, display: 'inline-block' }}>{label}</div>
+          })()}
         </div>
         <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
           {flyout.isTreatment && (
@@ -2617,44 +2651,16 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
             ? <Btn onClick={() => onAddTreatment(flyout.allTreatments?.[0]?._dbId)} style={{ fontSize: 11, padding: '4px 10px', whiteSpace: 'nowrap' }}>Edit treatment</Btn>
             : <Btn onClick={onAddTreatment} style={{ fontSize: 11, padding: '4px 10px', whiteSpace: 'nowrap' }}>+ Add treatment</Btn>
           }
-          <button onClick={onClose} aria-label="Close day details" style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 16, color: T.textMuted, padding: '0 4px', lineHeight: 1 }}>×</button>
         </div>
       </div>
-      {/* Color-coded day type banner */}
-      {(() => {
-        const banners = {
-          tret:     { bg: '#EDE9FE', color: '#5B21B6', label: `${period?.activeName ? period.activeName.charAt(0).toUpperCase() + period.activeName.slice(1) : 'Tretinoin'} night` },
-          bha:      { bg: '#DCFCE7', color: '#166534', label: 'BHA night' },
-          pause:    { bg: '#FEF3C7', color: '#92400E', label: 'Pre-treatment pause' },
-          pca:      { bg: '#FFE4E6', color: '#9F1239', label: 'Recovery products' },
-          recovery: { bg: '#FFE4E6', color: '#9F1239', label: 'Recovery' },
-        }
-        const key = isTreatment ? null : dayType
-        const b = banners[key]
-        if (!b && !isTreatment) return null
-        if (isTreatment && allTreatments?.length > 1) {
-          return (
-            <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 10 }}>
-              {allTreatments.map(t => {
-                const lbl = allTypes?.[t.type]?.label || t.type
-                return <div key={t._dbId} style={{ fontSize: 11, fontWeight: 500, padding: '4px 10px', borderRadius: T.radius.pill, background: '#E0F2FE', color: '#0C4A6E', display: 'inline-block' }}>{lbl.charAt(0).toUpperCase() + lbl.slice(1).toLowerCase()}</div>
-              })}
-            </div>
-          )
-        }
-        const label = isTreatment ? (allTypes?.[dayType]?.label || dayType) : b.label
-        const bg    = isTreatment ? '#E0F2FE' : b.bg
-        const color = isTreatment ? '#0C4A6E' : b.color
-        return <div style={{ fontSize: 11, fontWeight: 500, padding: '4px 10px', borderRadius: T.radius.pill, background: bg, color, marginBottom: 10, display: 'inline-block' }}>{label}</div>
-      })()}
 
       {/* 1. Shower routine — always at top */}
       <ShowerSection dt={date} showerHistory={showerHistory} onEditShower={onEditShower} products={products} onUpdateShowerItemProduct={onUpdateShowerItemProduct} />
 
       {/* 2. Morning / Night tabs */}
       <div style={{ display: 'flex', gap: 6, marginBottom: 8, marginTop: 10 }}>
-        <button onClick={() => switchTab('am')} aria-pressed={tab === 'am'} style={{ padding: '4px 14px', borderRadius: 0, border: `0.5px solid ${tab === 'am' ? T.pinkDeep : T.border}`, background: tab === 'am' ? T.pink : 'transparent', fontSize: 12, fontWeight: tab === 'am' ? 500 : 400, cursor: 'pointer', color: T.text }}>Morning (AM)</button>
-        <button onClick={() => switchTab('pm')} aria-pressed={tab === 'pm'} style={{ padding: '4px 14px', borderRadius: 0, border: `0.5px solid ${tab === 'pm' ? T.pinkDeep : T.border}`, background: tab === 'pm' ? T.pink : 'transparent', fontSize: 12, fontWeight: tab === 'pm' ? 500 : 400, cursor: 'pointer', color: T.text }}>Evening (PM)</button>
+        <button onClick={() => switchTab('am')} aria-pressed={tab === 'am'} style={{ padding: '7px 18px', borderRadius: T.radius.pill, border: 'none', background: tab === 'am' ? T.pink : T.white, fontSize: 14, fontWeight: 700, cursor: 'pointer', color: T.text }}>Morning (AM)</button>
+        <button onClick={() => switchTab('pm')} aria-pressed={tab === 'pm'} style={{ padding: '7px 18px', borderRadius: T.radius.pill, border: 'none', background: tab === 'pm' ? T.pink : T.white, fontSize: 14, fontWeight: 700, cursor: 'pointer', color: T.text }}>Evening (PM)</button>
       </div>
 
       {/* 3. Extras — filtered by frequency + current tab, hidden when nothing matches */}
@@ -2670,7 +2676,7 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
           {period && <div style={{ fontSize: 10, fontWeight: 600, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8, paddingTop: 10, borderTop: `0.5px solid ${T.border}` }}>Skincare</div>}
           {/* AM: normal routine unless it's an AM treatment */}
           {tab === 'am' && dayType === 'pause' && (
-            <div style={{ fontSize: 11, color: '#92400E', background: '#FFFBEB', border: '0.5px solid #FCD34D', borderRadius: 0, padding: '5px 10px', marginBottom: 8 }}>
+            <div style={{ fontSize: 11, color: T.pause.text, background: T.pause.bg, border: `0.5px solid ${T.pause.border}`, borderRadius: 0, padding: '5px 10px', marginBottom: 8 }}>
               Pre-treatment pause — your morning SPF and moisturizer are fine. Skip any acids or actives.
             </div>
           )}
@@ -2684,22 +2690,22 @@ function DayFlyout({ flyout, period, dailyHistory, showerHistory, products, allT
               Recovery products only — no actives this morning.
             </div>
           )}
-          {tab === 'am' && !isRecovery && !(isTreatment && treatTod === 'am') && renderSteps(period ? getStepsForDayType(period, 'am') : getDefaultSteps('am'), T.pinkDeep, 'am')}
-          {tab === 'am' && isRecovery && renderSteps(getStepsForDayType(period, 'recovery'), T.pinkDeep, 'recovery')}
+          {tab === 'am' && !isRecovery && !(isTreatment && treatTod === 'am') && renderSteps(period ? getStepsForDayType(period, 'am') : getDefaultSteps('am'), dotColorFor(dayType), 'am')}
+          {tab === 'am' && isRecovery && renderSteps(getStepsForDayType(period, 'recovery'), dotColorFor('pca'), 'recovery')}
           {/* PM: treatment banner + recovery steps */}
           {tab === 'pm' && isTreatment && (
-            <div style={{ fontSize: 11, padding: '6px 10px', borderRadius: 0, background: '#E0F2FE', color: '#0C4A6E', marginBottom: 8, lineHeight: 1.5 }}>
+            <div style={{ fontSize: 11, padding: '6px 10px', borderRadius: 0, background: (T[dayType] || T.treatment).bg, color: (T[dayType] || T.treatment).text, marginBottom: 8, lineHeight: 1.5 }}>
               {treatTod === 'pm'
                 ? 'Treatment tonight — use recovery products after your appointment.'
                 : 'Treatment this morning — recovery begins tonight.'}
             </div>
           )}
           {tab === 'pm' && dayType === 'pause' && (
-            <div style={{ fontSize: 11, color: '#92400E', background: '#FFFBEB', border: '0.5px solid #FCD34D', borderRadius: 0, padding: '5px 10px', marginBottom: 8 }}>
+            <div style={{ fontSize: 11, color: T.pause.text, background: T.pause.bg, border: `0.5px solid ${T.pause.border}`, borderRadius: 0, padding: '5px 10px', marginBottom: 8 }}>
               Pre-treatment pause — skip actives tonight. Regular cleanse and moisturizer only.
             </div>
           )}
-          {tab === 'pm' && renderSteps(pmSteps, dayType === 'tret' ? '#A78BFA' : T.orange, nightType)}
+          {tab === 'pm' && renderSteps(pmSteps, dotColorFor(dayType), nightType)}
 
           {/* ── Manage steps ── */}
           {period && !isTreatment && (
