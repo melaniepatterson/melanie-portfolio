@@ -19,6 +19,7 @@ import RoutineHistory from './components/RoutineHistory'
 import ProductsPage from './components/ProductsPage'
 import CookieNotice from './components/CookieNotice'
 import PrivacyPolicy from './components/PrivacyPolicy'
+import BlogComingSoon from './components/BlogComingSoon'
 import BetaSurvey from './components/BetaSurvey'
 import { supabase } from './lib/supabase'
 import T from './components/theme'
@@ -107,6 +108,7 @@ function Layout() {
       "/routine/profile": "Profile — melanie.studio",
       "/routine/history": "History — melanie.studio",
       "/routine/products": "Products — melanie.studio",
+      "/blog": "Blog — melanie.studio",
     };
     const title = titles[location.pathname];
     if (title) {
@@ -123,6 +125,9 @@ function Layout() {
 
   // Privacy policy — no auth required
   if (location.pathname === "/privacy") return <PrivacyPolicy />
+
+  // Blog — no auth required, placeholder until the real thing ships
+  if (location.pathname === "/blog") return <BlogComingSoon />
 
   // Calendar — full screen, no nav/logo/footer chrome. Bypasses page-wrapper
   // like the other /routine/* pages below: page-wrapper centers <main> via

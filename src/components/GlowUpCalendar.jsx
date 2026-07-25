@@ -549,9 +549,9 @@ function SectionLabel({ children, style }) {
   return <div style={{ fontSize: 11, fontWeight: 600, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8, marginTop: 14, paddingTop: 12, borderTop: `0.5px solid ${T.hairline}`, ...style }}>{children}</div>
 }
 
-function FieldLabel({ children, htmlFor }) {
+function FieldLabel({ children, htmlFor, style }) {
   const Tag = htmlFor ? 'label' : 'div'
-  return <Tag htmlFor={htmlFor} style={{ fontSize: 11, color: T.textLight, marginBottom: 3, display: 'block' }}>{children}</Tag>
+  return <Tag htmlFor={htmlFor} style={{ fontSize: 11, color: T.textLight, marginBottom: 3, display: 'block', ...style }}>{children}</Tag>
 }
 
 // variant="pill" — solid white pill, for use directly on a full-color page
@@ -881,7 +881,7 @@ function CurrentRoutineSummary({ steps }) {
   const sortByOrder = (a, b) => (INGREDIENT_CATEGORIES[a.categoryKey]?.order ?? 99) - (INGREDIENT_CATEGORIES[b.categoryKey]?.order ?? 99)
 
   return (
-    <div style={{ background: T.surfaceMuted, borderRadius: T.radius.modal, padding: '14px 16px', marginBottom: 14 }}>
+    <div style={{ background: T.white, borderRadius: T.radius.modal, padding: '14px 16px', marginBottom: 14 }}>
       <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 10 }}>
         Your current routine
       </div>
@@ -935,70 +935,70 @@ export function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = fa
   const canSave = form.startDate.length > 0 && !conflict
 
   return (
-    <div style={{ background: T.white, borderRadius: T.radius.modal, padding: '16px 18px', marginBottom: 14 }}>
-      <div style={{ fontSize: 13, fontWeight: 600, color: T.darkGreen, marginBottom: 4 }}>
+    <div style={{ background: T.green, borderRadius: T.radius.modal, padding: '16px 18px', marginBottom: 14 }}>
+      <div style={{ fontSize: 13, fontWeight: 600, color: T.white, marginBottom: 4 }}>
         {isFirst ? 'Skincare routine' : lockStartDate ? `Skincare routine — editing from ${fmtDate(initial.startDate)}` : 'Skincare routine'}
       </div>
       {!isFirst && !lockStartDate && (
-        <div style={{ fontSize: 12, color: T.textMuted, marginBottom: 12 }}>Past months stay accurate. This adds a new period; it doesn't overwrite history.</div>
+        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.85)', marginBottom: 12 }}>Past months stay accurate. This adds a new period; it doesn't overwrite history.</div>
       )}
       {lockStartDate && (
-        <div style={{ fontSize: 12, color: T.textMuted, marginBottom: 12 }}>You can edit the start date — if it overlaps with another period you'll be prompted to resolve it first.</div>
+        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.85)', marginBottom: 12 }}>You can edit the start date — if it overlaps with another period you'll be prompted to resolve it first.</div>
       )}
 
       <div style={{ marginBottom: 10 }}>
-        <FieldLabel htmlFor="rp-start-date">{isFirst ? 'Routine start date' : 'Effective from'}</FieldLabel>
-        <DateInput id="rp-start-date" value={form.startDate} onChange={e => set('startDate', e.target.value)} />
+        <FieldLabel htmlFor="rp-start-date" style={{ color: 'rgba(255,255,255,0.85)' }}>{isFirst ? 'Routine start date' : 'Effective from'}</FieldLabel>
+        <DateInput id="rp-start-date" variant="pill" value={form.startDate} onChange={e => set('startDate', e.target.value)} />
       </div>
 
       {conflict && <ConflictMessage conflict={conflict} onEditConflict={onEditConflict} />}
 
       {!isFirst && <CurrentRoutineSummary steps={initial?.steps} />}
 
-      <SectionLabel style={{ borderTop: 'none', paddingTop: 0 }}>What does your skincare routine consist of?</SectionLabel>
-      <div style={{ fontSize: 12, color: T.textMuted, marginBottom: 12, lineHeight: 1.6, background: T.surfaceMuted, borderRadius: T.radius.card, padding: '10px 12px' }}>
+      <SectionLabel style={{ borderTop: 'none', paddingTop: 0, color: T.white }}>What does your skincare routine consist of?</SectionLabel>
+      <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.85)', marginBottom: 12, lineHeight: 1.6 }}>
         Your morning and evening steps — from cleanse to SPF, actives, and treatments. Toggle on what you use and we'll build your calendar around it.
       </div>
 
       {/* Retinoid toggle */}
-      <div style={{ marginBottom: 4, padding: '10px 12px', borderRadius: T.radius.card, background: form.tretEnabled ? T.green : T.surfaceMuted }}>
+      <div style={{ marginBottom: 4, padding: '10px 12px', borderRadius: T.radius.card, background: form.tretEnabled ? T.white : 'rgba(255,255,255,0.15)' }}>
         <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer' }}>
           <input type="checkbox" checked={form.tretEnabled} onChange={e => set('tretEnabled', e.target.checked)} style={{ width: 14, height: 14, marginTop: 2, cursor: 'pointer', accentColor: T.darkGreen }} />
           <div>
-            <div style={{ fontSize: 12, fontWeight: 600, color: T.darkGreen }}>Retinoid (vitamin A)</div>
-            <div style={{ fontSize: 11, color: T.textMuted }}>Tretinoin, adapalene, retinol, retinaldehyde, and more — prescription or over the counter</div>
+            <div style={{ fontSize: 12, fontWeight: 600, color: form.tretEnabled ? T.darkGreen : T.white }}>Retinoid (vitamin A)</div>
+            <div style={{ fontSize: 11, color: form.tretEnabled ? T.textMuted : 'rgba(255,255,255,0.85)' }}>Tretinoin, adapalene, retinol, retinaldehyde, and more — prescription or over the counter</div>
           </div>
         </label>
       </div>
       {form.tretEnabled && (
         <div style={{ marginLeft: 12, marginBottom: 8, paddingLeft: 12 }}>
           <div style={{ marginBottom: 8, marginTop: 8 }}>
-            <FieldLabel htmlFor="rp-active-name">Which one?</FieldLabel>
+            <FieldLabel htmlFor="rp-active-name" style={{ color: 'rgba(255,255,255,0.85)' }}>Which one?</FieldLabel>
             <select
               id="rp-active-name"
               value={MAIN_ACTIVE_OPTIONS.find(o => o.value === form.activeName) ? form.activeName : 'tretinoin'}
               onChange={e => set('activeName', e.target.value)}
-              style={{ fontSize: 12, padding: '5px 8px', border: 'none', borderRadius: T.radius.card, background: T.surfaceMuted, color: T.darkGreen }}
+              style={{ fontSize: 12, padding: '7px 14px', border: 'none', borderRadius: T.radius.pill, background: T.white, color: T.darkGreen, fontFamily: 'inherit' }}
             >
               {MAIN_ACTIVE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
             </select>
           </div>
           {(form.activeName === 'other' || !MAIN_ACTIVE_OPTIONS.find(o => o.value === form.activeName)) && (
             <div style={{ marginBottom: 8 }}>
-              <FieldLabel htmlFor="rp-active-custom">Name it</FieldLabel>
-              <TextInput id="rp-active-custom" value={MAIN_ACTIVE_OPTIONS.find(o => o.value === form.activeName) ? '' : form.activeName} onChange={e => set('activeName', e.target.value)} placeholder="e.g. clindamycin, azelaic" width={200} />
+              <FieldLabel htmlFor="rp-active-custom" style={{ color: 'rgba(255,255,255,0.85)' }}>Name it</FieldLabel>
+              <TextInput id="rp-active-custom" variant="pill" value={MAIN_ACTIVE_OPTIONS.find(o => o.value === form.activeName) ? '' : form.activeName} onChange={e => set('activeName', e.target.value)} placeholder="e.g. clindamycin, azelaic" width={200} />
             </div>
           )}
           <div style={{ marginBottom: 8 }}>
-            <FieldLabel htmlFor="rp-tret-start">When did you start?</FieldLabel>
-            <DateInput id="rp-tret-start" value={form.tretStartDate} onChange={e => set('tretStartDate', e.target.value)} />
+            <FieldLabel htmlFor="rp-tret-start" style={{ color: 'rgba(255,255,255,0.85)' }}>When did you start?</FieldLabel>
+            <DateInput id="rp-tret-start" variant="pill" value={form.tretStartDate} onChange={e => set('tretStartDate', e.target.value)} />
           </div>
-          <FieldLabel>How often?</FieldLabel>
+          <FieldLabel style={{ color: 'rgba(255,255,255,0.85)' }}>How often?</FieldLabel>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 6, marginBottom: 6 }}>
             {TRET_FREQUENCIES.map(f => (
-              <button key={f.key} onClick={() => set('tretFrequency', f.key)} aria-pressed={form.tretFrequency === f.key} style={{ border: 'none', borderRadius: T.radius.card, padding: '8px 10px', cursor: 'pointer', background: form.tretFrequency === f.key ? T.green : T.surfaceMuted, textAlign: 'left' }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: T.darkGreen }}>{f.label}</div>
-                <div style={{ fontSize: 10, color: T.textLight }}>{f.description}</div>
+              <button key={f.key} onClick={() => set('tretFrequency', f.key)} aria-pressed={form.tretFrequency === f.key} style={{ border: 'none', borderRadius: T.radius.card, padding: '8px 10px', cursor: 'pointer', background: form.tretFrequency === f.key ? T.white : 'rgba(255,255,255,0.15)', textAlign: 'left' }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: form.tretFrequency === f.key ? T.darkGreen : T.white }}>{f.label}</div>
+                <div style={{ fontSize: 10, color: form.tretFrequency === f.key ? T.textLight : 'rgba(255,255,255,0.75)' }}>{f.description}</div>
               </button>
             ))}
           </div>
@@ -1007,8 +1007,8 @@ export function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = fa
 
       {/* Other evening actives */}
       {form.tretEnabled && (
-        <div style={{ fontSize: 11, color: T.textMuted, margin: '8px 0 6px', paddingLeft: 2 }}>
-          <strong style={{ color: T.darkGreen }}>Active nights</strong> = nights you use your main evening treatment. <strong style={{ color: T.darkGreen }}>Off nights</strong> = the other evenings.
+        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.85)', margin: '8px 0 6px', paddingLeft: 2 }}>
+          <strong style={{ color: T.white }}>Active nights</strong> = nights you use your main evening treatment. <strong style={{ color: T.white }}>Off nights</strong> = the other evenings.
         </div>
       )}
       {AVAILABLE_SECONDARY_ACTIVES.map(def => {
@@ -1016,26 +1016,30 @@ export function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = fa
         const enabled = sa.enabled
         const showNightsOptions = form.tretEnabled
         const incompatWarning = enabled && showNightsOptions ? SECONDARY_INCOMPATIBILITIES[def.key]?.[sa.nights] : null
+        // Always rebuild by filtering out any existing entry for this key and
+        // re-adding the patched one — periods saved before an active was
+        // added to this list (or saved with an empty array) leave
+        // form.secondaryActives missing or incomplete, and a plain .map()
+        // silently no-ops when it can't find a matching entry to update.
+        const updateThis = patch => {
+          const rest = (form.secondaryActives || []).filter(a => a.key !== def.key)
+          set('secondaryActives', [...rest, { ...sa, ...patch }])
+        }
         return (
-          <div key={def.key} style={{ marginBottom: 4, padding: '10px 12px', borderRadius: T.radius.card, background: enabled ? T.green : T.surfaceMuted }}>
+          <div key={def.key} style={{ marginBottom: 4, padding: '10px 12px', borderRadius: T.radius.card, background: enabled ? T.white : 'rgba(255,255,255,0.15)' }}>
             <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer' }}>
-              <input type="checkbox" checked={enabled} onChange={e => {
-                const base = form.secondaryActives || AVAILABLE_SECONDARY_ACTIVES.map(a => ({ key: a.key, enabled: false, nights: a.defaultNights }))
-                set('secondaryActives', base.map(a => a.key === def.key ? { ...a, enabled: e.target.checked } : a))
-              }} style={{ width: 14, height: 14, marginTop: 2, cursor: 'pointer', accentColor: T.darkGreen }} />
+              <input type="checkbox" checked={enabled} onChange={e => updateThis({ enabled: e.target.checked })}
+                style={{ width: 14, height: 14, marginTop: 2, cursor: 'pointer', accentColor: T.darkGreen }} />
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 12, fontWeight: 500, color: T.darkGreen }}>{def.label}</div>
+                <div style={{ fontSize: 12, fontWeight: 500, color: enabled ? T.darkGreen : T.white }}>{def.label}</div>
                 {enabled && showNightsOptions && (
                   <div style={{ marginTop: 6 }}>
                     <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
                       {NIGHTS_OPTIONS.map(n => {
                         const isIncompat = !!SECONDARY_INCOMPATIBILITIES[def.key]?.[n.key]
                         return (
-                          <button key={n.key} onClick={e => {
-                            e.preventDefault()
-                            const base = form.secondaryActives || []
-                            set('secondaryActives', base.map(a => a.key === def.key ? { ...a, nights: n.key } : a))
-                          }} style={{ fontSize: 10, padding: '2px 8px', borderRadius: T.radius.pill, cursor: 'pointer', border: 'none', background: sa.nights === n.key ? T.white : 'transparent', fontWeight: sa.nights === n.key ? 600 : 400, color: isIncompat ? '#92400E' : (sa.nights === n.key ? T.darkGreen : T.textLight), whiteSpace: 'nowrap' }}>
+                          <button key={n.key} onClick={e => { e.preventDefault(); updateThis({ nights: n.key }) }}
+                            style={{ fontSize: 10, padding: '2px 8px', borderRadius: T.radius.pill, cursor: 'pointer', border: 'none', background: sa.nights === n.key ? T.darkGreen : 'transparent', fontWeight: sa.nights === n.key ? 600 : 400, color: isIncompat ? '#92400E' : (sa.nights === n.key ? T.white : T.darkGreen), whiteSpace: 'nowrap' }}>
                             {n.label}{isIncompat ? ' ⚠' : ''}
                           </button>
                         )
@@ -1051,11 +1055,8 @@ export function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = fa
                 {enabled && !showNightsOptions && (
                   <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 6, justifyContent: 'flex-end' }}>
                     {EVENING_FREQ_SIMPLE.map(n => (
-                      <button key={n.key} onClick={e => {
-                        e.preventDefault()
-                        const base = form.secondaryActives || []
-                        set('secondaryActives', base.map(a => a.key === def.key ? { ...a, nights: n.key } : a))
-                      }} style={{ fontSize: 10, padding: '2px 8px', borderRadius: T.radius.pill, cursor: 'pointer', border: 'none', background: sa.nights === n.key ? T.white : 'transparent', fontWeight: sa.nights === n.key ? 600 : 400, color: sa.nights === n.key ? T.darkGreen : T.textLight, whiteSpace: 'nowrap' }}>
+                      <button key={n.key} onClick={e => { e.preventDefault(); updateThis({ nights: n.key }) }}
+                        style={{ fontSize: 10, padding: '2px 8px', borderRadius: T.radius.pill, cursor: 'pointer', border: 'none', background: sa.nights === n.key ? T.darkGreen : 'transparent', fontWeight: sa.nights === n.key ? 600 : 400, color: sa.nights === n.key ? T.white : T.darkGreen, whiteSpace: 'nowrap' }}>
                         {n.label}
                       </button>
                     ))}
@@ -1069,11 +1070,11 @@ export function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = fa
 
 
 
-      <SectionLabel style={{ borderTop: 'none' }}>Product assignments (optional)</SectionLabel>
+      <SectionLabel style={{ borderTop: 'none', color: T.white }}>Product assignments (optional)</SectionLabel>
       <div style={{ marginBottom: 8 }}>
-        <Btn onClick={() => setShowProducts(s => !s)} style={{ fontSize: 11, padding: '4px 10px', marginBottom: 8 }}>{showProducts ? 'Hide products' : 'Assign products to steps'}</Btn>
+        <Btn onClick={() => setShowProducts(s => !s)} style={{ fontSize: 11, padding: '4px 10px', marginBottom: 8, background: T.white, color: T.darkGreen, border: 'none' }}>{showProducts ? 'Hide products' : 'Assign products to steps'}</Btn>
         {showProducts && (
-          <div>
+          <div style={{ background: T.white, borderRadius: T.radius.card, padding: '10px 12px' }}>
             <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 8 }}>Assign products to each routine step. Unassigned steps will be faded in the day flyout.</div>
             {/* Product assignment split by routine section.
                 If `form.steps` was carried over from an existing routine
@@ -5560,7 +5561,7 @@ export default function GlowUpCalendar({ session }) {
       {confirmDialog}
 
     </div>
-    <GlowUpFooter />
+    <GlowUpFooter onFeedback={() => setShowFeedback(true)} />
     </div>
   )
 }

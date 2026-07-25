@@ -191,7 +191,7 @@ export default function RoutineHistory({ session }) {
   function Timestamps({ p }) {
     if (!p.createdAt && !p.updatedAt) return null
     return (
-      <div style={{ fontSize: 10, color: T.textLight, fontStyle: 'italic', marginTop: 6, lineHeight: 1.7 }}>
+      <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.65)', fontStyle: 'italic', marginTop: 6, lineHeight: 1.7 }}>
         {p.createdAt && <div>Created: {fmtDateTime(p.createdAt)}</div>}
         {p.updatedAt && p.createdAt && p.updatedAt !== p.createdAt && <div>Last edited: {fmtDateTime(p.updatedAt)}</div>}
       </div>
@@ -229,7 +229,7 @@ export default function RoutineHistory({ session }) {
       </div>
 
       {/* Tabs */}
-      <div style={{ display: 'flex', justifyContent: 'flex-start', gap: 6, padding: '16px 20px 8px', maxWidth: CONTENT_WIDTH, margin: '0 auto', boxSizing: 'border-box' }}>
+      <div style={{ display: 'flex', justifyContent: 'flex-start', gap: 6, padding: '16px 20px 8px', width: '100%', maxWidth: CONTENT_WIDTH, margin: '0 auto', boxSizing: 'border-box' }}>
         {tabs.map(t => (
           <button key={t.key} onClick={() => setTab(t.key)} style={{
             padding: '6px 14px', borderRadius: T.radius.pill, fontSize: 11, cursor: 'pointer',
@@ -241,7 +241,7 @@ export default function RoutineHistory({ session }) {
         ))}
       </div>
 
-      <div style={{ padding: '8px 20px', maxWidth: CONTENT_WIDTH, margin: '0 auto', boxSizing: 'border-box' }}>
+      <div style={{ padding: '8px 20px', width: '100%', maxWidth: CONTENT_WIDTH, margin: '0 auto', boxSizing: 'border-box' }}>
         {loading ? (
           <div style={{ fontSize: 13, color: T.textMuted, padding: '20px 0' }}>Loading...</div>
         ) : (
@@ -258,15 +258,15 @@ export default function RoutineHistory({ session }) {
                 {routineHistory.length === 0
                   ? <div style={{ fontSize: 13, color: T.textMuted, fontStyle: 'italic' }}>No skincare routines yet.</div>
                   : routineHistory.map((p, i) => (
-                    <div key={i} style={{ background: T.surfaceMuted, borderRadius: T.radius.card, padding: '12px 14px', marginBottom: 10 }}>
+                    <div key={i} style={{ background: T.darkGreen, borderRadius: T.radius.card, padding: '12px 14px', marginBottom: 10 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
-                        <div style={{ fontSize: 12, fontWeight: 600, color: T.text }}>{getPeriodLabel(p)}</div>
+                        <div style={{ fontSize: 12, fontWeight: 600, color: T.white }}>{getPeriodLabel(p)}</div>
                         <div style={{ display: 'flex', gap: 4 }}>
-                          <Btn style={{ borderColor: T.darkGreen, color: T.darkGreen }} onClick={() => navigate('edit-skincare', p)}>Edit</Btn>
-                          <button onClick={() => deleteSkincare(p)} aria-label="Delete this skincare routine" style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 16, padding: '0 4px' }}>×</button>
+                          <Btn style={{ borderColor: T.white, color: T.white }} onClick={() => navigate('edit-skincare', p)}>Edit</Btn>
+                          <button onClick={() => deleteSkincare(p)} aria-label="Delete this skincare routine" style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: 'rgba(255,255,255,0.7)', fontSize: 16, padding: '0 4px' }}>×</button>
                         </div>
                       </div>
-                      <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.7 }}>
+                      <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.85)', lineHeight: 1.7 }}>
                         {(() => {
                           const steps = p.steps
                           if (steps) {
@@ -309,15 +309,15 @@ export default function RoutineHistory({ session }) {
                 {dailyHistory.length === 0
                   ? <div style={{ fontSize: 13, color: T.textMuted, fontStyle: 'italic' }}>No extras routines yet.</div>
                   : dailyHistory.map((p, i) => (
-                    <div key={i} style={{ background: T.surfaceMuted, borderRadius: T.radius.card, padding: '12px 14px', marginBottom: 10 }}>
+                    <div key={i} style={{ background: T.darkGreen, borderRadius: T.radius.card, padding: '12px 14px', marginBottom: 10 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
-                        <div style={{ fontSize: 12, fontWeight: 600, color: T.text }}>{getPeriodLabel(p)}</div>
+                        <div style={{ fontSize: 12, fontWeight: 600, color: T.white }}>{getPeriodLabel(p)}</div>
                         <div style={{ display: 'flex', gap: 4 }}>
-                          <Btn style={{ borderColor: T.darkGreen, color: T.darkGreen }} onClick={() => navigate('edit-daily', p)}>Edit</Btn>
-                          <button onClick={() => deleteDaily(p)} aria-label="Delete this extras routine" style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 16, padding: '0 4px' }}>×</button>
+                          <Btn style={{ borderColor: T.white, color: T.white }} onClick={() => navigate('edit-daily', p)}>Edit</Btn>
+                          <button onClick={() => deleteDaily(p)} aria-label="Delete this extras routine" style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: 'rgba(255,255,255,0.7)', fontSize: 16, padding: '0 4px' }}>×</button>
                         </div>
                       </div>
-                      <div style={{ fontSize: 11, color: T.textMuted }}>{(p.items||[]).map(it => it.label).join(' · ') || 'No items'}</div>
+                      <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.85)' }}>{(p.items||[]).map(it => it.label).join(' · ') || 'No items'}</div>
                       <Timestamps p={p} />
                     </div>
                   ))
@@ -337,15 +337,15 @@ export default function RoutineHistory({ session }) {
                 {showerHistory.length === 0
                   ? <div style={{ fontSize: 13, color: T.textMuted, fontStyle: 'italic' }}>No shower routines yet.</div>
                   : showerHistory.map((p, i) => (
-                    <div key={i} style={{ background: T.surfaceMuted, borderRadius: T.radius.card, padding: '12px 14px', marginBottom: 10 }}>
+                    <div key={i} style={{ background: T.darkGreen, borderRadius: T.radius.card, padding: '12px 14px', marginBottom: 10 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
-                        <div style={{ fontSize: 12, fontWeight: 600, color: T.text }}>{getPeriodLabel(p)}</div>
+                        <div style={{ fontSize: 12, fontWeight: 600, color: T.white }}>{getPeriodLabel(p)}</div>
                         <div style={{ display: 'flex', gap: 4 }}>
-                          <Btn style={{ borderColor: T.darkGreen, color: T.darkGreen }} onClick={() => navigate('edit-shower', p)}>Edit</Btn>
-                          <button onClick={() => deleteShower(p)} aria-label="Delete this shower routine" style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 16, padding: '0 4px' }}>×</button>
+                          <Btn style={{ borderColor: T.white, color: T.white }} onClick={() => navigate('edit-shower', p)}>Edit</Btn>
+                          <button onClick={() => deleteShower(p)} aria-label="Delete this shower routine" style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: 'rgba(255,255,255,0.7)', fontSize: 16, padding: '0 4px' }}>×</button>
                         </div>
                       </div>
-                      <div style={{ fontSize: 11, color: T.textMuted }}>{(p.items||[]).map(it => `${it.label}${it.frequency ? ` (${it.frequency})` : ''}`).join(' · ') || 'No items'}</div>
+                      <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.85)' }}>{(p.items||[]).map(it => `${it.label}${it.frequency ? ` (${it.frequency})` : ''}`).join(' · ') || 'No items'}</div>
                       <Timestamps p={p} />
                     </div>
                   ))
@@ -401,7 +401,7 @@ export default function RoutineHistory({ session }) {
         </div>
       )}
       {confirmDialog}
-      <GlowUpFooter />
+      <GlowUpFooter onFeedback={() => setShowFeedback(true)} />
     </div>
   )
 }

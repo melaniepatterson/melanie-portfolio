@@ -385,7 +385,7 @@ export default function Profile({ session, onOpenSurvey }) {
         </div>
       </div>
 
-      <div style={{ maxWidth: 480, margin: '0 auto', padding: '24px 20px' }}>
+      <div style={{ width: '100%', maxWidth: 480, margin: '0 auto', padding: '24px 20px', boxSizing: 'border-box' }}>
 
         {/* Avatar */}
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 28 }}>
@@ -706,7 +706,7 @@ export default function Profile({ session, onOpenSurvey }) {
         </button>
       </div>
     </div>
-    <GlowUpFooter />
+    <GlowUpFooter onFeedback={() => setShowFeedback(true)} />
     {showSurvey && (
       <BetaSurvey
         session={session}

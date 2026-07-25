@@ -481,14 +481,10 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
           <button onClick={onClose} aria-label="Close" style={{ position: 'absolute', top: 12, right: 14, zIndex: 1010, border: 'none', background: 'transparent', color: T.textMuted, cursor: 'pointer', fontSize: 20, opacity: 0.8, padding: '0 2px', lineHeight: 1 }}>×</button>
 
         {/* ── Left: portrait image ─────────────────────────── */}
-        {/* Image sits inset within its brand-color panel like a photo mat
-            — most product photos are plain white-background studio shots,
-            so without this inset the color never actually shows and every
-            card looks identically blank. */}
         {img && (
-          <div style={{ width: '40%', flexShrink: 0, overflow: 'hidden', background: getBrandColor(p.brand, p.id), borderRadius: T.radius.card, padding: '7%', boxSizing: 'border-box', display: 'flex' }}>
+          <div style={{ width: '40%', flexShrink: 0, overflow: 'hidden', background: getBrandColor(p.brand, p.id), borderRadius: T.radius.card }}>
             <img src={img} alt={p.name}
-              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', borderRadius: 8 }}
+              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
               onError={e => { e.currentTarget.parentElement.style.display = 'none' }} />
           </div>
         )}
@@ -908,15 +904,11 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
                 role="button" tabIndex={0} aria-label={p.name}
                 onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedProduct(p) } }}
                 style={{ cursor: 'pointer', position: 'relative', background: T.white, display: 'flex', flexDirection: 'column', borderRadius: T.radius.card, overflow: 'hidden' }}>
-                {/* Portrait image — paddingBottom keeps 3:4 ratio consistent
-                    across all cards. Image is inset within its brand-color
-                    panel like a photo mat, same reasoning as the modal: most
-                    product photos are plain white-background studio shots,
-                    so without the inset the color never shows through. */}
+                {/* Portrait image — paddingBottom keeps 3:4 ratio consistent across all cards */}
                 <div style={{ position: 'relative', paddingBottom: '133.33%', overflow: 'hidden', background: getBrandColor(p.brand, p.id), flexShrink: 0 }}>
                   {img && (
                     <img src={img} alt={p.name}
-                      style={{ position: 'absolute', inset: '7%', width: '86%', height: '86%', objectFit: 'cover', display: 'block', borderRadius: 6 }}
+                      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                       onError={e => { e.currentTarget.style.display = 'none' }} />
                   )}
                   {/* Routine badges — top right */}
@@ -943,13 +935,13 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginTop: 8 }} onClick={e => e.stopPropagation()}>
                       {p.purchaseUrl && (
                         <a href={p.purchaseUrl} target="_blank" rel="noopener noreferrer"
-                          style={{ display: 'block', fontSize: 9, padding: '4px 8px', borderRadius: T.radius.pill, background: 'transparent', color: T.text, textDecoration: 'none', border: '0.5px solid ' + T.textMuted, textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'inherit', boxSizing: 'border-box' }}>
+                          style={{ display: 'block', fontSize: 9, padding: '4px 8px', borderRadius: T.radius.pill, background: getBrandColor(p.brand, p.id), color: T.text, textDecoration: 'none', border: 'none', textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'inherit', boxSizing: 'border-box' }}>
                           Buy from {p.store_name || 'affiliate'} ↗
                         </a>
                       )}
                       {p.direct_url && (
                         <a href={p.direct_url} target="_blank" rel="noopener noreferrer"
-                          style={{ display: 'block', fontSize: 9, padding: '4px 8px', borderRadius: T.radius.pill, background: 'transparent', color: T.text, textDecoration: 'none', border: '0.5px solid ' + T.textMuted, textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'inherit', boxSizing: 'border-box' }}>
+                          style={{ display: 'block', fontSize: 9, padding: '4px 8px', borderRadius: T.radius.pill, background: getBrandColor(p.brand, p.id), color: T.text, textDecoration: 'none', border: 'none', textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'inherit', boxSizing: 'border-box' }}>
                           Buy from {p.direct_store_name || 'brand site'} ↗
                         </a>
                       )}
@@ -1401,7 +1393,7 @@ export default function ProductsPage({ session }) {
             />
       }
       {alertDialog}
-      <GlowUpFooter />
+      <GlowUpFooter onFeedback={() => setShowFeedback(true)} />
     </div>
   )
 }
