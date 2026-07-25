@@ -478,7 +478,7 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
 
         {/* ── Left: portrait image ─────────────────────────── */}
         {img && (
-          <div style={{ width: '40%', flexShrink: 0, overflow: 'hidden', background: getBrandColor(p.brand, p.id), borderRadius: 0 }}>
+          <div style={{ width: '40%', flexShrink: 0, overflow: 'hidden', background: getBrandColor(p.brand, p.id), borderRadius: T.radius.card }}>
             <img src={img} alt={p.name}
               style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
               onError={e => { e.currentTarget.parentElement.style.display = 'none' }} />

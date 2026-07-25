@@ -1562,7 +1562,7 @@ export function DailyEditor({ initial, onSave, onCancel, lockStartDate = false, 
                     <div style={{ flex: 1, minWidth: 0 }}>
                       {prod ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          {prod.imageUrl && <img src={prod.imageUrl} alt="" style={{ width: 44, height: 44, borderRadius: 0, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />}
+                          {prod.imageUrl && <img src={prod.imageUrl} alt="" style={{ width: 44, height: 44, borderRadius: T.radius.card, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />}
                           <div style={{ minWidth: 0 }}>
                             <div style={{ fontSize: 11, fontWeight: 500, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{prod.name}</div>
                             {prod.brand && <div style={{ fontSize: 10, color: T.textMuted }}>{prod.brand}</div>}
@@ -1727,7 +1727,7 @@ function DailySection({ dt, dailyHistory, onEditDaily, tab, products, onUpdateDa
               <div style={{ flex: 1, minWidth: 0 }}>
                 {prod ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
-                    {prod.imageUrl && <img src={prod.imageUrl} alt="" style={{ width: 44, height: 44, borderRadius: 0, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />}
+                    {prod.imageUrl && <img src={prod.imageUrl} alt="" style={{ width: 44, height: 44, borderRadius: T.radius.card, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />}
                     <div style={{ minWidth: 0 }}>
                       <div style={{ fontSize: 11, fontWeight: 500, color: T.textMuted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{prod.name}</div>
                       {prod.brand && <div style={{ fontSize: 10, color: T.textLight }}>{prod.brand}</div>}
@@ -1829,9 +1829,9 @@ function ProductPicker({ stepKey, currentProductId, products, onSelect, onAddNew
           >
             {/* Thumbnail */}
             {p.imageUrl ? (
-              <img src={p.imageUrl} alt="" style={{ width: 32, height: 32, borderRadius: 0, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />
+              <img src={p.imageUrl} alt="" style={{ width: 32, height: 32, borderRadius: T.radius.card, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />
             ) : (
-              <div style={{ width: 32, height: 32, borderRadius: 0, background: T.surfaceMuted, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, color: T.textLight }}>◻</div>
+              <div style={{ width: 32, height: 32, borderRadius: T.radius.card, background: T.surfaceMuted, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, color: T.textLight }}>◻</div>
             )}
             {/* Info */}
             <div style={{ flex: 1, minWidth: 0 }}>
@@ -2116,7 +2116,7 @@ export function ShowerEditor({ initial, onSave, onCancel, allPeriods = [], onEdi
                     <div style={{ flex: 1, minWidth: 0 }}>
                       {prod ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          {prod.imageUrl && <img src={prod.imageUrl} alt="" style={{ width: 44, height: 44, borderRadius: 0, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />}
+                          {prod.imageUrl && <img src={prod.imageUrl} alt="" style={{ width: 44, height: 44, borderRadius: T.radius.card, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />}
                           <div style={{ minWidth: 0 }}>
                             <div style={{ fontSize: 11, fontWeight: 500, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{prod.name}</div>
                             {prod.brand && <div style={{ fontSize: 10, color: T.textMuted }}>{prod.brand}</div>}
@@ -2263,7 +2263,7 @@ function ShowerSection({ dt, showerHistory, onEditShower, products, onUpdateShow
                 <div style={{ flex: 1, minWidth: 0 }}>
                   {prod ? (
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
-                      {prod.imageUrl && <img src={prod.imageUrl} alt="" style={{ width: 44, height: 44, borderRadius: 0, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />}
+                      {prod.imageUrl && <img src={prod.imageUrl} alt="" style={{ width: 44, height: 44, borderRadius: T.radius.card, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />}
                       <div style={{ minWidth: 0 }}>
                         <div style={{ fontSize: 11, fontWeight: 500, color: T.textMuted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{prod.name}</div>
                         {prod.brand && <div style={{ fontSize: 10, color: T.textLight }}>{prod.brand}</div>}
@@ -2491,7 +2491,7 @@ function DayFlyout({ flyout, borderColor, period, dailyHistory, showerHistory, p
               </div>
               {product ? (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
-                  {product.imageUrl && <img src={product.imageUrl} alt="" style={{ width: 44, height: 44, borderRadius: 0, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />}
+                  {product.imageUrl && <img src={product.imageUrl} alt="" style={{ width: 44, height: 44, borderRadius: T.radius.card, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />}
                   <div style={{ minWidth: 0 }}>
                     <div style={{ fontSize: 11, color: T.textMuted, fontWeight: 500 }}>{product.name}</div>
                     {product.brand && <div style={{ fontSize: 10, color: T.textLight }}>{product.brand}</div>}
@@ -2659,8 +2659,8 @@ function DayFlyout({ flyout, borderColor, period, dailyHistory, showerHistory, p
 
       {/* 2. Morning / Night tabs */}
       <div style={{ display: 'flex', gap: 6, marginBottom: 8, marginTop: 10 }}>
-        <button onClick={() => switchTab('am')} aria-pressed={tab === 'am'} style={{ padding: '7px 18px', borderRadius: T.radius.pill, border: 'none', background: tab === 'am' ? T.pink : T.white, fontSize: 14, fontWeight: 700, cursor: 'pointer', color: T.text }}>Morning (AM)</button>
-        <button onClick={() => switchTab('pm')} aria-pressed={tab === 'pm'} style={{ padding: '7px 18px', borderRadius: T.radius.pill, border: 'none', background: tab === 'pm' ? T.pink : T.white, fontSize: 14, fontWeight: 700, cursor: 'pointer', color: T.text }}>Evening (PM)</button>
+        <button onClick={() => switchTab('am')} aria-pressed={tab === 'am'} style={{ padding: '7px 18px', borderRadius: T.radius.pill, border: 'none', background: tab === 'am' ? T.text : T.white, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', cursor: 'pointer', color: tab === 'am' ? T.white : T.text }}>Morning (AM)</button>
+        <button onClick={() => switchTab('pm')} aria-pressed={tab === 'pm'} style={{ padding: '7px 18px', borderRadius: T.radius.pill, border: 'none', background: tab === 'pm' ? T.text : T.white, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', cursor: 'pointer', color: tab === 'pm' ? T.white : T.text }}>Evening (PM)</button>
       </div>
 
       {/* 3. Extras — filtered by frequency + current tab, hidden when nothing matches */}
@@ -2676,7 +2676,7 @@ function DayFlyout({ flyout, borderColor, period, dailyHistory, showerHistory, p
           {period && <div style={{ fontSize: 10, fontWeight: 600, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8, paddingTop: 10, borderTop: `0.5px solid ${borderColor}` }}>Skincare</div>}
           {/* AM: normal routine unless it's an AM treatment */}
           {tab === 'am' && dayType === 'pause' && (
-            <div style={{ fontSize: 11, color: T.pause.text, background: T.pause.bg, border: `0.5px solid ${T.pause.border}`, borderRadius: 0, padding: '5px 10px', marginBottom: 8 }}>
+            <div style={{ fontSize: 11, color: T.pause.text, background: T.pause.bg, border: `0.5px solid ${T.pause.border}`, borderRadius: T.radius.card, padding: '5px 10px', marginBottom: 8 }}>
               Pre-treatment pause — your morning SPF and moisturizer are fine. Skip any acids or actives.
             </div>
           )}
@@ -2701,7 +2701,7 @@ function DayFlyout({ flyout, borderColor, period, dailyHistory, showerHistory, p
             </div>
           )}
           {tab === 'pm' && dayType === 'pause' && (
-            <div style={{ fontSize: 11, color: T.pause.text, background: T.pause.bg, border: `0.5px solid ${T.pause.border}`, borderRadius: 0, padding: '5px 10px', marginBottom: 8 }}>
+            <div style={{ fontSize: 11, color: T.pause.text, background: T.pause.bg, border: `0.5px solid ${T.pause.border}`, borderRadius: T.radius.card, padding: '5px 10px', marginBottom: 8 }}>
               Pre-treatment pause — skip actives tonight. Regular cleanse and moisturizer only.
             </div>
           )}
@@ -5309,7 +5309,10 @@ export default function GlowUpCalendar({ session }) {
                 zIndex: 501,
                 borderRadius: T.radius.modal,
                 background: flyoutBodyBg,
-                border: `2px solid ${flyoutBorderColor}`,
+                // Outer modal edge — commented out for now (liked it, just not here); the
+                // color-aware rule this was using (white on color / ink on white) still
+                // applies to the internal section dividers via flyoutBorderColor below.
+                // border: `2px solid ${flyoutBorderColor}`,
                 boxShadow: '0 8px 40px rgba(0,0,0,0.18)',
                 animation: 'fadeIn 0.15s ease',
                 overflow: 'hidden',

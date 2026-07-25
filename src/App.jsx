@@ -49,8 +49,20 @@ function Layout() {
   useEffect(() => {
     document.body.style.fontFamily = isRoutine ? T.fontFamily : ''
     document.body.style.color = isRoutine ? T.text : ''
+    // index.css sets body/html to the portfolio's cream (#FAF7F2) — that's
+    // the portfolio's own default and stays as-is there, but GlowUp needs
+    // white so the portfolio color doesn't show through on overscroll/short
+    // pages. Same gated-override pattern as fontFamily/color above.
+    document.body.style.backgroundColor = isRoutine ? T.white : ''
+    document.documentElement.style.backgroundColor = isRoutine ? T.white : ''
     document.body.classList.toggle('glowup-app', isRoutine)
-    return () => { document.body.style.fontFamily = ''; document.body.style.color = ''; document.body.classList.remove('glowup-app') }
+    return () => {
+      document.body.style.fontFamily = ''
+      document.body.style.color = ''
+      document.body.style.backgroundColor = ''
+      document.documentElement.style.backgroundColor = ''
+      document.body.classList.remove('glowup-app')
+    }
   }, [isRoutine])
 
   // Check ?survey=1 param — open modal over whatever page is current
