@@ -5,16 +5,30 @@ import T from './theme'
 
 // Each letter alternates up/down in a steady rhythm, with just the tilt
 // varying a little per letter — applied on hover via CSS custom properties.
+// Letters are grouped per word (each word its own nowrap span) so that at
+// larger sizes / narrower drawers, wrapping can only happen between words,
+// not mid-word.
 function ScatterText({ text }) {
-  const offsets = useMemo(() => text.split('').map((_, i) => ({
+  const words = useMemo(() => text.split(' '), [text])
+  const offsets = useMemo(() => text.replace(/ /g, '').split('').map((_, i) => ({
     ty: (i % 2 === 0 ? -1 : 1).toFixed(1),
     rot: (Math.random() * 5 - 2.5).toFixed(1),
   })), [text])
-  return text.split('').map((ch, i) => (
-    <span key={i} className="glowup-scatter-letter" style={{ whiteSpace: 'pre', '--ty': `${offsets[i].ty}px`, '--rot': `${offsets[i].rot}deg` }}>
-      {ch}
-    </span>
-  ))
+  let idx = 0
+  const nodes = []
+  words.forEach((word, wi) => {
+    const letters = word.split('').map(ch => {
+      const i = idx++
+      return (
+        <span key={`c${i}`} className="glowup-scatter-letter" style={{ whiteSpace: 'pre', '--ty': `${offsets[i].ty}px`, '--rot': `${offsets[i].rot}deg` }}>
+          {ch}
+        </span>
+      )
+    })
+    nodes.push(<span key={`w${wi}`} style={{ display: 'inline-flex' }}>{letters}</span>)
+    if (wi < words.length - 1) nodes.push(<span key={`s${wi}`} style={{ whiteSpace: 'pre' }}> </span>)
+  })
+  return nodes
 }
 
 
@@ -51,13 +65,15 @@ export default function SideMenu({ session, onClose, onFeedback }) {
   const currentPath = window.location.pathname
 
   // Each item gets its own brand color for the active-state pill — avoids
-  // yellow since that's now the drawer's own background.
+  // yellow since that's now the drawer's own background. Hover uses the
+  // matching dark variant with white text (white on each dark* token is
+  // 5.4-7.4:1, comfortably past WCAG AA even at normal-text size).
   const menuItems = [
-    { label: 'Calendar',           href: '/routine',          color: T.blue },
-    { label: 'Routine history',    href: '/routine/history',  color: T.green },
-    { label: 'Product library',    href: '/routine/products', color: T.pink },
-    { label: 'Account & settings', href: '/routine/profile',  color: T.orange },
-    { label: 'Send feedback', color: T.blue, action: onFeedback },
+    { label: 'Calendar',           href: '/routine',          color: T.blue,   hoverColor: T.darkBlue },
+    { label: 'Routine history',    href: '/routine/history',  color: T.green,  hoverColor: T.darkGreen },
+    { label: 'Product library',    href: '/routine/products', color: T.pink,   hoverColor: T.darkPink },
+    { label: 'Account & settings', href: '/routine/profile',  color: T.orange, hoverColor: T.darkOrange },
+    { label: 'Send feedback', color: T.blue, hoverColor: T.darkBlue, action: onFeedback },
   ]
 
   async function signOut() {
@@ -83,7 +99,7 @@ export default function SideMenu({ session, onClose, onFeedback }) {
       `}</style>
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.2)', zIndex: 200 }} />
       <div role="dialog" aria-modal="true" aria-label="Main menu" style={{
-        position: 'fixed', top: 0, right: 0, bottom: 0, width: 280,
+        position: 'fixed', top: 0, right: 0, bottom: 0, width: 'min(400px, 88vw)',
         background: T.yellow, border: 'none',
         zIndex: 201, display: 'flex', flexDirection: 'column',
         fontFamily: 'inherit', boxShadow: '-4px 0 24px rgba(0,0,0,0.2)',
@@ -109,24 +125,24 @@ export default function SideMenu({ session, onClose, onFeedback }) {
 
         {/* Menu items */}
         <div style={{ flex: 1, padding: '12px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 4 }}>
-          {menuItems.map(({ label, href, action, color }) => {
+          {menuItems.map(({ label, href, action, color, hoverColor }) => {
             const isActive = href && currentPath === href
             return (
               <button key={label} className="glowup-menu-item"
                 onClick={() => { onClose(); if (action) action(); else if (href) window.location.href = href }}
                 style={{
-                  display: 'flex', alignItems: 'center', width: '100%',
-                  padding: '14px 16px', border: 'none', borderRadius: T.radius.card,
+                  display: 'flex', alignItems: 'center', flexWrap: 'wrap', width: '100%',
+                  padding: '16px 16px', border: 'none', borderRadius: T.radius.card,
                   background: isActive ? color : 'transparent',
-                  cursor: 'pointer', textAlign: 'left', fontSize: 18,
+                  cursor: 'pointer', textAlign: 'left', fontSize: 32,
                   color: T.text, textTransform: 'uppercase', letterSpacing: '0.02em',
-                  fontWeight: 700,
+                  fontWeight: 700, lineHeight: 1.15,
                   fontFamily: 'inherit',
                   animation: isActive ? 'glowupMenuPop 0.3s ease' : 'none',
-                  transition: 'background 0.15s ease',
+                  transition: 'background 0.15s ease, color 0.15s ease',
                 }}
-                onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'rgba(0,0,0,0.08)' }}
-                onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent' }}
+                onMouseEnter={e => { if (!isActive) { e.currentTarget.style.background = hoverColor; e.currentTarget.style.color = T.white } }}
+                onMouseLeave={e => { if (!isActive) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = T.text } }}
               >
                 <ScatterText text={label} />
               </button>
