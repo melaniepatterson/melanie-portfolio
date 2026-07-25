@@ -1681,7 +1681,7 @@ export function DailyEditor({ initial, onSave, onCancel, lockStartDate = false, 
 
 // DailySection (Extras) — renders extras active today, filtered by frequency + AM/PM tab
 // Returns null when nothing is scheduled for that day+tab — no empty section shown
-function DailySection({ dt, dailyHistory, onEditDaily, tab, products, onUpdateDailyItemProduct }) {
+function DailySection({ dt, dailyHistory, onEditDaily, tab, products, onUpdateDailyItemProduct, accentColor }) {
   const period = getActiveDailyPeriod(dt, dailyHistory)
   const allItems = period?.items || []
   const [openItemId, setOpenItemId] = useState(null)
@@ -1747,6 +1747,7 @@ function DailySection({ dt, dailyHistory, onEditDaily, tab, products, onUpdateDa
                 products={products}
                 onSelect={(pid) => { onUpdateDailyItemProduct?.(period.id, item.id, pid); setOpenItemId(null) }}
                 onClose={() => setOpenItemId(null)}
+                accentColor={accentColor}
               />
             )}
           </div>
@@ -1759,7 +1760,7 @@ function DailySection({ dt, dailyHistory, onEditDaily, tab, products, onUpdateDa
 
 // ProductPicker — shown when clicking a step in the flyout
 // Lets user pick from existing products or add a new one
-function ProductPicker({ stepKey, currentProductId, products, onSelect, onAddNew, onClose, categoryKey }) {
+function ProductPicker({ stepKey, currentProductId, products, onSelect, onAddNew, onClose, categoryKey, accentColor = T.darkGreen }) {
   // Derive categoryKey from stepKey if not passed directly (e.g. 'main_cleanser' → 'cleanser')
   const derivedCategoryKey = categoryKey || (stepKey ? stepKey.replace(/^(am|main|off|recovery|pause|nr)_/, '') : null)
   const ingredientCat = derivedCategoryKey ? INGREDIENT_CATEGORIES[derivedCategoryKey] : null
@@ -1809,12 +1810,14 @@ function ProductPicker({ stepKey, currentProductId, products, onSelect, onAddNew
             onClick={() => onSelect(null)}
             role="button" tabIndex={0}
             onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect(null) } }}
-            style={{ padding: '6px 8px', borderRadius: 0, fontSize: 12, cursor: 'pointer', color: '#9F1239', marginBottom: 3, background: '#FFF0F0' }}
+            style={{ padding: '6px 8px', borderRadius: 0, fontSize: 12, cursor: 'pointer', color: T.treatment.text, marginBottom: 3, background: T.treatment.bg }}
           >
             Remove assignment
           </div>
         )}
-        {filtered.map(p => (
+        {filtered.map(p => {
+          const isSelected = p.id === currentProductId
+          return (
           <div
             key={p.id}
             onClick={() => onSelect(p.id)}
@@ -1823,28 +1826,29 @@ function ProductPicker({ stepKey, currentProductId, products, onSelect, onAddNew
             style={{
               display: 'flex', alignItems: 'center', gap: 8,
               padding: '6px 8px', borderRadius: 0, fontSize: 12, cursor: 'pointer', marginBottom: 2,
-              background: p.id === currentProductId ? T.pink : 'transparent',
-              border: `0.5px solid ${p.id === currentProductId ? T.pinkDeep : 'transparent'}`,
+              background: isSelected ? accentColor : 'transparent',
+              border: `0.5px solid ${isSelected ? accentColor : 'transparent'}`,
             }}
           >
             {/* Thumbnail */}
             {p.imageUrl ? (
               <img src={p.imageUrl} alt="" style={{ width: 32, height: 32, borderRadius: T.radius.card, objectFit: 'cover', flexShrink: 0 }} onError={e => e.target.style.display='none'} />
             ) : (
-              <div style={{ width: 32, height: 32, borderRadius: T.radius.card, background: T.surfaceMuted, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, color: T.textLight }}>◻</div>
+              <div style={{ width: 32, height: 32, borderRadius: T.radius.card, background: isSelected ? 'rgba(255,255,255,0.25)' : T.surfaceMuted, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, color: isSelected ? T.white : T.textLight }}>◻</div>
             )}
             {/* Info */}
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontWeight: 500, color: T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</div>
+              <div style={{ fontWeight: 500, color: isSelected ? T.white : T.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 1 }}>
-                {p.brand && <span style={{ fontSize: 10, color: T.textMuted }}>{p.brand}</span>}
-                {p.brand && p.category && <span style={{ fontSize: 10, color: T.textLight }}>·</span>}
-                {p.category && <span style={{ fontSize: 10, color: T.textLight }}>{p.category}</span>}
+                {p.brand && <span style={{ fontSize: 10, color: isSelected ? 'rgba(255,255,255,0.75)' : T.textMuted }}>{p.brand}</span>}
+                {p.brand && p.category && <span style={{ fontSize: 10, color: isSelected ? 'rgba(255,255,255,0.6)' : T.textLight }}>·</span>}
+                {p.category && <span style={{ fontSize: 10, color: isSelected ? 'rgba(255,255,255,0.6)' : T.textLight }}>{p.category}</span>}
               </div>
               {p.effectiveness > 0 && <StarRating value={p.effectiveness} size={9} />}
             </div>
           </div>
-        ))}
+          )
+        })}
       </div>
 
       <Btn variant="secondary" onClick={onAddNew} style={{ width: '100%', textAlign: 'center', fontSize: 11 }}>
@@ -2223,7 +2227,7 @@ export function ShowerEditor({ initial, onSave, onCancel, allPeriods = [], onEdi
 }
 
 // ShowerSection — shows active shower items for this specific date in the flyout
-function ShowerSection({ dt, showerHistory, onEditShower, products, onUpdateShowerItemProduct }) {
+function ShowerSection({ dt, showerHistory, onEditShower, products, onUpdateShowerItemProduct, accentColor }) {
   const period = getActiveShowerPeriod(dt, showerHistory)
   const allItems  = period?.items || []
   const activeItems = allItems.filter(item => isShowerItemActive(dt, item, period?.startDate))
@@ -2283,6 +2287,7 @@ function ShowerSection({ dt, showerHistory, onEditShower, products, onUpdateShow
                   products={products}
                   onSelect={(pid) => { onUpdateShowerItemProduct?.(period.id, item.id, pid); setOpenItemId(null) }}
                   onClose={() => setOpenItemId(null)}
+                  accentColor={accentColor}
                 />
               )}
             </div>
@@ -2316,7 +2321,7 @@ const AM_STEPS = [
 // × on active steps to remove back to library. No page refresh.
 const MULTI_STEP_KEYS = new Set(['watery_serum', 'treatment_serum', 'essence', 'toner', 'eye_cream'])
 
-function ManageSteps({ period, tab, onUpdateSteps, skinType }) {
+function ManageSteps({ period, tab, onUpdateSteps, skinType, accentColor = T.darkGreen }) {
   const [open, setOpen] = useState(false)
   if (!period?._dbId) return null
 
@@ -2370,7 +2375,7 @@ function ManageSteps({ period, tab, onUpdateSteps, skinType }) {
                 )}
               </div>
               <button onClick={() => addStep(key, cat.label)}
-                style={{ fontSize: 11, color: T.pinkDeep, background: 'none', border: 'none', cursor: 'pointer', padding: '0 2px', fontFamily: 'inherit', fontWeight: 600, lineHeight: 1, flexShrink: 0 }}>
+                style={{ fontSize: 11, color: accentColor, background: 'none', border: 'none', cursor: 'pointer', padding: '0 2px', fontFamily: 'inherit', fontWeight: 600, lineHeight: 1, flexShrink: 0 }}>
                 + Add
               </button>
             </div>
@@ -2528,6 +2533,7 @@ function DayFlyout({ flyout, borderColor, bodyIsWhite, period, dailyHistory, sho
                 onSelect={(pid) => handleSelectProduct(stepKey, pid)}
                 onAddNew={() => setAddingProduct(true)}
                 onClose={() => setOpenStepKey(null)}
+                accentColor={dayAccentDark}
               />
             )
           )}
@@ -2612,6 +2618,13 @@ function DayFlyout({ flyout, borderColor, bodyIsWhite, period, dailyHistory, sho
     return T[key]?.text || T.darkGreen
   }
 
+  // Dark accent for this day's own badge color — used for "selected" states
+  // in product pickers/add-step actions within the flyout (dark bg needs
+  // white text, same pattern as the badge/header elsewhere), falling back
+  // to dark green when the day has no active status to draw a color from.
+  const dayAccentColorKey = isTreatment ? (STATUS_COLORS[dayType] ? dayType : 'treatment') : (dayType === 'pca' ? 'recovery' : dayType)
+  const dayAccentDark = (dayAccentColorKey && STATUS_COLORS[dayAccentColorKey]) ? STATUS_COLORS[dayAccentColorKey].dark : T.darkGreen
+
   return (
     <div style={{ background: 'transparent', padding: '12px 14px', marginBottom: 14 }}>
       {/* Day-type badge + treatment actions — same row. Badge uses the
@@ -2655,7 +2668,7 @@ function DayFlyout({ flyout, borderColor, bodyIsWhite, period, dailyHistory, sho
       </div>
 
       {/* 1. Shower routine — always at top */}
-      <ShowerSection dt={date} showerHistory={showerHistory} onEditShower={onEditShower} products={products} onUpdateShowerItemProduct={onUpdateShowerItemProduct} />
+      <ShowerSection dt={date} showerHistory={showerHistory} onEditShower={onEditShower} products={products} onUpdateShowerItemProduct={onUpdateShowerItemProduct} accentColor={dayAccentDark} />
 
       {/* 2. Morning / Night tabs */}
       <div style={{ display: 'flex', gap: 6, marginBottom: 8, marginTop: 10 }}>
@@ -2664,7 +2677,7 @@ function DayFlyout({ flyout, borderColor, bodyIsWhite, period, dailyHistory, sho
       </div>
 
       {/* 3. Extras — filtered by frequency + current tab, hidden when nothing matches */}
-      <DailySection dt={date} dailyHistory={dailyHistory} onEditDaily={onEditDaily} tab={tab} products={products} onUpdateDailyItemProduct={onUpdateDailyItemProduct} />
+      <DailySection dt={date} dailyHistory={dailyHistory} onEditDaily={onEditDaily} tab={tab} products={products} onUpdateDailyItemProduct={onUpdateDailyItemProduct} accentColor={dayAccentDark} />
 
       {/* 4. Skincare steps — tab-specific */}
       {!period ? (
@@ -2714,6 +2727,7 @@ function DayFlyout({ flyout, borderColor, bodyIsWhite, period, dailyHistory, sho
               tab={tab}
               onUpdateSteps={onUpdateSteps}
               skinType={skinType}
+              accentColor={dayAccentDark}
             />
           )}
         </>
