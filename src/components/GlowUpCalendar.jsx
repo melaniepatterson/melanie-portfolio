@@ -1547,22 +1547,22 @@ export function DailyEditor({ initial, onSave, onCancel, lockStartDate = false, 
   }
 
   return (
-    <div style={{ background: T.white, border: `0.5px solid ${T.hairline}`, borderRadius: 0, padding: '14px 16px', marginBottom: 10 }}>
-      <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 4 }}>
+    <div style={{ background: T.pink, border: 'none', borderRadius: T.radius.modal, padding: '16px 18px', marginBottom: 10 }}>
+      <div style={{ fontSize: 13, fontWeight: 600, color: T.white, marginBottom: 4 }}>
         {initial?.id ? `Extras — editing from ${fmtDate(initial?.startDate)}` : 'Extras'}
       </div>
-      <div style={{ fontSize: 12, color: T.textMuted, marginBottom: 10, lineHeight: 1.6, background: T.surfaceMuted, borderRadius: 0, padding: '8px 12px' }}>
+      <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.85)', marginBottom: 10, lineHeight: 1.6 }}>
         The little things that make a big difference — growth serums, eye patches, leave-on body treatments, tools, supplements, and more.
       </div>
 
       <div style={{ display: 'flex', gap: 10, marginBottom: 10, flexWrap: 'wrap' }}>
         <div>
-          <FieldLabel htmlFor="daily-start">Start date</FieldLabel>
-          <DateInput id="daily-start" value={startDate} onChange={e => setStartDate(e.target.value)} />
+          <FieldLabel htmlFor="daily-start" style={{ color: 'rgba(255,255,255,0.85)' }}>Start date</FieldLabel>
+          <DateInput id="daily-start" variant="pill" value={startDate} onChange={e => setStartDate(e.target.value)} />
         </div>
         <div>
-          <FieldLabel htmlFor="daily-end">End date (leave blank if still active)</FieldLabel>
-          <DateInput id="daily-end" value={endDate} onChange={e => setEndDate(e.target.value)} />
+          <FieldLabel htmlFor="daily-end" style={{ color: 'rgba(255,255,255,0.85)' }}>End date (leave blank if still active)</FieldLabel>
+          <DateInput id="daily-end" variant="pill" value={endDate} onChange={e => setEndDate(e.target.value)} />
         </div>
       </div>
 
@@ -1570,9 +1570,9 @@ export function DailyEditor({ initial, onSave, onCancel, lockStartDate = false, 
 
       {/* Item list */}
       <div style={{ marginBottom: 10 }}>
-        <FieldLabel>Items — long press on mobile to drag and reorder</FieldLabel>
+        <FieldLabel style={{ color: 'rgba(255,255,255,0.85)' }}>Items — long press on mobile to drag and reorder</FieldLabel>
         {items.length === 0 && (
-          <div style={{ fontSize: 12, color: T.textLight, fontStyle: 'italic', padding: '6px 0' }}>No items yet — add one below</div>
+          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.85)', fontStyle: 'italic', padding: '6px 0' }}>No items yet — add one below</div>
         )}
         {items.map((item, i) => (
           <div key={item.id}>
@@ -1602,9 +1602,9 @@ export function DailyEditor({ initial, onSave, onCancel, lockStartDate = false, 
                     onClick={() => setItems(it => it.map((x,idx) => idx===i ? {...x,_pickingProduct:!x._pickingProduct} : x))}
                     role="button" tabIndex={0} aria-expanded={isOpen}
                     onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setItems(it => it.map((x,idx) => idx===i ? {...x,_pickingProduct:!x._pickingProduct} : x)) } }}
-                    style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 0, cursor: 'pointer', background: isOpen ? T.pink : 'transparent', border: `0.5px solid ${isOpen ? T.pinkDeep : T.hairline}`, marginBottom: isOpen ? 4 : 0 }}
+                    style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: T.radius.card, cursor: 'pointer', background: isOpen ? T.white : 'rgba(255,255,255,0.15)', border: 'none', marginBottom: isOpen ? 4 : 0 }}
                   >
-                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: T.pinkDeep, flexShrink: 0 }} />
+                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: T.darkPink, flexShrink: 0 }} />
                     <div style={{ flex: 1, minWidth: 0 }}>
                       {prod ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -1653,12 +1653,12 @@ export function DailyEditor({ initial, onSave, onCancel, lockStartDate = false, 
         <div style={{ marginBottom: 8 }}>
           <button
             onClick={() => setShowPresets(s => !s)}
-            style={{ fontSize: 11, color: T.pinkDeep, border: 'none', background: 'transparent', cursor: 'pointer', padding: 0, marginBottom: showPresets ? 6 : 0 }}
+            style={{ fontSize: 11, color: T.white, border: 'none', background: 'transparent', cursor: 'pointer', padding: 0, marginBottom: showPresets ? 6 : 0 }}
           >
             {showPresets ? '▲ Hide suggestions' : '▼ Browse suggestions'}
           </button>
           {showPresets && (
-            <div style={{ border: `0.5px solid ${T.hairline}`, borderRadius: 0, overflow: 'hidden', marginBottom: 8 }}>
+            <div style={{ background: T.white, borderRadius: T.radius.card, overflow: 'hidden', marginBottom: 8 }}>
               <input
                 type="text"
                 value={presetSearch}
@@ -1695,25 +1695,25 @@ export function DailyEditor({ initial, onSave, onCancel, lockStartDate = false, 
         </div>
 
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'flex-end' }}>
-        <div><FieldLabel htmlFor="daily-item">Item</FieldLabel><TextInput id="daily-item" value={newLabel} onChange={e => setNewLabel(e.target.value)} placeholder="e.g. Minoxidil" width={110} /></div>
-        <div><FieldLabel htmlFor="daily-note">Note</FieldLabel><TextInput id="daily-note" value={newNote} onChange={e => setNewNote(e.target.value)} placeholder="optional" width={90} /></div>
+        <div><FieldLabel htmlFor="daily-item" style={{ color: 'rgba(255,255,255,0.85)' }}>Item</FieldLabel><TextInput id="daily-item" variant="pill" value={newLabel} onChange={e => setNewLabel(e.target.value)} placeholder="e.g. Minoxidil" width={110} /></div>
+        <div><FieldLabel htmlFor="daily-note" style={{ color: 'rgba(255,255,255,0.85)' }}>Note</FieldLabel><TextInput id="daily-note" variant="pill" value={newNote} onChange={e => setNewNote(e.target.value)} placeholder="optional" width={90} /></div>
         <div>
-          <FieldLabel htmlFor="daily-freq">How often</FieldLabel>
-          <select id="daily-freq" value={newFreq} onChange={e => setNewFreq(e.target.value)} style={{ fontSize: 12, padding: '5px 8px', border: `0.5px solid ${T.hairline}`, borderRadius: 0, background: T.white, color: T.text }}>
+          <FieldLabel htmlFor="daily-freq" style={{ color: 'rgba(255,255,255,0.85)' }}>How often</FieldLabel>
+          <select id="daily-freq" value={newFreq} onChange={e => setNewFreq(e.target.value)} style={{ fontSize: 12, padding: '7px 14px', border: 'none', borderRadius: T.radius.pill, background: T.white, color: T.text, fontFamily: 'inherit' }}>
             {EXTRAS_FREQUENCIES.map(f => <option key={f.key} value={f.key}>{f.label}</option>)}
           </select>
         </div>
         <div>
-          <FieldLabel>When</FieldLabel>
+          <FieldLabel style={{ color: 'rgba(255,255,255,0.85)' }}>When</FieldLabel>
           <div style={{ display: 'flex', gap: 4 }}>
             {TIME_OF_DAY_OPTIONS.map(t => (
-              <button key={t.key} onClick={() => setNewTimeOfDay(t.key)} aria-pressed={newTimeOfDay === t.key} style={{ fontSize: 10, padding: '5px 8px', borderRadius: 0, cursor: 'pointer', border: `0.5px solid ${newTimeOfDay === t.key ? T.pinkDeep : T.hairline}`, background: newTimeOfDay === t.key ? T.pink : 'transparent', color: newTimeOfDay === t.key ? T.text : T.textLight }}>
+              <button key={t.key} onClick={() => setNewTimeOfDay(t.key)} aria-pressed={newTimeOfDay === t.key} style={{ fontSize: 10, padding: '5px 10px', borderRadius: T.radius.pill, cursor: 'pointer', border: 'none', background: newTimeOfDay === t.key ? T.white : 'rgba(255,255,255,0.15)', color: newTimeOfDay === t.key ? T.darkPink : T.white }}>
                 {t.label}
               </button>
             ))}
           </div>
         </div>
-        <Btn variant="secondary" onClick={addItem}>Add</Btn>
+        <Btn variant="secondary" onClick={addItem} style={{ borderColor: T.white, color: T.white }}>Add</Btn>
         </div>{/* end flex row */}
       </div>{/* end add item section */}
 
@@ -2124,23 +2124,23 @@ export function ShowerEditor({ initial, onSave, onCancel, allPeriods = [], onEdi
   }
 
   return (
-    <div style={{ background: T.white, border: `0.5px solid ${T.hairline}`, borderRadius: 0, padding: '14px 16px', marginBottom: 10 }}>
+    <div style={{ background: T.yellow, border: 'none', borderRadius: T.radius.modal, padding: '16px 18px', marginBottom: 10 }}>
       <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 4 }}>
         {initial?.id ? `Shower routine — editing from ${fmtDate(initial?.startDate)}` : 'Shower routine'}
       </div>
-      <div style={{ fontSize: 12, color: T.textMuted, marginBottom: 10, lineHeight: 1.6, background: T.surfaceMuted, borderRadius: 0, padding: '8px 12px' }}>
+      <div style={{ fontSize: 12, color: 'rgba(0,0,0,0.7)', marginBottom: 10, lineHeight: 1.6 }}>
         Body washes, hair treatments, and anything else that happens in the shower. Set how often each one runs.
       </div>
       <div style={{ display: 'flex', gap: 10, marginBottom: 10, flexWrap: 'wrap' }}>
-        <div><FieldLabel htmlFor="shower-start">Start date</FieldLabel><DateInput id="shower-start" value={startDate} onChange={e => setStartDate(e.target.value)} /></div>
-        <div><FieldLabel htmlFor="shower-end">End date (leave blank if active)</FieldLabel><DateInput id="shower-end" value={endDate} onChange={e => setEndDate(e.target.value)} /></div>
+        <div><FieldLabel htmlFor="shower-start" style={{ color: 'rgba(0,0,0,0.7)' }}>Start date</FieldLabel><DateInput id="shower-start" variant="pill" value={startDate} onChange={e => setStartDate(e.target.value)} /></div>
+        <div><FieldLabel htmlFor="shower-end" style={{ color: 'rgba(0,0,0,0.7)' }}>End date (leave blank if active)</FieldLabel><DateInput id="shower-end" variant="pill" value={endDate} onChange={e => setEndDate(e.target.value)} /></div>
       </div>
 
       {conflict && <ConflictMessage conflict={conflict} onEditConflict={onEditConflict} />}
 
 <div style={{ marginBottom: 10 }}>
-        <FieldLabel>Items — long press to reorder</FieldLabel>
-        {items.length === 0 && <div style={{ fontSize: 12, color: T.textLight, fontStyle: 'italic', padding: '6px 0' }}>No items yet</div>}
+        <FieldLabel style={{ color: 'rgba(0,0,0,0.7)' }}>Items — long press to reorder</FieldLabel>
+        {items.length === 0 && <div style={{ fontSize: 12, color: 'rgba(0,0,0,0.6)', fontStyle: 'italic', padding: '6px 0' }}>No items yet</div>}
         {items.map((item, i) => (
           <div key={item.id}>
             <DraggableShowerItem
@@ -2160,9 +2160,9 @@ export function ShowerEditor({ initial, onSave, onCancel, allPeriods = [], onEdi
                     onClick={() => setItems(it => it.map((x,idx) => idx===i ? {...x,_pickingProduct:!x._pickingProduct} : x))}
                     role="button" tabIndex={0} aria-expanded={isOpen}
                     onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setItems(it => it.map((x,idx) => idx===i ? {...x,_pickingProduct:!x._pickingProduct} : x)) } }}
-                    style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 0, cursor: 'pointer', background: isOpen ? T.pink : 'transparent', border: `0.5px solid ${isOpen ? T.pinkDeep : T.hairline}`, marginBottom: isOpen ? 4 : 0 }}
+                    style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: T.radius.card, cursor: 'pointer', background: isOpen ? T.white : 'rgba(0,0,0,0.08)', border: 'none', marginBottom: isOpen ? 4 : 0 }}
                   >
-                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: T.pinkDeep, flexShrink: 0 }} />
+                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: T.darkYellow, flexShrink: 0 }} />
                     <div style={{ flex: 1, minWidth: 0 }}>
                       {prod ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -2210,12 +2210,12 @@ export function ShowerEditor({ initial, onSave, onCancel, allPeriods = [], onEdi
         <div style={{ marginBottom: 8 }}>
           <button
             onClick={() => setShowShowerPresets(s => !s)}
-            style={{ fontSize: 11, color: T.pinkDeep, border: 'none', background: 'transparent', cursor: 'pointer', padding: 0, marginBottom: showShowerPresets ? 6 : 0 }}
+            style={{ fontSize: 11, color: T.text, border: 'none', background: 'transparent', cursor: 'pointer', padding: 0, marginBottom: showShowerPresets ? 6 : 0 }}
           >
             {showShowerPresets ? '▲ Hide suggestions' : '▼ Browse suggestions'}
           </button>
           {showShowerPresets && (
-            <div style={{ border: `0.5px solid ${T.hairline}`, borderRadius: 0, overflow: 'hidden', marginBottom: 8 }}>
+            <div style={{ background: T.white, borderRadius: T.radius.card, overflow: 'hidden', marginBottom: 8 }}>
               <input
                 type="text"
                 value={showerPresetSearch}
@@ -2252,11 +2252,11 @@ export function ShowerEditor({ initial, onSave, onCancel, allPeriods = [], onEdi
         </div>
 
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'flex-end' }}>
-          <div><FieldLabel htmlFor="shower-item">Item</FieldLabel><TextInput id="shower-item" value={newLabel} onChange={e => setNewLabel(e.target.value)} placeholder="e.g. BP wash" width={100} /></div>
-          <div><FieldLabel htmlFor="shower-note">Note</FieldLabel><TextInput id="shower-note" value={newNote} onChange={e => setNewNote(e.target.value)} placeholder="optional" width={80} /></div>
+          <div><FieldLabel htmlFor="shower-item" style={{ color: 'rgba(0,0,0,0.7)' }}>Item</FieldLabel><TextInput id="shower-item" variant="pill" value={newLabel} onChange={e => setNewLabel(e.target.value)} placeholder="e.g. BP wash" width={100} /></div>
+          <div><FieldLabel htmlFor="shower-note" style={{ color: 'rgba(0,0,0,0.7)' }}>Note</FieldLabel><TextInput id="shower-note" variant="pill" value={newNote} onChange={e => setNewNote(e.target.value)} placeholder="optional" width={80} /></div>
           <div>
-            <FieldLabel htmlFor="shower-freq">Frequency</FieldLabel>
-            <select id="shower-freq" value={newFreq} onChange={e => setNewFreq(e.target.value)} style={{ fontSize: 12, padding: '5px 8px', border: `0.5px solid ${T.hairline}`, borderRadius: 0, background: T.white, color: T.text }}>
+            <FieldLabel htmlFor="shower-freq" style={{ color: 'rgba(0,0,0,0.7)' }}>Frequency</FieldLabel>
+            <select id="shower-freq" value={newFreq} onChange={e => setNewFreq(e.target.value)} style={{ fontSize: 12, padding: '7px 14px', border: 'none', borderRadius: T.radius.pill, background: T.white, color: T.text, fontFamily: 'inherit' }}>
               {SHOWER_FREQUENCIES.map(f => <option key={f.key} value={f.key}>{f.label}</option>)}
             </select>
           </div>
@@ -3405,10 +3405,10 @@ function NewRoutinePeriodPicker({ routineHistory, dailyHistory, showerHistory, p
   const userId = session?.user?.id
   const [chosen, setChosen] = useState(null)
 
-  // Tell the parent whether we're on the chooser screen (full-page blue)
-  // or a sub-panel (its own colors) — parent owns the full-page background.
+  // Tell the parent which screen we're on so it can set the full-page
+  // background: 'chooser' (blue) or the chosen sub-panel's own color.
   useEffect(() => {
-    onScreenChange?.(!chosen)
+    onScreenChange?.(chosen || 'chooser')
     return () => onScreenChange?.(false)
   }, [chosen])
 
@@ -3471,66 +3471,67 @@ function NewRoutinePeriodPicker({ routineHistory, dailyHistory, showerHistory, p
     </div>
   )
 
+  // Skincare/daily sit on mint/pink full-page backgrounds (white text reads
+  // best); shower and the program panel stay dark-text contexts.
+  const backLinkColor = (chosen === 'skincare' || chosen === 'daily') ? T.white : T.darkGreen
   return (
     <div>
-      {/* Back link lives inside a wrapper card so it feels contained */}
-      <div style={{ background: T.white, borderRadius: T.radius.modal, marginBottom: 14, overflow: 'hidden' }}>
-        <button onClick={() => setChosen(null)} style={{ border: 'none', borderRadius: 0, background: 'transparent', fontSize: 12, color: T.darkGreen, cursor: 'pointer', padding: '10px 16px', display: 'block', width: '100%', textAlign: 'left' }}>
-          ← Back to routine type
-        </button>
-        <div style={{ padding: '0' }}>
-          {chosen === 'skincare' && (
-            <div style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 140px)', WebkitOverflowScrolling: 'touch' }}>
-            <RoutinePeriodForm
-              initial={{ ...getActivePeriod(now, routineHistory), startDate: '' }}
-              onSave={onSaveNew}
-              onCancel={onCancel}
-              isFirst={false}
-              allPeriods={routineHistory}
-              products={products}
-              onSaveProduct={onSaveProduct}
-              onEditConflict={onEditConflictRoutine}
-              userId={userId}
-            />
-            </div>
-          )}
-          {chosen === 'program' && (
-            <AddProgramPanel
-              session={session}
-              activeProgram={activeProgram}
-              activePrograms={activePrograms}
-              routinePeriod={getActivePeriod(now, routineHistory)}
-              skinType={skinType}
-              timezone={timezone}
-              onChanged={onProgramChanged}
-            />
-          )}
-          {chosen === 'daily' && (
-            <DailyEditor
-              initial={getActiveDailyPeriod(now, dailyHistory) ? { ...getActiveDailyPeriod(now, dailyHistory), startDate: '', endDate: null, id: null } : null}
-              onSave={onSaveDaily}
-              onCancel={onCancel}
-              allPeriods={dailyHistory}
-              onEditConflict={onEditConflictDaily}
-              products={products}
-              onSaveProduct={onSaveProduct}
-              userId={userId}
-            />
-          )}
-          {chosen === 'shower' && (
-            <ShowerEditor
-              initial={getActiveShowerPeriod(now, showerHistory) ? { ...getActiveShowerPeriod(now, showerHistory), startDate: '', endDate: null, id: null } : null}
-              onSave={onSaveShower}
-              onCancel={onCancel}
-              allPeriods={showerHistory}
-              onEditConflict={onEditConflictShower}
-              products={products}
-              onSaveProduct={onSaveProduct}
-              userId={userId}
-            />
-          )}
+      <button onClick={() => setChosen(null)} style={{
+        border: 'none', background: 'transparent', fontSize: 11, fontWeight: 600, color: backLinkColor,
+        textTransform: 'uppercase', letterSpacing: '0.06em', cursor: 'pointer', padding: 0, marginBottom: 14, display: 'block',
+      }}>
+        ← Back to routine type
+      </button>
+      {chosen === 'skincare' && (
+        <div style={{ overflowY: 'auto', maxHeight: 'calc(100vh - 140px)', WebkitOverflowScrolling: 'touch' }}>
+        <RoutinePeriodForm
+          initial={{ ...getActivePeriod(now, routineHistory), startDate: '' }}
+          onSave={onSaveNew}
+          onCancel={onCancel}
+          isFirst={false}
+          allPeriods={routineHistory}
+          products={products}
+          onSaveProduct={onSaveProduct}
+          onEditConflict={onEditConflictRoutine}
+          userId={userId}
+        />
         </div>
-      </div>
+      )}
+      {chosen === 'program' && (
+        <AddProgramPanel
+          session={session}
+          activeProgram={activeProgram}
+          activePrograms={activePrograms}
+          routinePeriod={getActivePeriod(now, routineHistory)}
+          skinType={skinType}
+          timezone={timezone}
+          onChanged={onProgramChanged}
+        />
+      )}
+      {chosen === 'daily' && (
+        <DailyEditor
+          initial={getActiveDailyPeriod(now, dailyHistory) ? { ...getActiveDailyPeriod(now, dailyHistory), startDate: '', endDate: null, id: null } : null}
+          onSave={onSaveDaily}
+          onCancel={onCancel}
+          allPeriods={dailyHistory}
+          onEditConflict={onEditConflictDaily}
+          products={products}
+          onSaveProduct={onSaveProduct}
+          userId={userId}
+        />
+      )}
+      {chosen === 'shower' && (
+        <ShowerEditor
+          initial={getActiveShowerPeriod(now, showerHistory) ? { ...getActiveShowerPeriod(now, showerHistory), startDate: '', endDate: null, id: null } : null}
+          onSave={onSaveShower}
+          onCancel={onCancel}
+          allPeriods={showerHistory}
+          onEditConflict={onEditConflictShower}
+          products={products}
+          onSaveProduct={onSaveProduct}
+          userId={userId}
+        />
+      )}
     </div>
   )
 }
@@ -4292,6 +4293,7 @@ export default function GlowUpCalendar({ session }) {
     loadAll()
   }, [userId, reloadKey])
   const [showTreatments, setShowTreatments] = useState(false)
+  // false when closed, otherwise 'chooser' | 'program' | 'skincare' | 'daily' | 'shower'
   const [routineChooserOpen, setRoutineChooserOpen] = useState(false)
   const [showMenu,          setShowMenu]          = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
@@ -5079,7 +5081,7 @@ export default function GlowUpCalendar({ session }) {
       <div style={{ background: T.white, position: 'sticky', top: 0, zIndex: 10 }}>
         <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '10px 20px', minHeight: 44, boxSizing: 'border-box' }}>
           <div className="glowup-cal-logo" style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
-            <GlowUpLogo size={32} style={{ color: logoColor.current }} />
+            <GlowUpLogo size={44} style={{ color: logoColor.current }} />
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <button onClick={() => setShowNotifications(s => !s)}
@@ -5377,15 +5379,24 @@ export default function GlowUpCalendar({ session }) {
             style={{
               position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
               zIndex: 50,
-              background: (showTreatments || selector) ? T.orange : showExport ? T.pink : routineChooserOpen ? T.blue : T.white,
+              background: (showTreatments || selector) ? T.orange
+                : showExport ? T.pink
+                : routineChooserOpen === 'chooser' ? T.blue
+                : routineChooserOpen === 'skincare' ? T.green
+                : routineChooserOpen === 'daily' ? T.pink
+                : routineChooserOpen === 'shower' ? T.yellow
+                : T.white,
               animation: 'panelIn 0.2s ease',
               overflowY: 'auto',
               WebkitOverflowScrolling: 'touch',
             }}>
-            {/* Inner wrapper — centered column, reasonable reading width */}
+            {/* Inner wrapper — centered reading column, except the
+                skincare/daily/shower editors which go full page width
+                (their own scrollable content, not just a narrow center). */}
             <div
               style={{
-                maxWidth: 560, margin: '0 auto', minHeight: '100vh',
+                maxWidth: ['skincare', 'daily', 'shower'].includes(routineChooserOpen) ? 'none' : 560,
+                margin: '0 auto', minHeight: '100vh',
                 display: 'flex', flexDirection: 'column', justifyContent: 'flex-start',
                 padding: '64px 20px 48px',
               }}>
