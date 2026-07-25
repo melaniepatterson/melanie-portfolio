@@ -8,14 +8,14 @@ import T from '../theme'
 export default function GlowUpFooter() {
   return (
     <footer style={{ width: '100%', flexShrink: 0 }}>
-      <div style={{ position: 'relative', height: 130, overflow: 'hidden', background: T.white }}>
+      <div style={{ position: 'relative', height: 260, overflow: 'hidden', background: T.white }}>
         <GlowUpLogo
-          size={560}
+          size={420}
           style={{
             position: 'absolute',
             top: '50%',
             left: '50%',
-            transform: 'translate(-50%, -50%) rotate(-15deg)',
+            transform: 'translate(-50%, -50%) rotate(-5deg)',
             whiteSpace: 'nowrap',
             color: T.text,
           }}

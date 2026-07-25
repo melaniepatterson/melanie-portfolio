@@ -3860,10 +3860,12 @@ function UpcomingTreatmentsPanel({ treatments, allTypes, routineHistory, onClose
 
               {isPast && (
                 <div style={{ fontSize: 11, color: cardText, opacity: 0.7, fontStyle: 'italic', marginTop: 10 }}>
-                  Recovery ended {(() => {
+                  {(() => {
                     const recEnd = new Date(dt); recEnd.setDate(recEnd.getDate() + cfg.post)
                     const daysSince = Math.round((now - recEnd) / 86400000)
-                    return daysSince <= 0 ? 'today' : `${daysSince}d ago`
+                    if (daysSince < 0) return `Recovery active — ends in ${-daysSince} day${-daysSince === 1 ? '' : 's'}`
+                    if (daysSince === 0) return 'Recovery ended today'
+                    return `Recovery ended ${daysSince}d ago`
                   })()}
                 </div>
               )}

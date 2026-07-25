@@ -107,10 +107,14 @@ export default function SideMenu({ session, onClose, onFeedback }) {
         fontFamily: 'inherit', boxShadow: '-4px 0 24px rgba(0,0,0,0.2)',
       }}>
         {/* Header — close button gets its own line up top so it isn't
-            crowded against the gear icon on the identity row below. */}
-        <div style={{ padding: '14px 20px 16px' }}>
+            crowded against the gear icon on the identity row below. Sized
+            and positioned to land on the same spot as the hamburger button
+            underneath (36x~32-36, ~14px top / 20px right inset on every
+            page that opens this drawer), so opening and closing the menu
+            doesn't require moving the cursor. */}
+        <div style={{ padding: '12px 20px 16px' }}>
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <button onClick={onClose} aria-label="Close menu" style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 22, color: T.text, padding: '0 2px', lineHeight: 1, flexShrink: 0 }}>×</button>
+            <button onClick={onClose} aria-label="Close menu" style={{ border: 'none', background: 'transparent', borderRadius: T.radius.pill, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', width: 36, height: 34, fontSize: 20, color: T.text, lineHeight: 1, flexShrink: 0 }}>×</button>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 10 }}>
             {!avatarReady ? (

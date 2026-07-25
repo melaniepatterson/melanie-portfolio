@@ -52,7 +52,10 @@ const FITZPATRICK = [
 ]
 
 const CHECK_COLORS = [T.pink, T.blue, T.green, T.yellow, T.orange]
-const randomCheckColor = () => CHECK_COLORS[Math.floor(Math.random() * CHECK_COLORS.length)]
+const randomCheckColor = (exclude) => {
+  const pool = exclude ? CHECK_COLORS.filter(c => c !== exclude) : CHECK_COLORS
+  return pool[Math.floor(Math.random() * pool.length)]
+}
 
 function SectionLabel({ children }) {
   return (
@@ -70,18 +73,23 @@ function OptionalTag() {
   )
 }
 
-function PillButton({ active, onClick, children, sub }) {
+// Unselected: neutral pill, no fill, black border. Selected: filled with
+// whatever brand color the parent assigned it (reshuffled on each new
+// selection — see randomCheckColor). Text stays black throughout since the
+// brand palette is all light/mid pastels — white text on them would fail
+// contrast.
+function PillButton({ active, onClick, children, sub, color }) {
   return (
     <button onClick={onClick} style={{
       padding: sub ? '6px 12px' : '6px 14px',
       borderRadius: T.radius.pill, fontSize: 12, cursor: 'pointer',
-      border: 'none',
-      background: active ? T.darkGreen : '#EBFBF2',
-      color: active ? T.white : T.text, fontFamily: 'inherit',
+      border: `1px solid ${active ? color : T.text}`,
+      background: active ? color : 'transparent',
+      color: T.text, fontFamily: 'inherit',
       display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1,
     }}>
       <span>{children}</span>
-      {sub && <span style={{ fontSize: 9, color: active ? 'rgba(255,255,255,0.75)' : T.textMuted }}>{sub}</span>}
+      {sub && <span style={{ fontSize: 9, color: T.textMuted }}>{sub}</span>}
     </button>
   )
 }
@@ -111,6 +119,16 @@ export default function Profile({ session, onOpenSurvey }) {
   const [ageRange,      setAgeRange]      = useState('')
   const [retinoidExp,   setRetinoidExp]   = useState('')
   const [climate,       setClimate]       = useState('')
+  // Random brand-color assignment for selection pills — one color per
+  // single-select group, one color per selected item for multi-select
+  // groups (so each chip keeps its own color as siblings are added/removed).
+  const [ageRangeColor, setAgeRangeColor] = useState(randomCheckColor)
+  const [skinTypeColor, setSkinTypeColor] = useState(randomCheckColor)
+  const [retinoidColor, setRetinoidColor] = useState(randomCheckColor)
+  const [climateColor,  setClimateColor]  = useState(randomCheckColor)
+  const [fitzColor,     setFitzColor]     = useState(randomCheckColor)
+  const [skinGoalColors,    setSkinGoalColors]    = useState({})
+  const [skinConcernColors, setSkinConcernColors] = useState({})
   const [timezone,      setTimezone]      = useState(() => detectTimezone())
   const [betaTester,    setBetaTester]    = useState(false)
   const [betaColor,     setBetaColor]     = useState(randomCheckColor)
@@ -256,8 +274,24 @@ export default function Profile({ session, onOpenSurvey }) {
     setCropSrc(null)
   }
 
-  function toggleArr(setter, val) {
-    setter(prev => prev.includes(val) ? prev.filter(x => x !== val) : [...prev, val])
+  // Single-select pill group: picks a fresh random color (never the one it
+  // just had) whenever the selection changes.
+  function selectSingle(current, setCurrent, setColor, val) {
+    if (current === val) { setCurrent(''); return }
+    setColor(prev => randomCheckColor(prev))
+    setCurrent(val)
+  }
+
+  // Multi-select pill group: each newly-selected chip gets its own color,
+  // chosen to avoid repeating the color of the most recently added chip.
+  function toggleMulti(list, setList, colors, setColors, val) {
+    if (list.includes(val)) {
+      setList(list.filter(x => x !== val))
+      return
+    }
+    const lastColor = list.length ? colors[list[list.length - 1]] : null
+    setColors({ ...colors, [val]: randomCheckColor(lastColor) })
+    setList([...list, val])
   }
 
   function toggleBetaTester() {
@@ -362,13 +396,13 @@ export default function Profile({ session, onOpenSurvey }) {
         <div style={{ marginBottom: 20 }}>
           <SectionLabel>Display name</SectionLabel>
           <input type="text" value={displayName} onChange={e => setDisplayName(e.target.value)} placeholder="Your name"
-            style={{ width: '100%', fontSize: 13, padding: '10px 14px', border: 'none', borderRadius: T.radius.pill, background: '#EBFBF2', color: T.text, boxSizing: 'border-box', outline: 'none', fontFamily: 'inherit' }} />
+            style={{ width: '100%', fontSize: 13, padding: '10px 14px', border: `1px solid ${T.hairline}`, borderRadius: T.radius.pill, background: T.white, color: T.text, boxSizing: 'border-box', outline: 'none', fontFamily: 'inherit' }} />
         </div>
 
         {/* Email */}
         <div style={{ marginBottom: 24 }}>
           <SectionLabel>Email</SectionLabel>
-          <div style={{ fontSize: 13, color: T.text, padding: '10px 14px', background: '#EBFBF2', borderRadius: T.radius.card }}>{email}</div>
+          <div style={{ fontSize: 13, color: T.text, padding: '10px 14px', border: `1px solid ${T.hairline}`, borderRadius: T.radius.pill, background: T.white, boxSizing: 'border-box' }}>{email}</div>
         </div>
 
         <div style={{ height: 1, background: 'rgba(0,0,0,0.08)', marginBottom: 24 }} />
@@ -381,13 +415,17 @@ export default function Profile({ session, onOpenSurvey }) {
           </div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             {FITZPATRICK.map(f => (
-              <button key={f.n} onClick={() => setFitzpatrick(fitzpatrick === f.n ? null : f.n)}
+              <button key={f.n} onClick={() => {
+                  if (fitzpatrick === f.n) { setFitzpatrick(null); return }
+                  setFitzColor(prev => randomCheckColor(prev))
+                  setFitzpatrick(f.n)
+                }}
                 title={`${f.label} — ${f.sub}`}
                 style={{
                   display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
                   padding: '8px 10px', borderRadius: T.radius.card, cursor: 'pointer', fontFamily: 'inherit',
-                  border: `2px solid ${fitzpatrick === f.n ? T.darkGreen : 'transparent'}`,
-                  background: fitzpatrick === f.n ? '#EBFBF2' : '#F7F7F7',
+                  border: `2px solid ${fitzpatrick === f.n ? fitzColor : T.text}`,
+                  background: 'transparent',
                   minWidth: 54,
                 }}>
                 <div style={{ width: 28, height: 28, borderRadius: '50%', background: f.color, border: '0.5px solid rgba(0,0,0,0.15)' }} />
@@ -407,7 +445,8 @@ export default function Profile({ session, onOpenSurvey }) {
           <SectionLabel>Age range <OptionalTag /></SectionLabel>
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
             {AGE_RANGES.map(a => (
-              <PillButton key={a} active={ageRange === a} onClick={() => setAgeRange(ageRange === a ? '' : a)}>{a}</PillButton>
+              <PillButton key={a} active={ageRange === a} color={ageRangeColor}
+                onClick={() => selectSingle(ageRange, setAgeRange, setAgeRangeColor, a)}>{a}</PillButton>
             ))}
           </div>
         </div>
@@ -417,7 +456,8 @@ export default function Profile({ session, onOpenSurvey }) {
           <SectionLabel>Skin type <OptionalTag /></SectionLabel>
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
             {SKIN_TYPES.map(t => (
-              <PillButton key={t} active={skinType === t} onClick={() => setSkinType(skinType === t ? '' : t)}>{t}</PillButton>
+              <PillButton key={t} active={skinType === t} color={skinTypeColor}
+                onClick={() => selectSingle(skinType, setSkinType, setSkinTypeColor, t)}>{t}</PillButton>
             ))}
           </div>
         </div>
@@ -427,7 +467,8 @@ export default function Profile({ session, onOpenSurvey }) {
           <SectionLabel>What I'm working toward <OptionalTag /></SectionLabel>
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
             {SKIN_GOALS.map(g => (
-              <PillButton key={g} active={skinGoals.includes(g)} onClick={() => toggleArr(setSkinGoals, g)}>{g}</PillButton>
+              <PillButton key={g} active={skinGoals.includes(g)} color={skinGoalColors[g]}
+                onClick={() => toggleMulti(skinGoals, setSkinGoals, skinGoalColors, setSkinGoalColors, g)}>{g}</PillButton>
             ))}
           </div>
         </div>
@@ -438,7 +479,8 @@ export default function Profile({ session, onOpenSurvey }) {
 
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
             {SKIN_CONCERNS.map(c => (
-              <PillButton key={c} active={skinConcerns.includes(c)} onClick={() => toggleArr(setSkinConcerns, c)}>{c}</PillButton>
+              <PillButton key={c} active={skinConcerns.includes(c)} color={skinConcernColors[c]}
+                onClick={() => toggleMulti(skinConcerns, setSkinConcerns, skinConcernColors, setSkinConcernColors, c)}>{c}</PillButton>
             ))}
           </div>
         </div>
@@ -448,8 +490,8 @@ export default function Profile({ session, onOpenSurvey }) {
           <SectionLabel>Retinoid experience <OptionalTag /></SectionLabel>
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
             {RETINOID_LEVELS.map(r => (
-              <PillButton key={r.key} active={retinoidExp === r.key} sub={r.sub}
-                onClick={() => setRetinoidExp(retinoidExp === r.key ? '' : r.key)}>
+              <PillButton key={r.key} active={retinoidExp === r.key} sub={r.sub} color={retinoidColor}
+                onClick={() => selectSingle(retinoidExp, setRetinoidExp, setRetinoidColor, r.key)}>
                 {r.label}
               </PillButton>
             ))}
@@ -462,13 +504,14 @@ export default function Profile({ session, onOpenSurvey }) {
           <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 8 }}>Affects which moisturizers and cleansers work best for you.</div>
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
             {CLIMATES.map(c => (
-              <PillButton key={c} active={climate === c} onClick={() => setClimate(climate === c ? '' : c)}>{c}</PillButton>
+              <PillButton key={c} active={climate === c} color={climateColor}
+                onClick={() => selectSingle(climate, setClimate, setClimateColor, c)}>{c}</PillButton>
             ))}
           </div>
         </div>
 
         {/* Timezone */}
-        <div style={{ marginBottom: 24, padding: '14px 16px', background: '#EBFBF2', borderRadius: T.radius.card }}>
+        <div style={{ marginBottom: 24, padding: '14px 16px', background: 'transparent', border: `1px solid ${T.text}`, borderRadius: T.radius.card }}>
           <div style={{ fontSize: 12, fontWeight: 700, color: T.text, marginBottom: 4 }}>Time zone</div>
           <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 12, lineHeight: 1.6 }}>
             Used to determine what day it is for your calendar — important if you use the app near midnight.
@@ -489,7 +532,7 @@ export default function Profile({ session, onOpenSurvey }) {
             </select>
             <button
               onClick={() => setTimezone(detectTimezone())}
-              style={{ padding: '8px 14px', borderRadius: T.radius.pill, border: 'none', background: T.white, color: T.darkGreen, cursor: 'pointer', fontSize: 11, fontFamily: 'inherit', whiteSpace: 'nowrap' }}>
+              style={{ padding: '8px 14px', borderRadius: T.radius.pill, border: `1px solid ${T.text}`, background: T.white, color: T.text, cursor: 'pointer', fontSize: 11, fontFamily: 'inherit', whiteSpace: 'nowrap' }}>
               Auto-detect
             </button>
           </div>
@@ -501,7 +544,7 @@ export default function Profile({ session, onOpenSurvey }) {
         </div>
 
         {/* Newsletter opt-in */}
-        <div style={{ marginBottom: 24, padding: '14px 16px', background: '#EBFBF2', borderRadius: T.radius.card }}>
+        <div style={{ marginBottom: 24, padding: '14px 16px', background: 'transparent', border: `1px solid ${T.text}`, borderRadius: T.radius.card }}>
           <div onClick={toggleNewsletter} role="checkbox" aria-checked={newsletterOptIn} tabIndex={0}
             onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleNewsletter() } }}
             style={{ display: 'flex', alignItems: 'flex-start', gap: 12, cursor: 'pointer', userSelect: 'none' }}>
@@ -518,7 +561,7 @@ export default function Profile({ session, onOpenSurvey }) {
         </div>
 
         {/* Privacy note */}
-        <div style={{ fontSize: 11, color: T.textLight, lineHeight: 1.6, padding: '12px 14px', background: '#EBFBF2', borderRadius: T.radius.card, marginBottom: 20 }}>
+        <div style={{ fontSize: 11, color: T.textLight, lineHeight: 1.6, padding: '12px 14px', background: 'transparent', border: `1px solid ${T.text}`, borderRadius: T.radius.card, marginBottom: 20 }}>
           Your data is never sold or shared. Optional fields help us understand which products work best for different skin tones, types, and concerns — so recommendations get better for everyone.
         </div>
 
@@ -537,7 +580,7 @@ export default function Profile({ session, onOpenSurvey }) {
           </div>
           {savedBetaTester && (
             <button onClick={() => setShowSurvey(true)}
-              style={{ fontSize: 12, color: T.darkGreen, fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit' }}>
+              style={{ fontSize: 12, color: T.text, fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit' }}>
               Share feedback about the app →
             </button>
           )}
@@ -545,7 +588,7 @@ export default function Profile({ session, onOpenSurvey }) {
 
         {/* Save */}
         <button onClick={handleSave} disabled={saving}
-          style={{ width: '100%', padding: '13px', borderRadius: T.radius.pill, border: 'none', background: saved ? T.green : T.darkGreen, color: saved ? T.darkGreen : T.white, fontSize: 13, fontWeight: 600, cursor: saving ? 'default' : 'pointer', opacity: saving ? 0.7 : 1, transition: 'background 0.2s', fontFamily: 'inherit', marginBottom: 16 }}>
+          style={{ width: '100%', padding: '13px', borderRadius: T.radius.pill, border: 'none', background: T.text, color: T.white, fontSize: 13, fontWeight: 600, cursor: saving ? 'default' : 'pointer', opacity: saving ? 0.7 : 1, transition: 'opacity 0.2s', fontFamily: 'inherit', marginBottom: 16 }}>
           {saved ? '✓ Saved' : saving ? 'Saving...' : 'Save profile'}
         </button>
 
@@ -558,7 +601,7 @@ export default function Profile({ session, onOpenSurvey }) {
             Export your routine as a calendar file (.ics) to add to Apple Calendar, Google Calendar, or any other calendar app.
           </div>
           <a href="/routine?export=1"
-            style={{ display: 'inline-block', padding: '9px 18px', borderRadius: T.radius.pill, border: 'none', background: '#EBFBF2', color: T.darkGreen, fontSize: 12, fontFamily: 'inherit', cursor: 'pointer', textDecoration: 'none' }}>
+            style={{ display: 'inline-block', padding: '9px 18px', borderRadius: T.radius.pill, border: 'none', background: T.text, color: T.white, fontSize: 12, fontFamily: 'inherit', cursor: 'pointer', textDecoration: 'none' }}>
             Open export options →
           </a>
         </div>
@@ -574,7 +617,7 @@ export default function Profile({ session, onOpenSurvey }) {
           )}
 
           <button onClick={() => setResetConfirm(true)}
-            style={{ width: '100%', padding: '11px', borderRadius: T.radius.pill, border: 'none', background: '#EBFBF2', fontSize: 13, color: T.text, cursor: 'pointer', fontFamily: 'inherit', marginBottom: 8 }}>
+            style={{ width: '100%', padding: '11px', borderRadius: T.radius.pill, border: 'none', background: T.text, fontSize: 13, color: T.white, cursor: 'pointer', fontFamily: 'inherit', marginBottom: 8 }}>
             Reset my routine
           </button>
           <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.6, marginBottom: 16 }}>
@@ -600,7 +643,7 @@ export default function Profile({ session, onOpenSurvey }) {
               </p>
               <div style={{ display: 'flex', gap: 8 }}>
                 <button onClick={() => setResetConfirm(false)} disabled={resetting}
-                  style={{ flex: 1, padding: '10px', borderRadius: T.radius.pill, border: 'none', background: '#EBFBF2', color: T.text, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit' }}>
+                  style={{ flex: 1, padding: '10px', borderRadius: T.radius.pill, border: `1px solid ${T.text}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit' }}>
                   Cancel
                 </button>
                 <button onClick={resetRoutine} disabled={resetting}
@@ -626,7 +669,7 @@ export default function Profile({ session, onOpenSurvey }) {
                 style={{ width: '100%', boxSizing: 'border-box', fontSize: 13, padding: '8px 14px', border: '1px solid rgba(0,0,0,0.15)', borderRadius: T.radius.pill, background: T.white, color: T.text, fontFamily: 'inherit', outline: 'none', marginBottom: 20 }} />
               <div style={{ display: 'flex', gap: 8 }}>
                 <button onClick={() => { setDeleteConfirm(false); setDeleteText('') }} disabled={deleting}
-                  style={{ flex: 1, padding: '10px', borderRadius: T.radius.pill, border: 'none', background: '#EBFBF2', color: T.text, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit' }}>
+                  style={{ flex: 1, padding: '10px', borderRadius: T.radius.pill, border: `1px solid ${T.text}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit' }}>
                   Cancel
                 </button>
                 <button onClick={deleteAccount} disabled={deleting || deleteText !== 'DELETE'}
@@ -640,7 +683,7 @@ export default function Profile({ session, onOpenSurvey }) {
 
         {/* Sign out */}
         <button onClick={async () => { await supabase.auth.signOut(); window.location.href = '/routine' }}
-          style={{ width: '100%', padding: '12px', borderRadius: T.radius.pill, border: 'none', background: '#EBFBF2', fontSize: 13, color: T.text, cursor: 'pointer', fontFamily: 'inherit' }}>
+          style={{ width: '100%', padding: '12px', borderRadius: T.radius.pill, border: 'none', background: T.text, fontSize: 13, color: T.white, cursor: 'pointer', fontFamily: 'inherit' }}>
           Sign out
         </button>
       </div>
