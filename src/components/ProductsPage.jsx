@@ -1289,7 +1289,7 @@ export default function ProductsPage({ session }) {
   }
 
   return (
-    <div style={{ fontFamily: 'inherit', minHeight: '100vh', background: T.white, paddingBottom: 40 }}>
+    <div style={{ fontFamily: 'inherit', minHeight: '100vh', background: T.white, display: 'flex', flexDirection: 'column' }}>
       {/* ── App header ──────────────────────────────────────────── */}
       <div style={{ background: T.text }}>
         {/* Logo row — arrow + logo both link back to calendar */}

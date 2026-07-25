@@ -2,12 +2,15 @@
 // bleeding off all four edges of its crop box, sitting on a solid black bar
 // with the copyright. Full-bleed, so it must be dropped outside any
 // maxWidth-constrained content column, same rule as the sticky headers.
+// marginTop: 'auto' pins it to the bottom of the viewport when page content
+// is shorter than the screen — the parent just needs to be a flex column
+// with minHeight: '100vh', same trick the portfolio's own footer uses.
 import GlowUpLogo from '../GlowUpWordmark'
 import T from '../theme'
 
 export default function GlowUpFooter() {
   return (
-    <footer style={{ width: '100%', flexShrink: 0 }}>
+    <footer style={{ width: '100%', flexShrink: 0, marginTop: 'auto' }}>
       <div style={{ position: 'relative', height: 260, overflow: 'hidden', background: T.white }}>
         <GlowUpLogo
           size={420}

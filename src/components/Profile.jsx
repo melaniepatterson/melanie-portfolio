@@ -94,6 +94,20 @@ function PillButton({ active, onClick, children, sub, color }) {
   )
 }
 
+// Assigns each item in a multi-select list its own color, avoiding repeats
+// between consecutive items — used both when the user adds a new chip and
+// when restoring a previously-saved selection from Supabase on load.
+function buildColorMap(list) {
+  const map = {}
+  let last = null
+  for (const item of list) {
+    const color = randomCheckColor(last)
+    map[item] = color
+    last = color
+  }
+  return map
+}
+
 // Custom checkbox that reshuffles to a random brand color every time it's toggled
 function RandomCheckbox({ checked, color }) {
   return (
@@ -225,7 +239,9 @@ export default function Profile({ session, onOpenSurvey }) {
           setDisplayName(data.display_name || '')
           setSkinType(data.skin_type || '')
           setSkinGoals(data.skin_goals || [])
+          setSkinGoalColors(buildColorMap(data.skin_goals || []))
           setSkinConcerns(data.skin_concerns || [])
+          setSkinConcernColors(buildColorMap(data.skin_concerns || []))
           setFitzpatrick(data.fitzpatrick || null)
           setAgeRange(data.age_range || '')
           setRetinoidExp(data.retinoid_experience || '')
@@ -335,7 +351,7 @@ export default function Profile({ session, onOpenSurvey }) {
 
   return (
     <>
-    <div style={{ fontFamily: 'inherit', minHeight: '100vh', background: T.white, padding: '0 0 60px' }}>
+    <div style={{ fontFamily: 'inherit', minHeight: '100vh', background: T.white, display: 'flex', flexDirection: 'column' }}>
       {cropSrc && (
         <CropModal imageSrc={cropSrc} onConfirm={handleCropConfirm} onCancel={handleCropCancel} uploading={uploading} />
       )}
@@ -402,7 +418,7 @@ export default function Profile({ session, onOpenSurvey }) {
         {/* Email */}
         <div style={{ marginBottom: 24 }}>
           <SectionLabel>Email</SectionLabel>
-          <div style={{ fontSize: 13, color: T.text, padding: '10px 14px', border: `1px solid ${T.hairline}`, borderRadius: T.radius.pill, background: T.white, boxSizing: 'border-box' }}>{email}</div>
+          <div style={{ fontSize: 13, color: T.textLight, padding: '10px 14px', border: `1px solid ${T.hairline}`, borderRadius: T.radius.pill, background: T.white, boxSizing: 'border-box' }}>{email}</div>
         </div>
 
         <div style={{ height: 1, background: 'rgba(0,0,0,0.08)', marginBottom: 24 }} />
@@ -561,7 +577,7 @@ export default function Profile({ session, onOpenSurvey }) {
         </div>
 
         {/* Privacy note */}
-        <div style={{ fontSize: 11, color: T.textLight, lineHeight: 1.6, padding: '12px 14px', background: 'transparent', border: `1px solid ${T.text}`, borderRadius: T.radius.card, marginBottom: 20 }}>
+        <div style={{ fontSize: 11, color: T.textLight, lineHeight: 1.6, padding: '12px 14px', background: 'transparent', borderRadius: T.radius.card, marginBottom: 20 }}>
           Your data is never sold or shared. Optional fields help us understand which products work best for different skin tones, types, and concerns — so recommendations get better for everyone.
         </div>
 

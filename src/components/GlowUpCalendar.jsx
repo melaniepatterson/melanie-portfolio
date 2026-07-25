@@ -5014,7 +5014,7 @@ export default function GlowUpCalendar({ session }) {
   )
 
   return (
-    <>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       {/* Sticky top bar — same structural pattern as Profile/ProductsPage/
           RoutineHistory (sticky, full-bleed) so the side drawer covers it
           consistently everywhere, but white instead of black since this is
@@ -5557,6 +5557,6 @@ export default function GlowUpCalendar({ session }) {
 
     </div>
     <GlowUpFooter />
-    </>
+    </div>
   )
 }

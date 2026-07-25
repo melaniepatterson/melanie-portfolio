@@ -199,7 +199,7 @@ export default function RoutineHistory({ session }) {
   }
 
   return (
-    <div style={{ fontFamily: 'inherit', minHeight: '100vh', background: T.white, paddingBottom: 40 }}>
+    <div style={{ fontFamily: 'inherit', minHeight: '100vh', background: T.white, display: 'flex', flexDirection: 'column' }}>
       {/* Header — arrow + logo both link back to calendar, matching Product Library */}
       <div style={{ background: T.text }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px 10px' }}>
@@ -234,11 +234,12 @@ export default function RoutineHistory({ session }) {
       <div style={{ display: 'flex', gap: 6, padding: '16px 20px 8px', maxWidth: CONTENT_WIDTH, margin: '0 auto', boxSizing: 'border-box' }}>
         {tabs.map(t => (
           <button key={t.key} onClick={() => setTab(t.key)} style={{
-            padding: '6px 14px', borderRadius: T.radius.pill, fontSize: 12, cursor: 'pointer',
-            border: 'none',
-            background: tab === t.key ? T.darkGreen : '#EBFBF2',
+            padding: '6px 14px', borderRadius: T.radius.pill, fontSize: 11, cursor: 'pointer',
+            border: `1px solid ${tab === t.key ? T.darkGreen : T.text}`,
+            background: tab === t.key ? T.darkGreen : 'transparent',
             color: tab === t.key ? T.white : T.text, fontFamily: 'inherit',
-          }}>{t.label} {t.count > 0 && <span style={{ fontSize: 10, color: tab === t.key ? 'rgba(255,255,255,0.75)' : T.textMuted }}>({t.count})</span>}</button>
+            fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em',
+          }}>{t.label} {t.count > 0 && <span style={{ color: tab === t.key ? 'rgba(255,255,255,0.75)' : T.textMuted }}>({t.count})</span>}</button>
         ))}
       </div>
 
@@ -251,7 +252,7 @@ export default function RoutineHistory({ session }) {
             {tab === 'skincare' && (
               <>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-                  <div style={{ fontSize: 11, fontWeight: 600, color: T.green, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Skincare</div>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: T.darkGreen, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Skincare</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                     <InfoTooltip text={TOOLTIP_TEXT} />
                   </div>
@@ -259,15 +260,15 @@ export default function RoutineHistory({ session }) {
                 {routineHistory.length === 0
                   ? <div style={{ fontSize: 13, color: T.textMuted, fontStyle: 'italic' }}>No skincare routines yet.</div>
                   : routineHistory.map((p, i) => (
-                    <div key={i} style={{ background: T.green, borderRadius: T.radius.card, padding: '12px 14px', marginBottom: 10 }}>
+                    <div key={i} style={{ background: T.white, border: `0.5px solid ${T.hairline}`, borderLeft: `4px solid ${T.green}`, borderRadius: 0, padding: '12px 14px', marginBottom: 10 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
-                        <div style={{ fontSize: 12, fontWeight: 600, color: T.white }}>{getPeriodLabel(p)}</div>
+                        <div style={{ fontSize: 12, fontWeight: 600, color: T.text }}>{getPeriodLabel(p)}</div>
                         <div style={{ display: 'flex', gap: 4 }}>
-                          <Btn style={{ borderColor: T.white, color: T.white }} onClick={() => navigate('edit-skincare', p)}>Edit</Btn>
-                          <button onClick={() => deleteSkincare(p)} aria-label="Delete this skincare routine" style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.white, opacity: 0.7, fontSize: 16, padding: '0 4px' }}>×</button>
+                          <Btn style={{ borderColor: T.darkGreen, color: T.darkGreen }} onClick={() => navigate('edit-skincare', p)}>Edit</Btn>
+                          <button onClick={() => deleteSkincare(p)} aria-label="Delete this skincare routine" style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.textLight, fontSize: 16, padding: '0 4px' }}>×</button>
                         </div>
                       </div>
-                      <div style={{ fontSize: 11, color: T.white, opacity: 0.85, lineHeight: 1.7 }}>
+                      <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.7 }}>
                         {(() => {
                           const steps = p.steps
                           if (steps) {
