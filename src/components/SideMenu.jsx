@@ -64,16 +64,17 @@ export default function SideMenu({ session, onClose, onFeedback }) {
 
   const currentPath = window.location.pathname
 
-  // Each item gets its own brand color for the active-state pill — avoids
-  // yellow since that's now the drawer's own background. Hover uses the
-  // matching dark variant with white text (white on each dark* token is
-  // 5.4-7.4:1, comfortably past WCAG AA even at normal-text size).
+  // Each item gets its own brand color for the active-state pill — the
+  // four remaining items map 1:1 onto the app's four core brand colors
+  // now that Account & settings lives behind the gear icon instead of
+  // competing for a color here. Hover uses the matching dark variant with
+  // white text (white on each dark* token is 5.4-7.4:1, comfortably past
+  // WCAG AA even at normal-text size).
   const menuItems = [
-    { label: 'Calendar',           href: '/routine',          color: T.blue,   hoverColor: T.darkBlue },
-    { label: 'Routine history',    href: '/routine/history',  color: T.green,  hoverColor: T.darkGreen },
-    { label: 'Product library',    href: '/routine/products', color: T.pink,   hoverColor: T.darkPink },
-    { label: 'Account & settings', href: '/routine/profile',  color: T.orange, hoverColor: T.darkOrange },
-    { label: 'Send feedback', color: T.blue, hoverColor: T.darkBlue, action: onFeedback },
+    { label: 'Calendar',        href: '/routine',          color: T.blue,   hoverColor: T.darkBlue },
+    { label: 'Routine history', href: '/routine/history',  color: T.green,  hoverColor: T.darkGreen },
+    { label: 'Product library', href: '/routine/products', color: T.pink,   hoverColor: T.darkPink },
+    { label: 'Send feedback', color: T.orange, hoverColor: T.darkOrange, action: onFeedback },
   ]
 
   async function signOut() {
@@ -118,6 +119,13 @@ export default function SideMenu({ session, onClose, onFeedback }) {
                   {avatarReady ? displayName : ''}
                 </div>
               </div>
+              <a href="/routine/profile" aria-label="Account & settings" onClick={onClose}
+                style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.text, padding: 4, lineHeight: 1, flexShrink: 0, display: 'flex' }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="3" />
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                </svg>
+              </a>
             </div>
             <button onClick={onClose} aria-label="Close menu" style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 22, color: T.text, padding: '0 2px', lineHeight: 1, flexShrink: 0 }}>×</button>
           </div>
@@ -134,9 +142,9 @@ export default function SideMenu({ session, onClose, onFeedback }) {
                   display: 'flex', alignItems: 'center', flexWrap: 'wrap', width: '100%',
                   padding: '16px 16px', border: 'none', borderRadius: T.radius.card,
                   background: isActive ? color : 'transparent',
-                  cursor: 'pointer', textAlign: 'left', fontSize: 32,
+                  cursor: 'pointer', textAlign: 'left', fontSize: 38,
                   color: T.text, textTransform: 'uppercase', letterSpacing: '0.02em',
-                  fontWeight: 700, lineHeight: 1.15,
+                  fontWeight: 900, lineHeight: 1.1,
                   fontFamily: 'inherit',
                   animation: isActive ? 'glowupMenuPop 0.3s ease' : 'none',
                   transition: 'background 0.15s ease, color 0.15s ease',

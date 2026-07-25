@@ -5057,13 +5057,42 @@ export default function GlowUpCalendar({ session }) {
   )
 
   return (
+    <>
+      {/* Sticky top bar — same structural pattern as Profile/ProductsPage/
+          RoutineHistory (sticky, full-bleed) so the side drawer covers it
+          consistently everywhere, but white instead of black since this is
+          the home page, and the logo stays centered (desktop-only, as
+          before) instead of left-aligned since there's no "back to
+          calendar" link needed here. */}
+      <div style={{ background: T.white, position: 'sticky', top: 0, zIndex: 10, borderBottom: `1px solid ${T.border}` }}>
+        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '10px 20px', minHeight: 44, maxWidth: 900, margin: '0 auto', boxSizing: 'border-box' }}>
+          <div className="glowup-cal-logo" style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
+            <GlowUpLogo size={32} style={{ color: logoColor.current }} />
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <button onClick={() => setShowNotifications(s => !s)} aria-label="Notifications"
+              style={{ position: 'relative', border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '6px 8px', cursor: 'pointer', color: T.text, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2, width: 36, height: 36 }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
+                <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+              </svg>
+              {unreadCount > 0 && (
+                <span style={{ position: 'absolute', top: 2, right: 2, width: 14, height: 14, borderRadius: '50%', background: T.pinkDeep, color: '#fff', fontSize: 8, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
+            </button>
+            <button onClick={() => setShowMenu(s => !s)} aria-label="Menu"
+              style={{ border: 'none', background: showMenu ? T.pink : 'transparent', borderRadius: T.radius.pill, padding: '5px 10px', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', justifyContent: 'center', width: 36, height: 36 }}>
+              <span style={{ display: 'block', width: 14, height: 1.5, background: T.text, borderRadius: 0 }} />
+              <span style={{ display: 'block', width: 14, height: 1.5, background: T.text, borderRadius: 0 }} />
+              <span style={{ display: 'block', width: 14, height: 1.5, background: T.text, borderRadius: 0 }} />
+            </button>
+          </div>
+        </div>
+      </div>
     <div onClick={() => { if (dayFlyout) setDayFlyout(null) }} style={{ fontFamily: 'inherit', padding: '1rem 0.75rem', maxWidth: 900, width: 'min(100vw, 900px)', boxSizing: 'border-box', position: 'relative', margin: '0 auto', overflow: 'hidden' }}>
       <style>{`html, body { overflow-x: hidden; } @keyframes slideDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } } @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } } @keyframes panelIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } } @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } } .glowup-cal-logo { display: flex } @media (max-width: 639px) { .glowup-cal-logo { display: none } }`}</style>
-
-      {/* Glow Up logo — desktop only */}
-      <div className="glowup-cal-logo" style={{ alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
-        <GlowUpLogo size={40} style={{ color: logoColor.current }} />
-      </div>
 
       {/* Program nudge — for users who built their routine manually and have never enrolled in a program */}
       {activePrograms.length === 0 && !programNudgeDismissed && routineHistory.length > 0 && completedPrograms.length === 0 && (() => {
@@ -5165,41 +5194,19 @@ export default function GlowUpCalendar({ session }) {
         <button onClick={nextMonth} aria-label="Next month" style={{ border: 'none', background: 'transparent', padding: '5px 20px', cursor: 'pointer', fontSize: 18, color: T.text, flexShrink: 0 }}>→</button>
       </div>
 
-      {/* Header — always visible, never moves */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, gap: 8 }}>
-        {/* Left — primary actions */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-          <Btn variant={['update','setup'].includes(panel) ? 'active' : 'primary'}
-            style={['update','setup'].includes(panel) ? undefined : { background: T.text, color: T.white }}
-            onClick={() => { setPanel(p => ['update','setup'].includes(p) ? null : (hasRoutine ? 'update' : 'setup')); setEditingPeriod(null); setDayFlyout(null) }}>
-            + Build your <AccentWord>routine</AccentWord>
-          </Btn>
-          <Btn variant={showTreatments ? 'active' : 'secondary'}
-            style={showTreatments ? undefined : { borderColor: T.text, color: T.text }}
-            onClick={() => { setShowTreatments(s => !s); setDayFlyout(null) }}>My treatments</Btn>
-          {(month !== now.getMonth() || year !== now.getFullYear()) && (
-            <Btn variant="ghost" style={{ color: T.darkGreen }} onClick={() => { setMonth(now.getMonth()); setYear(now.getFullYear()) }}>Today</Btn>
-          )}
-        </div>
-        {/* Right — bell + hamburger */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <button onClick={() => setShowNotifications(s => !s)} aria-label="Notifications"
-            style={{ position: 'relative', border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '5px 8px', cursor: 'pointer', fontSize: 15, lineHeight: 1, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
-            🔔
-            <span style={{ fontSize: 8, color: T.text, transition: 'transform 0.15s', display: 'inline-block', transform: showNotifications ? 'rotate(180deg)' : 'rotate(0deg)' }}>▼</span>
-            {unreadCount > 0 && (
-              <span style={{ position: 'absolute', top: 2, right: 2, width: 14, height: 14, borderRadius: '50%', background: T.pinkDeep, color: '#fff', fontSize: 8, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>
-                {unreadCount > 9 ? '9+' : unreadCount}
-              </span>
-            )}
-          </button>
-          <button onClick={() => setShowMenu(s => !s)} aria-label="Menu"
-            style={{ border: 'none', background: showMenu ? T.pink : 'transparent', borderRadius: T.radius.pill, padding: '5px 10px', cursor: 'pointer', color: T.text, fontSize: 16, lineHeight: 1, display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', justifyContent: 'center', width: 36, height: 32 }}>
-            <span style={{ display: 'block', width: 14, height: 1.5, background: T.text, borderRadius: 0 }} />
-            <span style={{ display: 'block', width: 14, height: 1.5, background: T.text, borderRadius: 0 }} />
-            <span style={{ display: 'block', width: 14, height: 1.5, background: T.text, borderRadius: 0 }} />
-          </button>
-        </div>
+      {/* Primary actions — bell + hamburger now live in the sticky header above */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
+        <Btn variant={['update','setup'].includes(panel) ? 'active' : 'primary'}
+          style={['update','setup'].includes(panel) ? undefined : { background: T.text, color: T.white }}
+          onClick={() => { setPanel(p => ['update','setup'].includes(p) ? null : (hasRoutine ? 'update' : 'setup')); setEditingPeriod(null); setDayFlyout(null) }}>
+          + Build your <AccentWord>routine</AccentWord>
+        </Btn>
+        <Btn variant={showTreatments ? 'active' : 'secondary'}
+          style={showTreatments ? undefined : { borderColor: T.text, color: T.text }}
+          onClick={() => { setShowTreatments(s => !s); setDayFlyout(null) }}>My treatments</Btn>
+        {(month !== now.getMonth() || year !== now.getFullYear()) && (
+          <Btn variant="ghost" style={{ color: T.darkGreen }} onClick={() => { setMonth(now.getMonth()); setYear(now.getFullYear()) }}>Today</Btn>
+        )}
       </div>
 
       {/* Notification feed */}
@@ -5572,5 +5579,6 @@ export default function GlowUpCalendar({ session }) {
       {confirmDialog}
 
     </div>
+    </>
   )
 }
