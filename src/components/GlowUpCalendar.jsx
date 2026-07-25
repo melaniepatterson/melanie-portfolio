@@ -42,6 +42,7 @@ import Btn from './shared/Btn'
 import AccentWord from './shared/AccentWord'
 import StarRating from './shared/StarRating'
 import FeedbackPanel from './shared/FeedbackPanel'
+import GlowUpFooter from './shared/GlowUpFooter'
 
 // ─── DESIGN TOKENS ───────────────────────────────────────────
 
@@ -2323,7 +2324,6 @@ const AM_STEPS = [
 const MULTI_STEP_KEYS = new Set(['watery_serum', 'treatment_serum', 'essence', 'toner', 'eye_cream'])
 
 function ManageSteps({ period, dayTypeKey, onUpdateSteps, skinType, accentColor = T.darkGreen, borderColor = T.hairline }) {
-  const [open, setOpen] = useState(false)
   if (!period?._dbId) return null
 
   const isOilySkin = skinType === 'oily' || skinType === 'combination'
@@ -2367,35 +2367,29 @@ function ManageSteps({ period, dayTypeKey, onUpdateSteps, skinType, accentColor 
 
   return (
     <div style={{ marginTop: 12, borderTop: `0.5px solid ${borderColor}`, paddingTop: 10 }}>
-      <button onClick={() => setOpen(o => !o)}
-        style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit', fontSize: 10, fontWeight: 600, color: T.textLight, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+      <div style={{ fontSize: 10, fontWeight: 600, color: T.textLight, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
         Add to routine
-        <span style={{ fontSize: 7, display: 'inline-block', transition: 'transform 0.15s', transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }}>▼</span>
-      </button>
-      {open && (
-        <>
-          <div style={{ fontSize: 10, color: T.textLight, fontStyle: 'italic', marginTop: 2, marginBottom: 6 }}>Tap + to add to your routine</div>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            {librarySteps.map(([key, cat]) => (
-              <div key={key} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, padding: '5px 0', borderBottom: `0.5px solid ${borderColor}` }}>
-                <div>
-                  <span style={{ fontSize: 12, color: T.textMuted }}>{cat.label}</span>
-                  {key === 'occlusive' && isOilySkin && (
-                    <div style={{ fontSize: 10, color: T.textLight, fontStyle: 'italic', marginTop: 1 }}>
-                      Use with caution on oily or acne-prone skin
-                    </div>
-                  )}
+      </div>
+      <div style={{ fontSize: 10, color: T.textLight, fontStyle: 'italic', marginTop: 2, marginBottom: 6 }}>Tap + to add to your routine</div>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        {librarySteps.map(([key, cat]) => (
+          <div key={key} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, padding: '5px 0', borderBottom: `0.5px solid ${borderColor}` }}>
+            <div>
+              <span style={{ fontSize: 12, color: T.textMuted }}>{cat.label}</span>
+              {key === 'occlusive' && isOilySkin && (
+                <div style={{ fontSize: 10, color: T.textLight, fontStyle: 'italic', marginTop: 1 }}>
+                  Use with caution on oily or acne-prone skin
                 </div>
-                <button onClick={() => addStep(key, cat.label)}
-                  aria-label={`Add ${cat.label}`} title="Add this step"
-                  style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: accentColor, fontSize: 16, padding: '0 4px', lineHeight: 1, fontWeight: 600, flexShrink: 0 }}>
-                  +
-                </button>
-              </div>
-            ))}
+              )}
+            </div>
+            <button onClick={() => addStep(key, cat.label)}
+              aria-label={`Add ${cat.label}`} title="Add this step"
+              style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: accentColor, fontSize: 16, padding: '0 4px', lineHeight: 1, fontWeight: 600, flexShrink: 0 }}>
+              +
+            </button>
           </div>
-        </>
-      )}
+        ))}
+      </div>
     </div>
   )
 }
@@ -5560,6 +5554,7 @@ export default function GlowUpCalendar({ session }) {
       {confirmDialog}
 
     </div>
+    <GlowUpFooter />
     </>
   )
 }

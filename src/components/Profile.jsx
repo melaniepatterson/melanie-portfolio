@@ -11,6 +11,7 @@ import { detectTimezone, TIMEZONE_OPTIONS } from './timezone'
 import T from './theme'
 import { useAlert } from './shared/useConfirm'
 import FeedbackPanel from './shared/FeedbackPanel'
+import GlowUpFooter from './shared/GlowUpFooter'
 
 
 
@@ -644,6 +645,7 @@ export default function Profile({ session, onOpenSurvey }) {
         </button>
       </div>
     </div>
+    <GlowUpFooter />
     {showSurvey && (
       <BetaSurvey
         session={session}

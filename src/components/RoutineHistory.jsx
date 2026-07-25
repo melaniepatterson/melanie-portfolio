@@ -9,6 +9,7 @@ import Btn from './shared/Btn'
 import { fmtDate, fmtDateTime } from './dateFormat'
 import InfoTooltip from './shared/InfoTooltip'
 import FeedbackPanel from './shared/FeedbackPanel'
+import GlowUpFooter from './shared/GlowUpFooter'
 import {
   RoutinePeriodForm, DailyEditor, ShowerEditor,
   getActivePeriod, getActiveDailyPeriod, getActiveShowerPeriod,
@@ -401,6 +402,7 @@ export default function RoutineHistory({ session }) {
         </div>
       )}
       {confirmDialog}
+      <GlowUpFooter />
     </div>
   )
 }

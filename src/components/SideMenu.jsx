@@ -94,7 +94,8 @@ export default function SideMenu({ session, onClose, onFeedback }) {
           display: inline-block;
           transition: transform 0.25s cubic-bezier(.34,1.56,.64,1);
         }
-        .glowup-menu-item:hover .glowup-scatter-letter {
+        .glowup-menu-item:hover .glowup-scatter-letter,
+        .glowup-menu-item.is-active .glowup-scatter-letter {
           transform: translateY(var(--ty)) rotate(var(--rot));
         }
       `}</style>
@@ -137,7 +138,7 @@ export default function SideMenu({ session, onClose, onFeedback }) {
           {menuItems.map(({ label, href, action, color, hoverColor }) => {
             const isActive = href && currentPath === href
             return (
-              <button key={label} className="glowup-menu-item"
+              <button key={label} className={`glowup-menu-item${isActive ? ' is-active' : ''}`}
                 onClick={() => { onClose(); if (action) action(); else if (href) window.location.href = href }}
                 style={{
                   display: 'flex', alignItems: 'center', flexWrap: 'wrap', width: '100%',

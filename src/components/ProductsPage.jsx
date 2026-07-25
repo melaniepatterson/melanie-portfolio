@@ -10,6 +10,7 @@ import { useConfirm, useAlert } from './shared/useConfirm'
 import Btn from './shared/Btn'
 import StarRating from './shared/StarRating'
 import FeedbackPanel from './shared/FeedbackPanel'
+import GlowUpFooter from './shared/GlowUpFooter'
 
 
 // A stable "random" brand color per filter label — hashed so the same
@@ -1388,6 +1389,7 @@ export default function ProductsPage({ session }) {
             />
       }
       {alertDialog}
+      <GlowUpFooter />
     </div>
   )
 }
