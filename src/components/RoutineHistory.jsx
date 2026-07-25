@@ -200,15 +200,13 @@ export default function RoutineHistory({ session }) {
 
   return (
     <div style={{ fontFamily: 'inherit', minHeight: '100vh', background: T.white, display: 'flex', flexDirection: 'column' }}>
-      {/* Header — arrow + logo both link back to calendar, matching Product Library */}
+      {/* Header — logo centered (matching the calendar page), arrow stays left */}
       <div style={{ background: T.text }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px 10px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <a href="/routine" aria-label="Back to calendar" style={{ border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.white, textDecoration: 'none', display: 'inline-block' }}>←</a>
-            <a href="/routine" style={{ display: 'flex', alignItems: 'baseline', textDecoration: 'none' }}>
-              <GlowUpLogo size={32} style={{ color: T.white }} />
-            </a>
-          </div>
+        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px 10px' }}>
+          <a href="/routine" aria-label="Back to calendar" style={{ border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.white, textDecoration: 'none', display: 'inline-block' }}>←</a>
+          <a href="/routine" style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', display: 'flex', alignItems: 'baseline', textDecoration: 'none' }}>
+            <GlowUpLogo size={32} style={{ color: T.white }} />
+          </a>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <Btn variant="primary" style={{ background: T.darkGreen, color: T.white }} onClick={openNewForm}>+ Start new routine</Btn>
             <NotificationBell session={session} />
@@ -225,13 +223,13 @@ export default function RoutineHistory({ session }) {
           )}
           {showFeedback && <FeedbackPanel onClose={() => setShowFeedback(false)} />}
         </div>
-        <div style={{ padding: '0 20px 14px' }}>
+        <div style={{ padding: '0 20px 14px', textAlign: 'center' }}>
           <div style={{ fontSize: 15, fontWeight: 600, color: T.white }}>Routine History</div>
         </div>
       </div>
 
       {/* Tabs */}
-      <div style={{ display: 'flex', gap: 6, padding: '16px 20px 8px', maxWidth: CONTENT_WIDTH, margin: '0 auto', boxSizing: 'border-box' }}>
+      <div style={{ display: 'flex', justifyContent: 'flex-start', gap: 6, padding: '16px 20px 8px', maxWidth: CONTENT_WIDTH, margin: '0 auto', boxSizing: 'border-box' }}>
         {tabs.map(t => (
           <button key={t.key} onClick={() => setTab(t.key)} style={{
             padding: '6px 14px', borderRadius: T.radius.pill, fontSize: 11, cursor: 'pointer',
@@ -260,7 +258,7 @@ export default function RoutineHistory({ session }) {
                 {routineHistory.length === 0
                   ? <div style={{ fontSize: 13, color: T.textMuted, fontStyle: 'italic' }}>No skincare routines yet.</div>
                   : routineHistory.map((p, i) => (
-                    <div key={i} style={{ background: T.white, border: `0.5px solid ${T.hairline}`, borderLeft: `4px solid ${T.green}`, borderRadius: 0, padding: '12px 14px', marginBottom: 10 }}>
+                    <div key={i} style={{ background: T.surfaceMuted, borderRadius: T.radius.card, padding: '12px 14px', marginBottom: 10 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
                         <div style={{ fontSize: 12, fontWeight: 600, color: T.text }}>{getPeriodLabel(p)}</div>
                         <div style={{ display: 'flex', gap: 4 }}>
@@ -311,7 +309,7 @@ export default function RoutineHistory({ session }) {
                 {dailyHistory.length === 0
                   ? <div style={{ fontSize: 13, color: T.textMuted, fontStyle: 'italic' }}>No extras routines yet.</div>
                   : dailyHistory.map((p, i) => (
-                    <div key={i} style={{ background: T.white, border: `0.5px solid ${T.hairline}`, borderRadius: 0, padding: '12px 14px', marginBottom: 10 }}>
+                    <div key={i} style={{ background: T.surfaceMuted, borderRadius: T.radius.card, padding: '12px 14px', marginBottom: 10 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
                         <div style={{ fontSize: 12, fontWeight: 600, color: T.text }}>{getPeriodLabel(p)}</div>
                         <div style={{ display: 'flex', gap: 4 }}>
@@ -339,7 +337,7 @@ export default function RoutineHistory({ session }) {
                 {showerHistory.length === 0
                   ? <div style={{ fontSize: 13, color: T.textMuted, fontStyle: 'italic' }}>No shower routines yet.</div>
                   : showerHistory.map((p, i) => (
-                    <div key={i} style={{ background: T.white, border: `0.5px solid ${T.hairline}`, borderRadius: 0, padding: '12px 14px', marginBottom: 10 }}>
+                    <div key={i} style={{ background: T.surfaceMuted, borderRadius: T.radius.card, padding: '12px 14px', marginBottom: 10 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
                         <div style={{ fontSize: 12, fontWeight: 600, color: T.text }}>{getPeriodLabel(p)}</div>
                         <div style={{ display: 'flex', gap: 4 }}>

@@ -469,20 +469,26 @@ function ProductModal({ product: p, onClose, onEdit, onDelete, catalogProducts, 
 
   return (
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
-      {/* X — floats above modal card, outside it */}
       <div style={{ position: 'relative', width: '100%', maxWidth: 760, height: 'min(85vh, 680px)' }}>
-        <button onClick={onClose} aria-label="Close" style={{ position: 'absolute', top: -12, right: -12, zIndex: 1010, width: 28, height: 28, borderRadius: T.radius.pill, border: 'none', background: T.white, color: T.text, cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1, boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>×</button>
         <div onClick={e => e.stopPropagation()} role="dialog" aria-modal="true" aria-label={p.name || 'Product details'} style={{
           background: T.white, borderRadius: T.radius.modal, width: '100%',
           height: '100%',
           display: 'flex', overflow: 'hidden', position: 'relative',
         }}>
+          {/* Plain × sitting inside the box, matching the day-flyout close
+              button — no circle/pill background, one close-button language
+              across the app. */}
+          <button onClick={onClose} aria-label="Close" style={{ position: 'absolute', top: 12, right: 14, zIndex: 1010, border: 'none', background: 'transparent', color: T.textMuted, cursor: 'pointer', fontSize: 20, opacity: 0.8, padding: '0 2px', lineHeight: 1 }}>×</button>
 
         {/* ── Left: portrait image ─────────────────────────── */}
+        {/* Image sits inset within its brand-color panel like a photo mat
+            — most product photos are plain white-background studio shots,
+            so without this inset the color never actually shows and every
+            card looks identically blank. */}
         {img && (
-          <div style={{ width: '40%', flexShrink: 0, overflow: 'hidden', background: getBrandColor(p.brand, p.id), borderRadius: T.radius.card }}>
+          <div style={{ width: '40%', flexShrink: 0, overflow: 'hidden', background: getBrandColor(p.brand, p.id), borderRadius: T.radius.card, padding: '7%', boxSizing: 'border-box', display: 'flex' }}>
             <img src={img} alt={p.name}
-              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', borderRadius: 8 }}
               onError={e => { e.currentTarget.parentElement.style.display = 'none' }} />
           </div>
         )}
@@ -861,8 +867,14 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
             { key: 'mine',        label: 'My products',   count: Object.keys(products).length + Object.values(catalogProducts || {}).filter(p => (userProductData || {})[p.id]?.in_library).length },
             { key: 'recommended', label: 'Recommended',   count: Object.keys(catalogProducts || {}).length },
           ].map(t => (
-            <button key={t.key} onClick={() => setLibTab(t.key)} style={{ padding: '5px 12px', borderRadius: T.radius.pill, fontSize: 12, cursor: 'pointer', border: 'none', background: libTab === t.key ? T.darkGreen : '#EBFBF2', color: libTab === t.key ? T.white : T.text, fontFamily: 'inherit' }}>
-              {t.label} <span style={{ fontSize: 10, color: libTab === t.key ? 'rgba(255,255,255,0.75)' : T.textMuted }}>({t.count})</span>
+            <button key={t.key} onClick={() => setLibTab(t.key)} style={{
+              padding: '5px 12px', borderRadius: T.radius.pill, fontSize: 11, cursor: 'pointer',
+              border: `1px solid ${libTab === t.key ? T.darkGreen : T.text}`,
+              background: libTab === t.key ? T.darkGreen : 'transparent',
+              color: libTab === t.key ? T.white : T.text, fontFamily: 'inherit',
+              fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em',
+            }}>
+              {t.label} <span style={{ color: libTab === t.key ? 'rgba(255,255,255,0.75)' : T.textMuted }}>({t.count})</span>
             </button>
           ))}
         </div>
@@ -886,7 +898,7 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
         )}
 
         {/* Grid — 2 col mobile, 5 col desktop, portrait images */}
-        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(5, 1fr)', gap: 2, paddingBottom: isMobile ? 80 : 24 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(5, 1fr)', gap: 12, paddingBottom: isMobile ? 80 : 24 }}>
           {list.map(p => {
             const wwu = isWhatWeUsing(p)
             const userUsing = !wwu && (userRoutineNames||new Set()).has(((p.name||'')+'|'+(p.brand||'')).toLowerCase())
@@ -896,11 +908,15 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
                 role="button" tabIndex={0} aria-label={p.name}
                 onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedProduct(p) } }}
                 style={{ cursor: 'pointer', position: 'relative', background: T.white, display: 'flex', flexDirection: 'column', borderRadius: T.radius.card, overflow: 'hidden' }}>
-                {/* Portrait image — paddingBottom keeps 3:4 ratio consistent across all cards */}
+                {/* Portrait image — paddingBottom keeps 3:4 ratio consistent
+                    across all cards. Image is inset within its brand-color
+                    panel like a photo mat, same reasoning as the modal: most
+                    product photos are plain white-background studio shots,
+                    so without the inset the color never shows through. */}
                 <div style={{ position: 'relative', paddingBottom: '133.33%', overflow: 'hidden', background: getBrandColor(p.brand, p.id), flexShrink: 0 }}>
                   {img && (
                     <img src={img} alt={p.name}
-                      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                      style={{ position: 'absolute', inset: '7%', width: '86%', height: '86%', objectFit: 'cover', display: 'block', borderRadius: 6 }}
                       onError={e => { e.currentTarget.style.display = 'none' }} />
                   )}
                   {/* Routine badges — top right */}
@@ -1292,16 +1308,12 @@ export default function ProductsPage({ session }) {
     <div style={{ fontFamily: 'inherit', minHeight: '100vh', background: T.white, display: 'flex', flexDirection: 'column' }}>
       {/* ── App header ──────────────────────────────────────────── */}
       <div style={{ background: T.text }}>
-        {/* Logo row — arrow + logo both link back to calendar */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px 10px' }}>
-          <style>{`.glowup-prodlogo { display: flex }`}</style>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <a href="/routine" aria-label="Back to calendar" style={{ border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.white, textDecoration: 'none', display: 'inline-block' }}>←</a>
-            <a href="/routine" className="glowup-prodlogo" style={{ alignItems: 'baseline', textDecoration: 'none' }}>
-              <GlowUpLogo size={32} style={{ color: T.white }} />
-            </a>
-          </div>
-          <div className="glowup-prodlogo" style={{ flex: 1 }} />
+        {/* Logo row — logo centered (matching the calendar page), arrow stays left */}
+        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px 10px' }}>
+          <a href="/routine" aria-label="Back to calendar" style={{ border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.white, textDecoration: 'none', display: 'inline-block' }}>←</a>
+          <a href="/routine" style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', display: 'flex', alignItems: 'baseline', textDecoration: 'none' }}>
+            <GlowUpLogo size={32} style={{ color: T.white }} />
+          </a>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <button onClick={() => setEditingProduct('new')}
               style={{ border: 'none', background: T.darkGreen, color: T.white, borderRadius: T.radius.pill, padding: '7px 16px', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 500, whiteSpace: 'nowrap' }}>
@@ -1323,8 +1335,8 @@ export default function ProductsPage({ session }) {
         </div>
         {/* Page title row with tabs */}
         <div style={{ padding: '0 20px 0' }}>
-          <div style={{ fontSize: 15, fontWeight: 600, color: T.white, marginBottom: 10 }}>Product Library</div>
-          <div style={{ display: 'flex', gap: 20, borderBottom: '1px solid rgba(255,255,255,0.25)' }}>
+          <div style={{ fontSize: 15, fontWeight: 600, color: T.white, marginBottom: 10, textAlign: 'center' }}>Product Library</div>
+          <div style={{ display: 'flex', justifyContent: 'flex-start', gap: 20, borderBottom: '1px solid rgba(255,255,255,0.25)' }}>
             {[['library', 'My Products'], ['history', 'Finish History']].map(([key, label]) => (
               <button key={key} onClick={() => setActiveTab(key)}
                 style={{ padding: '8px 0', border: 'none', background: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 12, fontWeight: activeTab === key ? 700 : 400, color: activeTab === key ? T.white : 'rgba(255,255,255,0.6)', borderBottom: `2px solid ${activeTab === key ? T.white : 'transparent'}`, marginBottom: -1 }}>

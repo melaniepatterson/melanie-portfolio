@@ -5,10 +5,12 @@ import T from './theme'
 const CHECK_COLORS = [T.pink, T.blue, T.green, T.yellow, T.orange]
 const randomCheckColor = () => CHECK_COLORS[Math.floor(Math.random() * CHECK_COLORS.length)]
 
+// Plain × — no circle background, matching the day-flyout close button
+// (the one consistent close-button style used across the app).
 function CloseButton({ onClose }) {
   return (
     <button onClick={onClose} aria-label="Close"
-      style={{ position: 'fixed', top: 20, right: 20, zIndex: 810, width: 36, height: 36, borderRadius: T.radius.pill, border: 'none', background: 'rgba(255,255,255,0.18)', cursor: 'pointer', fontSize: 18, color: T.white, lineHeight: 1, fontFamily: 'inherit' }}>
+      style={{ position: 'fixed', top: 20, right: 20, zIndex: 810, border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 22, color: T.white, opacity: 0.85, lineHeight: 1, fontFamily: 'inherit', padding: '0 2px' }}>
       ×
     </button>
   )

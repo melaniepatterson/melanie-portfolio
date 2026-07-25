@@ -34,7 +34,7 @@ export default function FeedbackPanel({ onClose }) {
   return (
     <div role="dialog" aria-modal="true" aria-labelledby="feedback-panel-title" style={{ position: 'fixed', inset: 0, background: T.darkYellow, zIndex: 800, overflowY: 'auto', WebkitOverflowScrolling: 'touch', fontFamily: 'inherit' }}>
       <button onClick={onClose} aria-label="Close"
-        style={{ position: 'fixed', top: 20, right: 20, zIndex: 810, width: 36, height: 36, borderRadius: T.radius.pill, border: 'none', background: 'rgba(255,255,255,0.18)', cursor: 'pointer', fontSize: 18, color: T.white, lineHeight: 1, fontFamily: 'inherit' }}>
+        style={{ position: 'fixed', top: 20, right: 20, zIndex: 810, border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 22, color: T.white, opacity: 0.85, lineHeight: 1, fontFamily: 'inherit', padding: '0 2px' }}>
         ×
       </button>
 

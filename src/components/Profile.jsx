@@ -356,15 +356,15 @@ export default function Profile({ session, onOpenSurvey }) {
         <CropModal imageSrc={cropSrc} onConfirm={handleCropConfirm} onCancel={handleCropCancel} uploading={uploading} />
       )}
 
-      {/* Header — arrow + logo both link back to calendar, matching Product Library / Routine History */}
+      {/* Header — logo centered (matching the calendar page), arrow stays
+          left, so the wordmark reads as the app's anchor point on every
+          page instead of only the home screen. */}
       <div style={{ background: T.text, position: 'sticky', top: 0, zIndex: 10 }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px 10px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <a href="/routine" aria-label="Back to calendar" style={{ border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.white, textDecoration: 'none', display: 'inline-block' }}>←</a>
-            <a href="/routine" style={{ display: 'flex', alignItems: 'baseline', textDecoration: 'none' }}>
-              <GlowUpLogo size={32} style={{ color: T.white }} />
-            </a>
-          </div>
+        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px 10px' }}>
+          <a href="/routine" aria-label="Back to calendar" style={{ border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.white, textDecoration: 'none', display: 'inline-block' }}>←</a>
+          <a href="/routine" style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', display: 'flex', alignItems: 'baseline', textDecoration: 'none' }}>
+            <GlowUpLogo size={32} style={{ color: T.white }} />
+          </a>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <NotificationBell session={session} />
             <button onClick={() => setShowMenu(true)}
@@ -380,7 +380,7 @@ export default function Profile({ session, onOpenSurvey }) {
           )}
           {showFeedback && <FeedbackPanel onClose={() => setShowFeedback(false)} />}
         </div>
-        <div style={{ padding: '0 20px 14px' }}>
+        <div style={{ padding: '0 20px 14px', textAlign: 'center' }}>
           <div style={{ fontSize: 15, fontWeight: 600, color: T.white }}>Account &amp; settings</div>
         </div>
       </div>
@@ -582,7 +582,7 @@ export default function Profile({ session, onOpenSurvey }) {
         </div>
 
         {/* Beta tester + feedback */}
-        <div style={{ borderTop: '1px solid rgba(0,0,0,0.08)', paddingTop: 16, marginBottom: 16 }}>
+        <div style={{ borderTop: '1px solid rgba(0,0,0,0.08)', paddingTop: 16, marginBottom: 8 }}>
           <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 10 }}>
             Beta program
           </div>
@@ -596,15 +596,17 @@ export default function Profile({ session, onOpenSurvey }) {
           </div>
           {savedBetaTester && (
             <button onClick={() => setShowSurvey(true)}
-              style={{ fontSize: 12, color: T.text, fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit' }}>
+              style={{ fontSize: 12, color: T.darkGreen, fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit' }}>
               Share feedback about the app →
             </button>
           )}
         </div>
 
-        {/* Save */}
+        {/* Save — sits close under Beta program (the last field it covers)
+            with extra breathing room below, so it reads as the button for
+            everything above rather than being paired with Export next. */}
         <button onClick={handleSave} disabled={saving}
-          style={{ width: '100%', padding: '13px', borderRadius: T.radius.pill, border: 'none', background: T.text, color: T.white, fontSize: 13, fontWeight: 600, cursor: saving ? 'default' : 'pointer', opacity: saving ? 0.7 : 1, transition: 'opacity 0.2s', fontFamily: 'inherit', marginBottom: 16 }}>
+          style={{ width: '100%', padding: '13px', borderRadius: T.radius.pill, border: 'none', background: T.text, color: T.white, fontSize: 13, fontWeight: 600, cursor: saving ? 'default' : 'pointer', opacity: saving ? 0.7 : 1, transition: 'opacity 0.2s', fontFamily: 'inherit', marginBottom: 36 }}>
           {saved ? '✓ Saved' : saving ? 'Saving...' : 'Save profile'}
         </button>
 
