@@ -2321,14 +2321,17 @@ const AM_STEPS = [
 // × on active steps to remove back to library. No page refresh.
 const MULTI_STEP_KEYS = new Set(['watery_serum', 'treatment_serum', 'essence', 'toner', 'eye_cream'])
 
-function ManageSteps({ period, tab, onUpdateSteps, skinType, accentColor = T.darkGreen }) {
+function ManageSteps({ period, dayTypeKey, onUpdateSteps, skinType, accentColor = T.darkGreen, borderColor = T.hairline }) {
   const [open, setOpen] = useState(false)
   if (!period?._dbId) return null
 
   const isOilySkin = skinType === 'oily' || skinType === 'combination'
-  const currentSteps = period.steps?.[tab] || []
+  const currentSteps = period.steps?.[dayTypeKey] || []
+  // dayTypes flags are per dayTypeKey (am/main/off/recovery/pause), not just
+  // am vs pm — 'professional' counts as available here too, same as
+  // getDefaultSteps treats it.
   const available = Object.entries(INGREDIENT_CATEGORIES)
-    .filter(([, cat]) => tab === 'am' ? cat.dayTypes.am : (cat.dayTypes.main || cat.dayTypes.off))
+    .filter(([, cat]) => cat.dayTypes[dayTypeKey] === true || cat.dayTypes[dayTypeKey] === 'professional')
     .sort((a, b) => a[1].order - b[1].order)
   const currentKeys = currentSteps.map(s => s.categoryKey)
   const librarySteps = available.filter(([key]) =>
@@ -2338,15 +2341,21 @@ function ManageSteps({ period, tab, onUpdateSteps, skinType, accentColor = T.dar
   if (librarySteps.length === 0) return null
 
   function addStep(key, label) {
-    const steps = JSON.parse(JSON.stringify(period.steps || { am: [], pm: [], off: [] }))
+    const steps = JSON.parse(JSON.stringify(period.steps || {}))
     const cats  = INGREDIENT_CATEGORIES
-    const uid   = `${tab}_${key}_${Date.now()}`
+    const uid   = `${dayTypeKey}_${key}_${Date.now()}`
     const newStep = { id: uid, categoryKey: key, label, optional: true, enabled: true }
-    const list  = steps[tab] || []
+    // Seed from the computed defaults if this dayType has never been
+    // customized before — otherwise the required default steps (cleanser,
+    // moisturizer, etc., which only ever existed virtually) get replaced by
+    // an array containing just this one new step.
+    const list  = steps[dayTypeKey] || getDefaultSteps(dayTypeKey)
     list.push(newStep)
     list.sort((a, b) => (cats[a.categoryKey]?.order ?? 99) - (cats[b.categoryKey]?.order ?? 99))
-    steps[tab] = list
-    if (tab === 'pm') {
+    steps[dayTypeKey] = list
+    // Active nights mirror to off nights by default, same convention as the
+    // removal side.
+    if (dayTypeKey === 'main') {
       const offList = steps.off || []
       offList.push({ id: `off_${key}_${Date.now()}`, categoryKey: key, label, optional: true, enabled: true })
       offList.sort((a, b) => (cats[a.categoryKey]?.order ?? 99) - (cats[b.categoryKey]?.order ?? 99))
@@ -2356,31 +2365,35 @@ function ManageSteps({ period, tab, onUpdateSteps, skinType, accentColor = T.dar
   }
 
   return (
-    <div style={{ marginTop: 12, borderTop: `0.5px solid ${T.hairline}`, paddingTop: 10 }}>
+    <div style={{ marginTop: 12, borderTop: `0.5px solid ${borderColor}`, paddingTop: 10 }}>
       <button onClick={() => setOpen(o => !o)}
-        style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit', fontSize: 9, fontWeight: 700, color: T.textLight, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+        style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit', fontSize: 10, fontWeight: 600, color: T.textLight, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
         Add to routine
         <span style={{ fontSize: 7, display: 'inline-block', transition: 'transform 0.15s', transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }}>▼</span>
       </button>
       {open && (
-        <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 1 }}>
-          {librarySteps.map(([key, cat]) => (
-            <div key={key} style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, padding: '6px 0', borderBottom: `0.5px solid ${T.hairline}` }}>
-              <div>
-                <span style={{ fontSize: 11, color: T.textMuted }}>{cat.label}</span>
-                {key === 'occlusive' && isOilySkin && (
-                  <div style={{ fontSize: 10, color: T.textLight, fontStyle: 'italic', marginTop: 1 }}>
-                    Use with caution on oily or acne-prone skin
-                  </div>
-                )}
+        <>
+          <div style={{ fontSize: 10, color: T.textLight, fontStyle: 'italic', marginTop: 2, marginBottom: 6 }}>Tap + to add to your routine</div>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            {librarySteps.map(([key, cat]) => (
+              <div key={key} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, padding: '5px 0', borderBottom: `0.5px solid ${borderColor}` }}>
+                <div>
+                  <span style={{ fontSize: 12, color: T.textMuted }}>{cat.label}</span>
+                  {key === 'occlusive' && isOilySkin && (
+                    <div style={{ fontSize: 10, color: T.textLight, fontStyle: 'italic', marginTop: 1 }}>
+                      Use with caution on oily or acne-prone skin
+                    </div>
+                  )}
+                </div>
+                <button onClick={() => addStep(key, cat.label)}
+                  aria-label={`Add ${cat.label}`} title="Add this step"
+                  style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: accentColor, fontSize: 16, padding: '0 4px', lineHeight: 1, fontWeight: 600, flexShrink: 0 }}>
+                  +
+                </button>
               </div>
-              <button onClick={() => addStep(key, cat.label)}
-                style={{ fontSize: 11, color: accentColor, background: 'none', border: 'none', cursor: 'pointer', padding: '0 2px', fontFamily: 'inherit', fontWeight: 600, lineHeight: 1, flexShrink: 0 }}>
-                + Add
-              </button>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </>
       )}
     </div>
   )
@@ -2412,6 +2425,12 @@ function DayFlyout({ flyout, borderColor, bodyIsWhite, period, dailyHistory, sho
     return 'off'
   })()
   const isRecovery = dayType === 'pca' || dayType === 'recovery'
+  // The actual period.steps[...] key backing whichever tab is showing right
+  // now — 'am'/'recovery' for the AM tab, nightType for PM (which already
+  // resolves to main/off/pause/recovery/treatment). Needed anywhere steps
+  // get read or written for the current view, since 'am'/'pm' alone aren't
+  // real storage keys once a day has any status beyond plain am/pm.
+  const activeDayTypeKey = tab === 'am' ? (isRecovery ? 'recovery' : 'am') : nightType
 
   // Use treatment-scoped recovery routine if available
   const activeRecovery = isRecovery && activeTreatmentType
@@ -2482,11 +2501,25 @@ function DayFlyout({ flyout, borderColor, bodyIsWhite, period, dailyHistory, sho
                   <button onClick={e => {
                     e.stopPropagation()
                     if (onUpdateSteps) {
-                      // Remove this specific step instance by id
-                      const steps = JSON.parse(JSON.stringify(period.steps || { am: [], pm: [], off: [] }))
-                      steps.am  = (steps.am  || []).filter(s => s.id !== step.id)
-                      steps.pm  = (steps.pm  || []).filter(s => s.id !== step.id)
-                      steps.off = (steps.off || []).filter(s => s.id !== step.id && s.id !== step.id.replace(/^(am|pm)_/, 'off_'))
+                      // Remove this specific step instance by id — must key off
+                      // the actual dayTypeKey this list was rendered under
+                      // (am/main/off/pause/recovery/treatment), not a hardcoded
+                      // am/pm/off guess. That mismatch was why removal silently
+                      // did nothing on any colored (non-plain-am) day: the step
+                      // lived under e.g. period.steps.recovery, which was never
+                      // touched.
+                      const steps = JSON.parse(JSON.stringify(period.steps || {}))
+                      // Same defaults-seeding as ManageSteps.addStep — a
+                      // dayType with no persisted array yet is still showing
+                      // the full virtual default set, not just this step.
+                      steps[dayTypeKey] = (steps[dayTypeKey] || getDefaultSteps(dayTypeKey)).filter(s => s.id !== step.id)
+                      // Active/off nights mirror each other by default, so
+                      // removing a step on an active night also drops its
+                      // off-night counterpart.
+                      if (dayTypeKey === 'main') {
+                        const offId = step.id.replace(/^main_/, 'off_')
+                        steps.off = (steps.off || []).filter(s => s.id !== offId)
+                      }
                       onUpdateSteps(period._dbId, steps)
                     } else {
                       onUpdatePeriodSteps?.(period.startDate, stepKey, false)
@@ -2576,34 +2609,6 @@ function DayFlyout({ flyout, borderColor, bodyIsWhite, period, dailyHistory, sho
         )
       }
     })
-
-    // Show hidden optional steps at bottom with + to re-enable
-    const hiddenSteps = (() => {
-      if (activeRecovery?.steps) {
-        return activeRecovery.steps.filter(s => !s.enabled && s.optional)
-      }
-      return dayTypeKey ? getPeriodSteps(period, dayTypeKey).filter(s => !s.enabled && s.optional) : []
-    })()
-    if (hiddenSteps.length > 0 && period) {
-      result.push(
-        <div key="hidden-steps" style={{ marginTop: 8 }}>
-          <div style={{ marginBottom: 6 }}>
-            <div style={{ fontSize: 10, color: T.textLight, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Optional steps</div>
-            <div style={{ fontSize: 10, color: T.textLight, fontStyle: 'italic', marginTop: 2 }}>Tap + to add to your routine</div>
-          </div>
-          {hiddenSteps.map(s => (
-            <div key={s.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '5px 0', borderBottom: '0.5px solid ' + borderColor, opacity: 0.5 }}>
-              <div style={{ fontSize: 12, color: T.textMuted }}>{s.label}</div>
-              <button
-                onClick={() => onUpdatePeriodSteps?.(period.startDate, s.id, true)}
-                style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.darkGreen, fontSize: 16, padding: '0 4px', lineHeight: 1, fontWeight: 600 }}
-                title="Restore this step"
-              >+</button>
-            </div>
-          ))}
-        </div>
-      )
-    }
 
     return result
   }
@@ -2724,10 +2729,11 @@ function DayFlyout({ flyout, borderColor, bodyIsWhite, period, dailyHistory, sho
           {period && !isTreatment && (
             <ManageSteps
               period={period}
-              tab={tab}
+              dayTypeKey={activeDayTypeKey}
               onUpdateSteps={onUpdateSteps}
               skinType={skinType}
               accentColor={dayAccentDark}
+              borderColor={borderColor}
             />
           )}
         </>
@@ -5087,14 +5093,16 @@ export default function GlowUpCalendar({ session }) {
             <GlowUpLogo size={32} style={{ color: logoColor.current }} />
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            <button onClick={() => setShowNotifications(s => !s)} aria-label="Notifications"
+            <button onClick={() => setShowNotifications(s => !s)}
+              aria-label={unreadCount > 0 ? `Notifications, ${unreadCount} unread` : 'Notifications'}
+              aria-expanded={showNotifications}
               style={{ position: 'relative', border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '6px 8px', cursor: 'pointer', color: T.text, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2, width: 36, height: 36 }}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
                 <path d="M13.73 21a2 2 0 0 1-3.46 0" />
               </svg>
               {unreadCount > 0 && (
-                <span style={{ position: 'absolute', top: 2, right: 2, width: 14, height: 14, borderRadius: '50%', background: T.pinkDeep, color: '#fff', fontSize: 8, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>
+                <span aria-hidden="true" style={{ position: 'absolute', top: 2, right: 2, width: 14, height: 14, borderRadius: '50%', background: T.warn, color: '#fff', fontSize: 8, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>
                   {unreadCount > 9 ? '9+' : unreadCount}
                 </span>
               )}
