@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import GlowUpLogo from './GlowUpWordmark'
 import SideMenu from './SideMenu'
+import NotificationBell from './shared/NotificationBell'
 import { supabase } from '../lib/supabase'
 import Avatar from './Avatar'
 import CropModal from './CropModal'
@@ -313,12 +314,15 @@ export default function Profile({ session, onOpenSurvey }) {
               <GlowUpLogo size={32} style={{ color: T.white }} />
             </a>
           </div>
-          <button onClick={() => setShowMenu(true)}
-            style={{ border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '5px 10px', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', justifyContent: 'center', width: 36, height: 32 }}>
-            <span style={{ display: 'block', width: 14, height: 1.5, background: T.white }} />
-            <span style={{ display: 'block', width: 14, height: 1.5, background: T.white }} />
-            <span style={{ display: 'block', width: 14, height: 1.5, background: T.white }} />
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <NotificationBell session={session} />
+            <button onClick={() => setShowMenu(true)}
+              style={{ border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '5px 10px', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', justifyContent: 'center', width: 36, height: 32 }}>
+              <span style={{ display: 'block', width: 14, height: 1.5, background: T.white }} />
+              <span style={{ display: 'block', width: 14, height: 1.5, background: T.white }} />
+              <span style={{ display: 'block', width: 14, height: 1.5, background: T.white }} />
+            </button>
+          </div>
           {showMenu && (
             <SideMenu session={session} onClose={() => setShowMenu(false)}
               onFeedback={() => { setShowMenu(false); setShowFeedback(true) }} />

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import GlowUpLogo from './GlowUpWordmark'
 import SideMenu from './SideMenu'
+import NotificationBell from './shared/NotificationBell'
 import { supabase } from '../lib/supabase'
 import T from './theme'
 import { useConfirm } from './shared/useConfirm'
@@ -209,6 +210,7 @@ export default function RoutineHistory({ session }) {
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <Btn variant="primary" style={{ background: T.darkGreen, color: T.white }} onClick={openNewForm}>+ Start new routine</Btn>
+            <NotificationBell session={session} />
             <button onClick={() => setShowMenu(true)}
               style={{ border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '5px 10px', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', justifyContent: 'center', width: 36, height: 32 }}>
               <span style={{ display: 'block', width: 14, height: 1.5, background: T.white }} />

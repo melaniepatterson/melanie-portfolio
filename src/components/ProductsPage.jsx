@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react'
 import GlowUpLogo from './GlowUpWordmark'
 import { supabase } from '../lib/supabase'
 import SideMenu from './SideMenu'
+import NotificationBell from './shared/NotificationBell'
 import T from './theme'
 import ProductForm, { PRODUCT_CATEGORIES, formatCatLabel, PAO_OPTIONS } from './shared/ProductForm'
 import { useConfirm, useAlert } from './shared/useConfirm'
@@ -1305,6 +1306,7 @@ export default function ProductsPage({ session }) {
               style={{ border: 'none', background: T.darkGreen, color: T.white, borderRadius: T.radius.pill, padding: '7px 16px', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 500, whiteSpace: 'nowrap' }}>
               + Add new product
             </button>
+            <NotificationBell session={session} />
             <button onClick={() => setShowMenu(true)}
               style={{ border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '5px 10px', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', justifyContent: 'center', width: 36, height: 32 }}>
               <span style={{ display: 'block', width: 14, height: 1.5, background: T.white }} />
