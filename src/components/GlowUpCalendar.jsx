@@ -1428,7 +1428,7 @@ function DraggableItem({ item, index, total, onRemove, isDragging, onDragStart, 
       style={{
         display: 'flex', alignItems: 'flex-start', gap: 8,
         padding: '7px 8px', marginBottom: 3, borderRadius: 0,
-        border: `0.5px solid ${isDragging ? T.pinkDeep : T.hairline}`,
+        border: `0.5px solid ${isDragging ? T.darkPink : T.hairline}`,
         background: isDragging ? T.pink : pressing ? T.surfaceMuted : T.white,
         cursor: isDragging ? 'grabbing' : 'grab',
         transition: 'background 0.1s, border-color 0.1s',
@@ -1457,7 +1457,7 @@ function DraggableItem({ item, index, total, onRemove, isDragging, onDragStart, 
             {(freqOptions || SHOWER_FREQUENCIES).map(f => (
               <button key={f.key} onClick={e => { e.stopPropagation(); onFreqChange(index, f.key) }}
                 aria-pressed={(item.frequency||'daily') === f.key}
-                style={{ fontSize: 9, padding: '1px 5px', borderRadius: 0, cursor: 'pointer', border: `0.5px solid ${(item.frequency||'daily') === f.key ? T.pinkDeep : T.hairline}`, background: (item.frequency||'daily') === f.key ? T.pink : 'transparent', color: (item.frequency||'daily') === f.key ? T.text : T.textLight, whiteSpace: 'nowrap' }}>
+                style={{ fontSize: 9, padding: '1px 5px', borderRadius: 0, cursor: 'pointer', border: `0.5px solid ${(item.frequency||'daily') === f.key ? T.darkPink : T.hairline}`, background: (item.frequency||'daily') === f.key ? T.pink : 'transparent', color: (item.frequency||'daily') === f.key ? T.text : T.textLight, whiteSpace: 'nowrap' }}>
                 {f.label}
               </button>
             ))}
@@ -1482,7 +1482,7 @@ function DraggableItem({ item, index, total, onRemove, isDragging, onDragStart, 
             {TIME_OF_DAY_OPTIONS.map(t => (
               <button key={t.key} onClick={e => { e.stopPropagation(); onTimeChange(index, t.key) }}
                 aria-pressed={(item.timeOfDay||'both') === t.key}
-                style={{ fontSize: 9, padding: '1px 5px', borderRadius: 0, cursor: 'pointer', border: `0.5px solid ${(item.timeOfDay||'both') === t.key ? T.pinkDeep : T.hairline}`, background: (item.timeOfDay||'both') === t.key ? T.pink : 'transparent', color: (item.timeOfDay||'both') === t.key ? T.text : T.textLight }}>
+                style={{ fontSize: 9, padding: '1px 5px', borderRadius: 0, cursor: 'pointer', border: `0.5px solid ${(item.timeOfDay||'both') === t.key ? T.darkPink : T.hairline}`, background: (item.timeOfDay||'both') === t.key ? T.pink : 'transparent', color: (item.timeOfDay||'both') === t.key ? T.text : T.textLight }}>
                 {t.label}
               </button>
             ))}
@@ -1769,7 +1769,7 @@ function DailySection({ dt, dailyHistory, onEditDaily, tab, products, onUpdateDa
               onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenItemId(isOpen ? null : item.id) } }}
               style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '7px 0', borderBottom: `0.5px solid ${T.hairline}`, cursor: 'pointer', opacity: prod ? 1 : 0.45 }}
             >
-              <div style={{ width: 8, height: 8, borderRadius: '50%', background: T.pinkDeep, flexShrink: 0 }} />
+              <div style={{ width: 8, height: 8, borderRadius: '50%', background: T.darkPink, flexShrink: 0 }} />
               <div style={{ flex: 1, minWidth: 0 }}>
                 {prod ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
@@ -2049,7 +2049,7 @@ function DraggableShowerItem({ item, index, onRemove, onFreqChange, onWeekStartC
       onTouchCancel={handleTouchEnd}
       style={{
         display: 'flex', alignItems: 'center', gap: 8, padding: '7px 8px', marginBottom: 3,
-        borderRadius: 0, border: `0.5px solid ${isDragging ? T.pinkDeep : T.hairline}`,
+        borderRadius: 0, border: `0.5px solid ${isDragging ? T.darkPink : T.hairline}`,
         background: isDragging ? T.pink : pressing ? T.surfaceMuted : T.white,
         cursor: isDragging ? 'grabbing' : 'grab', opacity: isDragging ? 0.6 : 1, userSelect: 'none',
       }}
@@ -2063,7 +2063,7 @@ function DraggableShowerItem({ item, index, onRemove, onFreqChange, onWeekStartC
           {SHOWER_FREQUENCIES.map(f => (
             <button key={f.key} onClick={e => { e.stopPropagation(); onFreqChange(index, f.key) }}
               aria-pressed={item.frequency === f.key}
-              style={{ fontSize: 9, padding: '1px 6px', borderRadius: 0, cursor: 'pointer', border: `0.5px solid ${item.frequency === f.key ? T.pinkDeep : T.hairline}`, background: item.frequency === f.key ? T.pink : 'transparent', color: item.frequency === f.key ? T.text : T.textLight, fontWeight: item.frequency === f.key ? 500 : 400 }}
+              style={{ fontSize: 9, padding: '1px 6px', borderRadius: 0, cursor: 'pointer', border: `0.5px solid ${item.frequency === f.key ? T.darkPink : T.hairline}`, background: item.frequency === f.key ? T.pink : 'transparent', color: item.frequency === f.key ? T.text : T.textLight, fontWeight: item.frequency === f.key ? 500 : 400 }}
             >{f.label}</button>
           ))}
         </div>
@@ -2309,7 +2309,7 @@ function ShowerSection({ dt, showerHistory, onEditShower, products, onUpdateShow
                 onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenItemId(isOpen ? null : item.id) } }}
                 style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '7px 0', borderBottom: `0.5px solid ${T.hairline}`, cursor: 'pointer', opacity: prod ? 1 : 0.45 }}
               >
-                <div style={{ width: 8, height: 8, borderRadius: '50%', background: T.pinkDeep, flexShrink: 0 }} />
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: T.darkPink, flexShrink: 0 }} />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   {prod ? (
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
@@ -2860,7 +2860,7 @@ function ProgramEnrollmentPreview({ program, onConfirm, onBack, timezone }) {
       </button>
 
       <div style={{ marginBottom: 20 }}>
-        <div style={{ fontSize: 9, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 6 }}>Program overview</div>
+        <div style={{ fontSize: 9, fontWeight: 700, color: T.darkPink, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 6 }}>Program overview</div>
         <div style={{ fontSize: 18, fontWeight: 800, color: T.text, letterSpacing: '-0.03em', marginBottom: 8 }}>{program.name}</div>
         <div style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.7, marginBottom: 10 }}>{program.description}</div>
         {displayedTotal > 0 && (
@@ -2885,7 +2885,7 @@ function ProgramEnrollmentPreview({ program, onConfirm, onBack, timezone }) {
                     <div>
                       <div style={{ fontSize: 12, fontWeight: 600, color: pace === tier.id ? '#fff' : T.text }}>
                         {tier.label}
-                        {tier.default && <span style={{ fontSize: 10, fontWeight: 400, color: pace === tier.id ? 'rgba(255,255,255,0.6)' : T.pinkDeep, marginLeft: 8 }}>recommended</span>}
+                        {tier.default && <span style={{ fontSize: 10, fontWeight: 400, color: pace === tier.id ? 'rgba(255,255,255,0.6)' : T.darkPink, marginLeft: 8 }}>recommended</span>}
                       </div>
                       <div style={{ fontSize: 11, color: pace === tier.id ? 'rgba(255,255,255,0.7)' : T.textMuted }}>{tier.sublabel}</div>
                     </div>
@@ -2917,7 +2917,7 @@ function ProgramEnrollmentPreview({ program, onConfirm, onBack, timezone }) {
                     )}
                   </div>
                   <div style={{ paddingTop: 3 }}>
-                    <div style={{ fontSize: 10, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 2 }}>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: T.darkPink, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 2 }}>
                       Phase {p.phase_number}
                     </div>
                     <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>
@@ -2972,7 +2972,7 @@ function ProgramEnrollmentPreview({ program, onConfirm, onBack, timezone }) {
               await onConfirm(startDate, isLinear ? selectedTier?.durations : null, isBha ? bhaDay : null)
               setConfirming(false)
             }} disabled={confirming}
-              style={{ flex: 2, padding: '11px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
+              style={{ flex: 2, padding: '11px', borderRadius: 0, border: 'none', background: T.darkPink, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
               {confirming ? 'Starting…' : `Start ${program.name}`}
             </button>
           </div>
@@ -3273,7 +3273,7 @@ function AddProgramPanel({ session, activeProgram, activePrograms = [], routineP
           </div>
 
           <div style={{ background: T.white, border: `1px solid ${T.hairline}`, borderRadius: 0, padding: '14px 16px', marginBottom: 16 }}>
-            <div style={{ fontSize: 9, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 4 }}>
+            <div style={{ fontSize: 9, fontWeight: 700, color: T.darkPink, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 4 }}>
               {program.name}
             </div>
             <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>
@@ -3309,7 +3309,7 @@ function AddProgramPanel({ session, activeProgram, activePrograms = [], routineP
                   Cancel
                 </button>
                 <button onClick={endFoundationEarly} disabled={endingFoundation}
-                  style={{ flex: 1, padding: '10px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
+                  style={{ flex: 1, padding: '10px', borderRadius: 0, border: 'none', background: T.darkPink, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
                   {endingFoundation ? 'Saving…' : 'Done with this program'}
                 </button>
               </div>
@@ -3818,7 +3818,7 @@ function RecoveryRoutineEditor({ typeKey, typeLabel, steps, products, allProduct
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                   padding: '10px 12px', borderRadius: 0, cursor: 'pointer',
                   background: isOpen ? T.pink : 'transparent',
-                  border: `0.5px solid ${isOpen ? T.pinkDeep : T.hairline}`,
+                  border: `0.5px solid ${isOpen ? T.darkPink : T.hairline}`,
                   transition: 'all 0.15s',
                 }}
               >
@@ -5167,19 +5167,19 @@ export default function GlowUpCalendar({ session }) {
         // Or if any program has been graduated
         return completedPrograms.some(p => p.status_detail === 'graduated')
       })() && (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, padding: '10px 14px', background: T.pink, border: `1px solid ${T.pinkDeep}`, marginBottom: 12, flexWrap: 'wrap' }}>
-          <div style={{ fontSize: 12, color: T.pinkDeep, fontWeight: 500 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, padding: '10px 14px', background: T.pink, border: `1px solid ${T.darkPink}`, marginBottom: 12, flexWrap: 'wrap' }}>
+          <div style={{ fontSize: 12, color: T.darkPink, fontWeight: 500 }}>
             {completedPrograms.some(p => p.status_detail === 'graduated')
               ? "You've completed a program 🎉 — we'd love to know what you think."
               : "You've completed your first phase 🎉 — we'd love to know what you think so far."}
           </div>
           <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
             <button onClick={() => setShowSurvey(true)}
-              style={{ padding: '5px 12px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 11, fontFamily: 'inherit', fontWeight: 600 }}>
+              style={{ padding: '5px 12px', borderRadius: 0, border: 'none', background: T.darkPink, color: '#fff', cursor: 'pointer', fontSize: 11, fontFamily: 'inherit', fontWeight: 600 }}>
               Share feedback
             </button>
             <button onClick={() => handleSurveyDismiss()}
-              style={{ padding: '5px 8px', borderRadius: 0, border: 'none', background: 'transparent', color: T.pinkDeep, cursor: 'pointer', fontSize: 16, lineHeight: 1, fontFamily: 'inherit' }}>
+              style={{ padding: '5px 8px', borderRadius: 0, border: 'none', background: 'transparent', color: T.darkPink, cursor: 'pointer', fontSize: 16, lineHeight: 1, fontFamily: 'inherit' }}>
               ×
             </button>
           </div>
@@ -5403,7 +5403,7 @@ export default function GlowUpCalendar({ session }) {
 
             {/* First launch */}
             {!hasRoutine && panel === 'setup' && !editingPeriod && (
-              <div style={{ background: T.pink, border: `0.5px solid ${T.pinkDeep}`, borderRadius: 0, padding: '14px 18px', marginBottom: 8 }}>
+              <div style={{ background: T.pink, border: `0.5px solid ${T.darkPink}`, borderRadius: 0, padding: '14px 18px', marginBottom: 8 }}>
                 <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 6 }}>Welcome! Set up your routine to get started.</div>
                 <div style={{ fontSize: 12, color: T.textMuted, marginBottom: 10 }}>Configure your evening actives, secondary treatments, and schedule — it all auto-populates on the calendar.</div>
               </div>

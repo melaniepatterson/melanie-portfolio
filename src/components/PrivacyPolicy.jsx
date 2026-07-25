@@ -3,7 +3,7 @@ import T from './theme'
 function Section({ title, children, id }) {
   return (
     <div id={id} style={{ marginBottom: 32 }}>
-      <div style={{ fontSize: 11, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 8 }}>
+      <div style={{ fontSize: 11, fontWeight: 700, color: T.darkPink, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 8 }}>
         {title}
       </div>
       <div style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.85 }}>
@@ -35,7 +35,7 @@ export default function PrivacyPolicy() {
           <a href="/routine" style={{ fontSize: 12, color: T.textMuted, textDecoration: 'none', display: 'inline-block', marginBottom: 24 }}>
             ← Back to Glow Up
           </a>
-          <div style={{ fontSize: 9, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 10 }}>
+          <div style={{ fontSize: 9, fontWeight: 700, color: T.darkPink, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 10 }}>
             Legal
           </div>
           <h1 style={{ fontSize: 28, fontWeight: 800, color: T.text, letterSpacing: '-0.03em', margin: '0 0 8px' }}>
@@ -80,7 +80,7 @@ export default function PrivacyPolicy() {
           </Section>
 
           <Section title="Data storage and security">
-            <P>Your data is stored on Supabase infrastructure, which uses industry-standard encryption in transit and at rest. Supabase is our data processor under GDPR. Read their policy at <a href="https://supabase.com/privacy" style={{ color: T.pinkDeep }}>supabase.com/privacy</a>.</P>
+            <P>Your data is stored on Supabase infrastructure, which uses industry-standard encryption in transit and at rest. Supabase is our data processor under GDPR. Read their policy at <a href="https://supabase.com/privacy" style={{ color: T.darkPink }}>supabase.com/privacy</a>.</P>
             <P>We retain your data for as long as your account is active. To request deletion, email us below.</P>
           </Section>
 
@@ -106,7 +106,7 @@ export default function PrivacyPolicy() {
           </Section>
 
           <Section title="Contact">
-            <P>Questions? Email <a href="mailto:hello@melanie.studio?subject=Glow%20Up%20%E2%80%94%20Privacy%3A%20" style={{ color: T.pinkDeep }}><strong style={{ color: T.text }}>hello@melanie.studio</strong></a> — update this address before going public.</P>
+            <P>Questions? Email <a href="mailto:hello@melanie.studio?subject=Glow%20Up%20%E2%80%94%20Privacy%3A%20" style={{ color: T.darkPink }}><strong style={{ color: T.text }}>hello@melanie.studio</strong></a> — update this address before going public.</P>
           </Section>
 
         </div>

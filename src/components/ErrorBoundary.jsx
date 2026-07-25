@@ -22,8 +22,8 @@ function ErrorScreen({ error, onRetry, type = 'boundary' }) {
       {/* Sad star */}
       <svg width="52" height="52" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" style={{ marginBottom: 20, opacity: 0.5 }}>
         <path d="M32 6 L34 28 L56 32 L34 36 L32 58 L30 36 L8 32 L30 28 Z"
-          fill="none" stroke={T.pinkDeep} strokeWidth="1.5" strokeLinejoin="round" />
-        <circle cx="32" cy="32" r="2.5" fill={T.pinkDeep} opacity="0.6" />
+          fill="none" stroke={T.darkPink} strokeWidth="1.5" strokeLinejoin="round" />
+        <circle cx="32" cy="32" r="2.5" fill={T.darkPink} opacity="0.6" />
       </svg>
 
       <div style={{ fontSize: 15, fontWeight: 600, color: T.text, marginBottom: 8, textAlign: 'center' }}>
@@ -51,7 +51,7 @@ function ErrorScreen({ error, onRetry, type = 'boundary' }) {
       <div style={{ display: 'flex', gap: 8 }}>
         <button onClick={() => window.location.reload()} style={{
           padding: '10px 20px', borderRadius: 10,
-          border: 'none', background: T.pinkDeep,
+          border: 'none', background: T.darkPink,
           color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
         }}>
           Refresh page

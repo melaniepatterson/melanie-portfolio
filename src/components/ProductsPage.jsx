@@ -193,7 +193,7 @@ function FieldLabel({ children }) {
 function Toggle({ checked, onChange, label }) {
   return (
     <label style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', borderRadius: 8, cursor: 'pointer', background: T.surfaceMuted, border: `0.5px solid ${T.hairline}`, fontSize: 12, color: T.text, marginBottom: 6 }}>
-      <input type="checkbox" checked={checked} onChange={onChange} style={{ width: 14, height: 14, cursor: 'pointer', accentColor: T.pinkDeep }} />
+      <input type="checkbox" checked={checked} onChange={onChange} style={{ width: 14, height: 14, cursor: 'pointer', accentColor: T.darkPink }} />
       {label}
     </label>
   )

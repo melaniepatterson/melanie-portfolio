@@ -87,7 +87,7 @@ export default function CropModal({ imageSrc, onConfirm, onCancel, uploading }) 
             containerStyle: { borderRadius: 12 },
             mediaStyle: {},
             cropAreaStyle: {
-              border: `2px solid ${T.pinkDeep}`,
+              border: `2px solid ${T.darkPink}`,
               boxShadow: `0 0 0 9999px rgba(0,0,0,0.6)`,
             },
           }}
@@ -101,7 +101,7 @@ export default function CropModal({ imageSrc, onConfirm, onCancel, uploading }) 
           type="range" min={1} max={3} step={0.05}
           value={zoom} onChange={e => setZoom(Number(e.target.value))}
           aria-label="Zoom"
-          style={{ flex: 1, accentColor: T.pinkDeep, cursor: 'pointer' }}
+          style={{ flex: 1, accentColor: T.darkPink, cursor: 'pointer' }}
         />
         <span style={{ fontSize: 11, color: '#aaa', fontFamily: 'inherit', flexShrink: 0, width: 28, textAlign: 'right' }}>
           {zoom.toFixed(1)}×
@@ -128,7 +128,7 @@ export default function CropModal({ imageSrc, onConfirm, onCancel, uploading }) 
           disabled={uploading}
           style={{
             flex: 2, padding: '11px', borderRadius: 10,
-            border: 'none', background: T.pinkDeep, color: '#fff',
+            border: 'none', background: T.darkPink, color: '#fff',
             fontSize: 13, fontWeight: 600, cursor: uploading ? 'default' : 'pointer',
             fontFamily: 'inherit', opacity: uploading ? 0.6 : 1,
             transition: 'opacity 0.15s',

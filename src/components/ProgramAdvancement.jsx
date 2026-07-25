@@ -39,7 +39,7 @@ export function Phase2Picker({ options, onChoose, onClose, skinType, alreadyAdde
   if (bhaStep) return (
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
       <div onClick={e => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="bha-onboarding-title" style={{ background: T.white, border: `1px solid ${T.hairline}`, borderRadius: 0, width: '100%', maxWidth: 460, padding: '28px 24px' }}>
-        <div style={{ fontSize: 11, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>AHA/BHA Onboarding</div>
+        <div style={{ fontSize: 11, fontWeight: 700, color: T.darkPink, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>AHA/BHA Onboarding</div>
         <h3 id="bha-onboarding-title" style={{ fontSize: 18, fontWeight: 800, color: T.text, letterSpacing: '-0.03em', margin: '0 0 8px' }}>One more step</h3>
         <p style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.7, margin: '0 0 20px' }}>
           AHA/BHA needs a slow ramp-up to avoid irritation — we'll track it through the AHA/BHA Onboarding program. Pick which night works best for you and we'll handle the rest.
@@ -62,7 +62,7 @@ export function Phase2Picker({ options, onChoose, onClose, skinType, alreadyAdde
           await onChoose(chosenItems, bhaDay)
           setSaving(false)
         }}
-          style={{ width: '100%', padding: '12px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 600 }}>
+          style={{ width: '100%', padding: '12px', borderRadius: 0, border: 'none', background: T.darkPink, color: '#fff', cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 600 }}>
           {saving ? 'Starting…' : 'Start AHA/BHA Onboarding'}
         </button>
       </div>
@@ -77,7 +77,7 @@ export function Phase2Picker({ options, onChoose, onClose, skinType, alreadyAdde
           ×
         </button>
 
-        <div style={{ fontSize: 11, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8, paddingRight: 36 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: T.darkPink, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8, paddingRight: 36 }}>
           Phase 2 — Add to your routine
         </div>
         <h3 id="phase2-picker-title" style={{ fontSize: 20, fontWeight: 800, color: T.text, letterSpacing: '-0.03em', margin: '0 0 8px', paddingRight: 36 }}>
@@ -113,7 +113,7 @@ export function Phase2Picker({ options, onChoose, onClose, skinType, alreadyAdde
               setSaving(false)
             }
           }}
-          style={{ width: '100%', padding: '12px', borderRadius: 0, border: 'none', background: selected.size > 0 ? T.pinkDeep : T.hairline, color: '#fff', cursor: selected.size > 0 ? 'pointer' : 'default', fontSize: 13, fontFamily: 'inherit', fontWeight: 600, marginTop: 12 }}>
+          style={{ width: '100%', padding: '12px', borderRadius: 0, border: 'none', background: selected.size > 0 ? T.darkPink : T.hairline, color: '#fff', cursor: selected.size > 0 ? 'pointer' : 'default', fontSize: 13, fontFamily: 'inherit', fontWeight: 600, marginTop: 12 }}>
           {saving ? 'Saving…' : (() => {
             if (selected.size === 0) return 'Select an option to continue'
             const realCount = options.filter(o => selected.has(o.id) && !o.is_skip_option).length
@@ -134,7 +134,7 @@ function GraduationModal({ onConfirm, onClose }) {
   return (
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
       <div onClick={e => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="graduation-modal-title" style={{ background: T.white, border: `1px solid ${T.hairline}`, borderRadius: 0, width: '100%', maxWidth: 420, padding: '24px 20px', textAlign: 'center' }}>
-        <div style={{ fontSize: 11, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: T.darkPink, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>
           Graduation
         </div>
         <h3 id="graduation-modal-title" style={{ fontSize: 20, fontWeight: 800, color: T.text, letterSpacing: '-0.03em', margin: '0 0 12px' }}>
@@ -144,7 +144,7 @@ function GraduationModal({ onConfirm, onClose }) {
           Everything you've built over the last few weeks is saved. Keep going from here, or add a new program on top whenever you're ready.
         </p>
         <button disabled={saving} onClick={async () => { setSaving(true); await onConfirm() }}
-          style={{ width: '100%', padding: '12px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 600 }}>
+          style={{ width: '100%', padding: '12px', borderRadius: 0, border: 'none', background: T.darkPink, color: '#fff', cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 600 }}>
           {saving ? 'Saving…' : "Got it — that's my routine"}
         </button>
       </div>
@@ -162,7 +162,7 @@ function LinearAdvanceModal({ nextPhase, isGraduation, onConfirm, onClose }) {
   return (
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
       <div onClick={e => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="linear-advance-title" style={{ background: T.white, border: `1px solid ${T.hairline}`, borderRadius: 0, width: '100%', maxWidth: 420, padding: '24px 20px' }}>
-        <div style={{ fontSize: 11, fontWeight: 700, color: T.pinkDeep, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: T.darkPink, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>
           {isGraduation ? 'Graduation' : `Phase ${nextPhase.phase_number}`}
         </div>
         <h3 id="linear-advance-title" style={{ fontSize: 20, fontWeight: 800, color: T.text, letterSpacing: '-0.03em', margin: '0 0 12px' }}>
@@ -172,7 +172,7 @@ function LinearAdvanceModal({ nextPhase, isGraduation, onConfirm, onClose }) {
           {nextPhase.description}
         </p>
         <button disabled={saving} onClick={async () => { setSaving(true); await onConfirm() }}
-          style={{ width: '100%', padding: '12px', borderRadius: 0, border: 'none', background: T.pinkDeep, color: '#fff', cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 600 }}>
+          style={{ width: '100%', padding: '12px', borderRadius: 0, border: 'none', background: T.darkPink, color: '#fff', cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 600 }}>
           {saving ? 'Saving…' : isGraduation ? "Got it — that's my routine" : `Start Phase ${nextPhase.phase_number}`}
         </button>
       </div>
