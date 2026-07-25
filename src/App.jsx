@@ -124,6 +124,19 @@ function Layout() {
   // Privacy policy — no auth required
   if (location.pathname === "/privacy") return <PrivacyPolicy />
 
+  // Calendar — full screen, no nav/logo/footer chrome. Bypasses page-wrapper
+  // like the other /routine/* pages below: page-wrapper centers <main> via
+  // alignItems (needed elsewhere), which makes it shrink-wrap to whatever
+  // child has an explicit width — GlowUpCalendar's own maxWidth:900 content
+  // column — so its sticky header could never reach the true viewport edge
+  // from inside that wrapper no matter what width it declared itself.
+  if (location.pathname === "/routine") return (
+    <>
+      <ErrorBoundary><GlowUpCalendar session={session} /></ErrorBoundary>
+      <CookieNotice variant="glowup" />
+    </>
+  )
+
   // Profile page — full screen, no nav/logo/footer chrome
   if (location.pathname === "/routine/profile") return (
     <>

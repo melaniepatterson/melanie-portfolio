@@ -2381,7 +2381,7 @@ function ManageSteps({ period, tab, onUpdateSteps, skinType }) {
   )
 }
 
-function DayFlyout({ flyout, borderColor, period, dailyHistory, showerHistory, products, allTypes, onClose, onAddTreatment, onTabChange, onEditDaily, onEditShower, onUpdatePeriodProducts, onUpdatePeriodSteps, onAddProduct, recoveryRoutines, onUpdateRecoveryProducts, onUpdateRecoverySteps, onUpdateShowerItemProduct, onUpdateDailyItemProduct, session, onReload, onUpdateSteps, skinType }) {
+function DayFlyout({ flyout, borderColor, bodyIsWhite, period, dailyHistory, showerHistory, products, allTypes, onClose, onAddTreatment, onTabChange, onEditDaily, onEditShower, onUpdatePeriodProducts, onUpdatePeriodSteps, onAddProduct, recoveryRoutines, onUpdateRecoveryProducts, onUpdateRecoverySteps, onUpdateShowerItemProduct, onUpdateDailyItemProduct, session, onReload, onUpdateSteps, skinType }) {
   const userId = session?.user?.id
   const catalogProducts = Object.fromEntries(Object.entries(products).filter(([, p]) => p._isCatalog))
   const [massageOpen, setMassageOpen] = useState(false)
@@ -2635,12 +2635,12 @@ function DayFlyout({ flyout, borderColor, period, dailyHistory, showerHistory, p
               return allTreatments.map(t => {
                 const lbl = allTypes?.[t.type]?.label || t.type
                 const c = T[t.type] || T.treatment
-                return <div key={t._dbId} style={{ fontSize: 13, fontWeight: 700, padding: '5px 12px', borderRadius: T.radius.pill, background: T.white, color: c.text, display: 'inline-block' }}>{lbl.charAt(0).toUpperCase() + lbl.slice(1).toLowerCase()}</div>
+                return <div key={t._dbId} style={{ fontSize: 13, fontWeight: 700, padding: '5px 12px', borderRadius: T.radius.pill, background: bodyIsWhite ? c.bg : T.white, color: c.text, display: 'inline-block' }}>{lbl.charAt(0).toUpperCase() + lbl.slice(1).toLowerCase()}</div>
               })
             }
             const label = isTreatment ? (allTypes?.[dayType]?.label || dayType) : b.label
             const c = isTreatment ? (T[dayType] || T.treatment) : T[b.colorKey]
-            return <div style={{ fontSize: 13, fontWeight: 700, padding: '5px 12px', borderRadius: T.radius.pill, background: T.white, color: c.text, display: 'inline-block' }}>{label}</div>
+            return <div style={{ fontSize: 13, fontWeight: 700, padding: '5px 12px', borderRadius: T.radius.pill, background: bodyIsWhite ? c.bg : T.white, color: c.text, display: 'inline-block' }}>{label}</div>
           })()}
         </div>
         <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
@@ -3368,11 +3368,11 @@ function NewRoutinePeriodPicker({ routineHistory, dailyHistory, showerHistory, p
       <div style={{ fontSize: 22, fontWeight: 600, color: T.white, marginBottom: 6 }}>What kind of routine would you like to add?</div>
       <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.75)', marginBottom: 14 }}>Each type is tracked separately with its own history.</div>
 
-      {/* Primary choice: build a program vs manually adjust */}
-      <div style={{ display: 'flex', alignItems: 'stretch', gap: 10, marginBottom: 16 }}>
+      {/* Primary choice: build a program vs manually adjust — stacked, not a grid */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
         {primaryOptions.map(o => (
           <button key={o.key} onClick={() => setChosen(o.key)} style={{
-            flex: 1, padding: '16px 14px', borderRadius: T.radius.card,
+            padding: '16px 14px', borderRadius: T.radius.card,
             border: 'none', background: T.white,
             display: 'flex', flexDirection: 'column', justifyContent: 'center',
             textAlign: 'left', cursor: 'pointer',
@@ -3385,16 +3385,16 @@ function NewRoutinePeriodPicker({ routineHistory, dailyHistory, showerHistory, p
             <div style={{ fontSize: 11, color: T.darkBlue, opacity: 0.75, lineHeight: 1.6 }}>{o.desc}</div>
           </button>
         )).reduce((acc, el, i) => i === 0 ? [el] : [...acc,
-          <div key="or" style={{ display: 'flex', alignItems: 'center', fontSize: 11, color: 'rgba(255,255,255,0.7)', fontStyle: 'italic', flexShrink: 0 }}>or</div>,
+          <div key="or" style={{ textAlign: 'center', fontSize: 11, color: 'rgba(255,255,255,0.7)', fontStyle: 'italic' }}>or</div>,
           el
         ], [])}
       </div>
 
       <SectionLabel style={{ color: 'rgba(255,255,255,0.75)', borderTop: '0.5px solid rgba(255,255,255,0.3)' }}>Other options</SectionLabel>
-      <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 14 }}>
         {otherOptions.map(o => (
           <button key={o.key} onClick={() => setChosen(o.key)} style={{
-            flex: 1, padding: '10px 12px', borderRadius: T.radius.card,
+            padding: '10px 12px', borderRadius: T.radius.card,
             border: 'none', background: T.white,
             textAlign: 'left', cursor: 'pointer',
             transition: 'transform 0.2s ease, box-shadow 0.2s ease',
@@ -5092,6 +5092,31 @@ export default function GlowUpCalendar({ session }) {
               <span style={{ display: 'block', width: 14, height: 1.5, background: T.text, borderRadius: 0 }} />
             </button>
           </div>
+          {/* Notifications — overlay flyout anchored under the bell, not
+              inline content that pushes the page down. */}
+          {showNotifications && (
+            <>
+              <div onClick={() => setShowNotifications(false)} style={{ position: 'fixed', inset: 0, zIndex: 149 }} />
+              <div style={{ position: 'absolute', top: '100%', right: 20, marginTop: 8, width: 'min(340px, 90vw)', maxHeight: '70vh', overflowY: 'auto', background: T.white, border: `1px solid ${T.text}`, borderRadius: T.radius.modal, padding: '14px 16px', boxShadow: '0 8px 32px rgba(0,0,0,0.18)', zIndex: 150, animation: 'panelIn 0.15s ease' }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: T.text, marginBottom: 12 }}>Notifications</div>
+                {notifications.length === 0 ? (
+                  <div style={{ fontSize: 12, color: T.text, opacity: 0.7, fontStyle: 'italic', padding: '8px 0' }}>
+                    You're all caught up — nothing needs attention right now.
+                  </div>
+                ) : notifications.map(n => (
+                  <div key={n.id} style={{ display: 'flex', gap: 12, padding: '10px 0', borderTop: `0.5px solid ${T.hairline}` }}>
+                    <div style={{ fontSize: 16, flexShrink: 0, marginTop: 1 }}>
+                      {n.type === 'warning' ? '⚠️' : n.type === 'nudge' ? '✅' : 'ℹ️'}
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 12, fontWeight: 600, color: T.text, marginBottom: 2 }}>{n.title}</div>
+                      <div style={{ fontSize: 11, color: T.text, opacity: 0.7, lineHeight: 1.6 }}>{n.body}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
         </div>
       </div>
     <div onClick={() => { if (dayFlyout) setDayFlyout(null) }} style={{ fontFamily: 'inherit', padding: '1rem 0.75rem', maxWidth: 900, width: 'min(100vw, 900px)', boxSizing: 'border-box', position: 'relative', margin: '0 auto', overflow: 'hidden' }}>
@@ -5212,27 +5237,6 @@ export default function GlowUpCalendar({ session }) {
         )}
       </div>
 
-      {/* Notification feed */}
-      {showNotifications && (
-        <div style={{ background: T.white, border: `1px solid ${T.text}`, borderRadius: T.radius.modal, padding: '14px 16px', marginBottom: 14, animation: 'panelIn 0.15s ease' }}>
-          <div style={{ fontSize: 12, fontWeight: 700, color: T.text, marginBottom: 12 }}>Notifications</div>
-          {notifications.length === 0 ? (
-            <div style={{ fontSize: 12, color: T.text, opacity: 0.7, fontStyle: 'italic', padding: '8px 0' }}>
-              You're all caught up — nothing needs attention right now.
-            </div>
-          ) : notifications.map(n => (
-            <div key={n.id} style={{ display: 'flex', gap: 12, padding: '10px 0', borderTop: `0.5px solid ${T.hairline}` }}>
-              <div style={{ fontSize: 16, flexShrink: 0, marginTop: 1 }}>
-                {n.type === 'warning' ? '⚠️' : n.type === 'nudge' ? '✅' : 'ℹ️'}
-              </div>
-              <div>
-                <div style={{ fontSize: 12, fontWeight: 600, color: T.text, marginBottom: 2 }}>{n.title}</div>
-                <div style={{ fontSize: 11, color: T.text, opacity: 0.7, lineHeight: 1.6 }}>{n.body}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
 
       {/* Treatment warning modal — shown when adding a treatment during an active-ingredient phase */}
       {treatmentWarning && (() => {
@@ -5285,10 +5289,11 @@ export default function GlowUpCalendar({ session }) {
         const flyoutBodyBg = flyoutColors?.fill ?? T.white
         const flyoutHeaderBg = flyoutColors?.dark ?? T.white
         const flyoutHeaderInk = flyoutColors ? T.white : T.text
-        // Border is white on a colored flyout (for definition against the
-        // fill), or ink on an otherwise-white flyout — no active status to
-        // draw a color from there, so no cream/gray border token either.
-        const flyoutBorderColor = flyoutColors ? T.white : T.text
+        // Divider color: white on a colored flyout (for definition against
+        // the fill), or green on an otherwise-white flyout — no active
+        // status to draw a color from there, so no cream/gray border token
+        // either.
+        const flyoutBorderColor = flyoutColors ? T.white : T.darkGreen
 
         return (
           <>
@@ -5332,6 +5337,7 @@ export default function GlowUpCalendar({ session }) {
                 <DayFlyout
                   flyout={dayFlyout}
                   borderColor={flyoutBorderColor}
+                  bodyIsWhite={!flyoutColors}
                   period={activePeriodFlyout}
                   dailyHistory={dailyHistory}
                   showerHistory={showerHistory}
