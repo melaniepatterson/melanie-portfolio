@@ -4267,6 +4267,14 @@ export default function GlowUpCalendar({ session }) {
           direct_store_name:   p.direct_store_name || '',
           description:         p.description || '',
           ingredients:         p.ingredients || '',
+          // PAO/expiry — read back here so computeNotifications (and the
+          // product form's own PAO fields) actually see saved values;
+          // these round-trip through the sync-to-DB effect below, which
+          // already expects them under these same snake_case names.
+          purchased_at:        p.purchased_at || null,
+          opened_at:           p.opened_at || null,
+          expires_at:          p.expires_at || null,
+          pao_months:          p.pao_months || null,
         }
       })
       setProducts(prodMap)
