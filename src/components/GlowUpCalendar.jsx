@@ -43,6 +43,7 @@ import AccentWord from './shared/AccentWord'
 import StarRating from './shared/StarRating'
 import FeedbackPanel from './shared/FeedbackPanel'
 import GlowUpFooter from './shared/GlowUpFooter'
+import FirstVisitTip from './shared/FirstVisitTip'
 
 // ─── DESIGN TOKENS ───────────────────────────────────────────
 
@@ -2716,8 +2717,8 @@ function DayFlyout({ flyout, borderColor, bodyIsWhite, period, dailyHistory, sho
 
       {/* 2. Morning / Night tabs */}
       <div style={{ display: 'flex', gap: 6, marginBottom: 8, marginTop: 10 }}>
-        <button onClick={() => switchTab('am')} aria-pressed={tab === 'am'} style={{ padding: '7px 18px', borderRadius: T.radius.pill, border: 'none', background: tab === 'am' ? T.text : T.white, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', cursor: 'pointer', color: tab === 'am' ? T.white : T.text }}>Morning (AM)</button>
-        <button onClick={() => switchTab('pm')} aria-pressed={tab === 'pm'} style={{ padding: '7px 18px', borderRadius: T.radius.pill, border: 'none', background: tab === 'pm' ? T.text : T.white, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', cursor: 'pointer', color: tab === 'pm' ? T.white : T.text }}>Evening (PM)</button>
+        <button onClick={() => switchTab('am')} aria-pressed={tab === 'am'} style={{ padding: '7px 18px', borderRadius: T.radius.pill, border: tab === 'am' ? 'none' : `1px solid ${T.hairline}`, background: tab === 'am' ? T.text : T.white, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', cursor: 'pointer', color: tab === 'am' ? T.white : T.text }}>Morning (AM)</button>
+        <button onClick={() => switchTab('pm')} aria-pressed={tab === 'pm'} style={{ padding: '7px 18px', borderRadius: T.radius.pill, border: tab === 'pm' ? 'none' : `1px solid ${T.hairline}`, background: tab === 'pm' ? T.text : T.white, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', cursor: 'pointer', color: tab === 'pm' ? T.white : T.text }}>Evening (PM)</button>
       </div>
 
       {/* 3. Extras — filtered by frequency + current tab, hidden when nothing matches */}
@@ -5360,10 +5361,10 @@ export default function GlowUpCalendar({ session }) {
         />
       )}
 
-      {/* Hint — above day headers */}
-      <p style={{ fontSize: 11, color: T.text, opacity: 0.6, marginBottom: 6 }}>
-        Tap AM or PM on any date to open the day's routine. Use "Products" to manage your product library. Tap any step to assign a product.
-      </p>
+      {/* First-visit tip — above day headers, dismisses permanently once seen */}
+      <FirstVisitTip storageKey="glowup_calendar_tip_seen">
+        This is your skincare calendar. Click an AM or PM slot on any day to add your products.
+      </FirstVisitTip>
 
       {/* Day headers — always visible */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: 3, marginBottom: 3 }}>

@@ -691,7 +691,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
                 <div onClick={() => setEndFoundationConfirm(false)}
                   style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 400, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
                   <div onClick={e => e.stopPropagation()} role="dialog" aria-modal="true" aria-label="End this program early?"
-                    style={{ background: T.white, border: `1px solid ${T.hairline}`, borderRadius: 0, padding: '24px 20px', width: '100%', maxWidth: 420 }}>
+                    style={{ background: T.white, border: `1px solid ${T.hairline}`, borderRadius: T.radius.modal, padding: '24px 20px', width: '100%', maxWidth: 420 }}>
                     <div style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.7, marginBottom: 20 }}>
                       This locks in your current routine exactly as it is — no more Basic Skincare phases. Whether you're happy with it or just ready to move on, your routine stays as-is and you can keep adjusting it manually or add a new program (like Tretinoin Onboarding) anytime.
                     </div>

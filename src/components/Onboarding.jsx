@@ -3,6 +3,8 @@ import { supabase } from '../lib/supabase'
 import { buildStepEntries } from './programOptions'
 import ProgramOptionsChecklist, { toggleOption } from './ProgramOptionsChecklist'
 import T from './theme'
+import GlowUpLogo from './GlowUpWordmark'
+import { todayInTz } from './timezone'
 
 
 // ─── STEP INDICATOR ──────────────────────────────────────────
@@ -145,7 +147,7 @@ function Phase2StartScreen({ phase2, phase1Steps, phase2Options, skinType, onBac
 
 // ─── MAIN ONBOARDING COMPONENT ───────────────────────────────
 export default function Onboarding({ session, onEnrolled, onSkipToBuilder }) {
-  const [screen, setScreen]       = useState('disclaimer') // disclaimer | entry | program | phase1 | enrolling
+  const [screen, setScreen]       = useState('welcome') // welcome | intro | disclaimer | entry | program | phase1 | enrolling
   const [program, setProgram]     = useState(null)
   const [phases, setPhases]       = useState([])
   const [phase1Steps, setPhase1Steps] = useState([])
@@ -212,7 +214,10 @@ export default function Onboarding({ session, onEnrolled, onSkipToBuilder }) {
   async function enroll() {
     setScreen('enrolling')
     try {
-      const today = new Date().toISOString().split('T')[0]
+      // Local (device) "today", not UTC — matches the app's dateKey/getActivePeriod
+      // logic elsewhere, so the routine_periods row created here is never
+      // dated a day ahead for users west of UTC.
+      const today = todayInTz()
 
       // 1. Enroll in the program
       const { error: progErr } = await supabase
@@ -273,7 +278,10 @@ export default function Onboarding({ session, onEnrolled, onSkipToBuilder }) {
   async function enrollAtPhase2(chosenOptions, bhaDay = null) {
     setScreen('enrolling')
     try {
-      const today = new Date().toISOString().split('T')[0]
+      // Local (device) "today", not UTC — matches the app's dateKey/getActivePeriod
+      // logic elsewhere, so the routine_periods row created here is never
+      // dated a day ahead for users west of UTC.
+      const today = todayInTz()
       const phase2 = phases.find(p => p.phase_number === 2)
       const hasExfoliant = chosenOptions.some(o => o.step_key === 'exfoliant' && !o.is_skip_option)
       const nonBhaChoices = chosenOptions.filter(o => o.step_key !== 'exfoliant' || o.is_skip_option)
@@ -360,21 +368,67 @@ export default function Onboarding({ session, onEnrolled, onSkipToBuilder }) {
     }
   }
 
+  // ── WELCOME (1 of 2 intro screens, before the disclaimer) ─────
+  if (screen === 'welcome') return (
+    <div style={{ minHeight: '100vh', background: T.darkGreen, padding: '64px 24px', boxSizing: 'border-box', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <style>{`
+        @keyframes glowupOnboardFloat {
+          0%, 100% { transform: translateY(-8px); }
+          50%      { transform: translateY(8px); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .glowup-onboard-logo { animation: none !important; }
+        }
+      `}</style>
+      <div style={{ maxWidth: 420, textAlign: 'center' }}>
+        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', marginBottom: 6 }}>
+          Welcome to
+        </div>
+        <GlowUpLogo size={56} className="glowup-onboard-logo" style={{ display: 'inline-block', color: T.white, animation: 'glowupOnboardFloat 3s cubic-bezier(0.445, 0.05, 0.55, 0.95) infinite', marginBottom: 16 }} />
+        <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.85)', margin: '0 0 40px' }}>
+          Your skin routine, organized.
+        </p>
+        <button onClick={() => setScreen('intro')}
+          style={{ width: '100%', padding: '14px', borderRadius: T.radius.pill, border: 'none', background: T.white, color: T.darkGreen, cursor: 'pointer', fontSize: 14, fontFamily: 'inherit', fontWeight: 700 }}>
+          Get started
+        </button>
+      </div>
+    </div>
+  )
+
+  // ── INTRO (2 of 2 intro screens) ───────────────────────────────
+  if (screen === 'intro') return (
+    <div style={{ minHeight: '100vh', background: T.darkGreen, padding: '64px 24px', boxSizing: 'border-box' }}>
+      <div style={{ maxWidth: 480, margin: '0 auto' }}>
+        <h2 style={{ fontSize: 26, fontWeight: 800, color: T.white, letterSpacing: '-0.03em', margin: '0 0 20px' }}>
+          Glow Up is a skin care routine builder and tracker tool.
+        </h2>
+        <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.85)', lineHeight: 1.8, margin: '0 0 32px' }}>
+          We know sometimes a multi-step routine can get complicated. Whether you are new to serums or experienced with retinoids, this is a tool that lays out your whole regimen. Safely add new ingredients, or track recovery after a skin treatment with ease.
+        </p>
+        <button onClick={() => setScreen('disclaimer')}
+          style={{ width: '100%', padding: '14px', borderRadius: T.radius.pill, border: 'none', background: T.white, color: T.darkGreen, cursor: 'pointer', fontSize: 14, fontFamily: 'inherit', fontWeight: 700 }}>
+          Got it
+        </button>
+      </div>
+    </div>
+  )
+
   // ── DISCLAIMER ───────────────────────────────────────────────
   if (screen === 'disclaimer') return (
     <div style={{ minHeight: '100vh', background: T.darkGreen, padding: '64px 24px', boxSizing: 'border-box' }}>
       <div style={{ maxWidth: 480, margin: '0 auto' }}>
         <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.75)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 12 }}>
-          Before you start
+          Before you get started
         </div>
         <h2 style={{ fontSize: 26, fontWeight: 800, color: T.white, letterSpacing: '-0.03em', margin: '0 0 20px' }}>
-          Glow Up is a tracking tool, not medical advice
+          Glow Up is a tool, not medical advice
         </h2>
         <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', lineHeight: 1.8, margin: '0 0 14px' }}>
           Everything in this app — routines, programs, ingredient notes, skin type suggestions — is here to help you track and build your own practice. It's not a substitute for advice from a dermatologist or other medical professional.
         </p>
         <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', lineHeight: 1.8, margin: '0 0 32px' }}>
-          This is especially true for prescription treatments like tretinoin. If you have questions about what's right for your skin, please talk to your dermatologist.
+          This is especially true for prescription treatments like tretinoin. If you have questions about what's right for your skin, please talk to your dermatologist. Everyone's skin is different, and may respond to ingredients differently.
         </p>
         <button
           onClick={async () => {
@@ -386,7 +440,7 @@ export default function Onboarding({ session, onEnrolled, onSkipToBuilder }) {
             setScreen('entry')
           }}
           style={{ width: '100%', padding: '14px', borderRadius: T.radius.pill, border: 'none', background: T.white, color: T.darkGreen, cursor: 'pointer', fontSize: 14, fontFamily: 'inherit', fontWeight: 700 }}>
-          Got it — let's get started
+          I understand
         </button>
       </div>
     </div>
@@ -416,7 +470,7 @@ export default function Onboarding({ session, onEnrolled, onSkipToBuilder }) {
             Let's get your routine set up.
           </h1>
           <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', lineHeight: 1.7, margin: 0 }}>
-            Glow Up tracks your skincare routine, schedules your treatments, and walks you through introducing new products safely.
+            Glow Up tracks your skincare routine, logs your upcoming treatments, and walks you through introducing new products safely.
           </p>
         </div>
 
