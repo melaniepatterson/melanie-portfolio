@@ -37,7 +37,7 @@ function navigate(type, data) {
   window.location.href = '/routine'
 }
 
-export default function RoutineHistory({ session }) {
+export default function RoutineHistory({ session, betaTester }) {
   const [confirmDialog, confirm] = useConfirm()
   const [routineHistory, setRoutineHistory] = useState([])
   const [dailyHistory,   setDailyHistory]   = useState([])
@@ -218,7 +218,7 @@ export default function RoutineHistory({ session }) {
             </button>
           </div>
           {showMenu && (
-            <SideMenu session={session} onClose={() => setShowMenu(false)}
+            <SideMenu session={session} onClose={() => setShowMenu(false)} betaTester={betaTester}
               onFeedback={() => { setShowMenu(false); setShowFeedback(true) }} />
           )}
           {showFeedback && <FeedbackPanel onClose={() => setShowFeedback(false)} />}
@@ -401,7 +401,7 @@ export default function RoutineHistory({ session }) {
         </div>
       )}
       {confirmDialog}
-      <GlowUpFooter onFeedback={() => setShowFeedback(true)} />
+      <GlowUpFooter onFeedback={() => setShowFeedback(true)} betaTester={betaTester} />
     </div>
   )
 }

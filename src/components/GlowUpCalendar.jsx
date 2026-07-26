@@ -5356,6 +5356,7 @@ export default function GlowUpCalendar({ session }) {
           session={session}
           onClose={() => setShowMenu(false)}
           onFeedback={() => { setShowFeedback(true); setShowMenu(false) }}
+          betaTester={betaTester}
         />
       )}
 
@@ -5573,7 +5574,7 @@ export default function GlowUpCalendar({ session }) {
       {confirmDialog}
 
     </div>
-    <GlowUpFooter onFeedback={() => setShowFeedback(true)} />
+    <GlowUpFooter onFeedback={() => setShowFeedback(true)} betaTester={betaTester} />
     </div>
   )
 }

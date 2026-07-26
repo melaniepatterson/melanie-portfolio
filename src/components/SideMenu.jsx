@@ -32,7 +32,7 @@ function ScatterText({ text }) {
 }
 
 
-export default function SideMenu({ session, onClose, onFeedback }) {
+export default function SideMenu({ session, onClose, onFeedback, betaTester }) {
   const email = session?.user?.email || ''
   const [profile, setProfile] = useState(null)
   const [imageReady, setImageReady] = useState(false)
@@ -74,7 +74,9 @@ export default function SideMenu({ session, onClose, onFeedback }) {
     { label: 'Calendar',        href: '/routine',          color: T.blue,   hoverColor: T.darkBlue },
     { label: 'Routine history', href: '/routine/history',  color: T.green,  hoverColor: T.darkGreen },
     { label: 'Product library', href: '/routine/products', color: T.pink,   hoverColor: T.darkPink },
-    { label: 'Send feedback', color: T.orange, hoverColor: T.darkOrange, action: onFeedback },
+    // Beta testers give feedback through the beta survey instead — the
+    // anonymous general feedback form isn't shown to them.
+    ...(betaTester ? [] : [{ label: 'Send feedback', color: T.orange, hoverColor: T.darkOrange, action: onFeedback }]),
   ]
 
   async function signOut() {

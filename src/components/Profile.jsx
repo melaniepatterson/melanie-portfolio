@@ -375,7 +375,7 @@ export default function Profile({ session, onOpenSurvey }) {
             </button>
           </div>
           {showMenu && (
-            <SideMenu session={session} onClose={() => setShowMenu(false)}
+            <SideMenu session={session} onClose={() => setShowMenu(false)} betaTester={betaTester}
               onFeedback={() => { setShowMenu(false); setShowFeedback(true) }} />
           )}
           {showFeedback && <FeedbackPanel onClose={() => setShowFeedback(false)} />}
@@ -706,7 +706,7 @@ export default function Profile({ session, onOpenSurvey }) {
         </button>
       </div>
     </div>
-    <GlowUpFooter onFeedback={() => setShowFeedback(true)} />
+    <GlowUpFooter onFeedback={() => setShowFeedback(true)} betaTester={betaTester} />
     {showSurvey && (
       <BetaSurvey
         session={session}

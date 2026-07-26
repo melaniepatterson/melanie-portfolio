@@ -160,13 +160,13 @@ function Layout() {
   )
   if (location.pathname === "/routine/history") return (
     <>
-      <RoutineHistory session={session} />
+      <RoutineHistory session={session} betaTester={betaTester} />
       <CookieNotice variant="glowup" />
     </>
   )
   if (location.pathname === "/routine/products") return (
     <>
-      <ProductsPage session={session} />
+      <ProductsPage session={session} betaTester={betaTester} />
       <CookieNotice variant="glowup" />
     </>
   )
@@ -197,8 +197,8 @@ function Layout() {
                 <Route path="*" element={<NotFound />} />
                 <Route path="/routine" element={<ErrorBoundary><GlowUpCalendar session={session} /></ErrorBoundary>} />
                 <Route path="/routine/profile" element={<ErrorBoundary><Profile session={session} /></ErrorBoundary>} />
-                <Route path="/routine/history" element={<ErrorBoundary><RoutineHistory session={session} /></ErrorBoundary>} />
-                <Route path="/routine/products" element={<ErrorBoundary><ProductsPage session={session} /></ErrorBoundary>} />
+                <Route path="/routine/history" element={<ErrorBoundary><RoutineHistory session={session} betaTester={betaTester} /></ErrorBoundary>} />
+                <Route path="/routine/products" element={<ErrorBoundary><ProductsPage session={session} betaTester={betaTester} /></ErrorBoundary>} />
               </Routes>
             </PageTransition>
           </main>

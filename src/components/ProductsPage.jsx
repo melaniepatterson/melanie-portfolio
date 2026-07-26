@@ -976,7 +976,7 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
 }
 
 // ─── PRODUCTS PAGE ────────────────────────────────────────────
-export default function ProductsPage({ session }) {
+export default function ProductsPage({ session, betaTester }) {
   const [alertDialog, alertUser] = useAlert()
   const [products, setProducts] = useState({})
   const [catalogProducts, setCatalogProducts] = useState({})
@@ -1319,7 +1319,7 @@ export default function ProductsPage({ session }) {
               <span style={{ display: 'block', width: 14, height: 1.5, background: T.white }} />
             </button>
             {showMenu && (
-              <SideMenu session={session} onClose={() => setShowMenu(false)}
+              <SideMenu session={session} onClose={() => setShowMenu(false)} betaTester={betaTester}
                 onFeedback={() => { setShowMenu(false); setShowFeedback(true) }} />
             )}
             {showFeedback && <FeedbackPanel onClose={() => setShowFeedback(false)} />}
@@ -1393,7 +1393,7 @@ export default function ProductsPage({ session }) {
             />
       }
       {alertDialog}
-      <GlowUpFooter onFeedback={() => setShowFeedback(true)} />
+      <GlowUpFooter onFeedback={() => setShowFeedback(true)} betaTester={betaTester} />
     </div>
   )
 }

@@ -17,7 +17,7 @@ function FooterLink({ href, onClick, children }) {
   return <a href={href} style={style}>{children}</a>
 }
 
-export default function GlowUpFooter({ onFeedback }) {
+export default function GlowUpFooter({ onFeedback, betaTester }) {
   return (
     <footer style={{ width: '100%', flexShrink: 0, marginTop: 'auto' }}>
       <div style={{ position: 'relative', height: 340, overflow: 'hidden', background: T.white }}>
@@ -39,7 +39,7 @@ export default function GlowUpFooter({ onFeedback }) {
             <FooterLink href="/routine">Calendar</FooterLink>
             <FooterLink href="/routine/history">Routine history</FooterLink>
             <FooterLink href="/routine/products">Product library</FooterLink>
-            <FooterLink onClick={onFeedback}>Send feedback</FooterLink>
+            {!betaTester && <FooterLink onClick={onFeedback}>Send feedback</FooterLink>}
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <FooterLink href="/about-contact">About</FooterLink>
