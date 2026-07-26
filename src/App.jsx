@@ -20,6 +20,7 @@ import ProductsPage from './components/ProductsPage'
 import CookieNotice from './components/CookieNotice'
 import PrivacyPolicy from './components/PrivacyPolicy'
 import BlogComingSoon from './components/BlogComingSoon'
+import GlowUpAbout from './components/GlowUpAbout'
 import BetaSurvey from './components/BetaSurvey'
 import { supabase } from './lib/supabase'
 import T from './components/theme'
@@ -109,6 +110,7 @@ function Layout() {
       "/routine/history": "History — melanie.studio",
       "/routine/products": "Products — melanie.studio",
       "/blog": "Blog — melanie.studio",
+      "/about-glowup": "About — melanie.studio",
     };
     const title = titles[location.pathname];
     if (title) {
@@ -128,6 +130,10 @@ function Layout() {
 
   // Blog — no auth required, placeholder until the real thing ships
   if (location.pathname === "/blog") return <BlogComingSoon />
+
+  // GlowUp's own About page — no auth required, distinct from the
+  // portfolio's /about-contact (which is about Melanie, not the app)
+  if (location.pathname === "/about-glowup") return <GlowUpAbout />
 
   // Calendar — full screen, no nav/logo/footer chrome. Bypasses page-wrapper
   // like the other /routine/* pages below: page-wrapper centers <main> via

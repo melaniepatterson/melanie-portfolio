@@ -42,7 +42,7 @@ export default function GlowUpFooter({ onFeedback, betaTester }) {
             {!betaTester && <FooterLink onClick={onFeedback}>Send feedback</FooterLink>}
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <FooterLink href="/about-contact">About</FooterLink>
+            <FooterLink href="/about-glowup">About</FooterLink>
             <FooterLink href="/blog">Blog</FooterLink>
             <FooterLink href="/privacy#cookies">Cookie policy</FooterLink>
             <FooterLink href="/privacy">Privacy policy</FooterLink>

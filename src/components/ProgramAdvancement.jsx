@@ -659,14 +659,14 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
 
               {/* Current phase description — hide for Phase 1 tretinoin since sandwich note covers it */}
               {program.slug !== 'basic-skincare' && currentPhase.description && !(currentPhase.phase_number === 1 && (/sandwich/i.test(currentPhase.name || '') || /sandwich/i.test(currentPhase.description || ''))) && (
-                <div style={{ marginTop: 8, fontSize: 11, color: T.text, opacity: 0.85, lineHeight: 1.7, padding: '8px 10px', background: '#EBFBF2', borderRadius: 0 }}>
+                <div style={{ marginTop: 8, fontSize: 11, color: T.text, opacity: 0.85, lineHeight: 1.7, padding: '8px 10px', background: '#EBFBF2', borderRadius: T.radius.card }}>
                   {currentPhase.description}
                 </div>
               )}
 
               {/* Sandwich method description — only shown on Phase 1 */}
               {currentPhase.phase_number === 1 && (/sandwich/i.test(currentPhase.name || '') || /sandwich/i.test(currentPhase.description || '')) && (
-                <div style={{ marginTop: 8, fontSize: 11, color: T.text, opacity: 0.85, lineHeight: 1.7, padding: '8px 10px', background: '#EBFBF2', borderRadius: 0 }}>
+                <div style={{ marginTop: 8, fontSize: 11, color: T.text, opacity: 0.85, lineHeight: 1.7, padding: '8px 10px', background: '#EBFBF2', borderRadius: T.radius.card }}>
                   <span style={{ fontWeight: 600, color: T.text }}>What is the sandwich method? </span>
                   Apply moisturizer, wait 2–3 min, apply tretinoin, then moisturizer again on top. The buffer layers reduce irritation while it still absorbs.
                 </div>

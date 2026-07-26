@@ -2751,7 +2751,7 @@ function DayFlyout({ flyout, borderColor, bodyIsWhite, period, dailyHistory, sho
           {tab === 'am' && isRecovery && renderSteps(getStepsForDayType(period, 'recovery'), dotColorFor('pca'), 'recovery')}
           {/* PM: treatment banner + recovery steps */}
           {tab === 'pm' && isTreatment && (
-            <div style={{ fontSize: 11, padding: '6px 10px', borderRadius: 0, background: (T[dayType] || T.treatment).bg, color: (T[dayType] || T.treatment).text, marginBottom: 8, lineHeight: 1.5 }}>
+            <div style={{ fontSize: 11, padding: '6px 10px', borderRadius: T.radius.card, background: (treatTod === 'pm' ? (T[dayType] || T.treatment) : T.recovery).bg, color: (treatTod === 'pm' ? (T[dayType] || T.treatment) : T.recovery).text, marginBottom: 8, lineHeight: 1.5 }}>
               {treatTod === 'pm'
                 ? 'Treatment tonight — use recovery products after your appointment.'
                 : 'Treatment this morning — recovery begins tonight.'}
@@ -5329,8 +5329,8 @@ export default function GlowUpCalendar({ session }) {
                     setSelector({ key: dayFlyout.key, date: dayFlyout.date, ...(editingDbId && { editingDbId }) })
                     setDayFlyout(null)
                   }}
-                  onEditDaily={() => openDailyEditor(getActiveDailyPeriod(dayFlyout.date, dailyHistory))}
-                  onEditShower={() => openShowerEditor(getActiveShowerPeriod(dayFlyout.date, showerHistory))}
+                  onEditDaily={() => openDailyEditor(getActiveDailyPeriod(dayFlyout.date, dailyHistory) || 'new')}
+                  onEditShower={() => openShowerEditor(getActiveShowerPeriod(dayFlyout.date, showerHistory) || 'new')}
                   onUpdatePeriodProducts={updatePeriodProducts}
                   onUpdatePeriodSteps={updatePeriodStep}
                   onAddProduct={saveProduct}
