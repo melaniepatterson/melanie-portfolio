@@ -43,7 +43,7 @@ import AccentWord from './shared/AccentWord'
 import StarRating from './shared/StarRating'
 import FeedbackPanel from './shared/FeedbackPanel'
 import GlowUpFooter from './shared/GlowUpFooter'
-import FirstVisitTip from './shared/FirstVisitTip'
+import TourSpotlight from './shared/TourSpotlight'
 
 // ─── DESIGN TOKENS ───────────────────────────────────────────
 
@@ -2526,7 +2526,7 @@ function DayFlyout({ flyout, borderColor, bodyIsWhite, period, dailyHistory, sho
       const product = productId ? products[productId] : null
       const isThisOpen = openStepKey === stepKey
       result.push(
-        <div key={stepKey}>
+        <div key={stepKey} {...(result.length === 0 ? { 'data-tour-target': 'first-step-row' } : {})}>
           <div
             onClick={() => period && setOpenStepKey(isThisOpen ? null : stepKey)}
             role="button" tabIndex={period ? 0 : undefined} aria-expanded={isThisOpen}
@@ -2701,7 +2701,7 @@ function DayFlyout({ flyout, borderColor, bodyIsWhite, period, dailyHistory, sho
             return <div style={{ fontSize: 13, fontWeight: 700, padding: '5px 12px', borderRadius: T.radius.pill, background: bodyIsWhite ? c.bg : T.white, color: c.text, display: 'inline-block' }}>{label}</div>
           })()}
         </div>
-        <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
+        <div data-tour-target="add-treatment-btn" style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
           {flyout.isTreatment && (
             <Btn onClick={onAddTreatment} style={{ fontSize: 11, padding: '4px 10px', whiteSpace: 'nowrap' }}>+ Add treatment</Btn>
           )}
@@ -2713,7 +2713,9 @@ function DayFlyout({ flyout, borderColor, bodyIsWhite, period, dailyHistory, sho
       </div>
 
       {/* 1. Shower routine — always at top */}
-      <ShowerSection dt={date} showerHistory={showerHistory} onEditShower={onEditShower} products={products} onUpdateShowerItemProduct={onUpdateShowerItemProduct} accentColor={dayAccentDark} />
+      <div data-tour-target="shower-section">
+        <ShowerSection dt={date} showerHistory={showerHistory} onEditShower={onEditShower} products={products} onUpdateShowerItemProduct={onUpdateShowerItemProduct} accentColor={dayAccentDark} />
+      </div>
 
       {/* 2. Morning / Night tabs */}
       <div style={{ display: 'flex', gap: 6, marginBottom: 8, marginTop: 10 }}>
@@ -2722,7 +2724,9 @@ function DayFlyout({ flyout, borderColor, bodyIsWhite, period, dailyHistory, sho
       </div>
 
       {/* 3. Extras — filtered by frequency + current tab, hidden when nothing matches */}
-      <DailySection dt={date} dailyHistory={dailyHistory} onEditDaily={onEditDaily} tab={tab} products={products} onUpdateDailyItemProduct={onUpdateDailyItemProduct} accentColor={dayAccentDark} />
+      <div data-tour-target="extras-section">
+        <DailySection dt={date} dailyHistory={dailyHistory} onEditDaily={onEditDaily} tab={tab} products={products} onUpdateDailyItemProduct={onUpdateDailyItemProduct} accentColor={dayAccentDark} />
+      </div>
 
       {/* 4. Skincare steps — tab-specific */}
       {!period ? (
@@ -4313,6 +4317,23 @@ export default function GlowUpCalendar({ session }) {
     if (has) window.history.replaceState({}, '', window.location.pathname)
     return has
   })
+  // First-time guided tour — 'calendar-cell' | 'product-row' | 'add-treatment' | 'shower-extras' | null.
+  // Shows once ever per device; ends (and is marked seen) the moment it starts,
+  // so an interrupted tour never re-triggers on a later visit.
+  const [tourStep, setTourStep] = useState(() => {
+    try { return localStorage.getItem('glowup_calendar_tour_done') === '1' ? null : 'calendar-cell' } catch { return 'calendar-cell' }
+  })
+  function endTour() {
+    setTourStep(null)
+    try { localStorage.setItem('glowup_calendar_tour_done', '1') } catch {}
+  }
+  // Step 1 → 2: advance the moment the spotlighted (today) cell is opened —
+  // no separate click handler needed, the tour just watches dayFlyout.
+  useEffect(() => {
+    if (tourStep === 'calendar-cell' && dayFlyout?.key === dateKey(now)) {
+      setTourStep('product-row')
+    }
+  }, [dayFlyout, tourStep])
   const [showSurvey, setShowSurvey] = useState(false)
   const [surveyDismissed, setSurveyDismissed] = useState(() => {
     try {
@@ -4912,6 +4933,7 @@ export default function GlowUpCalendar({ session }) {
         </div>
         {/* AM half */}
         <div
+          {...(isToday ? { 'data-tour-target': 'today-am' } : {})}
           onClick={e => { e.stopPropagation(); isOpen && dayFlyout?.tab === 'am' ? setDayFlyout(null) : openDayFlyout(key, dt, 'am') }}
           role="button" tabIndex={0} aria-label={`Open AM routine for day ${d}`}
           onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); isOpen && dayFlyout?.tab === 'am' ? setDayFlyout(null) : openDayFlyout(key, dt, 'am') } }}
@@ -5324,7 +5346,7 @@ export default function GlowUpCalendar({ session }) {
                   showerHistory={showerHistory}
                   products={products}
                   allTypes={allTypes}
-                  onClose={() => setDayFlyout(null)}
+                  onClose={() => { setDayFlyout(null); if (tourStep && tourStep !== 'calendar-cell') endTour() }}
                   onTabChange={(t) => setDayFlyout(f => ({ ...f, tab: t }))}
                   onAddTreatment={(editingDbId) => {
                     setSelector({ key: dayFlyout.key, date: dayFlyout.date, ...(editingDbId && { editingDbId }) })
@@ -5360,11 +5382,6 @@ export default function GlowUpCalendar({ session }) {
           betaTester={betaTester}
         />
       )}
-
-      {/* First-visit tip — above day headers, dismisses permanently once seen */}
-      <FirstVisitTip storageKey="glowup_calendar_tip_seen">
-        This is your skincare calendar. Click an AM or PM slot on any day to add your products.
-      </FirstVisitTip>
 
       {/* Day headers — always visible */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: 3, marginBottom: 3 }}>
@@ -5573,6 +5590,42 @@ export default function GlowUpCalendar({ session }) {
       )}
 
       {confirmDialog}
+
+      {/* First-time guided tour — position: fixed, so JSX placement doesn't
+          matter for stacking; z-indexes (600+) sit above the day flyout
+          (500/501) so steps 2-4 can spotlight elements inside it. */}
+      {tourStep === 'calendar-cell' && (
+        <TourSpotlight
+          targetSelector='[data-tour-target="today-am"]'
+          message="This is your skincare calendar. Click an AM or PM slot on any day to add your products."
+          onSkip={endTour}
+        />
+      )}
+      {tourStep === 'product-row' && (
+        <TourSpotlight
+          targetSelector='[data-tour-target="first-step-row"]'
+          message="We pre-populated the product library with products we recommend, but you can add anything you want into your library. Tap any step to assign one."
+          onNext={() => setTourStep('add-treatment')}
+          onSkip={endTour}
+        />
+      )}
+      {tourStep === 'add-treatment' && (
+        <TourSpotlight
+          targetSelector='[data-tour-target="add-treatment-btn"]'
+          message="Add any skin treatments — like lasers, facials, or Botox — and Glow Up tracks your pre-treatment pause and recovery window automatically."
+          onNext={() => setTourStep('shower-extras')}
+          onSkip={endTour}
+        />
+      )}
+      {tourStep === 'shower-extras' && (
+        <TourSpotlight
+          targetSelectors={['[data-tour-target="shower-section"]', '[data-tour-target="extras-section"]']}
+          message="You can also add products to your shower routine or extras — like hair growth serums, eye patches, or anything else you want to keep a regular rotation of."
+          onNext={endTour}
+          nextLabel="Got it"
+          onSkip={endTour}
+        />
+      )}
 
     </div>
     <GlowUpFooter onFeedback={() => setShowFeedback(true)} betaTester={betaTester} />
