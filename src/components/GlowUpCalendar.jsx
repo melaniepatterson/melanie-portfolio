@@ -694,7 +694,7 @@ function TreatmentConflictBlock({ conflicts, ingredientConflicts, safeDate, trea
   const blocked = hasScheduling
 
   return (
-    <div style={{ background: blocked ? '#FCEBEB' : '#FFFBEB', border: `0.5px solid ${blocked ? '#E24B4A' : '#FCD34D'}`, borderRadius: 0, padding: '12px 14px', marginBottom: 12 }}>
+    <div style={{ background: blocked ? '#FCEBEB' : '#FFFBEB', border: `0.5px solid ${blocked ? '#E24B4A' : '#FCD34D'}`, borderRadius: T.radius.card, padding: '12px 14px', marginBottom: 12 }}>
 
       {/* Scheduling conflicts — block save */}
       {hasScheduling && (
@@ -936,18 +936,18 @@ export function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = fa
 
   return (
     <div style={{ background: T.green, borderRadius: T.radius.modal, padding: '16px 18px', marginBottom: 14 }}>
-      <div style={{ fontSize: 13, fontWeight: 600, color: T.white, marginBottom: 4 }}>
+      <div style={{ fontSize: 13, fontWeight: 600, color: T.darkGreen, marginBottom: 4 }}>
         {isFirst ? 'Skincare routine' : lockStartDate ? `Skincare routine — editing from ${fmtDate(initial.startDate)}` : 'Skincare routine'}
       </div>
       {!isFirst && !lockStartDate && (
-        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.85)', marginBottom: 12 }}>Past months stay accurate. This adds a new period; it doesn't overwrite history.</div>
+        <div style={{ fontSize: 12, color: 'rgba(0,0,0,0.6)', marginBottom: 12 }}>Past months stay accurate. This adds a new period; it doesn't overwrite history.</div>
       )}
       {lockStartDate && (
-        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.85)', marginBottom: 12 }}>You can edit the start date — if it overlaps with another period you'll be prompted to resolve it first.</div>
+        <div style={{ fontSize: 12, color: 'rgba(0,0,0,0.6)', marginBottom: 12 }}>You can edit the start date — if it overlaps with another period you'll be prompted to resolve it first.</div>
       )}
 
       <div style={{ marginBottom: 10 }}>
-        <FieldLabel htmlFor="rp-start-date" style={{ color: 'rgba(255,255,255,0.85)' }}>{isFirst ? 'Routine start date' : 'Effective from'}</FieldLabel>
+        <FieldLabel htmlFor="rp-start-date" style={{ color: 'rgba(0,0,0,0.6)' }}>{isFirst ? 'Routine start date' : 'Effective from'}</FieldLabel>
         <DateInput id="rp-start-date" variant="pill" value={form.startDate} onChange={e => set('startDate', e.target.value)} />
       </div>
 
@@ -955,25 +955,25 @@ export function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = fa
 
       {!isFirst && <CurrentRoutineSummary steps={initial?.steps} />}
 
-      <SectionLabel style={{ borderTop: 'none', paddingTop: 0, color: T.white }}>What does your skincare routine consist of?</SectionLabel>
-      <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.85)', marginBottom: 12, lineHeight: 1.6 }}>
+      <SectionLabel style={{ borderTop: 'none', paddingTop: 0, color: T.darkGreen }}>What does your skincare routine consist of?</SectionLabel>
+      <div style={{ fontSize: 12, color: 'rgba(0,0,0,0.6)', marginBottom: 12, lineHeight: 1.6 }}>
         Your morning and evening steps — from cleanse to SPF, actives, and treatments. Toggle on what you use and we'll build your calendar around it.
       </div>
 
       {/* Retinoid toggle */}
-      <div style={{ marginBottom: 4, padding: '10px 12px', borderRadius: T.radius.card, background: form.tretEnabled ? T.white : 'rgba(255,255,255,0.15)' }}>
+      <div style={{ marginBottom: 4, padding: '10px 12px', borderRadius: T.radius.card, background: form.tretEnabled ? T.white : 'rgba(0,0,0,0.08)' }}>
         <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer' }}>
           <input type="checkbox" checked={form.tretEnabled} onChange={e => set('tretEnabled', e.target.checked)} style={{ width: 14, height: 14, marginTop: 2, cursor: 'pointer', accentColor: T.darkGreen }} />
           <div>
-            <div style={{ fontSize: 12, fontWeight: 600, color: form.tretEnabled ? T.darkGreen : T.white }}>Retinoid (vitamin A)</div>
-            <div style={{ fontSize: 11, color: form.tretEnabled ? T.textMuted : 'rgba(255,255,255,0.85)' }}>Tretinoin, adapalene, retinol, retinaldehyde, and more — prescription or over the counter</div>
+            <div style={{ fontSize: 12, fontWeight: 600, color: T.darkGreen }}>Retinoid (vitamin A)</div>
+            <div style={{ fontSize: 11, color: form.tretEnabled ? T.textMuted : 'rgba(0,0,0,0.6)' }}>Tretinoin, adapalene, retinol, retinaldehyde, and more — prescription or over the counter</div>
           </div>
         </label>
       </div>
       {form.tretEnabled && (
         <div style={{ marginLeft: 12, marginBottom: 8, paddingLeft: 12 }}>
           <div style={{ marginBottom: 8, marginTop: 8 }}>
-            <FieldLabel htmlFor="rp-active-name" style={{ color: 'rgba(255,255,255,0.85)' }}>Which one?</FieldLabel>
+            <FieldLabel htmlFor="rp-active-name" style={{ color: 'rgba(0,0,0,0.6)' }}>Which one?</FieldLabel>
             <select
               id="rp-active-name"
               value={MAIN_ACTIVE_OPTIONS.find(o => o.value === form.activeName) ? form.activeName : 'tretinoin'}
@@ -985,20 +985,20 @@ export function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = fa
           </div>
           {(form.activeName === 'other' || !MAIN_ACTIVE_OPTIONS.find(o => o.value === form.activeName)) && (
             <div style={{ marginBottom: 8 }}>
-              <FieldLabel htmlFor="rp-active-custom" style={{ color: 'rgba(255,255,255,0.85)' }}>Name it</FieldLabel>
+              <FieldLabel htmlFor="rp-active-custom" style={{ color: 'rgba(0,0,0,0.6)' }}>Name it</FieldLabel>
               <TextInput id="rp-active-custom" variant="pill" value={MAIN_ACTIVE_OPTIONS.find(o => o.value === form.activeName) ? '' : form.activeName} onChange={e => set('activeName', e.target.value)} placeholder="e.g. clindamycin, azelaic" width={200} />
             </div>
           )}
           <div style={{ marginBottom: 8 }}>
-            <FieldLabel htmlFor="rp-tret-start" style={{ color: 'rgba(255,255,255,0.85)' }}>When did you start?</FieldLabel>
+            <FieldLabel htmlFor="rp-tret-start" style={{ color: 'rgba(0,0,0,0.6)' }}>When did you start?</FieldLabel>
             <DateInput id="rp-tret-start" variant="pill" value={form.tretStartDate} onChange={e => set('tretStartDate', e.target.value)} />
           </div>
-          <FieldLabel style={{ color: 'rgba(255,255,255,0.85)' }}>How often?</FieldLabel>
+          <FieldLabel style={{ color: 'rgba(0,0,0,0.6)' }}>How often?</FieldLabel>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 6, marginBottom: 6 }}>
             {TRET_FREQUENCIES.map(f => (
-              <button key={f.key} onClick={() => set('tretFrequency', f.key)} aria-pressed={form.tretFrequency === f.key} style={{ border: 'none', borderRadius: T.radius.card, padding: '8px 10px', cursor: 'pointer', background: form.tretFrequency === f.key ? T.white : 'rgba(255,255,255,0.15)', textAlign: 'left' }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: form.tretFrequency === f.key ? T.darkGreen : T.white }}>{f.label}</div>
-                <div style={{ fontSize: 10, color: form.tretFrequency === f.key ? T.textLight : 'rgba(255,255,255,0.75)' }}>{f.description}</div>
+              <button key={f.key} onClick={() => set('tretFrequency', f.key)} aria-pressed={form.tretFrequency === f.key} style={{ border: 'none', borderRadius: T.radius.card, padding: '8px 10px', cursor: 'pointer', background: form.tretFrequency === f.key ? T.white : 'rgba(0,0,0,0.08)', textAlign: 'left' }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: T.darkGreen }}>{f.label}</div>
+                <div style={{ fontSize: 10, color: form.tretFrequency === f.key ? T.textLight : 'rgba(0,0,0,0.55)' }}>{f.description}</div>
               </button>
             ))}
           </div>
@@ -1007,8 +1007,8 @@ export function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = fa
 
       {/* Other evening actives */}
       {form.tretEnabled && (
-        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.85)', margin: '8px 0 6px', paddingLeft: 2 }}>
-          <strong style={{ color: T.white }}>Active nights</strong> = nights you use your main evening treatment. <strong style={{ color: T.white }}>Off nights</strong> = the other evenings.
+        <div style={{ fontSize: 11, color: 'rgba(0,0,0,0.6)', margin: '8px 0 6px', paddingLeft: 2 }}>
+          <strong style={{ color: T.darkGreen }}>Active nights</strong> = nights you use your main evening treatment. <strong style={{ color: T.darkGreen }}>Off nights</strong> = the other evenings.
         </div>
       )}
       {AVAILABLE_SECONDARY_ACTIVES.map(def => {
@@ -1026,12 +1026,12 @@ export function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = fa
           set('secondaryActives', [...rest, { ...sa, ...patch }])
         }
         return (
-          <div key={def.key} style={{ marginBottom: 4, padding: '10px 12px', borderRadius: T.radius.card, background: enabled ? T.white : 'rgba(255,255,255,0.15)' }}>
+          <div key={def.key} style={{ marginBottom: 4, padding: '10px 12px', borderRadius: T.radius.card, background: enabled ? T.white : 'rgba(0,0,0,0.08)' }}>
             <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer' }}>
               <input type="checkbox" checked={enabled} onChange={e => updateThis({ enabled: e.target.checked })}
                 style={{ width: 14, height: 14, marginTop: 2, cursor: 'pointer', accentColor: T.darkGreen }} />
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 12, fontWeight: 500, color: enabled ? T.darkGreen : T.white }}>{def.label}</div>
+                <div style={{ fontSize: 12, fontWeight: 500, color: T.darkGreen }}>{def.label}</div>
                 {enabled && showNightsOptions && (
                   <div style={{ marginTop: 6 }}>
                     <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
@@ -1070,7 +1070,7 @@ export function RoutinePeriodForm({ initial = {}, onSave, onCancel, isFirst = fa
 
 
 
-      <SectionLabel style={{ borderTop: 'none', color: T.white }}>Product assignments (optional)</SectionLabel>
+      <SectionLabel style={{ borderTop: 'none', color: T.darkGreen }}>Product assignments (optional)</SectionLabel>
       <div style={{ marginBottom: 8 }}>
         <Btn onClick={() => setShowProducts(s => !s)} style={{ fontSize: 11, padding: '4px 10px', marginBottom: 8, background: T.white, color: T.darkGreen, border: 'none' }}>{showProducts ? 'Hide products' : 'Assign products to steps'}</Btn>
         {showProducts && (
@@ -1235,7 +1235,7 @@ function TreatmentSelectorPanel({ selector, treatments, allTypes, customTypes, s
       )}
 
       {/* Disclaimer */}
-      <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, padding: '10px 14px', background: 'rgba(255,255,255,0.12)', borderRadius: T.radius.card, marginBottom: 14 }}>
+      <div style={{ fontSize: 11, color: T.white, lineHeight: 1.7, padding: '10px 14px', borderRadius: T.radius.card, marginBottom: 14 }}>
         Treatments pause active ingredients (retinoids, exfoliants, vitamin C) during pre-treatment and recovery windows. Always consult your dermatologist before scheduling a treatment.
       </div>
 
@@ -1262,7 +1262,7 @@ function TreatmentSelectorPanel({ selector, treatments, allTypes, customTypes, s
         {Object.entries(allTypes).map(([k, v]) => (
           <ColorPagePill key={k} active={selType === k} accent={T.darkOrange}
             onClick={() => { setSelType(k); setTreatArea(v.area || 'face'); setCustomPre(v.pre ?? 0); setCustomPost(v.post ?? 0) }}
-            style={{ padding: '10px 12px', display: 'block' }}>
+            style={{ padding: '10px 12px', display: 'block', borderRadius: T.radius.card }}>
             <div style={{ fontSize: 12, fontWeight: 600 }}>{v.label}</div>
             <div style={{ fontSize: 10, opacity: 0.8, marginTop: 2 }}>Pause exfoliants & retinoids {v.pre} days before</div>
             <div style={{ fontSize: 10, opacity: 0.8 }}>Recovery for {v.post} days after</div>
@@ -3435,10 +3435,10 @@ function NewRoutinePeriodPicker({ routineHistory, dailyHistory, showerHistory, p
             border: 'none', background: T.white,
             display: 'flex', flexDirection: 'column', justifyContent: 'center',
             textAlign: 'left', cursor: 'pointer',
-            transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+            transition: 'transform 0.2s ease',
           }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.02)'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.15)' }}
-            onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = 'none' }}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.02)' }}
+            onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)' }}
           >
             <div style={{ fontSize: 14, fontWeight: 700, color: T.darkBlue, marginBottom: 4 }}>{o.label}</div>
             <div style={{ fontSize: 11, color: T.darkBlue, opacity: 0.75, lineHeight: 1.6 }}>{o.desc}</div>
@@ -3456,10 +3456,10 @@ function NewRoutinePeriodPicker({ routineHistory, dailyHistory, showerHistory, p
             padding: '10px 12px', borderRadius: T.radius.card,
             border: 'none', background: T.white,
             textAlign: 'left', cursor: 'pointer',
-            transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+            transition: 'transform 0.2s ease',
           }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.02)'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.15)' }}
-            onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = 'none' }}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.02)' }}
+            onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)' }}
           >
             <div style={{ fontSize: 12, fontWeight: 500, color: T.darkBlue, marginBottom: 2 }}>{o.label}</div>
             <div style={{ fontSize: 10, color: T.darkBlue, opacity: 0.75, lineHeight: 1.5 }}>{o.desc}</div>
@@ -3471,9 +3471,10 @@ function NewRoutinePeriodPicker({ routineHistory, dailyHistory, showerHistory, p
     </div>
   )
 
-  // Skincare/daily sit on mint/pink full-page backgrounds (white text reads
-  // best); shower and the program panel stay dark-text contexts.
-  const backLinkColor = (chosen === 'skincare' || chosen === 'daily') ? T.white : T.darkGreen
+  // Daily/shower sit on pink/yellow full-page backgrounds (white text reads
+  // best there); skincare's mint is light enough that white text is low
+  // contrast, so it stays dark-text like the program panel.
+  const backLinkColor = (chosen === 'daily' || chosen === 'shower') ? T.white : T.darkGreen
   return (
     <div>
       <button onClick={() => setChosen(null)} style={{
@@ -5110,7 +5111,7 @@ export default function GlowUpCalendar({ session }) {
           {showNotifications && (
             <>
               <div onClick={() => setShowNotifications(false)} style={{ position: 'fixed', inset: 0, zIndex: 149 }} />
-              <div style={{ position: 'absolute', top: '100%', right: 20, marginTop: 8, width: 'min(340px, 90vw)', maxHeight: '70vh', overflowY: 'auto', background: T.white, border: `1px solid ${T.text}`, borderRadius: T.radius.modal, padding: '14px 16px', boxShadow: '0 8px 32px rgba(0,0,0,0.18)', zIndex: 150, animation: 'panelIn 0.15s ease' }}>
+              <div style={{ position: 'absolute', top: '100%', right: 20, marginTop: 8, width: 'min(340px, 90vw)', maxHeight: '70vh', overflowY: 'auto', background: T.white, border: `1px solid ${T.text}`, borderRadius: T.radius.modal, padding: '14px 16px', zIndex: 150, animation: 'panelIn 0.15s ease' }}>
                 <div style={{ fontSize: 12, fontWeight: 700, color: T.text, marginBottom: 12 }}>Notifications</div>
                 {notifications.length === 0 ? (
                   <div style={{ fontSize: 12, color: T.text, opacity: 0.7, fontStyle: 'italic', padding: '8px 0' }}>
@@ -5390,12 +5391,12 @@ export default function GlowUpCalendar({ session }) {
               overflowY: 'auto',
               WebkitOverflowScrolling: 'touch',
             }}>
-            {/* Inner wrapper — centered reading column, except the
-                skincare/daily/shower editors which go full page width
-                (their own scrollable content, not just a narrow center). */}
+            {/* Inner wrapper — centered reading column. The background
+                behind it is full-bleed (the outer fixed div), so the page
+                still scrolls full width even though the content is capped. */}
             <div
               style={{
-                maxWidth: ['skincare', 'daily', 'shower'].includes(routineChooserOpen) ? 'none' : 560,
+                maxWidth: 560,
                 margin: '0 auto', minHeight: '100vh',
                 display: 'flex', flexDirection: 'column', justifyContent: 'flex-start',
                 padding: '64px 20px 48px',
