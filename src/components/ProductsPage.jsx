@@ -1308,7 +1308,7 @@ export default function ProductsPage({ session, betaTester }) {
           </a>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <button onClick={() => setEditingProduct('new')}
-              style={{ border: 'none', background: T.darkGreen, color: T.white, borderRadius: T.radius.pill, padding: '7px 16px', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 500, whiteSpace: 'nowrap' }}>
+              style={{ border: 'none', background: T.darkGreen, color: T.white, borderRadius: T.radius.pill, padding: '7px 16px', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 700, whiteSpace: 'nowrap' }}>
               + Add new product
             </button>
             <NotificationBell session={session} />

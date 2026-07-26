@@ -208,7 +208,7 @@ export default function RoutineHistory({ session, betaTester }) {
             <GlowUpLogo size={32} style={{ color: T.white }} />
           </a>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <Btn variant="primary" style={{ background: T.darkGreen, color: T.white }} onClick={openNewForm}>+ Start new routine</Btn>
+            <Btn variant="primary" style={{ background: T.darkGreen, color: T.white, fontWeight: 700 }} onClick={openNewForm}>+ Start new routine</Btn>
             <NotificationBell session={session} />
             <button onClick={() => setShowMenu(true)}
               style={{ border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '5px 10px', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', justifyContent: 'center', width: 36, height: 32 }}>
