@@ -17,9 +17,16 @@
          them to GlowUp's (title, icon, manifest-glowup.json) only while on
          a GlowUp page, and restores these values on the way out. -->
     <meta id="appleWebAppTitle" name="apple-mobile-web-app-title" content="melanie.studio" />
-    <meta name="description" content="Melanie Patterson is an Indo-Jamaican American artist and designer working across fine art, web development, and design. Based in Providence, RI." />
-    <meta property="og:title" content="melanie.studio" />
-    <meta property="og:description" content="Melanie Patterson is an Indo-Jamaican American artist and designer working across fine art, web development, and design. Based in Providence, RI." />
+    <!-- Portfolio is gated behind a "visit GlowUp" placeholder for now (see
+         PortfolioGate.jsx), so title/description/OG tags point at GlowUp
+         site-wide too — these are static (read by link-preview crawlers
+         that don't run JS, e.g. iMessage), so they can't be swapped
+         per-route client-side the way theme-color etc. are. Revert to the
+         portfolio's own copy once GlowUp moves to its own deployment and
+         the portfolio comes back. -->
+    <meta name="description" content="Your skincare routine, organized. Track products, treatments, and your routine — all in one place." />
+    <meta property="og:title" content="Glow Up" />
+    <meta property="og:description" content="Your skincare routine, organized. Track products, treatments, and your routine — all in one place." />
     <meta property="og:url" content="https://www.melanie.studio" />
     <link id="appleTouchIcon" rel="apple-touch-icon" href="/logo192.png" />
     <!--
@@ -36,7 +43,7 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <title>melanie.studio</title>
+    <title>Glow Up</title>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
