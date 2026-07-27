@@ -22,6 +22,7 @@ import PrivacyPolicy from './components/PrivacyPolicy'
 import BlogComingSoon from './components/BlogComingSoon'
 import GlowUpAbout from './components/GlowUpAbout'
 import BetaSurvey from './components/BetaSurvey'
+import PortfolioGate from './pages/PortfolioGate'
 import { supabase } from './lib/supabase'
 import T from './components/theme'
 
@@ -176,6 +177,11 @@ function Layout() {
       document.title = project ? `${project.title} — melanie.studio` : "melanie.studio";
     }
   }, [location.pathname]);
+
+  // Portfolio gated for now — points to GlowUp instead. Remove this check
+  // to bring the portfolio (home, /portfolio, project pages, /about-contact)
+  // back.
+  if (isHome || isWork || isWorkDetail || location.pathname === "/about-contact") return <PortfolioGate />
 
   if (isRoutine && session === undefined) return <GlowUpLoader />
   if (isRoutine && !session) return <Auth />
