@@ -187,7 +187,8 @@ export default function Profile({ session, onOpenSurvey }) {
       await supabase.from('treatments').delete().eq('user_id', userId)
       await supabase.from('custom_treatment_types').delete().eq('user_id', userId)
 
-      await supabase.from('profiles').update({ recovery_routines: {} }).eq('id', userId)
+      await supabase.from('profiles').update({ recovery_routines: {}, calendar_tour_completed_at: null }).eq('id', userId)
+      try { localStorage.removeItem('glowup_calendar_tour_done') } catch {}
 
       setResetConfirm(false)
       window.location.href = '/routine'
