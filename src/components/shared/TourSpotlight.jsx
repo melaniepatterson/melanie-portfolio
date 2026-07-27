@@ -118,7 +118,7 @@ export default function TourSpotlight({ targetSelector, targetSelectors, message
   )
 }
 
-// Duplicates the real header wordmark in solid black, fixed at its live
+// Duplicates the real header wordmark in solid white, fixed at its live
 // on-screen position, above the dimming overlay (z-index 610) — so it
 // reads clearly through the green wash instead of being tinted by it.
 // Renders nothing if the real logo isn't currently on-screen.
@@ -148,7 +148,7 @@ export function TourLogo({ selector, size = 44 }) {
 
   return (
     <div style={{ position: 'fixed', top: rect.top, left: rect.left, width: rect.width, height: rect.height, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', zIndex: 610 }}>
-      <GlowUpLogo size={size} style={{ color: '#000000' }} />
+      <GlowUpLogo size={size} style={{ color: T.white }} />
     </div>
   )
 }

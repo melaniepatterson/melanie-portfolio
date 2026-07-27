@@ -4178,7 +4178,7 @@ export default function GlowUpCalendar({ session }) {
       setLoading(true)
       const results = await Promise.allSettled([
         supabase.from('routine_periods').select('*').eq('user_id', userId).order('start_date'),
-        supabase.from('profiles').select('recovery_routines, display_name, avatar_url, skin_type, timezone, survey_submitted_at, beta_tester').eq('id', userId).single(),
+        supabase.from('profiles').select('recovery_routines, display_name, avatar_url, skin_type, timezone, survey_submitted_at, beta_tester, calendar_tour_completed_at').eq('id', userId).single(),
         supabase.from('products').select('*').or(`is_catalog.eq.true,user_id.eq.${userId}`),
         supabase.from('extras_periods').select('*').eq('user_id', userId).order('start_date'),
         supabase.from('shower_periods').select('*').eq('user_id', userId).order('start_date'),
@@ -4224,6 +4224,10 @@ export default function GlowUpCalendar({ session }) {
       // Re-check survey status from DB each load so deletions are reflected
       setSurveySubmitted(!!profileRR?.survey_submitted_at)
       if (profileRR?.beta_tester) setBetaTester(true)
+      // Server is authoritative for tour completion — overrides the
+      // localStorage-based initial guess so clearing cookies doesn't
+      // bring the tour back.
+      if (profileRR?.calendar_tour_completed_at) setTourStep(null)
       catalogIds.current = new Set()
       ;(pr || []).forEach(p => {
         if (p.is_catalog) catalogIds.current.add(p.id)
@@ -4328,6 +4332,12 @@ export default function GlowUpCalendar({ session }) {
     setDayFlyout(null)
     setShowMenu(false)
     try { localStorage.setItem('glowup_calendar_tour_done', '1') } catch {}
+    // Persist server-side too (via Skip or the final Done) — localStorage
+    // alone would let the tour come back after clearing cookies.
+    if (userId) {
+      supabase.from('profiles').update({ calendar_tour_completed_at: new Date().toISOString() }).eq('id', userId)
+        .then(({ error }) => { if (error) console.error('Failed to record tour completion:', error) })
+    }
   }
   // Step 1 → 2: advance the moment the spotlighted (today) cell is opened —
   // no separate click handler needed, the tour just watches dayFlyout.
