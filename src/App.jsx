@@ -88,13 +88,34 @@ function Layout() {
     // iOS Safari only repaints its status bar/toolbar chrome on a scroll
     // event, not immediately when theme-color changes via JS — and since
     // GlowUp's full-screen states (loader, Auth) use position:fixed with no
-    // window-level scrolling, that repaint trigger never naturally happens,
-    // leaving the chrome stuck on whatever color was there at first paint.
-    // Nudging the window by 1px and back forces Safari to resample it.
-    requestAnimationFrame(() => {
+    // other content in normal document flow, the page can genuinely have
+    // zero scrollable height, making window.scrollTo a silent no-op (no
+    // scroll event ever fires, so Safari never resamples). Forcing 1px of
+    // real overflow first guarantees the nudge actually scrolls.
+    // This effect re-runs again almost immediately once the session check
+    // resolves (undefined → null), so the pending rAFs from THIS run must be
+    // cancelled — and minHeight restored — before that next run starts, via
+    // the cleanup below. Without it, the two runs' capture/restore cycles
+    // interleave: the second run captures the first run's already-inflated
+    // minHeight as "previous", and whichever run's rAF fires last wins,
+    // sometimes leaving minHeight permanently stuck inflated and sometimes
+    // leaving the scroll nudge too garbled to actually trigger a repaint.
+    const html = document.documentElement
+    const prevMinHeight = html.style.minHeight
+    html.style.minHeight = 'calc(100vh + 1px)'
+    let raf2
+    const raf1 = requestAnimationFrame(() => {
       window.scrollTo(window.scrollX, window.scrollY + 1)
-      requestAnimationFrame(() => window.scrollTo(window.scrollX, window.scrollY - 1))
+      raf2 = requestAnimationFrame(() => {
+        window.scrollTo(window.scrollX, window.scrollY - 1)
+        html.style.minHeight = prevMinHeight
+      })
     })
+    return () => {
+      cancelAnimationFrame(raf1)
+      cancelAnimationFrame(raf2)
+      html.style.minHeight = prevMinHeight
+    }
   }, [isGlowUpPage, isGlowUpStandalone, session])
 
   // Home-screen identity (iOS "Add to Home Screen" + Android/PWA install) —
