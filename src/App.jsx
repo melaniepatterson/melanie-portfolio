@@ -91,6 +91,37 @@ function Layout() {
     })
   }, [isGlowUpPage, isGlowUpStandalone, session])
 
+  // Home-screen identity (iOS "Add to Home Screen" + Android/PWA install) —
+  // gated to GlowUp pages only, so the portfolio keeps its own icon/name/
+  // manifest untouched. Independent of session/loader state (unlike the
+  // color effect above) since even the signed-out Auth screen is GlowUp.
+  useEffect(() => {
+    const titleMeta = document.getElementById('appleWebAppTitle')
+    if (titleMeta) titleMeta.setAttribute('content', isGlowUpPage ? 'Glow Up' : 'melanie.studio')
+
+    const manifestLink = document.getElementById('manifestLink')
+    if (manifestLink) manifestLink.setAttribute('href', isGlowUpPage ? '/manifest-glowup.json' : '/manifest.json')
+
+    const appleIcon = document.getElementById('appleTouchIcon')
+    if (!appleIcon) return
+    if (isGlowUpPage) {
+      appleIcon.setAttribute('href', '/glowup-apple-touch-icon.png')
+      appleIcon.setAttribute('media', '(prefers-color-scheme: light)')
+      if (!document.getElementById('appleTouchIconDark')) {
+        const darkIcon = document.createElement('link')
+        darkIcon.id = 'appleTouchIconDark'
+        darkIcon.rel = 'apple-touch-icon'
+        darkIcon.media = '(prefers-color-scheme: dark)'
+        darkIcon.href = '/glowup-apple-touch-icon-dark.png'
+        appleIcon.insertAdjacentElement('afterend', darkIcon)
+      }
+    } else {
+      appleIcon.removeAttribute('media')
+      appleIcon.setAttribute('href', '/logo192.png')
+      document.getElementById('appleTouchIconDark')?.remove()
+    }
+  }, [isGlowUpPage])
+
   // Check ?survey=1 param — open modal over whatever page is current
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)

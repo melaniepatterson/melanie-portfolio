@@ -12,17 +12,21 @@
          without needing safe-area-inset handling for a translucent bar. -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content="Glow Up" />
+    <!-- apple-mobile-web-app-title, apple-touch-icon, and the manifest link
+         below all default to the portfolio's own identity — App.jsx swaps
+         them to GlowUp's (title, icon, manifest-glowup.json) only while on
+         a GlowUp page, and restores these values on the way out. -->
+    <meta id="appleWebAppTitle" name="apple-mobile-web-app-title" content="melanie.studio" />
     <meta name="description" content="Melanie Patterson is an Indo-Jamaican American artist and designer working across fine art, web development, and design. Based in Providence, RI." />
     <meta property="og:title" content="melanie.studio" />
     <meta property="og:description" content="Melanie Patterson is an Indo-Jamaican American artist and designer working across fine art, web development, and design. Based in Providence, RI." />
     <meta property="og:url" content="https://www.melanie.studio" />
-    <link rel="apple-touch-icon" href="/logo192.png" />
+    <link id="appleTouchIcon" rel="apple-touch-icon" href="/logo192.png" />
     <!--
       manifest.json provides metadata used when your web app is installed on a
       user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
     -->
-    <link rel="manifest" href="/manifest.json" />
+    <link id="manifestLink" rel="manifest" href="/manifest.json" />
     <!--
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.
