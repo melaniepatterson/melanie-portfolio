@@ -21,6 +21,8 @@ export default function Auth() {
   const [email,     setEmail]     = useState('')
   const [skinType,  setSkinType]  = useState('')
   const [howHeard,  setHowHeard]  = useState('')
+  const [skinTypeColor, setSkinTypeColor] = useState(randomCheckColor)
+  const [howHeardColor, setHowHeardColor] = useState(randomCheckColor)
   const [betaTester, setBetaTester] = useState(false)
   const [betaColor, setBetaColor] = useState(randomCheckColor)
   const [loading,   setLoading]   = useState(false)
@@ -94,20 +96,33 @@ export default function Auth() {
     setBetaColor(randomCheckColor())
   }
 
+  // Single-select pill group: clicking the active pill clears it, clicking a
+  // new one reshuffles that group's color (never repeating the last color).
+  function selectSingle(current, setCurrent, setColor, val) {
+    if (current === val) { setCurrent(''); return }
+    setColor(prev => randomCheckColor(prev))
+    setCurrent(val)
+  }
+
   // ── Shared styles ─────────────────────────────────────────────────────────
   const btnStyle = (active = true) => ({
-    width: '100%', padding: '13px', borderRadius: T.radius.pill, border: 'none',
-    background: active ? T.text : '#EBFBF2',
+    width: '100%', padding: '13px', borderRadius: T.radius.pill,
+    border: active ? 'none' : `1px solid ${T.text}`,
+    background: active ? T.text : 'transparent',
     color: active ? T.white : T.text,
     fontSize: 14, fontWeight: 600, cursor: active ? 'pointer' : 'default',
     fontFamily: 'inherit', transition: 'opacity 0.15s',
     opacity: loading ? 0.7 : 1,
   })
-  const pillStyle = (active) => ({
+  // Unselected: neutral pill, no fill, black border. Selected: filled with
+  // this group's assigned brand color. Text stays black throughout — the
+  // brand palette is all light/mid pastels, white text would fail contrast.
+  const pillStyle = (active, color) => ({
     padding: '7px 14px', borderRadius: T.radius.pill, fontSize: 12,
-    cursor: 'pointer', fontFamily: 'inherit', border: 'none',
-    background: active ? T.text : '#EBFBF2',
-    color: active ? T.white : T.text,
+    cursor: 'pointer', fontFamily: 'inherit',
+    border: `1px solid ${active ? color : T.text}`,
+    background: active ? color : 'transparent',
+    color: T.text,
   })
 
   return (
@@ -178,7 +193,7 @@ export default function Auth() {
                 Glow Up is in private beta. Add yourself to the waitlist and we'll reach out when your spot is ready.
               </div>
 
-              <div style={{ fontSize: 11, color: T.text, marginBottom: 12, padding: '10px 12px', background: '#EBFBF2', borderRadius: 8 }}>
+              <div style={{ fontSize: 12, color: T.text, marginBottom: 12, padding: '10px 16px', border: '1px solid rgba(0,0,0,0.5)', borderRadius: T.radius.pill, background: T.white, boxSizing: 'border-box' }}>
                 {email}
               </div>
 
@@ -190,8 +205,8 @@ export default function Auth() {
                 <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                   {SKIN_TYPES.map(t => (
                     <button key={t} type="button"
-                      onClick={() => setSkinType(skinType === t ? '' : t)}
-                      style={pillStyle(skinType === t)}>
+                      onClick={() => selectSingle(skinType, setSkinType, setSkinTypeColor, t)}
+                      style={pillStyle(skinType === t, skinTypeColor)}>
                       {t}
                     </button>
                   ))}
@@ -206,8 +221,8 @@ export default function Auth() {
                 <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                   {HOW_HEARD.map(h => (
                     <button key={h} type="button"
-                      onClick={() => setHowHeard(howHeard === h ? '' : h)}
-                      style={pillStyle(howHeard === h)}>
+                      onClick={() => selectSingle(howHeard, setHowHeard, setHowHeardColor, h)}
+                      style={pillStyle(howHeard === h, howHeardColor)}>
                       {h}
                     </button>
                   ))}
@@ -221,7 +236,7 @@ export default function Auth() {
               {/* Beta tester opt-in — checkbox reshuffles to a random color on every toggle */}
               <div onClick={toggleBetaTester} role="checkbox" aria-checked={betaTester} tabIndex={0}
                 onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleBetaTester() } }}
-                style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer', marginBottom: 20, padding: '12px', background: '#EBFBF2', borderRadius: 8, userSelect: 'none' }}>
+                style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer', marginBottom: 20, padding: '12px 14px', background: 'transparent', border: `1px solid ${T.text}`, borderRadius: T.radius.card, userSelect: 'none' }}>
                 <div style={{ width: 18, height: 18, marginTop: 3, borderRadius: 5, border: '1.5px solid ' + (betaTester ? betaColor : T.text), background: betaTester ? betaColor : 'transparent', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   {betaTester && (
                     <svg width="11" height="9" viewBox="0 0 11 9" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -239,7 +254,7 @@ export default function Auth() {
               </button>
 
               <button type="button" onClick={() => setScreen('email')}
-                style={{ marginTop: 10, width: '100%', padding: '10px', borderRadius: T.radius.pill, border: 'none', background: '#EBFBF2', color: T.text, fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>
+                style={{ marginTop: 10, width: '100%', padding: '10px', borderRadius: T.radius.pill, border: `1px solid ${T.text}`, background: 'transparent', color: T.text, fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>
                 ← Use a different email
               </button>
             </form>
