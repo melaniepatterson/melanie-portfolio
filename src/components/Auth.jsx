@@ -127,7 +127,7 @@ export default function Auth() {
 
   return (
     <div style={{
-      minHeight: '100vh', background: T.text,
+      position: 'fixed', inset: 0, overflowY: 'auto', background: T.text,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       padding: '24px 20px', fontFamily: 'inherit',
     }}>

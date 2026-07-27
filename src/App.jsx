@@ -25,6 +25,11 @@ import BetaSurvey from './components/BetaSurvey'
 import { supabase } from './lib/supabase'
 import T from './components/theme'
 
+// Captured once at module load, before any GlowUp route-coloring effect
+// ever touches the tag — the pristine portfolio value to restore to
+// outside /routine.
+const PORTFOLIO_THEME_COLOR = document.querySelector('meta[name="theme-color"]')?.getAttribute('content') ?? '#C93500'
+
 function Layout() {
   const location = useLocation();
   const isHome = location.pathname === "/";
@@ -53,26 +58,23 @@ function Layout() {
     document.body.style.color = isRoutine ? T.text : ''
     // index.css sets body/html to the portfolio's cream (#FAF7F2) — that's
     // the portfolio's own default and stays as-is there, but GlowUp needs
-    // white so the portfolio color doesn't show through on overscroll/short
-    // pages. Same gated-override pattern as fontFamily/color above.
-    document.body.style.backgroundColor = isRoutine ? T.white : ''
-    document.documentElement.style.backgroundColor = isRoutine ? T.white : ''
+    // its own color so the portfolio color doesn't show through on
+    // overscroll/short pages or gaps under mobile browser chrome. Which
+    // color depends on which GlowUp screen is actually up: the loader
+    // (green) and signed-out Auth (black) aren't white like the signed-in
+    // app, so blanket-forcing white here left a white sliver/address-bar
+    // mismatch behind both of those.
+    const routineBg = !isRoutine ? '' : session === undefined ? T.darkGreen : !session ? T.text : T.white
+    document.body.style.backgroundColor = routineBg
+    document.documentElement.style.backgroundColor = routineBg
     document.body.classList.toggle('glowup-app', isRoutine)
     // index.html sets theme-color to the portfolio's brand red — that colors
     // the browser chrome (mobile address bar, macOS title bar) site-wide
-    // unless overridden per-route, so GlowUp gets its own white to match.
+    // unless overridden per-route, so GlowUp gets its own color to match
+    // whichever screen is showing.
     const meta = document.querySelector('meta[name="theme-color"]')
-    const portfolioThemeColor = meta?.getAttribute('content')
-    if (meta && isRoutine) meta.setAttribute('content', T.white)
-    return () => {
-      document.body.style.fontFamily = ''
-      document.body.style.color = ''
-      document.body.style.backgroundColor = ''
-      document.documentElement.style.backgroundColor = ''
-      document.body.classList.remove('glowup-app')
-      if (meta && isRoutine) meta.setAttribute('content', portfolioThemeColor)
-    }
-  }, [isRoutine])
+    if (meta) meta.setAttribute('content', isRoutine ? routineBg : PORTFOLIO_THEME_COLOR)
+  }, [isRoutine, session])
 
   // Check ?survey=1 param — open modal over whatever page is current
   useEffect(() => {
