@@ -74,6 +74,16 @@ function Layout() {
     // whichever screen is showing.
     const meta = document.querySelector('meta[name="theme-color"]')
     if (meta) meta.setAttribute('content', isRoutine ? routineBg : PORTFOLIO_THEME_COLOR)
+    // iOS Safari only repaints its status bar/toolbar chrome on a scroll
+    // event, not immediately when theme-color changes via JS — and since
+    // GlowUp's full-screen states (loader, Auth) use position:fixed with no
+    // window-level scrolling, that repaint trigger never naturally happens,
+    // leaving the chrome stuck on whatever color was there at first paint.
+    // Nudging the window by 1px and back forces Safari to resample it.
+    requestAnimationFrame(() => {
+      window.scrollTo(window.scrollX, window.scrollY + 1)
+      requestAnimationFrame(() => window.scrollTo(window.scrollX, window.scrollY - 1))
+    })
   }, [isRoutine, session])
 
   // Check ?survey=1 param — open modal over whatever page is current
