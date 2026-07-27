@@ -5,6 +5,14 @@
     <link rel="icon" href="/melanie-studio-favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#C93500" />
+    <!-- Home-screen/standalone mode (iOS) — theme-color above only affects
+         the in-Safari-tab chrome; status-bar-style is the separate tag iOS
+         uses once GlowUp is added to the home screen. "default" keeps the
+         bar light/non-overlaying, matching the mostly-white signed-in app
+         without needing safe-area-inset handling for a translucent bar. -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Glow Up" />
     <meta name="description" content="Melanie Patterson is an Indo-Jamaican American artist and designer working across fine art, web development, and design. Based in Providence, RI." />
     <meta property="og:title" content="melanie.studio" />
     <meta property="og:description" content="Melanie Patterson is an Indo-Jamaican American artist and designer working across fine art, web development, and design. Based in Providence, RI." />
