@@ -85,35 +85,41 @@ function Layout() {
     // whichever screen is showing.
     const meta = document.querySelector('meta[name="theme-color"]')
     if (meta) meta.setAttribute('content', isGlowUpPage ? routineBg : PORTFOLIO_THEME_COLOR)
-    // iOS Safari only repaints its status bar/toolbar chrome on a scroll
-    // event, not immediately when theme-color changes via JS — and since
+  }, [isGlowUpPage, isGlowUpStandalone, session])
+
+  // iOS Safari only repaints its status bar/toolbar chrome on a scroll
+  // event, not immediately when theme-color changes via JS. Split into its
+  // own effect (rather than living inline above) for two reasons found by
+  // testing on a real device:
+  // 1. Skips the transient loader phase (session undefined) entirely — that
+  //    nudge gets immediately superseded the moment session resolves a
+  //    beat later, and firing two nudges back-to-back seemed to leave Safari
+  //    in a state where neither one reliably registered.
+  // 2. Holds the forced scroll position for a real 120ms via setTimeout
+  //    rather than just the next animation frame (~16ms) — a real device
+  //    apparently needs an actual rendered frame at the new scroll position,
+  //    not just a same-frame round trip, for the resample to reliably fire.
+  useEffect(() => {
+    if (isGlowUpPage && !isGlowUpStandalone && session === undefined) return
+
     // GlowUp's full-screen states (loader, Auth) use position:fixed with no
-    // other content in normal document flow, the page can genuinely have
-    // zero scrollable height, making window.scrollTo a silent no-op (no
-    // scroll event ever fires, so Safari never resamples). Forcing 1px of
-    // real overflow first guarantees the nudge actually scrolls.
-    // This effect re-runs again almost immediately once the session check
-    // resolves (undefined → null), so the pending rAFs from THIS run must be
-    // cancelled — and minHeight restored — before that next run starts, via
-    // the cleanup below. Without it, the two runs' capture/restore cycles
-    // interleave: the second run captures the first run's already-inflated
-    // minHeight as "previous", and whichever run's rAF fires last wins,
-    // sometimes leaving minHeight permanently stuck inflated and sometimes
-    // leaving the scroll nudge too garbled to actually trigger a repaint.
+    // other content in normal document flow, so the page can genuinely have
+    // zero scrollable height — window.scrollTo would then be a silent no-op
+    // (no scroll event ever fires). Forcing 1px of real overflow first
+    // guarantees the nudge actually scrolls.
     const html = document.documentElement
     const prevMinHeight = html.style.minHeight
-    html.style.minHeight = 'calc(100vh + 1px)'
-    let raf2
-    const raf1 = requestAnimationFrame(() => {
-      window.scrollTo(window.scrollX, window.scrollY + 1)
-      raf2 = requestAnimationFrame(() => {
-        window.scrollTo(window.scrollX, window.scrollY - 1)
-        html.style.minHeight = prevMinHeight
-      })
+    html.style.minHeight = 'calc(100vh + 2px)'
+    const raf = requestAnimationFrame(() => {
+      window.scrollTo(window.scrollX, window.scrollY + 2)
     })
+    const timeout = setTimeout(() => {
+      window.scrollTo(window.scrollX, window.scrollY - 2)
+      html.style.minHeight = prevMinHeight
+    }, 120)
     return () => {
-      cancelAnimationFrame(raf1)
-      cancelAnimationFrame(raf2)
+      cancelAnimationFrame(raf)
+      clearTimeout(timeout)
       html.style.minHeight = prevMinHeight
     }
   }, [isGlowUpPage, isGlowUpStandalone, session])
