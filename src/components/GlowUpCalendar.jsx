@@ -43,7 +43,7 @@ import AccentWord from './shared/AccentWord'
 import StarRating from './shared/StarRating'
 import FeedbackPanel from './shared/FeedbackPanel'
 import GlowUpFooter from './shared/GlowUpFooter'
-import TourSpotlight from './shared/TourSpotlight'
+import TourSpotlight, { TourLogo } from './shared/TourSpotlight'
 
 // ─── DESIGN TOKENS ───────────────────────────────────────────
 
@@ -1745,7 +1745,7 @@ function DailySection({ dt, dailyHistory, onEditDaily, tab, products, onUpdateDa
   return (
     <div style={{ marginBottom: 10 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-        <div style={{ fontSize: 10, fontWeight: 600, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Extras</div>
+        <div style={{ fontSize: 13, fontWeight: 700, color: T.text, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Extras</div>
         <button onClick={onEditDaily} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 11, color: T.textLight, padding: '0 2px' }} aria-label="Edit extras">Edit</button>
       </div>
       {activeItems.length === 0 && (
@@ -2283,7 +2283,7 @@ function ShowerSection({ dt, showerHistory, onEditShower, products, onUpdateShow
   return (
     <div style={{ marginBottom: 10 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-        <div style={{ fontSize: 10, fontWeight: 600, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Shower</div>
+        <div style={{ fontSize: 13, fontWeight: 700, color: T.text, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Shower</div>
         <button onClick={onEditShower} style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 11, color: T.textLight, padding: '0 2px' }}>Edit</button>
       </div>
       {activeItems.length === 0 ? (
@@ -2735,7 +2735,7 @@ function DayFlyout({ flyout, borderColor, bodyIsWhite, period, dailyHistory, sho
         </div>
       ) : (
         <>
-          {period && <div style={{ fontSize: 10, fontWeight: 600, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8, paddingTop: 10, borderTop: `0.5px solid ${borderColor}` }}>Skincare</div>}
+          {period && <div style={{ fontSize: 13, fontWeight: 700, color: T.text, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8, paddingTop: 10, borderTop: `0.5px solid ${borderColor}` }}>Skincare</div>}
           {/* AM: normal routine unless it's an AM treatment */}
           {tab === 'am' && dayType === 'pause' && (
             <div style={{ fontSize: 11, color: T.pause.text, background: T.pause.bg, border: `0.5px solid ${T.pause.border}`, borderRadius: T.radius.card, padding: '5px 10px', marginBottom: 8 }}>
@@ -5594,6 +5594,7 @@ export default function GlowUpCalendar({ session }) {
       {/* First-time guided tour — position: fixed, so JSX placement doesn't
           matter for stacking; z-indexes (600+) sit above the day flyout
           (500/501) so steps 2-4 can spotlight elements inside it. */}
+      {!!tourStep && <TourLogo selector=".glowup-cal-logo" />}
       {tourStep === 'calendar-cell' && (
         <TourSpotlight
           targetSelector='[data-tour-target="today-am"]'

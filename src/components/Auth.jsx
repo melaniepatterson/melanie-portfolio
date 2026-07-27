@@ -97,7 +97,7 @@ export default function Auth() {
   // ── Shared styles ─────────────────────────────────────────────────────────
   const btnStyle = (active = true) => ({
     width: '100%', padding: '13px', borderRadius: T.radius.pill, border: 'none',
-    background: active ? T.darkGreen : '#EBFBF2',
+    background: active ? T.text : '#EBFBF2',
     color: active ? T.white : T.darkGreen,
     fontSize: 14, fontWeight: 600, cursor: active ? 'pointer' : 'default',
     fontFamily: 'inherit', transition: 'opacity 0.15s',

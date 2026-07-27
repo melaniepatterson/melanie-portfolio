@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import T from '../theme'
+import GlowUpLogo from '../GlowUpWordmark'
 
 // A guided-tour spotlight: dims the whole screen except a cutout around
 // `targetSelector`, with a message bubble near the cutout. The four bands
@@ -55,26 +56,34 @@ export default function TourSpotlight({ targetSelector, targetSelectors, message
   const tooltipMaxWidth = 320
   let tooltipLeft = Math.min(Math.max(left, 14), vw - tooltipMaxWidth - 14)
 
+  const cutoutRadius = 12
+
   return (
     <>
       <style>{`
         @keyframes glowupTourPulse {
-          0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255,0.55); }
-          50%      { box-shadow: 0 0 0 8px rgba(255,255,255,0); }
+          0%, 100% { box-shadow: 0 0 0 9999px ${overlayBg}, 0 0 0 0 rgba(255,255,255,0.55); }
+          50%      { box-shadow: 0 0 0 9999px ${overlayBg}, 0 0 0 8px rgba(255,255,255,0); }
         }
       `}</style>
-      {/* Blocking bands — everything except the cutout */}
-      <div onClick={onSkip} style={{ position: 'fixed', top: 0, left: 0, right: 0, height: top, background: overlayBg, zIndex: 600 }} />
-      <div onClick={onSkip} style={{ position: 'fixed', top: bottom, left: 0, right: 0, bottom: 0, background: overlayBg, zIndex: 600 }} />
-      <div onClick={onSkip} style={{ position: 'fixed', top, left: 0, width: left, height, background: overlayBg, zIndex: 600 }} />
-      <div onClick={onSkip} style={{ position: 'fixed', top, left: right, right: 0, height, background: overlayBg, zIndex: 600 }} />
+      {/* Click-blocking bands — invisible, everything except the cutout.
+          Kept separate from the visual dimming below so the dimming layer
+          can have real rounded corners (a huge box-shadow on a small
+          rounded div) without losing click-blocking outside the cutout. */}
+      <div onClick={onSkip} style={{ position: 'fixed', top: 0, left: 0, right: 0, height: top, zIndex: 600 }} />
+      <div onClick={onSkip} style={{ position: 'fixed', top: bottom, left: 0, right: 0, bottom: 0, zIndex: 600 }} />
+      <div onClick={onSkip} style={{ position: 'fixed', top, left: 0, width: left, height, zIndex: 600 }} />
+      <div onClick={onSkip} style={{ position: 'fixed', top, left: right, right: 0, height, zIndex: 600 }} />
 
-      {/* Pulsing ring around the cutout — non-blocking, purely visual */}
+      {/* Dimming + pulsing ring, combined — a rounded div whose huge
+          box-shadow paints the rest of the viewport, so the cutout's
+          corners are genuinely rounded instead of a sharp rectangle. */}
       <div style={{
         position: 'fixed', top, left, width, height,
-        borderRadius: 10, border: `2px solid ${T.white}`,
+        borderRadius: cutoutRadius,
+        boxShadow: `0 0 0 9999px ${overlayBg}, 0 0 0 0 rgba(255,255,255,0.55)`,
         animation: 'glowupTourPulse 1.6s ease-in-out infinite',
-        pointerEvents: 'none', zIndex: 601,
+        pointerEvents: 'none', zIndex: 599,
       }} />
 
       {/* Message bubble — stopPropagation so clicking Next/the bubble itself
@@ -96,5 +105,40 @@ export default function TourSpotlight({ targetSelector, targetSelectors, message
         )}
       </div>
     </>
+  )
+}
+
+// Duplicates the real header wordmark in solid black, fixed at its live
+// on-screen position, above the dimming overlay (z-index 610) — so it
+// reads clearly through the green wash instead of being tinted by it.
+// Renders nothing if the real logo isn't currently on-screen.
+export function TourLogo({ selector, size = 44 }) {
+  const [rect, setRect] = useState(null)
+
+  useEffect(() => {
+    function measure() {
+      const el = document.querySelector(selector)
+      if (!el) { setRect(null); return }
+      const r = el.getBoundingClientRect()
+      const onScreen = r.bottom > 0 && r.top < window.innerHeight && r.right > 0 && r.left < window.innerWidth
+      setRect(onScreen ? { top: r.top, left: r.left, width: r.width, height: r.height } : null)
+    }
+    measure()
+    const id = setInterval(measure, 200)
+    window.addEventListener('resize', measure)
+    window.addEventListener('scroll', measure, true)
+    return () => {
+      clearInterval(id)
+      window.removeEventListener('resize', measure)
+      window.removeEventListener('scroll', measure, true)
+    }
+  }, [selector])
+
+  if (!rect) return null
+
+  return (
+    <div style={{ position: 'fixed', top: rect.top, left: rect.left, width: rect.width, height: rect.height, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', zIndex: 610 }}>
+      <GlowUpLogo size={size} style={{ color: '#000000' }} />
+    </div>
   )
 }
