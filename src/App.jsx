@@ -58,12 +58,19 @@ function Layout() {
     document.body.style.backgroundColor = isRoutine ? T.white : ''
     document.documentElement.style.backgroundColor = isRoutine ? T.white : ''
     document.body.classList.toggle('glowup-app', isRoutine)
+    // index.html sets theme-color to the portfolio's brand red — that colors
+    // the browser chrome (mobile address bar, macOS title bar) site-wide
+    // unless overridden per-route, so GlowUp gets its own white to match.
+    const meta = document.querySelector('meta[name="theme-color"]')
+    const portfolioThemeColor = meta?.getAttribute('content')
+    if (meta && isRoutine) meta.setAttribute('content', T.white)
     return () => {
       document.body.style.fontFamily = ''
       document.body.style.color = ''
       document.body.style.backgroundColor = ''
       document.documentElement.style.backgroundColor = ''
       document.body.classList.remove('glowup-app')
+      if (meta && isRoutine) meta.setAttribute('content', portfolioThemeColor)
     }
   }, [isRoutine])
 

@@ -11,7 +11,6 @@ import Btn from './shared/Btn'
 import StarRating from './shared/StarRating'
 import FeedbackPanel from './shared/FeedbackPanel'
 import GlowUpFooter from './shared/GlowUpFooter'
-import FirstVisitTip from './shared/FirstVisitTip'
 
 
 // A stable "random" brand color per filter label — hashed so the same
@@ -856,11 +855,6 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
 
       {/* ── Main Content ──────────────────────────────────────── */}
       <div style={{ flex: 1, padding: '16px 20px', minWidth: 0, overflowY: 'auto', height: '100%' }}>
-
-        {/* First-visit tip — dismisses permanently once seen */}
-        <FirstVisitTip storageKey="glowup_products_tip_seen">
-          We pre-populated the product library with products we recommend, but you can add anything you want into your library.
-        </FirstVisitTip>
 
         {/* Tabs */}
         <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
