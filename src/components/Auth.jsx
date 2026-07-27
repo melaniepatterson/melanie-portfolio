@@ -126,12 +126,25 @@ export default function Auth() {
   })
 
   return (
-    <div style={{
-      position: 'fixed', inset: 0, overflowY: 'auto', background: T.text,
+    <div className="glowup-auth-root" style={{
+      background: T.text,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      padding: '24px 20px', fontFamily: 'inherit',
+      padding: '24px 20px', fontFamily: 'inherit', boxSizing: 'border-box',
     }}>
       <style>{`
+        /* min-height fallback pair, not a single inline value: 100vh alone
+           leaves a gap on mobile when the browser chrome expands/collapses,
+           but 100dvh (the fix) also mattered for a second reason — the
+           earlier position:fixed workaround for that gap made this whole
+           page structurally un-scrollable (no content in normal document
+           flow), which meant window-level scroll was IMPOSSIBLE even for a
+           real user swipe, not just for the theme-color repaint nudge in
+           App.jsx that depends on a real scroll event firing. Normal flow
+           + 100dvh fixes the original gap without that side effect.
+           Unsupported dvh values are simply ignored by older browsers,
+           leaving the 100vh line in effect as the fallback. */
+        .glowup-auth-root { min-height: 100vh; }
+        .glowup-auth-root { min-height: 100dvh; }
         @keyframes glowupAuthFloat {
           0%, 100% { transform: translateY(-8px); }
           50%      { transform: translateY(8px); }
