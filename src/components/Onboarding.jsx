@@ -6,13 +6,18 @@ import T from './theme'
 import GlowUpLogo from './GlowUpWordmark'
 import { todayInTz } from './timezone'
 
+// Brand color cycle — used to give step numbers, phase icons, and progress
+// dots each their own pop of color against the black/white onboarding
+// screens, instead of a single flat green.
+const BRAND_COLORS = [T.pink, T.blue, T.green, T.yellow, T.orange]
+const BRAND_DARK_COLORS = [T.darkPink, T.darkBlue, T.darkGreen, T.darkYellow, T.darkOrange]
 
 // ─── STEP INDICATOR ──────────────────────────────────────────
-function StepDot({ active, done }) {
+function StepDot({ color, done }) {
   return (
     <div style={{
       width: 8, height: 8, borderRadius: '50%', flexShrink: 0,
-      background: done ? T.white : active ? T.green : 'rgba(255,255,255,0.3)',
+      background: done ? T.white : color || 'rgba(255,255,255,0.3)',
       transition: 'background 0.2s',
     }} />
   )
@@ -29,7 +34,7 @@ function StepList({ steps, tod }) {
       </div>
       {filtered.sort((a, b) => a.position - b.position).map((s, i) => (
         <div key={s.id} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', marginBottom: 10 }}>
-          <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#EBFBF2', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: T.darkGreen, marginTop: 1 }}>
+          <div style={{ width: 20, height: 20, borderRadius: '50%', background: BRAND_COLORS[i % BRAND_COLORS.length], flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: T.text, marginTop: 1 }}>
             {i + 1}
           </div>
           <div>
@@ -52,7 +57,7 @@ function Phase2StartScreen({ phase2, phase1Steps, phase2Options, skinType, onBac
   const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
 
   if (bhaStep) return (
-    <div style={{ minHeight: '100vh', background: T.darkGreen, padding: '48px 24px', boxSizing: 'border-box' }}>
+    <div style={{ minHeight: '100vh', background: T.text, padding: '48px 24px', boxSizing: 'border-box' }}>
       <div style={{ maxWidth: 480, margin: '0 auto' }}>
         <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.75)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>AHA/BHA Onboarding</div>
         <h2 style={{ fontSize: 24, fontWeight: 800, color: T.white, letterSpacing: '-0.03em', margin: '0 0 8px' }}>One more step</h2>
@@ -63,7 +68,7 @@ function Phase2StartScreen({ phase2, phase1Steps, phase2Options, skinType, onBac
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
           {DAYS.map((d, i) => (
             <button key={i} onClick={() => setBhaDay(i)}
-              style={{ padding: '6px 12px', borderRadius: T.radius.pill, border: 'none', background: bhaDay === i ? T.white : 'rgba(255,255,255,0.15)', color: bhaDay === i ? T.darkGreen : T.white, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
+              style={{ padding: '6px 12px', borderRadius: T.radius.pill, border: 'none', background: bhaDay === i ? T.white : 'rgba(255,255,255,0.15)', color: bhaDay === i ? T.text : T.white, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
               {d}
             </button>
           ))}
@@ -76,7 +81,7 @@ function Phase2StartScreen({ phase2, phase1Steps, phase2Options, skinType, onBac
           await onConfirm(chosenItems, bhaDay)
           setSaving(false)
         }}
-          style={{ width: '100%', padding: '13px', borderRadius: T.radius.pill, border: 'none', background: T.white, color: T.darkGreen, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 600 }}>
+          style={{ width: '100%', padding: '13px', borderRadius: T.radius.pill, border: 'none', background: T.white, color: T.text, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 600 }}>
           {saving ? 'Starting…' : 'Start AHA/BHA Onboarding'}
         </button>
       </div>
@@ -84,7 +89,7 @@ function Phase2StartScreen({ phase2, phase1Steps, phase2Options, skinType, onBac
   )
 
   return (
-    <div style={{ minHeight: '100vh', background: T.darkGreen, padding: '48px 24px', boxSizing: 'border-box' }}>
+    <div style={{ minHeight: '100vh', background: T.text, padding: '48px 24px', boxSizing: 'border-box' }}>
       <div style={{ maxWidth: 480, margin: '0 auto' }}>
         <button onClick={onBack}
           style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.8)', fontSize: 13, padding: 0, marginBottom: 32, fontFamily: 'inherit' }}>
@@ -132,7 +137,7 @@ function Phase2StartScreen({ phase2, phase1Steps, phase2Options, skinType, onBac
               setSaving(false)
             }
           }}
-          style={{ width: '100%', padding: '13px', borderRadius: T.radius.pill, border: 'none', background: selected.size > 0 ? T.white : 'rgba(255,255,255,0.3)', color: T.darkGreen, cursor: selected.size > 0 ? 'pointer' : 'default', fontSize: 13, fontFamily: 'inherit', fontWeight: 600, marginTop: 16 }}>
+          style={{ width: '100%', padding: '13px', borderRadius: T.radius.pill, border: 'none', background: selected.size > 0 ? T.white : 'rgba(255,255,255,0.3)', color: T.text, cursor: selected.size > 0 ? 'pointer' : 'default', fontSize: 13, fontFamily: 'inherit', fontWeight: 600, marginTop: 16 }}>
           {saving ? 'Setting up…' : (() => {
             if (selected.size === 0) return 'Choose at least one'
             const realCount = phase2Options.filter(o => selected.has(o.id) && !o.is_skip_option).length
@@ -370,7 +375,7 @@ export default function Onboarding({ session, onEnrolled, onSkipToBuilder }) {
 
   // ── WELCOME (1 of 2 intro screens, before the disclaimer) ─────
   if (screen === 'welcome') return (
-    <div style={{ minHeight: '100vh', background: T.darkGreen, padding: '64px 24px', boxSizing: 'border-box', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div style={{ minHeight: '100vh', background: T.text, padding: '64px 24px', boxSizing: 'border-box', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <style>{`
         @keyframes glowupOnboardFloat {
           0%, 100% { transform: translateY(-8px); }
@@ -389,7 +394,7 @@ export default function Onboarding({ session, onEnrolled, onSkipToBuilder }) {
           Your skin routine, organized.
         </p>
         <button onClick={() => setScreen('intro')}
-          style={{ width: '100%', padding: '14px', borderRadius: T.radius.pill, border: 'none', background: T.white, color: T.darkGreen, cursor: 'pointer', fontSize: 14, fontFamily: 'inherit', fontWeight: 700 }}>
+          style={{ width: '100%', padding: '14px', borderRadius: T.radius.pill, border: 'none', background: T.white, color: T.text, cursor: 'pointer', fontSize: 14, fontFamily: 'inherit', fontWeight: 700 }}>
           Get started
         </button>
       </div>
@@ -398,7 +403,7 @@ export default function Onboarding({ session, onEnrolled, onSkipToBuilder }) {
 
   // ── INTRO (2 of 2 intro screens) ───────────────────────────────
   if (screen === 'intro') return (
-    <div style={{ minHeight: '100vh', background: T.darkGreen, padding: '64px 24px', boxSizing: 'border-box' }}>
+    <div style={{ minHeight: '100vh', background: T.text, padding: '64px 24px', boxSizing: 'border-box' }}>
       <div style={{ maxWidth: 480, margin: '0 auto' }}>
         <h2 style={{ fontSize: 26, fontWeight: 800, color: T.white, letterSpacing: '-0.03em', margin: '0 0 20px' }}>
           Glow Up is a skin care routine builder and tracker tool.
@@ -407,7 +412,7 @@ export default function Onboarding({ session, onEnrolled, onSkipToBuilder }) {
           We know sometimes a multi-step routine can get complicated. Whether you are new to serums or experienced with retinoids, this is a tool that lays out your whole regimen. Safely add new ingredients, or track recovery after a skin treatment with ease.
         </p>
         <button onClick={() => setScreen('disclaimer')}
-          style={{ width: '100%', padding: '14px', borderRadius: T.radius.pill, border: 'none', background: T.white, color: T.darkGreen, cursor: 'pointer', fontSize: 14, fontFamily: 'inherit', fontWeight: 700 }}>
+          style={{ width: '100%', padding: '14px', borderRadius: T.radius.pill, border: 'none', background: T.white, color: T.text, cursor: 'pointer', fontSize: 14, fontFamily: 'inherit', fontWeight: 700 }}>
           Got it
         </button>
       </div>
@@ -416,7 +421,7 @@ export default function Onboarding({ session, onEnrolled, onSkipToBuilder }) {
 
   // ── DISCLAIMER ───────────────────────────────────────────────
   if (screen === 'disclaimer') return (
-    <div style={{ minHeight: '100vh', background: T.darkGreen, padding: '64px 24px', boxSizing: 'border-box' }}>
+    <div style={{ minHeight: '100vh', background: T.text, padding: '64px 24px', boxSizing: 'border-box' }}>
       <div style={{ maxWidth: 480, margin: '0 auto' }}>
         <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.75)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 12 }}>
           Before you get started
@@ -439,7 +444,7 @@ export default function Onboarding({ session, onEnrolled, onSkipToBuilder }) {
               .eq('id', session.user.id)
             setScreen('entry')
           }}
-          style={{ width: '100%', padding: '14px', borderRadius: T.radius.pill, border: 'none', background: T.white, color: T.darkGreen, cursor: 'pointer', fontSize: 14, fontFamily: 'inherit', fontWeight: 700 }}>
+          style={{ width: '100%', padding: '14px', borderRadius: T.radius.pill, border: 'none', background: T.white, color: T.text, cursor: 'pointer', fontSize: 14, fontFamily: 'inherit', fontWeight: 700 }}>
           I understand
         </button>
       </div>
@@ -447,20 +452,20 @@ export default function Onboarding({ session, onEnrolled, onSkipToBuilder }) {
   )
 
   if (loading) return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: T.darkGreen, color: 'rgba(255,255,255,0.85)', fontSize: 13 }}>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: T.text, color: 'rgba(255,255,255,0.85)', fontSize: 13 }}>
       Loading…
     </div>
   )
 
   if (error) return (
-    <div style={{ minHeight: '100vh', background: T.darkGreen, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24, boxSizing: 'border-box' }}>
+    <div style={{ minHeight: '100vh', background: T.text, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24, boxSizing: 'border-box' }}>
       <div style={{ color: T.white, fontSize: 13, fontWeight: 600, textAlign: 'center' }}>Something went wrong: {error}</div>
     </div>
   )
 
   // ── ENTRY ─────────────────────────────────────────────────
   if (screen === 'entry') return (
-    <div style={{ minHeight: '100vh', background: T.darkGreen, padding: '48px 24px', boxSizing: 'border-box' }}>
+    <div style={{ minHeight: '100vh', background: T.text, padding: '48px 24px', boxSizing: 'border-box' }}>
       <div style={{ maxWidth: 480, margin: '0 auto' }}>
         <div style={{ marginBottom: 40 }}>
           <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.75)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 12 }}>
@@ -516,7 +521,7 @@ export default function Onboarding({ session, onEnrolled, onSkipToBuilder }) {
 
   // ── PROGRAM SELECTION ────────────────────────────────────
   if (screen === 'program') return (
-    <div style={{ minHeight: '100vh', background: T.darkGreen, padding: '48px 24px', boxSizing: 'border-box' }}>
+    <div style={{ minHeight: '100vh', background: T.text, padding: '48px 24px', boxSizing: 'border-box' }}>
       <div style={{ maxWidth: 480, margin: '0 auto' }}>
         <button onClick={() => setScreen('entry')}
           style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.8)', fontSize: 13, padding: 0, marginBottom: 32, fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -544,7 +549,7 @@ export default function Onboarding({ session, onEnrolled, onSkipToBuilder }) {
           {phases.map((ph, i) => (
             <div key={ph.id} style={{ display: 'flex', gap: 14, marginBottom: 14 }}>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0 }}>
-                <div style={{ width: 24, height: 24, borderRadius: '50%', background: i === 0 ? T.darkGreen : '#EBFBF2', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: i === 0 ? T.white : T.darkGreen, flexShrink: 0 }}>
+                <div style={{ width: 24, height: 24, borderRadius: '50%', background: BRAND_COLORS[i % BRAND_COLORS.length], display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: T.text, flexShrink: 0 }}>
                   {ph.phase_number}
                 </div>
                 {i < phases.length - 1 && (
@@ -552,7 +557,7 @@ export default function Onboarding({ session, onEnrolled, onSkipToBuilder }) {
                 )}
               </div>
               <div style={{ paddingTop: 3 }}>
-                <div style={{ fontSize: 10, fontWeight: 700, color: T.darkGreen, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 2 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: BRAND_DARK_COLORS[i % BRAND_DARK_COLORS.length], letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 2 }}>
                   Phase {ph.phase_number}
                 </div>
                 <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>
@@ -566,7 +571,7 @@ export default function Onboarding({ session, onEnrolled, onSkipToBuilder }) {
         </div>
 
         <button onClick={() => setScreen('phase1')}
-          style={{ width: '100%', padding: '13px', borderRadius: T.radius.pill, border: 'none', background: T.white, color: T.darkGreen, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 600 }}>
+          style={{ width: '100%', padding: '13px', borderRadius: T.radius.pill, border: 'none', background: T.white, color: T.text, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 600 }}>
           See what Phase 1 looks like →
         </button>
       </div>
@@ -577,7 +582,7 @@ export default function Onboarding({ session, onEnrolled, onSkipToBuilder }) {
   if (screen === 'phase1') {
     const phase1 = phases.find(p => p.phase_number === 1)
     return (
-      <div style={{ minHeight: '100vh', background: T.darkGreen, padding: '48px 24px', boxSizing: 'border-box' }}>
+      <div style={{ minHeight: '100vh', background: T.text, padding: '48px 24px', boxSizing: 'border-box' }}>
         <div style={{ maxWidth: 480, margin: '0 auto' }}>
           <button onClick={() => setScreen('program')}
             style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.8)', fontSize: 13, padding: 0, marginBottom: 32, fontFamily: 'inherit' }}>
@@ -591,7 +596,7 @@ export default function Onboarding({ session, onEnrolled, onSkipToBuilder }) {
             </div>
             <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
               {phases.map((ph, i) => (
-                <StepDot key={ph.id} active={i === 0} done={false} />
+                <StepDot key={ph.id} color={BRAND_COLORS[i % BRAND_COLORS.length]} done={false} />
               ))}
             </div>
           </div>
@@ -622,7 +627,7 @@ export default function Onboarding({ session, onEnrolled, onSkipToBuilder }) {
           </div>
 
           <button onClick={enroll}
-            style={{ width: '100%', padding: '13px', borderRadius: T.radius.pill, border: 'none', background: T.white, color: T.darkGreen, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 600, marginBottom: 12 }}>
+            style={{ width: '100%', padding: '13px', borderRadius: T.radius.pill, border: 'none', background: T.white, color: T.text, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 600, marginBottom: 12 }}>
             Start Phase 1 — Foundation
           </button>
           <button onClick={onSkipToBuilder}
@@ -651,7 +656,7 @@ export default function Onboarding({ session, onEnrolled, onSkipToBuilder }) {
 
 
   if (screen === 'enrolling') return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: T.darkGreen, flexDirection: 'column', gap: 12 }}>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: T.text, flexDirection: 'column', gap: 12 }}>
       <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.85)' }}>Setting up your routine…</div>
     </div>
   )

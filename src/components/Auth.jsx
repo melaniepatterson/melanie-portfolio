@@ -98,7 +98,7 @@ export default function Auth() {
   const btnStyle = (active = true) => ({
     width: '100%', padding: '13px', borderRadius: T.radius.pill, border: 'none',
     background: active ? T.text : '#EBFBF2',
-    color: active ? T.white : T.darkGreen,
+    color: active ? T.white : T.text,
     fontSize: 14, fontWeight: 600, cursor: active ? 'pointer' : 'default',
     fontFamily: 'inherit', transition: 'opacity 0.15s',
     opacity: loading ? 0.7 : 1,
@@ -106,13 +106,13 @@ export default function Auth() {
   const pillStyle = (active) => ({
     padding: '7px 14px', borderRadius: T.radius.pill, fontSize: 12,
     cursor: 'pointer', fontFamily: 'inherit', border: 'none',
-    background: active ? T.darkGreen : '#EBFBF2',
+    background: active ? T.text : '#EBFBF2',
     color: active ? T.white : T.text,
   })
 
   return (
     <div style={{
-      minHeight: '100vh', background: T.darkGreen,
+      minHeight: '100vh', background: T.text,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       padding: '24px 20px', fontFamily: 'inherit',
     }}>
@@ -239,7 +239,7 @@ export default function Auth() {
               </button>
 
               <button type="button" onClick={() => setScreen('email')}
-                style={{ marginTop: 10, width: '100%', padding: '10px', borderRadius: T.radius.pill, border: 'none', background: '#EBFBF2', color: T.darkGreen, fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>
+                style={{ marginTop: 10, width: '100%', padding: '10px', borderRadius: T.radius.pill, border: 'none', background: '#EBFBF2', color: T.text, fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>
                 ← Use a different email
               </button>
             </form>
@@ -251,7 +251,7 @@ export default function Auth() {
               <div style={{ marginBottom: 12 }}>
                 {alreadyOnList ? (
                   <svg width="32" height="32" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <g fill={T.darkGreen}>
+                    <g fill={T.text}>
                       <ellipse cx="12" cy="6" rx="3" ry="5" />
                       <ellipse cx="12" cy="6" rx="3" ry="5" transform="rotate(72 12 12)" />
                       <ellipse cx="12" cy="6" rx="3" ry="5" transform="rotate(144 12 12)" />
@@ -261,7 +261,7 @@ export default function Auth() {
                   </svg>
                 ) : (
                   <svg width="32" height="32" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 2 L14.5 9.5 L22 12 L14.5 14.5 L12 22 L9.5 14.5 L2 12 L9.5 9.5 Z" fill={T.darkGreen} />
+                    <path d="M12 2 L14.5 9.5 L22 12 L14.5 14.5 L12 22 L9.5 14.5 L2 12 L9.5 9.5 Z" fill={T.text} />
                   </svg>
                 )}
               </div>

@@ -83,7 +83,7 @@ export default function GlowUpLoader() {
   return (
     <div style={{
       position: 'fixed', inset: 0,
-      background: T.darkGreen,
+      background: T.text,
       display: 'flex', flexDirection: 'column',
       alignItems: 'center', justifyContent: 'center',
       gap: 28, zIndex: 9999,
