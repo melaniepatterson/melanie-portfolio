@@ -65,12 +65,17 @@ function Layout() {
     // index.css sets body/html to the portfolio's cream (#FAF7F2) — that's
     // the portfolio's own default and stays as-is there, but GlowUp needs
     // its own color so the portfolio color doesn't show through on
-    // overscroll/short pages or gaps under mobile browser chrome. Which
-    // color depends on which GlowUp screen is actually up: the loader
-    // (green) and signed-out Auth (black) aren't white like the signed-in
-    // app or the standalone pages (privacy/blog/about), so blanket-forcing
-    // white here left a white sliver/address-bar mismatch behind those.
-    const routineBg = !isGlowUpPage ? '' : isGlowUpStandalone ? T.white : session === undefined ? T.darkGreen : !session ? T.text : T.white
+    // overscroll/short pages or gaps under mobile browser chrome. Black
+    // covers both the loader and signed-out Auth states — deliberately NOT
+    // tracking the loader's green here, since that split a single day1
+    // color decision across two async transitions (session undefined→null,
+    // then null→object) and left a real gap on cold loads where the page
+    // had mounted but the session check hadn't resolved yet, so the
+    // background was still sitting on green behind the (already black)
+    // Auth screen until something else (e.g. a refresh) forced a recheck.
+    // Black is correct immediately on mount, no async wait — GlowUpLoader's
+    // own full-screen fixed div paints its own green on top regardless.
+    const routineBg = !isGlowUpPage ? '' : isGlowUpStandalone ? T.white : !session ? T.text : T.white
     document.body.style.backgroundColor = routineBg
     document.documentElement.style.backgroundColor = routineBg
     document.body.classList.toggle('glowup-app', isGlowUpPage)
