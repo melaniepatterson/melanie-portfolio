@@ -145,6 +145,7 @@ export default function SideMenu({ session, onClose, onFeedback, betaTester }) {
             const isActive = href && currentPath === href
             return (
               <button key={label} className={`glowup-menu-item${isActive ? ' is-active' : ''}`}
+                data-tour-target={label === 'Product library' ? 'product-library-menu-item' : undefined}
                 onClick={() => { onClose(); if (action) action(); else if (href) window.location.href = href }}
                 style={{
                   display: 'flex', alignItems: 'center', flexWrap: 'wrap', width: '100%',

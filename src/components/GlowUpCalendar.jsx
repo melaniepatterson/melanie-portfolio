@@ -4325,6 +4325,8 @@ export default function GlowUpCalendar({ session }) {
   })
   function endTour() {
     setTourStep(null)
+    setDayFlyout(null)
+    setShowMenu(false)
     try { localStorage.setItem('glowup_calendar_tour_done', '1') } catch {}
   }
   // Step 1 → 2: advance the moment the spotlighted (today) cell is opened —
@@ -4334,6 +4336,13 @@ export default function GlowUpCalendar({ session }) {
       setTourStep('product-row')
     }
   }, [dayFlyout, tourStep])
+  // Skip the program-banner step entirely if the user has no active program
+  // to show a banner for — there's nothing to spotlight.
+  useEffect(() => {
+    if (tourStep === 'program-banner' && activePrograms.length === 0) {
+      setTourStep('add-program')
+    }
+  }, [tourStep, activePrograms])
   const [showSurvey, setShowSurvey] = useState(false)
   const [surveyDismissed, setSurveyDismissed] = useState(() => {
     try {
@@ -5228,8 +5237,8 @@ export default function GlowUpCalendar({ session }) {
         />
       )}
       {/* Active program banners — one per active program */}
-      {activePrograms.map(prog => (
-        <div key={prog.id} style={{ width: '100%', minWidth: 0, maxWidth: '100%', overflow: 'hidden', boxSizing: 'border-box' }}>
+      {activePrograms.map((prog, i) => (
+        <div key={prog.id} {...(i === 0 ? { 'data-tour-target': 'program-banner' } : {})} style={{ width: '100%', minWidth: 0, maxWidth: '100%', overflow: 'hidden', boxSizing: 'border-box' }}>
           <ProgramAdvancement
             session={session}
             activeProgram={prog}
@@ -5261,12 +5270,12 @@ export default function GlowUpCalendar({ session }) {
 
       {/* Primary actions — bell + hamburger now live in the sticky header above */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
-        <Btn variant={['update','setup'].includes(panel) ? 'active' : 'primary'}
+        <Btn data-tour-target="build-routine-btn" variant={['update','setup'].includes(panel) ? 'active' : 'primary'}
           style={['update','setup'].includes(panel) ? undefined : { background: T.text, color: T.white }}
           onClick={() => { setPanel(p => ['update','setup'].includes(p) ? null : (hasRoutine ? 'update' : 'setup')); setEditingPeriod(null); setDayFlyout(null) }}>
           + Build your <AccentWord>routine</AccentWord>
         </Btn>
-        <Btn variant={showTreatments ? 'active' : 'secondary'}
+        <Btn data-tour-target="my-treatments-btn" variant={showTreatments ? 'active' : 'secondary'}
           style={showTreatments ? undefined : { borderColor: T.text, color: T.text }}
           onClick={() => { setShowTreatments(s => !s); setDayFlyout(null) }}>My treatments</Btn>
         {(month !== now.getMonth() || year !== now.getFullYear()) && (
@@ -5622,8 +5631,40 @@ export default function GlowUpCalendar({ session }) {
         <TourSpotlight
           targetSelectors={['[data-tour-target="shower-section"]', '[data-tour-target="extras-section"]']}
           message="You can also add products to your shower routine or extras — like hair growth serums, eye patches, or anything else you want to keep a regular rotation of."
+          onNext={() => { setDayFlyout(null); setTourStep('my-treatments') }}
+          onSkip={endTour}
+        />
+      )}
+      {tourStep === 'my-treatments' && (
+        <TourSpotlight
+          targetSelector='[data-tour-target="my-treatments-btn"]'
+          message="You can also add treatments from here."
+          onNext={() => setTourStep('program-banner')}
+          onSkip={endTour}
+        />
+      )}
+      {tourStep === 'program-banner' && (
+        <TourSpotlight
+          targetSelector='[data-tour-target="program-banner"]'
+          message="This is the program banner — it tracks your progress in any program you're enrolled in."
+          onNext={() => setTourStep('add-program')}
+          onSkip={endTour}
+        />
+      )}
+      {tourStep === 'add-program' && (
+        <TourSpotlight
+          targetSelector='[data-tour-target="build-routine-btn"]'
+          message="When you're ready, you can add new programs here."
+          onNext={() => { setShowMenu(true); setTourStep('product-library') }}
+          onSkip={endTour}
+        />
+      )}
+      {tourStep === 'product-library' && (
+        <TourSpotlight
+          targetSelector='[data-tour-target="product-library-menu-item"]'
+          message="Finally, this is the product library. Discover new products and what's currently in your collection to track purchases, effectiveness, expiry, and more."
           onNext={endTour}
-          nextLabel="Got it"
+          nextLabel="Done"
           onSkip={endTour}
         />
       )}

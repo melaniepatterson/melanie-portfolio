@@ -99,11 +99,21 @@ export default function TourSpotlight({ targetSelector, targetSelectors, message
           {message}
         </div>
         {onNext && (
-          <button onClick={onNext} style={{ border: 'none', background: T.darkGreen, color: T.white, borderRadius: T.radius.pill, padding: '7px 16px', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
+          <button onClick={onNext} style={{ border: 'none', background: T.text, color: T.white, borderRadius: T.radius.pill, padding: '7px 16px', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
             {nextLabel}
           </button>
         )}
       </div>
+
+      {/* Skip tour — persistent, top-right, visible on every step */}
+      <button onClick={onSkip} style={{
+        position: 'fixed', top: 20, right: 20, zIndex: 603,
+        border: 'none', background: 'rgba(0,0,0,0.35)', color: T.white,
+        borderRadius: T.radius.pill, padding: '7px 14px', fontSize: 11, fontWeight: 700,
+        cursor: 'pointer', fontFamily: 'inherit', letterSpacing: '0.02em',
+      }}>
+        Skip tour
+      </button>
     </>
   )
 }
