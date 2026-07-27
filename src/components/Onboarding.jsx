@@ -409,7 +409,7 @@ export default function Onboarding({ session, onEnrolled, onSkipToBuilder }) {
           Glow Up is a skin care routine builder and tracker tool.
         </h2>
         <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.85)', lineHeight: 1.8, margin: '0 0 32px' }}>
-          We know sometimes a multi-step routine can get complicated. Whether you are new to serums or experienced with retinoids, this is a tool that lays out your whole regimen. Safely add new ingredients, or track recovery after a skin treatment with ease.
+          We know a multi-step routine can sometimes get complicated. Whether you are new to serums or experienced with retinoids, this is a tool that lays out your whole regimen. Safely add new ingredients, or track recovery after a skin treatment with ease.
         </p>
         <button onClick={() => setScreen('disclaimer')}
           style={{ width: '100%', padding: '14px', borderRadius: T.radius.pill, border: 'none', background: T.white, color: T.text, cursor: 'pointer', fontSize: 14, fontFamily: 'inherit', fontWeight: 700 }}>

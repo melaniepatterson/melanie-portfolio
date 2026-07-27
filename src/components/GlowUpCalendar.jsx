@@ -5662,7 +5662,7 @@ export default function GlowUpCalendar({ session }) {
       {tourStep === 'product-library' && (
         <TourSpotlight
           targetSelector='[data-tour-target="product-library-menu-item"]'
-          message="Finally, this is the product library. Discover new products and what's currently in your collection to track purchases, effectiveness, expiry, and more."
+          message="Finally, this is the product library. Discover new products and see what's currently in your collection to track purchases, effectiveness, expiry, and more."
           onNext={endTour}
           nextLabel="Done"
           onSkip={endTour}
