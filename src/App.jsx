@@ -36,6 +36,11 @@ function Layout() {
   const isWork = location.pathname === "/portfolio";
   const isWorkDetail = location.pathname.startsWith("/portfolio/");
   const isRoutine = location.pathname.startsWith("/routine");
+  // GlowUp pages that live outside /routine — no auth, no loader/Auth
+  // states, just a plain white GlowUp page — but still need GlowUp's font
+  // and colors instead of the portfolio's, same as everything under /routine.
+  const isGlowUpStandalone = ["/privacy", "/blog", "/about-glowup"].includes(location.pathname)
+  const isGlowUpPage = isRoutine || isGlowUpStandalone
 
   const [session, setSession] = useState(undefined)
   const [showSurvey, setShowSurvey] = useState(false)
@@ -54,26 +59,26 @@ function Layout() {
   // portfolio's brand red body color — GlowUp doesn't use it, so anywhere
   // a component leaves color unset it should inherit black, not red.
   useEffect(() => {
-    document.body.style.fontFamily = isRoutine ? T.fontFamily : ''
-    document.body.style.color = isRoutine ? T.text : ''
+    document.body.style.fontFamily = isGlowUpPage ? T.fontFamily : ''
+    document.body.style.color = isGlowUpPage ? T.text : ''
     // index.css sets body/html to the portfolio's cream (#FAF7F2) — that's
     // the portfolio's own default and stays as-is there, but GlowUp needs
     // its own color so the portfolio color doesn't show through on
     // overscroll/short pages or gaps under mobile browser chrome. Which
     // color depends on which GlowUp screen is actually up: the loader
     // (green) and signed-out Auth (black) aren't white like the signed-in
-    // app, so blanket-forcing white here left a white sliver/address-bar
-    // mismatch behind both of those.
-    const routineBg = !isRoutine ? '' : session === undefined ? T.darkGreen : !session ? T.text : T.white
+    // app or the standalone pages (privacy/blog/about), so blanket-forcing
+    // white here left a white sliver/address-bar mismatch behind those.
+    const routineBg = !isGlowUpPage ? '' : isGlowUpStandalone ? T.white : session === undefined ? T.darkGreen : !session ? T.text : T.white
     document.body.style.backgroundColor = routineBg
     document.documentElement.style.backgroundColor = routineBg
-    document.body.classList.toggle('glowup-app', isRoutine)
+    document.body.classList.toggle('glowup-app', isGlowUpPage)
     // index.html sets theme-color to the portfolio's brand red — that colors
     // the browser chrome (mobile address bar, macOS title bar) site-wide
     // unless overridden per-route, so GlowUp gets its own color to match
     // whichever screen is showing.
     const meta = document.querySelector('meta[name="theme-color"]')
-    if (meta) meta.setAttribute('content', isRoutine ? routineBg : PORTFOLIO_THEME_COLOR)
+    if (meta) meta.setAttribute('content', isGlowUpPage ? routineBg : PORTFOLIO_THEME_COLOR)
     // iOS Safari only repaints its status bar/toolbar chrome on a scroll
     // event, not immediately when theme-color changes via JS — and since
     // GlowUp's full-screen states (loader, Auth) use position:fixed with no
@@ -84,7 +89,7 @@ function Layout() {
       window.scrollTo(window.scrollX, window.scrollY + 1)
       requestAnimationFrame(() => window.scrollTo(window.scrollX, window.scrollY - 1))
     })
-  }, [isRoutine, session])
+  }, [isGlowUpPage, isGlowUpStandalone, session])
 
   // Check ?survey=1 param — open modal over whatever page is current
   useEffect(() => {
