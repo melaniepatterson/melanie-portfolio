@@ -428,7 +428,7 @@ export default function Profile({ session, onOpenSurvey }) {
         <div style={{ marginBottom: 24 }}>
           <SectionLabel>Skin tone <OptionalTag /></SectionLabel>
           <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 10, lineHeight: 1.5 }}>
-            Fitzpatrick scale — helps us understand how products work across different melanin levels.
+            This helps us recommend steps based on your skin type.
           </div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             {FITZPATRICK.map(f => (
