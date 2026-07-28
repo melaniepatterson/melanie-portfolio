@@ -2,38 +2,35 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" href="/melanie-studio-favicon.ico" />
+    <!-- Everything below (favicon, apple-touch-icon, app title, manifest,
+         OG tags) is one static GlowUp identity now, no per-route JS
+         swapping — the portfolio is gated behind a "visit GlowUp"
+         placeholder (see PortfolioGate.jsx) and GlowUp itself is moving to
+         its own deployment, so there's no separate portfolio identity left
+         to protect here. Revert / re-split if the portfolio comes back
+         before that move happens. -->
+    <link rel="icon" type="image/png" href="/glowup-icon-192.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#C93500" />
-    <!-- Home-screen/standalone mode (iOS) — theme-color above only affects
-         the in-Safari-tab chrome; status-bar-style is the separate tag iOS
-         uses once GlowUp is added to the home screen. "default" keeps the
-         bar light/non-overlaying, matching the mostly-white signed-in app
-         without needing safe-area-inset handling for a translucent bar. -->
+    <!-- theme-color above only affects the in-Safari-tab chrome;
+         status-bar-style is the separate tag iOS uses once added to the
+         home screen. "default" keeps the bar light/non-overlaying, matching
+         the mostly-white signed-in app without needing safe-area-inset
+         handling for a translucent bar. -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <!-- apple-mobile-web-app-title, apple-touch-icon, and the manifest link
-         below all default to the portfolio's own identity — App.jsx swaps
-         them to GlowUp's (title, icon, manifest-glowup.json) only while on
-         a GlowUp page, and restores these values on the way out. -->
-    <meta id="appleWebAppTitle" name="apple-mobile-web-app-title" content="melanie.studio" />
-    <!-- Portfolio is gated behind a "visit GlowUp" placeholder for now (see
-         PortfolioGate.jsx), so title/description/OG tags point at GlowUp
-         site-wide too — these are static (read by link-preview crawlers
-         that don't run JS, e.g. iMessage), so they can't be swapped
-         per-route client-side the way theme-color etc. are. Revert to the
-         portfolio's own copy once GlowUp moves to its own deployment and
-         the portfolio comes back. -->
+    <meta name="apple-mobile-web-app-title" content="Glow Up" />
     <meta name="description" content="Your skincare routine, organized. Track products, treatments, and your routine — all in one place." />
     <meta property="og:title" content="Glow Up" />
     <meta property="og:description" content="Your skincare routine, organized. Track products, treatments, and your routine — all in one place." />
     <meta property="og:url" content="https://www.melanie.studio" />
-    <link id="appleTouchIcon" rel="apple-touch-icon" href="/logo192.png" />
+    <link rel="apple-touch-icon" href="/glowup-apple-touch-icon.png" media="(prefers-color-scheme: light)" />
+    <link rel="apple-touch-icon" href="/glowup-apple-touch-icon-dark.png" media="(prefers-color-scheme: dark)" />
     <!--
       manifest.json provides metadata used when your web app is installed on a
       user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
     -->
-    <link id="manifestLink" rel="manifest" href="/manifest.json" />
+    <link rel="manifest" href="/manifest-glowup.json" />
     <!--
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.
