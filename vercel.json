@@ -1,4 +1,8 @@
 {
+  "redirects": [
+    { "source": "/routine", "destination": "https://glowup.melanie.studio/routine", "permanent": false },
+    { "source": "/routine/:path*", "destination": "https://glowup.melanie.studio/routine/:path*", "permanent": false }
+  ],
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]
