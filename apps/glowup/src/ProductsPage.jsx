@@ -11,7 +11,30 @@ import Btn from './shared/Btn'
 import StarRating from './shared/StarRating'
 import FeedbackPanel from './shared/FeedbackPanel'
 import GlowUpFooter from './shared/GlowUpFooter'
+import Skeleton from './shared/Skeleton'
 const GLOWUP_HOME = '/'
+
+// Mirrors ProductLibrary's real card shape (3:4 portrait image + name +
+// brand line) so the grid doesn't visibly reflow when real cards land.
+function ProductCardSkeleton() {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', borderRadius: T.radius.card, overflow: 'hidden' }}>
+      <Skeleton height={0} radius={0} style={{ width: '100%', paddingBottom: '133.33%' }} />
+      <div style={{ padding: '8px 8px 10px' }}>
+        <Skeleton height={12} width="85%" style={{ marginBottom: 6 }} />
+        <Skeleton height={10} width="50%" />
+      </div>
+    </div>
+  )
+}
+
+function ProductGridSkeleton({ count = 10 }) {
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: 12, padding: '20px' }}>
+      {Array.from({ length: count }).map((_, i) => <ProductCardSkeleton key={i} />)}
+    </div>
+  )
+}
 
 
 // A stable "random" brand color per filter label — hashed so the same
@@ -1355,7 +1378,7 @@ export default function ProductsPage({ session, betaTester }) {
       )}
 
       {loading
-        ? <div style={{ padding: '40px 20px', fontSize: 13, color: T.textMuted, textAlign: 'center' }}>Loading your products...</div>
+        ? <ProductGridSkeleton />
         : activeTab === 'history'
         ? <div style={{ padding: '20px' }}>
             {finishHistory.length === 0

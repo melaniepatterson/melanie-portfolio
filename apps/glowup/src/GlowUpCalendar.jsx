@@ -44,6 +44,27 @@ import StarRating from './shared/StarRating'
 import FeedbackPanel from './shared/FeedbackPanel'
 import GlowUpFooter from './shared/GlowUpFooter'
 import TourSpotlight, { TourLogo } from './shared/TourSpotlight'
+import Skeleton from './shared/Skeleton'
+
+// A few skeleton rows shaped like a numbered timeline entry — used for
+// both phase-detail and program-list loading, where the real content is
+// text-heavy and doesn't reduce to one repeatable card shape.
+function TimelineRowsSkeleton({ count = 3 }) {
+  return (
+    <div>
+      {Array.from({ length: count }).map((_, i) => (
+        <div key={i} style={{ display: 'flex', gap: 14, marginBottom: 18 }}>
+          <Skeleton width={24} height={24} radius={0} style={{ flexShrink: 0 }} />
+          <div style={{ flex: 1, paddingTop: 3 }}>
+            <Skeleton height={12} width="40%" style={{ marginBottom: 8 }} />
+            <Skeleton height={11} width="90%" style={{ marginBottom: 6 }} />
+            <Skeleton height={11} width="70%" />
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
 
 // ─── DESIGN TOKENS ───────────────────────────────────────────
 
@@ -2876,7 +2897,7 @@ function ProgramEnrollmentPreview({ program, onConfirm, onBack, timezone }) {
       </div>
 
       {loading ? (
-        <div style={{ fontSize: 12, color: T.textMuted, padding: '20px 0', textAlign: 'center' }}>Loading…</div>
+        <TimelineRowsSkeleton />
       ) : (
         <>
           {/* Pace picker — above phases, linear programs only */}
@@ -3258,7 +3279,9 @@ function AddProgramPanel({ session, activeProgram, activePrograms = [], routineP
   }
 
   if (loading) return (
-    <div style={{ padding: '20px 18px', fontSize: 13, color: T.textMuted }}>Loading programs…</div>
+    <div style={{ padding: '20px 18px' }}>
+      <TimelineRowsSkeleton />
+    </div>
   )
 
   // ── ACTIVE PROGRAM — show status + end option ──────────────

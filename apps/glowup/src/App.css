@@ -8,6 +8,25 @@ main {
   padding: 0;
 }
 
+/* ─── Loading skeletons — see shared/Skeleton.jsx ─────────────────────── */
+.gu-skeleton {
+  background: linear-gradient(90deg, #F0F0EE 25%, #E4E4E1 37%, #F0F0EE 63%);
+  background-size: 400% 100%;
+  animation: gu-skeleton-shimmer 1.4s ease infinite;
+}
+
+@keyframes gu-skeleton-shimmer {
+  0%   { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gu-skeleton {
+    animation: none;
+    background: #F0F0EE;
+  }
+}
+
 @font-face {
   font-family: 'Naskle';
   src: local('Naskle'), url(./fonts/Naskle-Regular.woff) format('woff'), url(./fonts/Naskle-Regular.woff2) format('woff2');
