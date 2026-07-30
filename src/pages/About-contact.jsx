@@ -27,7 +27,7 @@ export default function AboutContact() {
           </p>
          
           <div className={styles.links}>
-            <a href="/images/Melanie_Patterson_Resume_Front_End_Web_Developer_Visual_Design.pdf" target="_blank" rel="noreferrer" ><SplitText>CV</SplitText></a>
+            <a href="/images/Melanie_Patterson_Resume.pdf" target="_blank" rel="noreferrer" ><SplitText>CV</SplitText></a>
             <span> / </span>
             <a href="mailto:hello@melanie.studio"><SplitText>Email</SplitText></a>
           </div>
