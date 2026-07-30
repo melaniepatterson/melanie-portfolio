@@ -335,7 +335,7 @@ export default function Auth() {
         {/* Footer */}
         <div style={{ textAlign: 'center', marginTop: 20, fontSize: 11, color: 'rgba(255,255,255,0.8)' }}>
           Your data is never sold. <span style={{ margin: '0 6px' }}>·</span>
-          <a href="https://melanie.studio" style={{ color: 'inherit', textDecoration: 'underline' }}>melanie.studio</a>
+          by <a href="https://melanie.studio" style={{ color: 'inherit', textDecoration: 'underline' }}>melanie.studio</a>
         </div>
       </div>
     </div>

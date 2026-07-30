@@ -15,7 +15,7 @@ export default function GlowUpAbout() {
       </div>
       <div style={{ display: 'flex', gap: 16, marginBottom: 24 }}>
         <a href="/privacy" style={{ fontSize: 12, color: T.textMuted, textDecoration: 'none' }}>Privacy policy</a>
-        <a href="/about-contact" style={{ fontSize: 12, color: T.textMuted, textDecoration: 'none' }}>About Melanie</a>
+        <a href="https://www.melanie.studio/about-contact" style={{ fontSize: 12, color: T.textMuted, textDecoration: 'none' }}>About Melanie</a>
       </div>
       <a href={GLOWUP_HOME} style={{ fontSize: 12, color: T.textMuted, textDecoration: 'none' }}>
         ← Back to Glow Up

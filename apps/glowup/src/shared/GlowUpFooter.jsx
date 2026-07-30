@@ -51,7 +51,7 @@ export default function GlowUpFooter({ onFeedback, betaTester }) {
           </div>
         </div>
         <div style={{ textAlign: 'center', fontSize: 11, fontWeight: 500, letterSpacing: '0.08em', color: T.white, maxWidth: 900, margin: '0 auto' }}>
-          © {new Date().getFullYear()} Melanie Patterson
+          © {new Date().getFullYear()} Melanie Patterson <span style={{ margin: '0 6px' }}>·</span> <a href="https://melanie.studio" style={{ color: 'inherit', textDecoration: 'underline' }}>melanie.studio</a>
         </div>
       </div>
     </footer>
