@@ -108,12 +108,12 @@ function Layout() {
 
   useEffect(() => {
     const titles = {
-      "/": "Routine — melanie.studio",
-      "/profile": "Profile — melanie.studio",
-      "/history": "History — melanie.studio",
-      "/products": "Products — melanie.studio",
-      "/blog": "Blog — melanie.studio",
-      "/about-glowup": "About — melanie.studio",
+      "/": "Routine — Glow Up",
+      "/profile": "Profile — Glow Up",
+      "/history": "History — Glow Up",
+      "/products": "Products — Glow Up",
+      "/blog": "Blog — Glow Up",
+      "/about-glowup": "About — Glow Up",
     };
     const title = titles[location.pathname];
     if (title) document.title = title;

@@ -7,14 +7,12 @@ const GLOWUP_HOME = '/'
 const MESSAGES = [
   "This page broke out and had to be extracted.",
   "404 — this route didn't survive patch testing.",
-  "Looks like this page skipped its routine and went missing.",
-  "We looked everywhere, even under the retinol.",
-  "This page purged itself. No cure time, just gone.",
-  "Not found, not glowing, not here.",
-  "This route ghosted us — SPF couldn't have prevented that.",
   "This page needs more hydration. Also, it doesn't exist.",
-  "Somebody double-cleansed this URL right off the map.",
+  "Somebody double-cleansed this URL — gone for good.",
   "This link over-exfoliated and now there's nothing left.",
+  "This page's SPF wore off hours ago.",
+  "Someone forgot to moisturize this route — it flaked off.",
+  "This page purged itself — no trace left.",
 ]
 
 export default function NotFound() {
