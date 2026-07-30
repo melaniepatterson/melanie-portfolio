@@ -3310,10 +3310,6 @@ function AddProgramPanel({ session, activeProgram, activePrograms = [], routineP
             </div>
           </div>
 
-          <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.7, marginBottom: 16 }}>
-            The same buttons live in your status bar above the calendar — here's where they take you.
-          </div>
-
           {!endFoundationConfirm && (
             <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
               <button onClick={() => setShowAddMore(true)}
@@ -3321,7 +3317,7 @@ function AddProgramPanel({ session, activeProgram, activePrograms = [], routineP
                 Add to my routine
               </button>
               <button onClick={() => setEndFoundationConfirm(true)}
-                style={{ padding: '7px 14px', borderRadius: T.radius.pill, border: `1px solid ${cardColor}`, background: 'transparent', color: cardColor, cursor: 'pointer', fontSize: 11, fontFamily: 'inherit', whiteSpace: 'nowrap', opacity: 0.7 }}>
+                style={{ padding: '7px 14px', borderRadius: T.radius.pill, border: `1px solid ${cardColor}`, background: 'transparent', color: cardColor, cursor: 'pointer', fontSize: 11, fontFamily: 'inherit', whiteSpace: 'nowrap' }}>
                 Done with this program
               </button>
             </div>
