@@ -59,51 +59,6 @@ function Layout() {
     return () => subscription.unsubscribe()
   }, [])
 
-  // index.html's static tags (favicon, title, manifest, OG) are the
-  // portfolio's own — correct by default, since the portfolio is no longer
-  // gated. But glowup.melanie.studio builds from this exact same file (only
-  // VITE_GLOWUP_STANDALONE differs), so without this override it would lose
-  // its own identity — browser tab, favicon, "Add to Home Screen" — on its
-  // next deploy. One-time, build-constant, not per-route like the
-  // theme-color effect below. Note: this fixes what real visitors see, but
-  // NOT link-preview crawlers (iMessage etc.) — those read the raw static
-  // HTML and never run this JS, so glowup.melanie.studio's og:title would
-  // still say "melanie.studio" until that's addressed separately.
-  useEffect(() => {
-    if (!GLOWUP_STANDALONE) return
-    const GLOWUP_DESCRIPTION = "Your skincare routine, organized. Track products, treatments, and your routine — all in one place."
-    document.title = 'Glow Up'
-    const setAttr = (selector, attr, value) => document.querySelector(selector)?.setAttribute(attr, value)
-    setAttr('link[rel="icon"]', 'href', '/glowup-icon-192.png')
-    setAttr('link[rel="manifest"]', 'href', '/manifest-glowup.json')
-    setAttr('meta[name="description"]', 'content', GLOWUP_DESCRIPTION)
-    setAttr('meta[property="og:title"]', 'content', 'Glow Up')
-    setAttr('meta[property="og:description"]', 'content', GLOWUP_DESCRIPTION)
-
-    // apple-mobile-web-app-title has no equivalent in the portfolio's own
-    // index.html, so there's nothing for setAttr to find — create it.
-    if (!document.querySelector('meta[name="apple-mobile-web-app-title"]')) {
-      const titleMeta = document.createElement('meta')
-      titleMeta.name = 'apple-mobile-web-app-title'
-      titleMeta.content = 'Glow Up'
-      document.head.appendChild(titleMeta)
-    }
-
-    const appleIcon = document.querySelector('link[rel="apple-touch-icon"]')
-    if (appleIcon) {
-      appleIcon.setAttribute('href', '/glowup-apple-touch-icon.png')
-      appleIcon.setAttribute('media', '(prefers-color-scheme: light)')
-      if (!document.getElementById('glowupAppleTouchIconDark')) {
-        const dark = document.createElement('link')
-        dark.id = 'glowupAppleTouchIconDark'
-        dark.rel = 'apple-touch-icon'
-        dark.media = '(prefers-color-scheme: dark)'
-        dark.href = '/glowup-apple-touch-icon-dark.png'
-        appleIcon.insertAdjacentElement('afterend', dark)
-      }
-    }
-  }, [])
-
   // GlowUp uses DM Sans everywhere — the rest of the portfolio site sets
   // Bricolage Grotesque on <body>, which otherwise leaks through anywhere
   // a GlowUp component relies on fontFamily: 'inherit'. Same story for the
