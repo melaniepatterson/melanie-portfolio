@@ -3293,6 +3293,7 @@ function AddProgramPanel({ session, activeProgram, activePrograms = [], routineP
     // them is what unlocks this hub's library in the first place. Show
     // progress + an explanation, plus the option to call it done early.
     if (!program.is_stackable) {
+      const cardColor = programCardColor(program)
       return (
         <div style={{ padding: '18px 18px' }}>
           <div style={{ fontSize: 13, fontWeight: 600, color: T.text, marginBottom: 4 }}>You're still building your foundation</div>
@@ -3300,11 +3301,11 @@ function AddProgramPanel({ session, activeProgram, activePrograms = [], routineP
             {program.name} walks you through your first routine in phases. Once you finish, programs like Tretinoin Onboarding will show up here.
           </div>
 
-          <div style={{ background: T.white, border: `1px solid ${T.hairline}`, borderRadius: 0, padding: '14px 16px', marginBottom: 16 }}>
-            <div style={{ fontSize: 9, fontWeight: 700, color: T.darkPink, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 4 }}>
+          <div style={{ background: cardColor, borderRadius: T.radius.card, padding: '14px 16px', marginBottom: 16 }}>
+            <div style={{ fontSize: 9, fontWeight: 700, color: T.white, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 4 }}>
               {program.name}
             </div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: T.white }}>
               {currentPhase ? `Phase ${currentPhase.phase_number} of ${phases.filter(p => p.duration_days != null).length} — ${currentPhase.name}` : 'In progress'}
             </div>
           </div>
@@ -3316,28 +3317,28 @@ function AddProgramPanel({ session, activeProgram, activePrograms = [], routineP
           {!endFoundationConfirm && (
             <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
               <button onClick={() => setShowAddMore(true)}
-                style={{ padding: '7px 14px', borderRadius: 0, border: `1px solid ${T.hairline}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 11, fontFamily: 'inherit', whiteSpace: 'nowrap' }}>
+                style={{ padding: '7px 14px', borderRadius: T.radius.pill, border: `1px solid ${T.hairline}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 11, fontFamily: 'inherit', whiteSpace: 'nowrap' }}>
                 Add to my routine
               </button>
               <button onClick={() => setEndFoundationConfirm(true)}
-                style={{ padding: '7px 14px', borderRadius: 0, border: `1px solid ${T.hairline}`, background: 'transparent', color: T.textMuted, cursor: 'pointer', fontSize: 11, fontFamily: 'inherit', whiteSpace: 'nowrap' }}>
+                style={{ padding: '7px 14px', borderRadius: T.radius.pill, border: `1px solid ${T.hairline}`, background: 'transparent', color: T.textMuted, cursor: 'pointer', fontSize: 11, fontFamily: 'inherit', whiteSpace: 'nowrap' }}>
                 Done with this program
               </button>
             </div>
           )}
 
           {endFoundationConfirm && (
-            <div style={{ maxWidth: '100%', overflow: 'hidden', border: `1px solid ${T.hairline}`, borderRadius: 0, padding: '14px 16px' }}>
+            <div style={{ maxWidth: '100%', overflow: 'hidden', background: T.white, border: `1px solid ${T.hairline}`, borderRadius: T.radius.card, padding: '14px 16px' }}>
               <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.7, marginBottom: 14, wordBreak: 'break-word' }}>
                 This locks in your current routine exactly as it is — no more Basic Skincare phases. Whether you're happy with it or just ready to move on, your routine stays as-is and you can keep adjusting it manually or add a new program (like Tretinoin Onboarding) anytime.
               </div>
               <div style={{ display: 'flex', gap: 8 }}>
                 <button onClick={() => setEndFoundationConfirm(false)} disabled={endingFoundation}
-                  style={{ flex: 1, padding: '10px', borderRadius: 0, border: `1px solid ${T.hairline}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
+                  style={{ flex: 1, padding: '10px', borderRadius: T.radius.pill, border: `1px solid ${T.hairline}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
                   Cancel
                 </button>
                 <button onClick={endFoundationEarly} disabled={endingFoundation}
-                  style={{ flex: 1, padding: '10px', borderRadius: 0, border: 'none', background: T.darkPink, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
+                  style={{ flex: 1, padding: '10px', borderRadius: T.radius.pill, border: 'none', background: cardColor, color: T.white, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
                   {endingFoundation ? 'Saving…' : 'Done with this program'}
                 </button>
               </div>
