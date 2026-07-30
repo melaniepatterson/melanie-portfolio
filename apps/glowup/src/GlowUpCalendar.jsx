@@ -3317,11 +3317,11 @@ function AddProgramPanel({ session, activeProgram, activePrograms = [], routineP
           {!endFoundationConfirm && (
             <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
               <button onClick={() => setShowAddMore(true)}
-                style={{ padding: '7px 14px', borderRadius: T.radius.pill, border: `1px solid ${T.hairline}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 11, fontFamily: 'inherit', whiteSpace: 'nowrap' }}>
+                style={{ padding: '7px 14px', borderRadius: T.radius.pill, border: `1px solid ${cardColor}`, background: 'transparent', color: cardColor, cursor: 'pointer', fontSize: 11, fontFamily: 'inherit', whiteSpace: 'nowrap' }}>
                 Add to my routine
               </button>
               <button onClick={() => setEndFoundationConfirm(true)}
-                style={{ padding: '7px 14px', borderRadius: T.radius.pill, border: `1px solid ${T.hairline}`, background: 'transparent', color: T.textMuted, cursor: 'pointer', fontSize: 11, fontFamily: 'inherit', whiteSpace: 'nowrap' }}>
+                style={{ padding: '7px 14px', borderRadius: T.radius.pill, border: `1px solid ${cardColor}`, background: 'transparent', color: cardColor, cursor: 'pointer', fontSize: 11, fontFamily: 'inherit', whiteSpace: 'nowrap', opacity: 0.7 }}>
                 Done with this program
               </button>
             </div>
@@ -3334,7 +3334,7 @@ function AddProgramPanel({ session, activeProgram, activePrograms = [], routineP
               </div>
               <div style={{ display: 'flex', gap: 8 }}>
                 <button onClick={() => setEndFoundationConfirm(false)} disabled={endingFoundation}
-                  style={{ flex: 1, padding: '10px', borderRadius: T.radius.pill, border: `1px solid ${T.hairline}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
+                  style={{ flex: 1, padding: '10px', borderRadius: T.radius.pill, border: `1px solid ${cardColor}`, background: 'transparent', color: cardColor, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
                   Cancel
                 </button>
                 <button onClick={endFoundationEarly} disabled={endingFoundation}
