@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { supabase } from '@shared/supabase'
+import { supabase } from './supabase'
 import T from './theme'
 import GlowUpLogo from './GlowUpWordmark'
 const GLOWUP_HOME = '/'

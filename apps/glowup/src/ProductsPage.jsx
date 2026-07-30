@@ -1,7 +1,7 @@
 // v2-stars-modal-fix
 import { useState, useEffect, useRef } from 'react'
 import GlowUpLogo from './GlowUpWordmark'
-import { supabase } from '@shared/supabase'
+import { supabase } from './supabase'
 import SideMenu from './SideMenu'
 import NotificationBell from './shared/NotificationBell'
 import T from './theme'

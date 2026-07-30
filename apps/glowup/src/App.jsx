@@ -13,9 +13,9 @@ import BlogComingSoon from './BlogComingSoon'
 import GlowUpAbout from './GlowUpAbout'
 import BetaSurvey from './BetaSurvey'
 import T from './theme'
-import { supabase } from '@shared/supabase'
-import CookieNotice from '@shared/CookieNotice'
-import NotFound from '@shared/NotFound'
+import { supabase } from './supabase'
+import CookieNotice from './CookieNotice'
+import NotFound from './NotFound'
 
 const PUBLIC_PATHS = ["/privacy", "/blog", "/about-glowup"]
 
@@ -130,13 +130,13 @@ function Layout() {
       <Route path="/" element={
         <>
           <ErrorBoundary><GlowUpCalendar session={session} /></ErrorBoundary>
-          <CookieNotice variant="glowup" />
+          <CookieNotice />
         </>
       } />
       <Route path="/profile" element={
         <>
           <Profile session={session} onOpenSurvey={() => setShowSurvey(true)} />
-          <CookieNotice variant="glowup" />
+          <CookieNotice />
           {showSurvey && session && (
             <BetaSurvey
               session={session}
@@ -151,13 +151,13 @@ function Layout() {
       <Route path="/history" element={
         <>
           <RoutineHistory session={session} betaTester={betaTester} />
-          <CookieNotice variant="glowup" />
+          <CookieNotice />
         </>
       } />
       <Route path="/products" element={
         <>
           <ProductsPage session={session} betaTester={betaTester} />
-          <CookieNotice variant="glowup" />
+          <CookieNotice />
         </>
       } />
       <Route path="*" element={<NotFound />} />

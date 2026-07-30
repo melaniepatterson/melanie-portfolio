@@ -9,8 +9,7 @@ import WorkDetail from "./pages/WorkDetail";
 import { PROJECTS } from "./data/projects";
 import { useEffect } from "react";
 import PageTransition from "./PageTransition";
-import NotFound from "@shared/NotFound";
-import CookieNotice from "@shared/CookieNotice";
+import NotFound from "./NotFound";
 
 function Layout() {
   const location = useLocation();
@@ -41,39 +40,36 @@ function Layout() {
   }, [location.pathname]);
 
   return (
-    <>
-      <div className="layout">
-        {!isHome && <Nav isWork={isWork || isWorkDetail} />}
-        <Logo isWork={isWork || isWorkDetail} />
-        <div className="page-wrapper" style={{
-          backgroundColor: isWork || isWorkDetail ? "#C93500" : "#FAF7F2",
+    <div className="layout">
+      {!isHome && <Nav isWork={isWork || isWorkDetail} />}
+      <Logo isWork={isWork || isWorkDetail} />
+      <div className="page-wrapper" style={{
+        backgroundColor: isWork || isWorkDetail ? "#C93500" : "#FAF7F2",
+      }}>
+        <main className="content">
+          <PageTransition>
+            <Routes>
+              <Route path="/" element={<Hero />} />
+              <Route path="/portfolio" element={<Work />} />
+              <Route path="/portfolio/:slug" element={<WorkDetail />} />
+              <Route path="/about-contact" element={<AboutContact />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </PageTransition>
+        </main>
+        <footer style={{
+          marginTop: "auto",
+          padding: "1rem 2rem",
+          fontSize: "0.6rem",
+          letterSpacing: "0.1em",
+          opacity: 0.4,
+          color: isWork || isWorkDetail ? "#FAF7F2" : "#C93500",
+          pointerEvents: "none",
         }}>
-          <main className="content">
-            <PageTransition>
-              <Routes>
-                <Route path="/" element={<Hero />} />
-                <Route path="/portfolio" element={<Work />} />
-                <Route path="/portfolio/:slug" element={<WorkDetail />} />
-                <Route path="/about-contact" element={<AboutContact />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </PageTransition>
-          </main>
-          <footer style={{
-            marginTop: "auto",
-            padding: "1rem 2rem",
-            fontSize: "0.6rem",
-            letterSpacing: "0.1em",
-            opacity: 0.4,
-            color: isWork || isWorkDetail ? "#FAF7F2" : "#C93500",
-            pointerEvents: "none",
-          }}>
-            © {new Date().getFullYear()} Melanie Patterson
-          </footer>
-        </div>
+          © {new Date().getFullYear()} Melanie Patterson
+        </footer>
       </div>
-      <CookieNotice variant="portfolio" />
-    </>
+    </div>
   );
 }
 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { supabase } from '@shared/supabase'
+import { supabase } from './supabase'
 import T from './theme'
 
 const CHECK_COLORS = [T.pink, T.blue, T.green, T.yellow, T.orange]

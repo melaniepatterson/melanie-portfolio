@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { supabase } from '@shared/supabase'
+import { supabase } from './supabase'
 import { buildStepEntries } from './programOptions'
 import ProgramOptionsChecklist, { toggleOption } from './ProgramOptionsChecklist'
 import T from './theme'

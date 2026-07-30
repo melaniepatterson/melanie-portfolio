@@ -4,7 +4,7 @@
 // fetch of just what computeNotifications needs, so the bell can drop into
 // any header without each page having to load calendar-specific data.
 import { useState, useEffect } from 'react'
-import { supabase } from '@shared/supabase'
+import { supabase } from '../supabase'
 import { detectTimezone } from '../timezone'
 import { BASE_TYPES } from '../GlowUpCalendar'
 import { computeNotifications } from './notifications'

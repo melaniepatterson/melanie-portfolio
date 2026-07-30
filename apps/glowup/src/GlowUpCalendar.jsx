@@ -22,7 +22,7 @@
  */
 
 import { useState, useEffect, useRef } from 'react'
-import { supabase } from '@shared/supabase'
+import { supabase } from './supabase'
 import GlowUpLoader from './GlowUpLoader'
 import { LoadError } from './ErrorBoundary'
 import Onboarding from './Onboarding'

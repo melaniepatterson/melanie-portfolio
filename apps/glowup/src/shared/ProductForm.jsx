@@ -5,7 +5,7 @@
 // See GlowUp_Project_Handoff.md Section 13.5a for the consolidation decision —
 // GlowUpCalendar.jsx and ProductsPage.jsx previously had two diverging copies.
 import { useState, useRef, useEffect } from 'react'
-import { supabase } from '@shared/supabase'
+import { supabase } from '../supabase'
 import T from '../theme'
 import { useAlert } from './useConfirm'
 import StarRating from './StarRating'

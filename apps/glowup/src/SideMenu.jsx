@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import Avatar from './Avatar'
-import { supabase } from '@shared/supabase'
+import { supabase } from './supabase'
 import T from './theme'
 const GLOWUP_BASE = ''
 const GLOWUP_HOME = '/'
