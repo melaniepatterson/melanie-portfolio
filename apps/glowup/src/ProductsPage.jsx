@@ -28,10 +28,51 @@ function ProductCardSkeleton() {
   )
 }
 
-function ProductGridSkeleton({ count = 10 }) {
+const FILTER_ROW_WIDTHS = ['70%', '55%', '82%', '60%']
+
+// Mirrors the desktop filter sidebar's real shape (FilterSection groups of
+// a title line + checkbox rows) at the same 200px width, so the grid next
+// to it doesn't shift position once real filters land.
+function FilterSidebarSkeleton() {
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: 12, padding: '20px' }}>
-      {Array.from({ length: count }).map((_, i) => <ProductCardSkeleton key={i} />)}
+    <div style={{ width: 200, flexShrink: 0, borderRight: '0.5px solid rgba(0,0,0,0.1)', padding: '16px 16px 16px 20px' }}>
+      {[0, 1, 2].map(section => (
+        <div key={section} style={{ borderBottom: '0.5px solid rgba(0,0,0,0.1)', paddingBottom: 12, marginBottom: 12 }}>
+          <Skeleton height={11} width="45%" style={{ marginBottom: 12 }} />
+          {FILTER_ROW_WIDTHS.map((w, row) => (
+            <div key={row} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '3px 0', marginBottom: 5 }}>
+              <Skeleton width={18} height={18} radius={5} />
+              <Skeleton height={11} width={w} />
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+// Full-page skeleton — same flex row (sidebar + main content) as the real
+// ProductLibrary, same tab pills, same sort/search row, and the grid at
+// its real column count (5 desktop / 2 mobile) so cards render at their
+// real size instead of an unrelated auto-fit count.
+function ProductsPageSkeleton({ isMobile }) {
+  return (
+    <div style={{ display: 'flex', gap: 0, height: 'calc(100vh - 120px)', overflow: 'hidden' }}>
+      {!isMobile && <FilterSidebarSkeleton />}
+      <div style={{ flex: 1, padding: '16px 20px', minWidth: 0 }}>
+        <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
+          <Skeleton width={100} height={24} radius={999} />
+          <Skeleton width={90} height={24} radius={999} />
+          <Skeleton width={110} height={24} radius={999} />
+        </div>
+        <div style={{ display: 'flex', gap: 8, marginBottom: 16, alignItems: 'center' }}>
+          <Skeleton width={110} height={28} radius={999} />
+          <Skeleton height={28} radius={999} style={{ flex: 1 }} />
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(5, 1fr)', gap: 12 }}>
+          {Array.from({ length: isMobile ? 6 : 10 }).map((_, i) => <ProductCardSkeleton key={i} />)}
+        </div>
+      </div>
     </div>
   )
 }
@@ -1013,6 +1054,12 @@ export default function ProductsPage({ session, betaTester }) {
   const [showFeedback, setShowFeedback] = useState(false)
   const [activeRoutineNames, setActiveRoutineNames] = useState(new Set())
   const [userRoutineNames, setUserRoutineNames] = useState(new Set())
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 640)
+  useEffect(() => {
+    function onResize() { setIsMobile(window.innerWidth < 640) }
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
   const userId = session?.user?.id
   const CURATOR_ID = '27fbf9cd-5cfe-4032-9594-398e96fd0ccf'
 
@@ -1378,7 +1425,7 @@ export default function ProductsPage({ session, betaTester }) {
       )}
 
       {loading
-        ? <ProductGridSkeleton />
+        ? <ProductsPageSkeleton isMobile={isMobile} />
         : activeTab === 'history'
         ? <div style={{ padding: '20px' }}>
             {finishHistory.length === 0
