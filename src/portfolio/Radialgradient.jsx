@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, forwardRef } from "react";
 import { Link } from "react-router-dom";
 import { PROJECTS } from "./data/projects";
-import { SplitText } from "./App";
+import { SplitText } from "../App";
 
 const CHASER_IMAGES = PROJECTS.map(p => p.images[0].src);
 

@@ -1,7 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { PROJECTS } from "../data/projects";
 import styles from "./WorkDetail.module.css";
-import { SplitText } from "../App";
+import { SplitText } from "../../App";
 import InspirationResult from "../components/InspirationResult";
 import Lightbox from "../components/Lightbox";
 import CodeReveal from "../components/CodeReveal";

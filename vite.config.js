@@ -17,18 +17,18 @@ function glowupStandaloneHtml() {
     transformIndexHtml(html) {
       return html
         .replace(
-          '<link rel="icon" href="/melanie-studio-favicon.ico" />',
-          '<link rel="icon" type="image/png" href="/glowup-icon-192.png" />'
+          '<link rel="icon" href="/portfolio/melanie-studio-favicon.ico" />',
+          '<link rel="icon" type="image/png" href="/glowup/glowup-icon-192.png" />'
         )
         .replace(
-          '<link rel="apple-touch-icon" href="/logo192.png" />',
-          '<link rel="apple-touch-icon" href="/glowup-apple-touch-icon.png" media="(prefers-color-scheme: light)" />\n' +
-          '    <link rel="apple-touch-icon" href="/glowup-apple-touch-icon-dark.png" media="(prefers-color-scheme: dark)" />\n' +
+          '<link rel="apple-touch-icon" href="/portfolio/logo192.png" />',
+          '<link rel="apple-touch-icon" href="/glowup/glowup-apple-touch-icon.png" media="(prefers-color-scheme: light)" />\n' +
+          '    <link rel="apple-touch-icon" href="/glowup/glowup-apple-touch-icon-dark.png" media="(prefers-color-scheme: dark)" />\n' +
           '    <meta name="apple-mobile-web-app-title" content="Glow Up" />'
         )
         .replace(
-          '<link rel="manifest" href="/manifest.json" />',
-          '<link rel="manifest" href="/manifest-glowup.json" />'
+          '<link rel="manifest" href="/portfolio/manifest.json" />',
+          '<link rel="manifest" href="/glowup/manifest-glowup.json" />'
         )
         .replace(
           /<meta name="description" content="[^"]*" \/>/,

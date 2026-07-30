@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import T from './theme'
+import T from '../glowup/theme'
 
 const COPY = {
   glowup: {

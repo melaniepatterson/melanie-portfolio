@@ -1,4 +1,4 @@
-import { SplitText } from "../App";
+import { SplitText } from "../../App";
 import styles from "./About-contact.module.css";
 import { useEffect, useState } from "react";
 

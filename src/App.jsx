@@ -1,29 +1,29 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import Nav from "./Nav";
-import Hero from "./Radialgradient";
-import Logo from "./Logo";
-import Work from "./pages/Work";
-import AboutContact from "./pages/About-contact";
+import Nav from "./portfolio/Nav";
+import Hero from "./portfolio/Radialgradient";
+import Logo from "./portfolio/Logo";
+import Work from "./portfolio/pages/Work";
+import AboutContact from "./portfolio/pages/About-contact";
 import "./App.css";
-import WorkDetail from "./pages/WorkDetail";
-import { PROJECTS } from "./data/projects";
+import WorkDetail from "./portfolio/pages/WorkDetail";
+import { PROJECTS } from "./portfolio/data/projects";
 import { useEffect, useState } from "react";
-import PageTransition from "./PageTransition";
-import NotFound from "./pages/NotFound";
-import GlowUpCalendar from './components/GlowUpCalendar'
-import GlowUpLoader from './components/GlowUpLoader'
-import { ErrorBoundary } from './components/ErrorBoundary'
-import Auth from './components/Auth'
-import Profile from './components/Profile'
-import RoutineHistory from './components/RoutineHistory'
-import ProductsPage from './components/ProductsPage'
-import CookieNotice from './components/CookieNotice'
-import PrivacyPolicy from './components/PrivacyPolicy'
-import BlogComingSoon from './components/BlogComingSoon'
-import GlowUpAbout from './components/GlowUpAbout'
-import BetaSurvey from './components/BetaSurvey'
+import PageTransition from "./portfolio/PageTransition";
+import NotFound from "./shared/NotFound";
+import GlowUpCalendar from './glowup/GlowUpCalendar'
+import GlowUpLoader from './glowup/GlowUpLoader'
+import { ErrorBoundary } from './glowup/ErrorBoundary'
+import Auth from './glowup/Auth'
+import Profile from './glowup/Profile'
+import RoutineHistory from './glowup/RoutineHistory'
+import ProductsPage from './glowup/ProductsPage'
+import CookieNotice from './shared/CookieNotice'
+import PrivacyPolicy from './glowup/PrivacyPolicy'
+import BlogComingSoon from './glowup/BlogComingSoon'
+import GlowUpAbout from './glowup/GlowUpAbout'
+import BetaSurvey from './glowup/BetaSurvey'
 import { supabase } from './lib/supabase'
-import T from './components/theme'
+import T from './glowup/theme'
 import { GLOWUP_STANDALONE, GLOWUP_BASE, GLOWUP_HOME } from './lib/glowupMode'
 
 // Captured once at module load, before any GlowUp route-coloring effect

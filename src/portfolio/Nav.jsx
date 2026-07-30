@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { SplitText } from "./App";
+import { SplitText } from "../App";
 
 export default function Nav({ isWork }) {
   const color = isWork ? "#FAF7F2" : "#C93500";
