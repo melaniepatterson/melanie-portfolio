@@ -1,0 +1,21 @@
+body {
+  margin: 0;
+  font-family: 'Bricolage Grotesque', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  color: #C93500;
+  background-color: #FAF7F2;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+html {
+  background-color: #FAF7F2;
+  scroll-behavior: smooth;
+}
+
+p, h1, h2, h3 {
+  text-wrap: pretty;
+}

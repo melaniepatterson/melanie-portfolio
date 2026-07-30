@@ -1,0 +1,176 @@
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import "./App.css";
+import GlowUpCalendar from './GlowUpCalendar'
+import GlowUpLoader from './GlowUpLoader'
+import { ErrorBoundary } from './ErrorBoundary'
+import Auth from './Auth'
+import Profile from './Profile'
+import RoutineHistory from './RoutineHistory'
+import ProductsPage from './ProductsPage'
+import PrivacyPolicy from './PrivacyPolicy'
+import BlogComingSoon from './BlogComingSoon'
+import GlowUpAbout from './GlowUpAbout'
+import BetaSurvey from './BetaSurvey'
+import T from './theme'
+import { supabase } from '@shared/supabase'
+import CookieNotice from '@shared/CookieNotice'
+import NotFound from '@shared/NotFound'
+
+const PUBLIC_PATHS = ["/privacy", "/blog", "/about-glowup"]
+
+function Layout() {
+  const location = useLocation();
+  const isPublicPage = PUBLIC_PATHS.includes(location.pathname)
+
+  const [session, setSession] = useState(undefined)
+  const [showSurvey, setShowSurvey] = useState(false)
+  const [surveySubmitted, setSurveySubmitted] = useState(false)
+  const [betaTester, setBetaTester] = useState(false)
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => setSession(session))
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => setSession(session))
+    return () => subscription.unsubscribe()
+  }, [])
+
+  // index.html sets theme-color to white by default — this keeps the browser
+  // chrome (mobile address bar, macOS title bar) in sync with whichever
+  // screen is showing: black behind the loader/signed-out Auth screen,
+  // white everywhere else.
+  useEffect(() => {
+    const routineBg = (!isPublicPage && !session) ? T.text : T.white
+    document.body.style.backgroundColor = routineBg
+    document.documentElement.style.backgroundColor = routineBg
+    const meta = document.querySelector('meta[name="theme-color"]')
+    if (meta) meta.setAttribute('content', routineBg)
+  }, [isPublicPage, session])
+
+  // iOS Safari only repaints its status bar/toolbar chrome on a scroll
+  // event, not immediately when theme-color changes via JS. GlowUp's
+  // full-screen states (loader, Auth) use position:fixed with no other
+  // content in normal document flow, so the page can genuinely have zero
+  // scrollable height — window.scrollTo would then be a silent no-op (no
+  // scroll event ever fires). Forcing 1px of real overflow first
+  // guarantees the nudge actually scrolls, and holding it for a real
+  // 120ms via setTimeout (rather than just the next animation frame)
+  // is what a real device needs to reliably resample.
+  useEffect(() => {
+    const html = document.documentElement
+    const prevMinHeight = html.style.minHeight
+    html.style.minHeight = 'calc(100vh + 2px)'
+    const raf = requestAnimationFrame(() => {
+      window.scrollTo(window.scrollX, window.scrollY + 2)
+    })
+    const timeout = setTimeout(() => {
+      window.scrollTo(window.scrollX, window.scrollY - 2)
+      html.style.minHeight = prevMinHeight
+    }, 120)
+    return () => {
+      cancelAnimationFrame(raf)
+      clearTimeout(timeout)
+      html.style.minHeight = prevMinHeight
+    }
+  }, [isPublicPage, session])
+
+  // Check ?survey=1 param — open modal over whatever page is current
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('survey') === '1') {
+      window.history.replaceState({}, '', window.location.pathname)
+      setShowSurvey(true)
+    }
+  }, [location.search])
+
+  // Load beta tester + survey status when session is available
+  useEffect(() => {
+    if (!session?.user?.id) return
+    supabase.from('profiles').select('beta_tester, survey_submitted_at')
+      .eq('id', session.user.id).single()
+      .then(({ data }) => {
+        if (data) {
+          setBetaTester(data.beta_tester || false)
+          setSurveySubmitted(!!data.survey_submitted_at)
+          // Also open survey if param was set before profile loaded
+          if (data.beta_tester && new URLSearchParams(window.location.search).get('survey') === '1') {
+            window.history.replaceState({}, '', window.location.pathname)
+            setShowSurvey(true)
+          }
+        }
+      })
+  }, [session?.user?.id])
+
+  useEffect(() => {
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+  }, []);
+
+  useEffect(() => {
+    const titles = {
+      "/": "Routine — melanie.studio",
+      "/profile": "Profile — melanie.studio",
+      "/history": "History — melanie.studio",
+      "/products": "Products — melanie.studio",
+      "/blog": "Blog — melanie.studio",
+      "/about-glowup": "About — melanie.studio",
+    };
+    const title = titles[location.pathname];
+    if (title) document.title = title;
+  }, [location.pathname]);
+
+  if (!isPublicPage && session === undefined) return <GlowUpLoader />
+  if (!isPublicPage && !session) return <Auth />
+
+  return (
+    <Routes>
+      <Route path="/privacy" element={<PrivacyPolicy />} />
+      <Route path="/blog" element={<BlogComingSoon />} />
+      <Route path="/about-glowup" element={<GlowUpAbout />} />
+      <Route path="/" element={
+        <>
+          <ErrorBoundary><GlowUpCalendar session={session} /></ErrorBoundary>
+          <CookieNotice variant="glowup" />
+        </>
+      } />
+      <Route path="/profile" element={
+        <>
+          <Profile session={session} onOpenSurvey={() => setShowSurvey(true)} />
+          <CookieNotice variant="glowup" />
+          {showSurvey && session && (
+            <BetaSurvey
+              session={session}
+              onClose={() => setShowSurvey(false)}
+              onSubmitted={() => { setSurveySubmitted(true); setShowSurvey(false) }}
+              betaTester={betaTester}
+              alreadySubmitted={surveySubmitted}
+            />
+          )}
+        </>
+      } />
+      <Route path="/history" element={
+        <>
+          <RoutineHistory session={session} betaTester={betaTester} />
+          <CookieNotice variant="glowup" />
+        </>
+      } />
+      <Route path="/products" element={
+        <>
+          <ProductsPage session={session} betaTester={betaTester} />
+          <CookieNotice variant="glowup" />
+        </>
+      } />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Layout />
+    </BrowserRouter>
+  );
+}
+
+export default App;

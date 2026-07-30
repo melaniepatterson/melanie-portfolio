@@ -1,1 +1,0 @@
-import{j as t}from"./index-CrAvBL-2.js";import{i}from"./03-CBQMXsnM.js";function r({hovered:e}){return t.jsx("div",{style:{position:"relative",width:"100%",aspectRatio:"4/3"},children:t.jsx("img",{src:i,alt:"",style:{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover"}})})}export{r as default};

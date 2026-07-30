@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "portfolio-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev:portfolio", "--", "--port", "5173"],
+      "port": 5173
+    },
+    {
+      "name": "glowup-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev:glowup", "--", "--port", "5174"],
+      "port": 5174
+    }
+  ]
+}
