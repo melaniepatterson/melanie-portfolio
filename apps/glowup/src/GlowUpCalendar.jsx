@@ -3347,6 +3347,9 @@ function AddProgramPanel({ session, activeProgram, activePrograms = [], routineP
               onChoose={addStepsNow}
               onClose={() => setShowAddMore(false)}
               skinType={skinType}
+              accentColor={T.darkGreen}
+              unselectedBg={T.white}
+              unselectedTextColor={T.darkGreen}
             />
           )}
         </div>

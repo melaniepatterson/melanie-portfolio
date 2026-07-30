@@ -25,7 +25,7 @@ function useEscapeToClose(onClose) {
 }
 
 // ─── PHASE 2 OPTION PICKER ────────────────────────────────────
-export function Phase2Picker({ options, onChoose, onClose, skinType, alreadyAdded = new Set() }) {
+export function Phase2Picker({ options, onChoose, onClose, skinType, alreadyAdded = new Set(), accentColor = T.darkPink, unselectedBg, unselectedTextColor }) {
   const [selected, setSelected] = useState(new Set())
   const [saving, setSaving] = useState(false)
   const [bhaStep, setBhaStep] = useState(false) // show AHA/BHA day picker after confirming
@@ -38,8 +38,8 @@ export function Phase2Picker({ options, onChoose, onClose, skinType, alreadyAdde
 
   if (bhaStep) return (
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-      <div onClick={e => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="bha-onboarding-title" style={{ background: T.white, border: `1px solid ${T.hairline}`, borderRadius: 0, width: '100%', maxWidth: 460, padding: '28px 24px' }}>
-        <div style={{ fontSize: 11, fontWeight: 700, color: T.darkPink, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>AHA/BHA Onboarding</div>
+      <div onClick={e => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="bha-onboarding-title" style={{ background: T.white, border: 'none', borderRadius: T.radius.modal, width: '100%', maxWidth: 460, padding: '28px 24px' }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: accentColor, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>AHA/BHA Onboarding</div>
         <h3 id="bha-onboarding-title" style={{ fontSize: 18, fontWeight: 800, color: T.text, letterSpacing: '-0.03em', margin: '0 0 8px' }}>One more step</h3>
         <p style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.7, margin: '0 0 20px' }}>
           AHA/BHA needs a slow ramp-up to avoid irritation — we'll track it through the AHA/BHA Onboarding program. Pick which night works best for you and we'll handle the rest.
@@ -49,7 +49,7 @@ export function Phase2Picker({ options, onChoose, onClose, skinType, alreadyAdde
           {DAYS.map((d, i) => (
             <button key={i} onClick={() => setBhaDay(i)}
               aria-pressed={bhaDay === i}
-              style={{ padding: '6px 12px', borderRadius: 0, border: `1px solid ${bhaDay === i ? T.text : T.hairline}`, background: bhaDay === i ? T.text : 'transparent', color: bhaDay === i ? '#fff' : T.textMuted, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
+              style={{ padding: '6px 12px', borderRadius: T.radius.pill, border: `1px solid ${bhaDay === i ? T.text : T.hairline}`, background: bhaDay === i ? T.text : 'transparent', color: bhaDay === i ? '#fff' : T.textMuted, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
               {d}
             </button>
           ))}
@@ -62,7 +62,7 @@ export function Phase2Picker({ options, onChoose, onClose, skinType, alreadyAdde
           await onChoose(chosenItems, bhaDay)
           setSaving(false)
         }}
-          style={{ width: '100%', padding: '12px', borderRadius: 0, border: 'none', background: T.darkPink, color: '#fff', cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 600 }}>
+          style={{ width: '100%', padding: '12px', borderRadius: T.radius.pill, border: 'none', background: accentColor, color: '#fff', cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 600 }}>
           {saving ? 'Starting…' : 'Start AHA/BHA Onboarding'}
         </button>
       </div>
@@ -71,13 +71,13 @@ export function Phase2Picker({ options, onChoose, onClose, skinType, alreadyAdde
 
   return (
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-      <div onClick={e => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="phase2-picker-title" style={{ position: 'relative', background: T.white, border: `1px solid ${T.hairline}`, borderRadius: 0, width: '100%', maxWidth: 460, maxHeight: '85vh', overflowY: 'auto', padding: '24px 20px' }}>
+      <div onClick={e => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="phase2-picker-title" style={{ position: 'relative', background: T.white, border: 'none', borderRadius: T.radius.modal, width: '100%', maxWidth: 460, maxHeight: '85vh', overflowY: 'auto', padding: '24px 20px' }}>
         <button onClick={onClose} aria-label="Close"
-          style={{ position: 'absolute', top: 16, right: 16, width: 28, height: 28, border: `1px solid ${T.hairline}`, background: 'transparent', borderRadius: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: T.textMuted, fontSize: 14, lineHeight: 1, fontFamily: 'inherit', padding: 0 }}>
+          style={{ position: 'absolute', top: 16, right: 16, width: 28, height: 28, border: `1px solid ${T.hairline}`, background: 'transparent', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: T.textMuted, fontSize: 14, lineHeight: 1, fontFamily: 'inherit', padding: 0 }}>
           ×
         </button>
 
-        <div style={{ fontSize: 11, fontWeight: 700, color: T.darkPink, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8, paddingRight: 36 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: accentColor, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8, paddingRight: 36 }}>
           Phase 2 — Add to your routine
         </div>
         <h3 id="phase2-picker-title" style={{ fontSize: 20, fontWeight: 800, color: T.text, letterSpacing: '-0.03em', margin: '0 0 8px', paddingRight: 36 }}>
@@ -96,6 +96,8 @@ export function Phase2Picker({ options, onChoose, onClose, skinType, alreadyAdde
           }}
           skinType={skinType}
           alreadyAdded={alreadyAdded}
+          unselectedBg={unselectedBg}
+          unselectedTextColor={unselectedTextColor}
         />
 
         <button
@@ -113,7 +115,7 @@ export function Phase2Picker({ options, onChoose, onClose, skinType, alreadyAdde
               setSaving(false)
             }
           }}
-          style={{ width: '100%', padding: '12px', borderRadius: 0, border: 'none', background: selected.size > 0 ? T.darkPink : T.hairline, color: '#fff', cursor: selected.size > 0 ? 'pointer' : 'default', fontSize: 13, fontFamily: 'inherit', fontWeight: 600, marginTop: 12 }}>
+          style={{ width: '100%', padding: '12px', borderRadius: T.radius.pill, border: 'none', background: selected.size > 0 ? accentColor : T.hairline, color: '#fff', cursor: selected.size > 0 ? 'pointer' : 'default', fontSize: 13, fontFamily: 'inherit', fontWeight: 600, marginTop: 12 }}>
           {saving ? 'Saving…' : (() => {
             if (selected.size === 0) return 'Select an option to continue'
             const realCount = options.filter(o => selected.has(o.id) && !o.is_skip_option).length

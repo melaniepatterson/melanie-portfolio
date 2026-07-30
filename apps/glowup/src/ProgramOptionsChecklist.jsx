@@ -6,7 +6,7 @@ import T from './theme'
 // - "skip" option exclusive with everything else
 // - actives (vitamin_c / exfoliant) mutually exclusive with each other
 // - contextual skin-type notes (informational only — never disables an option)
-export default function ProgramOptionsChecklist({ options, selected, onToggle, skinType, alreadyAdded = new Set() }) {
+export default function ProgramOptionsChecklist({ options, selected, onToggle, skinType, alreadyAdded = new Set(), unselectedBg = '#EBFBF2', unselectedTextColor = T.text }) {
   const realOptions = options.filter(o => !o.is_skip_option)
   const skipOption = options.find(o => o.is_skip_option)
   // An active is "taken" if it's already in the routine OR currently selected in the picker
@@ -33,15 +33,15 @@ export default function ProgramOptionsChecklist({ options, selected, onToggle, s
                 width: '100%', textAlign: 'left', display: 'flex', alignItems: 'flex-start', gap: 10,
                 padding: '14px 16px', borderRadius: T.radius.card, cursor: disabled ? 'default' : 'pointer', fontFamily: 'inherit',
                 border: 'none',
-                background: isAlreadyAdded ? '#F0F0F0' : isOn ? T.darkGreen : '#EBFBF2',
+                background: isAlreadyAdded ? '#F0F0F0' : isOn ? T.darkGreen : unselectedBg,
                 opacity: disabledByOtherActive ? 0.4 : 1,
               }}>
-              <div style={{ width: 18, height: 18, borderRadius: '50%', border: `1.5px solid ${isAlreadyAdded ? 'rgba(0,0,0,0.25)' : isOn ? '#fff' : T.text}`, background: isAlreadyAdded ? 'rgba(0,0,0,0.15)' : isOn ? '#fff' : 'transparent', flexShrink: 0, marginTop: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ width: 18, height: 18, borderRadius: '50%', border: `1.5px solid ${isAlreadyAdded ? 'rgba(0,0,0,0.25)' : isOn ? '#fff' : unselectedTextColor}`, background: isAlreadyAdded ? 'rgba(0,0,0,0.15)' : isOn ? '#fff' : 'transparent', flexShrink: 0, marginTop: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 {isAlreadyAdded && <svg width="10" height="8" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke={T.textMuted} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>}
                 {!isAlreadyAdded && isOn && <svg width="10" height="8" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke={T.darkGreen} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>}
               </div>
               <div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: isAlreadyAdded ? T.textMuted : isOn ? '#fff' : T.text, marginBottom: 3 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: isAlreadyAdded ? T.textMuted : isOn ? '#fff' : unselectedTextColor, marginBottom: 3 }}>
                   {opt.label}
                   {isAlreadyAdded
                     ? <span style={{ fontSize: 9, fontWeight: 700, color: T.textMuted, marginLeft: 8, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Already in your routine</span>
@@ -54,7 +54,7 @@ export default function ProgramOptionsChecklist({ options, selected, onToggle, s
               </div>
             </button>
             {skinNote && (
-              <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.6, padding: '8px 12px', background: '#EBFBF2', borderRadius: T.radius.card, marginTop: 4 }}>
+              <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.6, padding: '8px 12px', background: unselectedBg, borderRadius: T.radius.card, marginTop: 4 }}>
                 {skinNote}
               </div>
             )}
@@ -69,9 +69,9 @@ export default function ProgramOptionsChecklist({ options, selected, onToggle, s
             width: '100%', textAlign: 'left', display: 'block', marginTop: 8, marginBottom: 8,
             padding: '14px 16px', borderRadius: T.radius.card, cursor: 'pointer', fontFamily: 'inherit',
             border: 'none',
-            background: selected.has(skipOption.id) ? T.darkGreen : '#EBFBF2',
+            background: selected.has(skipOption.id) ? T.darkGreen : unselectedBg,
           }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: selected.has(skipOption.id) ? '#fff' : T.text, marginBottom: 3 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: selected.has(skipOption.id) ? '#fff' : unselectedTextColor, marginBottom: 3 }}>
             {skipOption.label}
           </div>
           <div style={{ fontSize: 12, color: selected.has(skipOption.id) ? 'rgba(255,255,255,0.75)' : T.textMuted, lineHeight: 1.6 }}>
