@@ -12,6 +12,7 @@ import T from './theme'
 import { useAlert } from './shared/useConfirm'
 import FeedbackPanel from './shared/FeedbackPanel'
 import GlowUpFooter from './shared/GlowUpFooter'
+import { GLOWUP_HOME } from '../lib/glowupMode'
 
 
 
@@ -191,7 +192,7 @@ export default function Profile({ session, onOpenSurvey }) {
       try { localStorage.removeItem('glowup_calendar_tour_done') } catch {}
 
       setResetConfirm(false)
-      window.location.href = '/routine'
+      window.location.href = GLOWUP_HOME
     } catch (err) {
       setActionError(err.message)
     } finally {
@@ -362,8 +363,8 @@ export default function Profile({ session, onOpenSurvey }) {
           page instead of only the home screen. */}
       <div style={{ background: T.text, position: 'sticky', top: 0, zIndex: 10 }}>
         <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px 10px' }}>
-          <a href="/routine" aria-label="Back to calendar" style={{ border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.white, textDecoration: 'none', display: 'inline-block' }}>←</a>
-          <a href="/routine" style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', display: 'flex', alignItems: 'baseline', textDecoration: 'none' }}>
+          <a href={GLOWUP_HOME} aria-label="Back to calendar" style={{ border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.white, textDecoration: 'none', display: 'inline-block' }}>←</a>
+          <a href={GLOWUP_HOME} style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', display: 'flex', alignItems: 'baseline', textDecoration: 'none' }}>
             <GlowUpLogo size={32} style={{ color: T.white }} />
           </a>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -619,7 +620,7 @@ export default function Profile({ session, onOpenSurvey }) {
           <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.7, marginBottom: 12 }}>
             Export your routine as a calendar file (.ics) to add to Apple Calendar, Google Calendar, or any other calendar app.
           </div>
-          <a href="/routine?export=1"
+          <a href={`${GLOWUP_HOME}?export=1`}
             style={{ display: 'inline-block', padding: '9px 18px', borderRadius: T.radius.pill, border: 'none', background: T.text, color: T.white, fontSize: 12, fontFamily: 'inherit', cursor: 'pointer', textDecoration: 'none' }}>
             Open export options →
           </a>
@@ -701,7 +702,7 @@ export default function Profile({ session, onOpenSurvey }) {
         )}
 
         {/* Sign out */}
-        <button onClick={async () => { await supabase.auth.signOut(); window.location.href = '/routine' }}
+        <button onClick={async () => { await supabase.auth.signOut(); window.location.href = GLOWUP_HOME }}
           style={{ width: '100%', padding: '12px', borderRadius: T.radius.pill, border: 'none', background: T.text, fontSize: 13, color: T.white, cursor: 'pointer', fontFamily: 'inherit' }}>
           Sign out
         </button>

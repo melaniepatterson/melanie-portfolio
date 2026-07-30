@@ -25,6 +25,7 @@ import BetaSurvey from './components/BetaSurvey'
 import PortfolioGate from './pages/PortfolioGate'
 import { supabase } from './lib/supabase'
 import T from './components/theme'
+import { GLOWUP_STANDALONE, GLOWUP_BASE, GLOWUP_HOME } from './lib/glowupMode'
 
 // Captured once at module load, before any GlowUp route-coloring effect
 // ever touches the tag — the pristine portfolio value to restore to
@@ -36,12 +37,17 @@ function Layout() {
   const isHome = location.pathname === "/";
   const isWork = location.pathname === "/portfolio";
   const isWorkDetail = location.pathname.startsWith("/portfolio/");
-  const isRoutine = location.pathname.startsWith("/routine");
   // GlowUp pages that live outside /routine — no auth, no loader/Auth
   // states, just a plain white GlowUp page — but still need GlowUp's font
   // and colors instead of the portfolio's, same as everything under /routine.
   const isGlowUpStandalone = ["/privacy", "/blog", "/about-glowup"].includes(location.pathname)
+  // On the standalone GlowUp deployment the whole app IS the calendar app —
+  // every path is "routine" except the few no-auth-required pages above.
+  const isRoutine = GLOWUP_STANDALONE ? !isGlowUpStandalone : location.pathname.startsWith("/routine")
   const isGlowUpPage = isRoutine || isGlowUpStandalone
+  const ROUTINE_PROFILE = `${GLOWUP_BASE}/profile`
+  const ROUTINE_HISTORY = `${GLOWUP_BASE}/history`
+  const ROUTINE_PRODUCTS = `${GLOWUP_BASE}/products`
 
   const [session, setSession] = useState(undefined)
   const [showSurvey, setShowSurvey] = useState(false)
@@ -162,10 +168,10 @@ function Layout() {
       "/": "melanie.studio",
       "/portfolio": "Work — melanie.studio",
       "/about-contact": "Info & Contact — melanie.studio",
-      "/routine": "Routine — melanie.studio",
-      "/routine/profile": "Profile — melanie.studio",
-      "/routine/history": "History — melanie.studio",
-      "/routine/products": "Products — melanie.studio",
+      [GLOWUP_HOME]: "Routine — melanie.studio",
+      [ROUTINE_PROFILE]: "Profile — melanie.studio",
+      [ROUTINE_HISTORY]: "History — melanie.studio",
+      [ROUTINE_PRODUCTS]: "Products — melanie.studio",
       "/blog": "Blog — melanie.studio",
       "/about-glowup": "About — melanie.studio",
     };
@@ -181,8 +187,9 @@ function Layout() {
 
   // Portfolio gated for now — points to GlowUp instead. Remove this check
   // to bring the portfolio (home, /portfolio, project pages, /about-contact)
-  // back.
-  if (isHome || isWork || isWorkDetail || location.pathname === "/about-contact") return <PortfolioGate />
+  // back. Never applies on the standalone GlowUp deployment, where "/" is
+  // GlowUp's own home, not the portfolio's.
+  if (!GLOWUP_STANDALONE && (isHome || isWork || isWorkDetail || location.pathname === "/about-contact")) return <PortfolioGate />
 
   if (isRoutine && session === undefined) return <GlowUpLoader />
   if (isRoutine && !session) return <Auth />
@@ -203,7 +210,7 @@ function Layout() {
   // child has an explicit width — GlowUpCalendar's own maxWidth:900 content
   // column — so its sticky header could never reach the true viewport edge
   // from inside that wrapper no matter what width it declared itself.
-  if (location.pathname === "/routine") return (
+  if (location.pathname === GLOWUP_HOME) return (
     <>
       <ErrorBoundary><GlowUpCalendar session={session} /></ErrorBoundary>
       <CookieNotice variant="glowup" />
@@ -211,7 +218,7 @@ function Layout() {
   )
 
   // Profile page — full screen, no nav/logo/footer chrome
-  if (location.pathname === "/routine/profile") return (
+  if (location.pathname === ROUTINE_PROFILE) return (
     <>
       <Profile session={session} onOpenSurvey={() => setShowSurvey(true)} />
       <CookieNotice variant="glowup" />
@@ -226,18 +233,23 @@ function Layout() {
       )}
     </>
   )
-  if (location.pathname === "/routine/history") return (
+  if (location.pathname === ROUTINE_HISTORY) return (
     <>
       <RoutineHistory session={session} betaTester={betaTester} />
       <CookieNotice variant="glowup" />
     </>
   )
-  if (location.pathname === "/routine/products") return (
+  if (location.pathname === ROUTINE_PRODUCTS) return (
     <>
       <ProductsPage session={session} betaTester={betaTester} />
       <CookieNotice variant="glowup" />
     </>
   )
+
+  // Standalone GlowUp deployment — nothing below this point exists there
+  // (no portfolio to fall through to). Anything unmatched above is a
+  // genuine 404 on this domain.
+  if (GLOWUP_STANDALONE) return <NotFound />
 
   return (
     <>

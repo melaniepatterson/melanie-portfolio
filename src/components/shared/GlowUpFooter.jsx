@@ -8,6 +8,7 @@
 // footer uses.
 import GlowUpLogo from '../GlowUpWordmark'
 import T from '../theme'
+import { GLOWUP_BASE, GLOWUP_HOME } from '../../lib/glowupMode'
 
 // Plain text, white, no underline, no hover treatment — same for links and
 // the one action (Send feedback opens a modal instead of navigating).
@@ -36,9 +37,9 @@ export default function GlowUpFooter({ onFeedback, betaTester }) {
       <div style={{ background: T.text, padding: '32px 20px 20px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 24, maxWidth: 900, margin: '0 auto 28px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <FooterLink href="/routine">Calendar</FooterLink>
-            <FooterLink href="/routine/history">Routine history</FooterLink>
-            <FooterLink href="/routine/products">Product library</FooterLink>
+            <FooterLink href={GLOWUP_HOME}>Calendar</FooterLink>
+            <FooterLink href={`${GLOWUP_BASE}/history`}>Routine history</FooterLink>
+            <FooterLink href={`${GLOWUP_BASE}/products`}>Product library</FooterLink>
             {!betaTester && <FooterLink onClick={onFeedback}>Send feedback</FooterLink>}
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>

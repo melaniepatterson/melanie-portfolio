@@ -1,4 +1,5 @@
 import T from './theme'
+import { GLOWUP_HOME } from '../lib/glowupMode'
 
 function Section({ title, children, id }) {
   return (
@@ -32,7 +33,7 @@ export default function PrivacyPolicy() {
 
         {/* Header */}
         <div style={{ marginBottom: 40 }}>
-          <a href="/routine" style={{ fontSize: 12, color: T.textMuted, textDecoration: 'none', display: 'inline-block', marginBottom: 24 }}>
+          <a href={GLOWUP_HOME} style={{ fontSize: 12, color: T.textMuted, textDecoration: 'none', display: 'inline-block', marginBottom: 24 }}>
             ← Back to Glow Up
           </a>
           <div style={{ fontSize: 9, fontWeight: 700, color: T.darkPink, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 10 }}>

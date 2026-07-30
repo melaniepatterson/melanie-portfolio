@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { supabase } from '../lib/supabase'
 import T from './theme'
 import GlowUpLogo from './GlowUpWordmark'
+import { GLOWUP_HOME } from '../lib/glowupMode'
 
 
 const SKIN_TYPES = ['Dry', 'Oily', 'Combination', 'Normal', 'Sensitive', 'Not sure yet']
@@ -50,7 +51,7 @@ export default function Auth() {
         // Approved → send magic link
         const { error: otpError } = await supabase.auth.signInWithOtp({
           email: trimmed,
-          options: { emailRedirectTo: window.location.origin + '/routine' },
+          options: { emailRedirectTo: window.location.origin + GLOWUP_HOME },
         })
         if (otpError) throw otpError
         setScreen('check')

@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import Avatar from './Avatar'
 import { supabase } from '../lib/supabase'
 import T from './theme'
+import { GLOWUP_BASE, GLOWUP_HOME } from '../lib/glowupMode'
 
 // Each letter alternates up/down in a steady rhythm, with just the tilt
 // varying a little per letter — applied on hover via CSS custom properties.
@@ -71,9 +72,9 @@ export default function SideMenu({ session, onClose, onFeedback, betaTester }) {
   // white text (white on each dark* token is 5.4-7.4:1, comfortably past
   // WCAG AA even at normal-text size).
   const menuItems = [
-    { label: 'Calendar',        href: '/routine',          color: T.blue,   hoverColor: T.darkBlue },
-    { label: 'Routine history', href: '/routine/history',  color: T.green,  hoverColor: T.darkGreen },
-    { label: 'Product library', href: '/routine/products', color: T.pink,   hoverColor: T.darkPink },
+    { label: 'Calendar',        href: GLOWUP_HOME,               color: T.blue,   hoverColor: T.darkBlue },
+    { label: 'Routine history', href: `${GLOWUP_BASE}/history`,  color: T.green,  hoverColor: T.darkGreen },
+    { label: 'Product library', href: `${GLOWUP_BASE}/products`, color: T.pink,   hoverColor: T.darkPink },
     // Beta testers give feedback through the beta survey instead — the
     // anonymous general feedback form isn't shown to them.
     ...(betaTester ? [] : [{ label: 'Send feedback', color: T.orange, hoverColor: T.darkOrange, action: onFeedback }]),
@@ -81,7 +82,7 @@ export default function SideMenu({ session, onClose, onFeedback, betaTester }) {
 
   async function signOut() {
     await supabase.auth.signOut()
-    window.location.href = '/routine'
+    window.location.href = GLOWUP_HOME
   }
 
   return (
@@ -129,7 +130,7 @@ export default function SideMenu({ session, onClose, onFeedback, betaTester }) {
                 {avatarReady ? displayName : ''}
               </div>
             </div>
-            <a href="/routine/profile" aria-label="Account & settings" onClick={onClose}
+            <a href={`${GLOWUP_BASE}/profile`} aria-label="Account & settings" onClick={onClose}
               style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: T.text, padding: 4, lineHeight: 1, flexShrink: 0, display: 'flex' }}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="3" />

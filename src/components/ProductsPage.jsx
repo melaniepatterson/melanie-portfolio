@@ -11,6 +11,7 @@ import Btn from './shared/Btn'
 import StarRating from './shared/StarRating'
 import FeedbackPanel from './shared/FeedbackPanel'
 import GlowUpFooter from './shared/GlowUpFooter'
+import { GLOWUP_HOME } from '../lib/glowupMode'
 
 
 // A stable "random" brand color per filter label — hashed so the same
@@ -1302,8 +1303,8 @@ export default function ProductsPage({ session, betaTester }) {
       <div style={{ background: T.text }}>
         {/* Logo row — logo centered (matching the calendar page), arrow stays left */}
         <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px 10px' }}>
-          <a href="/routine" aria-label="Back to calendar" style={{ border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.white, textDecoration: 'none', display: 'inline-block' }}>←</a>
-          <a href="/routine" style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', display: 'flex', alignItems: 'baseline', textDecoration: 'none' }}>
+          <a href={GLOWUP_HOME} aria-label="Back to calendar" style={{ border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '5px 12px', cursor: 'pointer', fontSize: 15, color: T.white, textDecoration: 'none', display: 'inline-block' }}>←</a>
+          <a href={GLOWUP_HOME} style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', display: 'flex', alignItems: 'baseline', textDecoration: 'none' }}>
             <GlowUpLogo size={32} style={{ color: T.white }} />
           </a>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>

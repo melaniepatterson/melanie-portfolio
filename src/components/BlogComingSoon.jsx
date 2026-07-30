@@ -1,5 +1,6 @@
 import GlowUpLogo from './GlowUpWordmark'
 import T from './theme'
+import { GLOWUP_HOME } from '../lib/glowupMode'
 
 export default function BlogComingSoon() {
   return (
@@ -9,7 +10,7 @@ export default function BlogComingSoon() {
       <div style={{ fontSize: 13, color: T.textMuted, maxWidth: 380, lineHeight: 1.7, marginBottom: 24 }}>
         We're working on routine tips, ingredient breakdowns, and behind-the-scenes updates. Check back soon.
       </div>
-      <a href="/routine" style={{ fontSize: 12, color: T.textMuted, textDecoration: 'none' }}>
+      <a href={GLOWUP_HOME} style={{ fontSize: 12, color: T.textMuted, textDecoration: 'none' }}>
         ← Back to Glow Up
       </a>
     </div>
