@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef, Suspense, lazy } from "react";
+import { createPortal } from "react-dom";
 import styles from "./Work.module.css";
 import { PROJECTS } from "../data/projects";
 import { Link } from "react-router-dom";
@@ -139,9 +140,9 @@ useEffect(() => {
         ☰ Filters
       </button>
 
-      {drawerOpen && (
+      {!isMobile && drawerOpen && (
         <div
-          className={isMobile ? styles.sheetBackdrop : styles.overlay}
+          className={styles.overlay}
           onClick={() => setDrawerOpen(false)}
         />
       )}
@@ -207,17 +208,27 @@ useEffect(() => {
         );
 
         return isMobile ? (
-          drawerOpen && (
-            <div className={styles.sheet}>
-              <div className={styles.sheetHandleRow}>
-                <div className={styles.sheetHandle} />
+          drawerOpen && createPortal(
+            <>
+              {/* Portaled straight to <body> — .page creates its own stacking
+                  context (position:relative + z-index), which trapped the
+                  sheet's z-index:300 inside it, so the fixed logo (z-index:50,
+                  a sibling of .page) was comparing against .page's own low
+                  z-index and painting on top of the whole sheet regardless.
+                  Escaping .page's subtree entirely sidesteps that. */}
+              <div className={styles.sheetBackdrop} onClick={() => setDrawerOpen(false)} />
+              <div className={styles.sheet}>
+                <div className={styles.sheetHandleRow}>
+                  <div className={styles.sheetHandle} />
+                </div>
+                <div className={styles.sheetHeader}>
+                  <div className={styles.sheetTitle}>Filters</div>
+                  <button className={styles.drawerClose} onClick={() => setDrawerOpen(false)}>✕</button>
+                </div>
+                {filterContent}
               </div>
-              <div className={styles.sheetHeader}>
-                <div className={styles.sheetTitle}>Filters</div>
-                <button className={styles.drawerClose} onClick={() => setDrawerOpen(false)}>✕</button>
-              </div>
-              {filterContent}
-            </div>
+            </>,
+            document.body
           )
         ) : (
           <div className={`${styles.drawer} ${drawerOpen ? styles.drawerOpen : ""}`}>

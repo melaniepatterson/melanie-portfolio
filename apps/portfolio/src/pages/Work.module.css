@@ -4,14 +4,7 @@
   width: 100%;
   background-color: #C93500;
   position: relative;
-  /* .page's own z-index (not the sheet's internal 300) is what actually
-     gets compared against sibling elements outside it, like the fixed
-     logo (z-index 50) — since position:relative + z-index here creates a
-     stacking context, everything inside (including the z-index:300 sheet)
-     was capped at "2" from the outside, so the logo painted on top of the
-     whole page regardless of the sheet's own stacking. Needs to clear 50,
-     but stay under .sidenav's 100. */
-  z-index: 60;
+  z-index: 2;
   flex: 1;
 }
 
