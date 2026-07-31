@@ -1,5 +1,5 @@
 // v2-stars-modal-fix
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import GlowUpLogo from './GlowUpWordmark'
 import { supabase } from './supabase'
 import SideMenu from './SideMenu'
@@ -12,6 +12,7 @@ import StarRating from './shared/StarRating'
 import FeedbackPanel from './shared/FeedbackPanel'
 import GlowUpFooter from './shared/GlowUpFooter'
 import Skeleton from './shared/Skeleton'
+import { LoadError } from './ErrorBoundary'
 const GLOWUP_HOME = '/'
 
 // Mirrors ProductLibrary's real card shape (3:4 portrait image + name +
@@ -1048,6 +1049,7 @@ export default function ProductsPage({ session, betaTester }) {
   const [userProductData, setUserProductData] = useState({}) // keyed by product_id
   const [editingProduct, setEditingProduct] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [loadFailed, setLoadFailed] = useState(false)
   const [activeTab, setActiveTab] = useState('library') // library | history
   const [finishHistory, setFinishHistory] = useState([])
   const [showMenu, setShowMenu] = useState(false)
@@ -1070,20 +1072,24 @@ export default function ProductsPage({ session, betaTester }) {
     return () => document.removeEventListener('keydown', handleKey)
   }, [editingProduct])
 
-  useEffect(() => {
+  const load = useCallback(async () => {
     if (!userId) return
-    async function load() {
+    setLoading(true)
+    setLoadFailed(false)
+    try {
       // Single unified query — catalog (is_catalog=true) + user products
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('products')
         .select('*')
         .or(`is_catalog.eq.true,user_id.eq.${userId}`)
+      if (error) throw error
 
       // Load user_product_data overlay
-      const { data: upd } = await supabase
+      const { data: upd, error: updErr } = await supabase
         .from('user_product_data')
         .select('*')
         .eq('user_id', userId)
+      if (updErr) throw updErr
       const updMap = {}
       ;(upd || []).forEach(row => { updMap[row.product_id] = row })
       setUserProductData(updMap)
@@ -1134,6 +1140,13 @@ export default function ProductsPage({ session, betaTester }) {
         setProducts(userMap)
       }
 
+      setLoading(false)
+
+      // Everything below is a best-effort enhancement (routine badge,
+      // auto-add-to-library, finish history) — the core product library
+      // above already loaded and rendered, so a failure here shouldn't
+      // block the page with a full error state, just log it.
+      try {
       // Fetch curator's active routine for badge
       const { data: routinePeriods } = await supabase
         .from('routine_periods')
@@ -1217,18 +1230,30 @@ export default function ProductsPage({ session, betaTester }) {
           }
         }
       }
-      setLoading(false)
+      } catch (err) {
+        console.error('ProductsPage routine badge/auto-add load error (non-critical):', err)
+      }
 
-      // Load finish history
-      const { data: finishes } = await supabase
-        .from('product_finishes')
-        .select('id, product_id, finished_at, notes')
-        .eq('user_id', userId)
-        .order('finished_at', { ascending: false })
-      setFinishHistory(finishes || [])
+      // Load finish history — also best-effort, own try/catch
+      try {
+        const { data: finishes, error: finErr } = await supabase
+          .from('product_finishes')
+          .select('id, product_id, finished_at, notes')
+          .eq('user_id', userId)
+          .order('finished_at', { ascending: false })
+        if (finErr) throw finErr
+        setFinishHistory(finishes || [])
+      } catch (err) {
+        console.error('ProductsPage finish history load error (non-critical):', err)
+      }
+    } catch (err) {
+      console.error('ProductsPage load error:', err)
+      setLoadFailed(true)
+      setLoading(false)
     }
-    load()
   }, [userId])
+
+  useEffect(() => { load() }, [load])
 
   async function addToLibrary(product) {
     const { data } = await supabase.from('user_product_data')
@@ -1426,6 +1451,8 @@ export default function ProductsPage({ session, betaTester }) {
 
       {loading
         ? <ProductsPageSkeleton isMobile={isMobile} />
+        : loadFailed
+        ? <LoadError message="Couldn't load your products." onRetry={load} />
         : activeTab === 'history'
         ? <div style={{ padding: '20px' }}>
             {finishHistory.length === 0

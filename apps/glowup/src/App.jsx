@@ -114,7 +114,8 @@ function Layout() {
     if (!session?.user?.id) return
     supabase.from('profiles').select('beta_tester, survey_submitted_at')
       .eq('id', session.user.id).single()
-      .then(({ data }) => {
+      .then(({ data, error }) => {
+        if (error) console.error('Beta tester/survey status load error:', error)
         if (data) {
           setBetaTester(data.beta_tester || false)
           setSurveySubmitted(!!data.survey_submitted_at)

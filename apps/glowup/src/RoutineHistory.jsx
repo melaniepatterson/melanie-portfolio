@@ -10,6 +10,7 @@ import { fmtDate, fmtDateTime } from './dateFormat'
 import InfoTooltip from './shared/InfoTooltip'
 import FeedbackPanel from './shared/FeedbackPanel'
 import GlowUpFooter from './shared/GlowUpFooter'
+import { LoadError } from './ErrorBoundary'
 const GLOWUP_HOME = '/'
 import {
   RoutinePeriodForm, DailyEditor, ShowerEditor,
@@ -45,6 +46,7 @@ export default function RoutineHistory({ session, betaTester }) {
   const [showerHistory,  setShowerHistory]  = useState([])
   const [products,       setProducts]       = useState({})
   const [loading, setLoading] = useState(true)
+  const [loadFailed, setLoadFailed] = useState(false)
   const [tab, setTab] = useState('skincare')
   const [showMenu, setShowMenu] = useState(false)
   const [showFeedback, setShowFeedback] = useState(false)
@@ -53,12 +55,25 @@ export default function RoutineHistory({ session, betaTester }) {
   const userId = session?.user?.id
 
   async function load() {
-    const [{ data: rp }, { data: ep }, { data: sp }, { data: pr }] = await Promise.all([
-      supabase.from('routine_periods').select('*').eq('user_id', userId).order('start_date', { ascending: false }),
-      supabase.from('extras_periods').select('*').eq('user_id', userId).order('start_date', { ascending: false }),
-      supabase.from('shower_periods').select('*').eq('user_id', userId).order('start_date', { ascending: false }),
-      supabase.from('products').select('*').or(`is_catalog.eq.true,user_id.eq.${userId}`),
-    ])
+    setLoading(true)
+    setLoadFailed(false)
+    let rp, ep, sp, pr
+    try {
+      const results = await Promise.all([
+        supabase.from('routine_periods').select('*').eq('user_id', userId).order('start_date', { ascending: false }),
+        supabase.from('extras_periods').select('*').eq('user_id', userId).order('start_date', { ascending: false }),
+        supabase.from('shower_periods').select('*').eq('user_id', userId).order('start_date', { ascending: false }),
+        supabase.from('products').select('*').or(`is_catalog.eq.true,user_id.eq.${userId}`),
+      ])
+      const err = results.find(r => r.error)?.error
+      if (err) throw err
+      ;[{ data: rp }, { data: ep }, { data: sp }, { data: pr }] = results
+    } catch (err) {
+      console.error('RoutineHistory load error:', err)
+      setLoadFailed(true)
+      setLoading(false)
+      return
+    }
     setRoutineHistory((rp||[]).map(p => ({
       startDate: p.start_date, endDate: p.end_date, activeName: p.active_name,
       tretEnabled: p.tret_enabled, tretFrequency: p.tret_frequency, tretStartDate: p.tret_start_date,
@@ -245,6 +260,8 @@ export default function RoutineHistory({ session, betaTester }) {
       <div style={{ padding: '8px 20px', width: '100%', maxWidth: CONTENT_WIDTH, margin: '0 auto', boxSizing: 'border-box' }}>
         {loading ? (
           <div style={{ fontSize: 13, color: T.textMuted, padding: '20px 0' }}>Loading...</div>
+        ) : loadFailed ? (
+          <LoadError message="Couldn't load your history." onRetry={load} />
         ) : (
           <>
             {/* Skincare */}

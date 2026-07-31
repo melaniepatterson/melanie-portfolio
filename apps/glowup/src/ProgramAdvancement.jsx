@@ -6,6 +6,7 @@ import T from './theme'
 import Btn from './shared/Btn'
 import AccentWord from './shared/AccentWord'
 import { programCardColor } from './programColors'
+import { InlineLoadError } from './ErrorBoundary'
 
 
 function daysSince(dateStr) {
@@ -225,6 +226,7 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
   const [showLinearAdvance, setShowLinearAdvance] = useState(false)
   const [postponing, setPostponing] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [loadFailed, setLoadFailed] = useState(false)
 
   useEffect(() => {
     if (!endFoundationConfirm) return
@@ -239,25 +241,31 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
   }, [activeProgram?.id])
 
   async function loadProgramContent() {
+    setLoading(true)
+    setLoadFailed(false)
     try {
-      const { data: prog } = await supabase
+      const { data: prog, error: progErr } = await supabase
         .from('programs').select('*').eq('id', activeProgram.program_id).single()
-      const { data: ph } = await supabase
+      if (progErr) throw progErr
+      const { data: ph, error: phErr } = await supabase
         .from('program_phases').select('*').eq('program_id', activeProgram.program_id).order('phase_number')
+      if (phErr) throw phErr
 
       setProgram(prog)
       setPhases(ph || [])
 
       const phase2 = (ph || []).find(p => p.phase_number === 2)
       if (prog?.slug === 'basic-skincare' && phase2) {
-        const { data: opts } = await supabase
+        const { data: opts, error: optsErr } = await supabase
           .from('program_phase_options').select('*').eq('phase_id', phase2.id).order('position')
+        if (optsErr) throw optsErr
         setPhase2Options(opts || [])
       } else if (ph?.length) {
         // Linear programs (e.g. Tretinoin) — preload all phases' step config
         // so advancing is a single tap with no extra fetch
-        const { data: steps } = await supabase
+        const { data: steps, error: stepsErr } = await supabase
           .from('program_phase_steps').select('*').in('phase_id', ph.map(p => p.id))
+        if (stepsErr) throw stepsErr
         const byPhase = {}
         for (const s of (steps || [])) {
           if (!byPhase[s.phase_id]) byPhase[s.phase_id] = []
@@ -267,12 +275,19 @@ export default function ProgramAdvancement({ session, activeProgram, routinePeri
       }
     } catch (err) {
       console.error('ProgramAdvancement load error:', err)
+      setLoadFailed(true)
     } finally {
       setLoading(false)
     }
   }
 
-  if (loading || !activeProgram || !program || !phases.length) return null
+  if (loading || !activeProgram) return null
+  if (loadFailed) return (
+    <div style={{ maxWidth: 900, margin: '0 auto', padding: '0 20px' }}>
+      <InlineLoadError message="Couldn't load your program." onRetry={loadProgramContent} />
+    </div>
+  )
+  if (!program || !phases.length) return null
 
   const currentPhase = phases.find(p => p.phase_number === activeProgram.current_phase_number)
   if (!currentPhase) return null

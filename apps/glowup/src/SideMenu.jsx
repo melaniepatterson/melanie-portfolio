@@ -42,7 +42,10 @@ export default function SideMenu({ session, onClose, onFeedback, betaTester }) {
   useEffect(() => {
     if (!session?.user?.id) return
     supabase.from('profiles').select('display_name, avatar_url').eq('id', session.user.id).single()
-      .then(({ data }) => setProfile(data || {}))
+      .then(({ data, error }) => {
+        if (error) console.error('SideMenu profile load error:', error)
+        setProfile(data || {})
+      })
   }, [session?.user?.id])
 
   useEffect(() => {

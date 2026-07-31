@@ -1,7 +1,7 @@
 import { Component } from 'react'
 import T from './theme'
 
-function ErrorScreen({ error, onRetry, type = 'boundary' }) {
+function ErrorScreen({ error, onRetry, type = 'boundary', message }) {
   const isLoad = type === 'load'
   return (
     <div style={{
@@ -27,7 +27,7 @@ function ErrorScreen({ error, onRetry, type = 'boundary' }) {
       </svg>
 
       <div style={{ fontSize: 15, fontWeight: 600, color: T.text, marginBottom: 8, textAlign: 'center' }}>
-        {isLoad ? 'Couldn\'t load your routine' : 'Something went wrong'}
+        {isLoad ? (message || 'Couldn\'t load your routine') : 'Something went wrong'}
       </div>
 
       <div style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.6, textAlign: 'center', maxWidth: 300, marginBottom: 24 }}>
@@ -49,14 +49,44 @@ function ErrorScreen({ error, onRetry, type = 'boundary' }) {
       )}
 
       <div style={{ display: 'flex', gap: 8 }}>
-        <button onClick={() => window.location.reload()} style={{
+        <button onClick={() => onRetry ? onRetry() : window.location.reload()} style={{
           padding: '10px 20px', borderRadius: 10,
           border: 'none', background: T.darkPink,
           color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
         }}>
-          Refresh page
+          {onRetry ? 'Try again' : 'Refresh page'}
         </button>
       </div>
+    </div>
+  )
+}
+
+// Non-fullscreen sibling of LoadError — for a panel/card whose load failed,
+// where the rest of the page (nav, calendar chrome) should stay visible
+// rather than being covered by a fixed overlay.
+export function InlineLoadError({ message = "Couldn't load this.", onRetry }) {
+  return (
+    <div style={{
+      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+      textAlign: 'center', padding: '28px 20px', gap: 10,
+    }}>
+      <svg width="32" height="32" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" style={{ opacity: 0.5 }}>
+        <path d="M32 6 L34 28 L56 32 L34 36 L32 58 L30 36 L8 32 L30 28 Z"
+          fill="none" stroke={T.darkPink} strokeWidth="2" strokeLinejoin="round" />
+        <circle cx="32" cy="32" r="3" fill={T.darkPink} opacity="0.6" />
+      </svg>
+      <div style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.6, maxWidth: 260 }}>
+        {message}
+      </div>
+      {onRetry && (
+        <button onClick={onRetry} style={{
+          padding: '8px 16px', borderRadius: T.radius.pill,
+          border: `1px solid ${T.hairline}`, background: 'transparent',
+          color: T.text, fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
+        }}>
+          Try again
+        </button>
+      )}
     </div>
   )
 }
@@ -87,7 +117,7 @@ export class ErrorBoundary extends Component {
   }
 }
 
-// Inline load error — used inside GlowUpCalendar when loadAll() fails
-export function LoadError({ error, onRetry }) {
-  return <ErrorScreen error={error} type="load" onRetry={onRetry} />
+// Fullscreen load error — used by any page whose primary data failed to load
+export function LoadError({ error, onRetry, message }) {
+  return <ErrorScreen error={error} type="load" onRetry={onRetry} message={message} />
 }

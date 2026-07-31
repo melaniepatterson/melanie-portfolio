@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import GlowUpLogo from './GlowUpWordmark'
 import SideMenu from './SideMenu'
@@ -12,6 +12,7 @@ import T from './theme'
 import { useAlert } from './shared/useConfirm'
 import FeedbackPanel from './shared/FeedbackPanel'
 import GlowUpFooter from './shared/GlowUpFooter'
+import { LoadError } from './ErrorBoundary'
 const GLOWUP_HOME = '/'
 
 
@@ -154,6 +155,7 @@ export default function Profile({ session, onOpenSurvey }) {
   const [cropSrc,       setCropSrc]       = useState(null)
   const [uploading,     setUploading]     = useState(false)
   const [loading,       setLoading]       = useState(true)
+  const [loadFailed,    setLoadFailed]    = useState(false)
   const [saving,        setSaving]        = useState(false)
   const [saved,         setSaved]         = useState(false)
   const [showMenu,      setShowMenu]      = useState(false)
@@ -233,10 +235,18 @@ export default function Profile({ session, onOpenSurvey }) {
     return () => document.removeEventListener('keydown', handleKey)
   }, [resetConfirm, deleteConfirm, resetting, deleting])
 
-  useEffect(() => {
+  const loadProfile = useCallback(() => {
     if (!userId) return
+    setLoading(true)
+    setLoadFailed(false)
     supabase.from('profiles').select('*').eq('id', userId).single()
-      .then(({ data }) => {
+      .then(({ data, error }) => {
+        if (error) {
+          console.error('Profile load error:', error)
+          setLoadFailed(true)
+          setLoading(false)
+          return
+        }
         if (data) {
           setDisplayName(data.display_name || '')
           setSkinType(data.skin_type || '')
@@ -257,6 +267,8 @@ export default function Profile({ session, onOpenSurvey }) {
         setLoading(false)
       })
   }, [userId])
+
+  useEffect(() => { loadProfile() }, [loadProfile])
 
   async function handleAvatarUpload(e) {
     const file = e.target.files?.[0]
@@ -349,6 +361,10 @@ export default function Profile({ session, onOpenSurvey }) {
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', fontFamily: 'inherit', color: T.textMuted, fontSize: 13 }}>
       Loading...
     </div>
+  )
+
+  if (loadFailed) return (
+    <LoadError message="Couldn't load your profile." onRetry={loadProfile} />
   )
 
   return (

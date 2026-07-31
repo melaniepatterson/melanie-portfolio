@@ -21,10 +21,10 @@
  * ─────────────────────────────────────────────────────────────
  */
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { supabase } from './supabase'
 import GlowUpLoader from './GlowUpLoader'
-import { LoadError } from './ErrorBoundary'
+import { LoadError, InlineLoadError } from './ErrorBoundary'
 import Onboarding from './Onboarding'
 import ProgramAdvancement, { Phase2Picker } from './ProgramAdvancement'
 import BetaSurvey from './BetaSurvey'
@@ -2818,6 +2818,7 @@ function DayFlyout({ flyout, borderColor, bodyIsWhite, period, dailyHistory, sho
 function ProgramEnrollmentPreview({ program, onConfirm, onBack, timezone }) {
   const [phases, setPhases] = useState([])
   const [loading, setLoading] = useState(true)
+  const [loadFailed, setLoadFailed] = useState(false)
   const [startDate, setStartDate] = useState(() => todayInTz(timezone || detectTimezone()))
   const [confirming, setConfirming] = useState(false)
 
@@ -2855,10 +2856,18 @@ function ProgramEnrollmentPreview({ program, onConfirm, onBack, timezone }) {
 
   const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
 
-  useEffect(() => {
+  const loadPhases = useCallback(() => {
+    setLoading(true)
+    setLoadFailed(false)
     supabase.from('program_phases').select('*').eq('program_id', program.id).order('phase_number')
-      .then(({ data }) => { setPhases(data || []); setLoading(false) })
+      .then(({ data, error }) => {
+        if (error) { console.error('ProgramEnrollmentPreview load error:', error); setLoadFailed(true); setLoading(false); return }
+        setPhases(data || [])
+        setLoading(false)
+      })
   }, [program.id])
+
+  useEffect(() => { loadPhases() }, [loadPhases])
 
   // For linear programs, use selected tier durations; otherwise use DB durations
   const displayedTotal = isLinear && selectedTier
@@ -2898,6 +2907,8 @@ function ProgramEnrollmentPreview({ program, onConfirm, onBack, timezone }) {
 
       {loading ? (
         <TimelineRowsSkeleton />
+      ) : loadFailed ? (
+        <InlineLoadError message="Couldn't load this program." onRetry={loadPhases} />
       ) : (
         <>
           {/* Pace picker — above phases, linear programs only */}
@@ -2961,7 +2972,7 @@ function ProgramEnrollmentPreview({ program, onConfirm, onBack, timezone }) {
         </>
       )}
 
-      {!loading && (
+      {!loading && !loadFailed && (
         <div style={{ borderTop: `0.5px solid ${T.hairline}`, paddingTop: 16 }}>
           <div style={{ fontSize: 12, fontWeight: 600, color: T.text, marginBottom: 4 }}>When did/will you start?</div>
           <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 10, lineHeight: 1.6 }}>
@@ -3023,43 +3034,51 @@ function AddProgramPanel({ session, activeProgram, activePrograms = [], routineP
   const [showAddMore, setShowAddMore] = useState(false)
   const [endFoundationConfirm, setEndFoundationConfirm] = useState(false)
   const [endingFoundation, setEndingFoundation] = useState(false)
+  const [loadFailed, setLoadFailed] = useState(false)
 
   useEffect(() => { load() }, [activePrograms.map(p => p.id).join(',')])
 
   async function load() {
     setLoading(true)
+    setLoadFailed(false)
     try {
       if (activeProgram) {
-        const { data: prog } = await supabase
+        const { data: prog, error: progErr } = await supabase
           .from('programs').select('*').eq('id', activeProgram.program_id).single()
-        const { data: ph } = await supabase
+        if (progErr) throw progErr
+        const { data: ph, error: phErr } = await supabase
           .from('program_phases').select('*').eq('program_id', activeProgram.program_id).order('phase_number')
+        if (phErr) throw phErr
         setActiveProgramDetails({ program: prog, phases: ph || [] })
 
         if (prog?.slug === 'basic-skincare') {
           const phase2 = (ph || []).find(p => p.phase_number === 2)
           if (phase2) {
-            const { data: opts } = await supabase
+            const { data: opts, error: optsErr } = await supabase
               .from('program_phase_options').select('*').eq('phase_id', phase2.id).order('position')
+            if (optsErr) throw optsErr
             setPhase2Options(opts || [])
           }
         }
 
         // Load slugs of ALL active programs for incompatibility checking
         if (activePrograms.length > 0) {
-          const { data: progs } = await supabase
+          const { data: progs, error: slugsErr } = await supabase
             .from('programs').select('slug').in('id', activePrograms.map(p => p.program_id))
+          if (slugsErr) throw slugsErr
           setActiveProgramSlugs((progs || []).map(p => p.slug))
         }
 
         // Also show the library so compatible add-on programs can be enrolled
-        const { data: progs } = await supabase
+        const { data: progs, error: libErr } = await supabase
           .from('programs').select('*').eq('is_stackable', true).order('name')
+        if (libErr) throw libErr
         setLibrary(progs || [])
 
-        const { data: completions } = await supabase
+        const { data: completions, error: compErr } = await supabase
           .from('user_programs').select('program_id, status_detail')
           .eq('user_id', session.user.id).in('status', ['completed'])
+        if (compErr) throw compErr
         const counts = {}
         for (const c of (completions || [])) counts[c.program_id] = (counts[c.program_id] || 0) + 1
         setCompletionCounts(counts)
@@ -3067,16 +3086,18 @@ function AddProgramPanel({ session, activeProgram, activePrograms = [], routineP
       } else {
         setActiveProgramDetails(null)
         // Add-on programs only — basic-skincare is the foundation, not an add-on
-        const { data: progs } = await supabase
+        const { data: progs, error: libErr } = await supabase
           .from('programs').select('*').eq('is_stackable', true).order('name')
+        if (libErr) throw libErr
         setLibrary(progs || [])
 
         // Load completion counts per program for this user
-        const { data: completions } = await supabase
+        const { data: completions, error: compErr } = await supabase
           .from('user_programs')
           .select('program_id, status_detail')
           .eq('user_id', session.user.id)
           .in('status', ['completed'])
+        if (compErr) throw compErr
         const counts = {}
         for (const c of (completions || [])) {
           counts[c.program_id] = (counts[c.program_id] || 0) + 1
@@ -3085,6 +3106,7 @@ function AddProgramPanel({ session, activeProgram, activePrograms = [], routineP
       }
     } catch (err) {
       console.error('AddProgramPanel load error:', err)
+      setLoadFailed(true)
     } finally {
       setLoading(false)
     }
@@ -3382,7 +3404,9 @@ function AddProgramPanel({ session, activeProgram, activePrograms = [], routineP
         Programs guide you through introducing something new — pacing it out in phases so you can tell what your skin is responding to. Your current routine stays as your baseline.
       </div>
 
-      {library.length === 0 ? (
+      {loadFailed ? (
+        <InlineLoadError message="Couldn't load programs." onRetry={load} />
+      ) : library.length === 0 ? (
         <div style={{ fontSize: 12, color: T.textMuted, fontStyle: 'italic', padding: '20px 0', textAlign: 'center' }}>
           No programs available yet — check back soon.
         </div>
@@ -4210,6 +4234,13 @@ export default function GlowUpCalendar({ session }) {
         supabase.from('user_programs').select('*').eq('user_id', userId).eq('status', 'active'),
         supabase.from('user_programs').select('id, started_at, status_detail').eq('user_id', userId).eq('status', 'completed'),
       ])
+      // Promise.allSettled only distinguishes a thrown/rejected promise from
+      // a resolved one — a Supabase query still "fulfills" when it returns
+      // {data: null, error}, so that has to be checked explicitly or a real
+      // query failure (RLS denial, bad connection) is indistinguishable from
+      // "no rows" and silently renders as an empty calendar.
+      const firstError = results.find(r => r.status === 'fulfilled' && r.value?.error)?.value.error
+      if (firstError) throw firstError
       const getValue = (r) => r.status === 'fulfilled' ? (r.value?.data ?? null) : null
       const [rp, profileRR, pr, ep, sp, tr, ct, up, cp] = results.map(getValue)
 
@@ -5110,7 +5141,7 @@ export default function GlowUpCalendar({ session }) {
   if (loadError) return (
     <LoadError
       error={loadError}
-      onRetry={() => { setLoadError(null); setLoading(true) }}
+      onRetry={() => { setLoadError(null); setReloadKey(k => k + 1) }}
     />
   )
   if (loading) return <GlowUpLoader />
