@@ -23,6 +23,16 @@ function Layout() {
     }
   }, []);
 
+  // Keep Safari's toolbar chrome in sync with whichever background is
+  // actually visible — home's dominant color is the big blurred pink
+  // circle in Radialgradient.jsx (#FFD6F9), not the cream page background
+  // it sits on top of.
+  useEffect(() => {
+    const color = isWork || isWorkDetail ? "#C93500" : isHome ? "#FFD6F9" : "#FAF7F2";
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', color);
+  }, [isHome, isWork, isWorkDetail]);
+
   useEffect(() => {
     const titles = {
       "/": "melanie.studio",

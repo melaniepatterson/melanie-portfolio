@@ -232,13 +232,12 @@ export default function RepulseLogo() {
         }}
       />
 
-      <div style={{
+      <div className="home-nav" style={{
         position: "fixed",
         inset: 0,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        gap: "3rem",
         zIndex: 10,
         pointerEvents: "none"
       }}>

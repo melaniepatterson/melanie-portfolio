@@ -42,9 +42,21 @@ main {
   min-width: 0;
 }
 
+.home-nav {
+  gap: 3rem;
+}
+
+@media (max-width: 640px) {
+  .home-nav {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+}
+
 .layout {
   display: flex;
   min-height: 100vh;
+  min-height: 100dvh; /* mobile Safari's 100vh ignores its own toolbar, pushing the footer under it */
   width: 100%;
 }
 
