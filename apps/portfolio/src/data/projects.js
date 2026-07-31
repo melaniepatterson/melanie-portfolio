@@ -46,8 +46,8 @@ export const PROJECTS = [
     topics: null,
     client: null,
     year: "2026",
-    description: "Glow Up is a skincare tracking, organizing, and discovery app built to help users navigate their way through a multi-step routine safely and confidently. It walks users through phased, dermatology-inspired onboarding programs that ramp up active ingredients and exfoliants gradually, tracks routine extras like haircare and gua sha, and detects when a scheduled treatment—like a chemical peel, laser session, or microneedling—conflicts with ingredients in someone's routine. It also includes a product library with ethics/values tracking and expiry tracking, a calendar export, and a feedback system. Designed and built with React/Supabase architecture, custom typography and brand system, and accessibility incorporated from the start.",
-    externalLink: "",
+    description: "Glow Up (beta) is a skincare tracking, organizing, and discovery app built to help users navigate their way through a multi-step routine safely and confidently. It walks users through phased, dermatology-inspired onboarding programs that ramp up active ingredients and exfoliants gradually, tracks routine extras like haircare and gua sha, and detects when a scheduled treatment—like a chemical peel, laser session, or microneedling—conflicts with ingredients in someone's routine. It also includes a product library with ethics/values tracking and expiry tracking, a calendar export, and a feedback system. Designed and built with React/Supabase architecture, custom typography and brand system, and accessibility incorporated from the start.",
+    externalLink: "https://glowupdemo.melanie.studio/",
     thumbnail: null, // or: () => import('../projects/project-one/Thumbnail')
     hero: null,      // or: () => import('../projects/project-one/Hero')
     images: [
