@@ -6,6 +6,8 @@ import T from './theme'
 // flashes on every blocked write (see demoClient.js's 'glowup-demo-write'
 // event) so the connection between "I clicked something" and "that's why"
 // is immediate rather than left to guesswork.
+const BANNER_HEIGHT = 32
+
 export default function DemoBanner() {
   const [flash, setFlash] = useState(false)
 
@@ -19,11 +21,21 @@ export default function DemoBanner() {
     return () => window.removeEventListener('glowup-demo-write', onWrite)
   }, [])
 
+  // Fixed rather than in normal flow, so it stays visible while scrolling —
+  // but every page also has its own sticky header pinned to top:0, so we
+  // reserve the banner's height as body padding to keep the two from
+  // overlapping instead of just layering z-index over the header.
+  useEffect(() => {
+    document.body.style.paddingTop = `${BANNER_HEIGHT}px`
+    return () => { document.body.style.paddingTop = '' }
+  }, [])
+
   return (
     <div style={{
-      position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000,
+      position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000, height: BANNER_HEIGHT,
+      display: 'flex', alignItems: 'center', justifyContent: 'center', boxSizing: 'border-box',
       background: flash ? T.darkPink : T.darkGreen, color: T.white,
-      textAlign: 'center', padding: '6px 12px', fontSize: 12, fontWeight: 600,
+      textAlign: 'center', padding: '0 12px', fontSize: 12, fontWeight: 600,
       transition: 'background 150ms ease', pointerEvents: 'none',
     }}>
       {flash ? "This is a demo — changes aren't saved" : "You're viewing a demo of Glow Up"}
