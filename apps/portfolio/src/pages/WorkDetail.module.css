@@ -211,3 +211,33 @@
   50% { opacity: 0.8; }
 }
 
+@media (max-width: 640px) {
+  .page {
+    padding: 4rem 1.25rem 3rem;
+  }
+
+  .layout {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .info {
+    position: static;
+    top: auto;
+  }
+
+  .title {
+    font-size: 1.9rem;
+  }
+
+  .gallery {
+    grid-template-columns: 1fr;
+  }
+
+  .gallerySmall,
+  .galleryLarge,
+  .galleryFull {
+    grid-column: span 1;
+  }
+}
+

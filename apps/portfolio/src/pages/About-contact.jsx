@@ -6,7 +6,7 @@ export default function AboutContact() {
   const [hovered, setHovered] = useState(false);
   
   useEffect(() => {
-    document.documentElement.style.backgroundColor = "#C93500";
+    document.documentElement.style.backgroundColor = "#FAF7F2";
     return () => {
       document.documentElement.style.backgroundColor = "";
     };

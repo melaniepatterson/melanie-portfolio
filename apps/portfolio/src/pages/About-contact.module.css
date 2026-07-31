@@ -45,3 +45,29 @@
   object-fit: contain;
   display: block;
 }
+
+@media (max-width: 640px) {
+  .page {
+    padding: 2rem 1.5rem;
+    max-width: 100%;
+  }
+
+  .content {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .text {
+    padding-top: 4.5rem; /* clears the stacked nav in the top-right corner */
+  }
+
+  .bio {
+    font-size: 0.88rem;
+  }
+
+  .photo img {
+    max-width: min(320px, 70vw);
+    margin: 0 auto;
+    padding-top: 0;
+  }
+}

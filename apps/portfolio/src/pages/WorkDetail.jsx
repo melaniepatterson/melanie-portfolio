@@ -80,6 +80,13 @@ export default function WorkDetail() {
   const { slug } = useParams();
   const project = PROJECTS.find(p => p.slug === slug);
   const [lightbox, setLightbox] = useState(null);
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 640);
+
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 640);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
   useEffect(() => {
     document.documentElement.style.backgroundColor = "#C93500";
@@ -160,7 +167,7 @@ export default function WorkDetail() {
             if (img.type === "inspiration-result") {
               return (
                 <React.Fragment key={i}>
-                  {rowBreaks.has(i) && <div className={styles.galleryRowBreak} />}
+                  {!isMobile && rowBreaks.has(i) && <div className={styles.galleryRowBreak} />}
                   <div className={`${styles.galleryItem} ${styles.galleryLarge}`}>
                     <InspirationResult
                       {...img}
@@ -174,10 +181,10 @@ export default function WorkDetail() {
             if (img.type === "code-reveal") {
               return (
                 <React.Fragment key={i}>
-                  {rowBreaks.has(i) && <div className={styles.galleryRowBreak} />}
+                  {!isMobile && rowBreaks.has(i) && <div className={styles.galleryRowBreak} />}
                   <div
                     className={`${styles.galleryItem} ${img.size === "large" ? styles.galleryLarge : styles.gallerySmall}`}
-                    style={{ gridColumnStart: offsets[i] }}
+                    style={isMobile ? undefined : { gridColumnStart: offsets[i] }}
                   >
                     <CodeReveal still={img.still} alt={img.alt} code={img.code} />
                   </div>
@@ -188,12 +195,14 @@ export default function WorkDetail() {
             if (img.type === "browser-frame") {
               return (
                 <React.Fragment key={i}>
-                  {rowBreaks.has(i) && <div className={styles.galleryRowBreak} />}
-                  {spacers[i] && <div className={styles.gallerySpacer} />}
+                  {!isMobile && rowBreaks.has(i) && <div className={styles.galleryRowBreak} />}
+                  {!isMobile && spacers[i] && <div className={styles.gallerySpacer} />}
                   <div
                     className={`${styles.galleryItem} ${img.size === "large" ? styles.galleryLarge : styles.gallerySmall}`}
                     style={
-                      img.size === "large"
+                      isMobile
+                        ? undefined
+                        : img.size === "large"
                         ? { gridColumn: "span 2" }
                         : { gridColumnStart: offsets[i] }
                     }
@@ -207,10 +216,10 @@ export default function WorkDetail() {
 
             return (
               <React.Fragment key={i}>
-                {rowBreaks.has(i) && <div className={styles.galleryRowBreak} />}
+                {!isMobile && rowBreaks.has(i) && <div className={styles.galleryRowBreak} />}
                 <div
                   className={`${styles.galleryItem} ${img.size === "large" ? styles.galleryLarge : styles.gallerySmall} ${img.lightbox ? styles.lightboxable : ""}`}
-                  style={{ gridColumnStart: offsets[i] }}
+                  style={isMobile ? undefined : { gridColumnStart: offsets[i] }}
                   onClick={() => img.lightbox && setLightbox({ src: img.src, alt: img.alt })}
                 >
                   <img src={img.src} alt={img.alt} loading="lazy" />

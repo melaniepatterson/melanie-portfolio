@@ -269,3 +269,88 @@
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(4px); }
 }
+
+/* Bottom-sheet filter panel — mobile only, replaces the left slide-in
+   drawer. Same visual pattern as GlowUp's ProductsPage.jsx filter sheet. */
+.sheetBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 250;
+}
+
+.sheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 300;
+  background: #C93500;
+  border-radius: 16px 16px 0 0;
+  padding: 0 1.5rem 2rem;
+  max-height: 75vh;
+  overflow-y: auto;
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.25);
+  animation: slideUp 0.22s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.sheetHandleRow {
+  display: flex;
+  justify-content: center;
+  padding: 0.75rem 0 1rem;
+}
+
+.sheetHandle {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(250, 247, 242, 0.3);
+}
+
+.sheetHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.sheetTitle {
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #FAF7F2;
+}
+
+@media (max-width: 640px) {
+  .content {
+    padding: 5rem 1.25rem 3rem;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+    row-gap: 2.5rem;
+  }
+
+  .small,
+  .medium,
+  .wide,
+  .large {
+    grid-column: span 1;
+  }
+
+  .cardTitle {
+    font-size: 1.1rem;
+    line-height: 1.2;
+  }
+
+  .clearButton {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.65rem;
+  }
+}

@@ -2,12 +2,12 @@ export default function Logo({ isWork, isHidden }) {
   if (isHidden) return null
 
   return (
-    <div style={{
+    <div className="site-logo" style={{
       position: "fixed",
       bottom: "2rem",
       right: "2rem",
       zIndex: 50,
-      width: "clamp(170px, 40vw, 550px)",
+      width: "clamp(190px, 42vw, 580px)",
       pointerEvents: "none"
     }}>
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 916.78 579.4" fill={isWork ? "#FAF7F2" : "#c93500"}>

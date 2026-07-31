@@ -56,6 +56,13 @@ export default function Work() {
   const [hasScroll, setHasScroll] = useState(false);
   const gridRef = useRef(null);
   const [gridVisible, setGridVisible] = useState(true);
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 640);
+
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 640);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
   useEffect(() => {
   document.documentElement.style.backgroundColor = "#C93500";
@@ -133,63 +140,92 @@ useEffect(() => {
       </button>
 
       {drawerOpen && (
-        <div className={styles.overlay} onClick={() => setDrawerOpen(false)} />
+        <div
+          className={isMobile ? styles.sheetBackdrop : styles.overlay}
+          onClick={() => setDrawerOpen(false)}
+        />
       )}
 
-      <div className={`${styles.drawer} ${drawerOpen ? styles.drawerOpen : ""}`}>
-        <button className={styles.drawerClose} onClick={() => setDrawerOpen(false)}>✕</button>
+      {(() => {
+        const filterContent = (
+          <>
+            {availableDisciplines.length > 0 && (
+              <div className={styles.filterSection}>
+                <div className={styles.filterTitle}>Discipline</div>
+                {availableDisciplines.map(m => (
+                  <label
+                    key={m}
+                    className={styles.filterOption}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      toggleFilter(m, selectedDisciplines, setSelectedDisciplines);
+                    }}
+                  >
+                    <StarCheckbox checked={selectedDisciplines.includes(m)} shape={shapeMap[m]} />
+                    {m}
+                  </label>
+                ))}
+              </div>
+            )}
 
-        <div className={styles.filterSection}>
-          <div className={styles.filterTitle}>Discipline</div>
-          {availableDisciplines.map(m => (
-            <label
-              key={m}
-              className={styles.filterOption}
-              onClick={(e) => {
-                e.preventDefault();
-                toggleFilter(m, selectedDisciplines, setSelectedDisciplines);
-              }}
-            >
-              <StarCheckbox checked={selectedDisciplines.includes(m)} shape={shapeMap[m]} />
-              {m}
-            </label>
-          ))}
-        </div>
+            {availableTopics.length > 0 && (
+              <div className={styles.filterSection}>
+                <div className={styles.filterTitle}>Topic</div>
+                {availableTopics.map(m => (
+                  <label
+                    key={m}
+                    className={styles.filterOption}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      toggleFilter(m, selectedTopics, setSelectedTopics);
+                    }}
+                  >
+                    <StarCheckbox checked={selectedTopics.includes(m)} shape={shapeMap[m]} />
+                    {m}
+                  </label>
+                ))}
+              </div>
+            )}
 
-        <div className={styles.filterSection}>
-          <div className={styles.filterTitle}>Topic</div>
-          {availableTopics.map(m => (
-            <label
-              key={m}
-              className={styles.filterOption}
-              onClick={(e) => {
-                e.preventDefault();
-                toggleFilter(m, selectedTopics, setSelectedTopics);
-              }}
-            >
-              <StarCheckbox checked={selectedTopics.includes(m)} shape={shapeMap[m]} />
-              {m}
-            </label>
-          ))}
-        </div>
+            {(selectedDisciplines.length > 0 || selectedTopics.length > 0) && (
+              <button
+                className={styles.clearButton}
+                onClick={() => {
+                  setGridVisible(false);
+                  setTimeout(() => {
+                    setSelectedDisciplines([]);
+                    setSelectedTopics([]);
+                    setGridVisible(true);
+                    window.scrollTo(0, 0);
+                  }, 200);
+                }}
+              >
+                Clear Filters
+              </button>
+            )}
+          </>
+        );
 
-        {(selectedDisciplines.length > 0 || selectedTopics.length > 0) && (
-          <button
-            className={styles.clearButton}
-            onClick={() => {
-              setGridVisible(false);
-              setTimeout(() => {
-                setSelectedDisciplines([]);
-                setSelectedTopics([]);
-                setGridVisible(true);
-                window.scrollTo(0, 0);
-              }, 200);
-            }}
-          >
-  Clear Filters
-</button>
-        )}
-      </div>
+        return isMobile ? (
+          drawerOpen && (
+            <div className={styles.sheet}>
+              <div className={styles.sheetHandleRow}>
+                <div className={styles.sheetHandle} />
+              </div>
+              <div className={styles.sheetHeader}>
+                <div className={styles.sheetTitle}>Filters</div>
+                <button className={styles.drawerClose} onClick={() => setDrawerOpen(false)}>✕</button>
+              </div>
+              {filterContent}
+            </div>
+          )
+        ) : (
+          <div className={`${styles.drawer} ${drawerOpen ? styles.drawerOpen : ""}`}>
+            <button className={styles.drawerClose} onClick={() => setDrawerOpen(false)}>✕</button>
+            {filterContent}
+          </div>
+        );
+      })()}
 
       <div className={styles.content} ref={contentRef}>
         <div className={styles.grid} ref={gridRef} style={{
@@ -203,13 +239,13 @@ useEffect(() => {
 
             return (
               <React.Fragment key={project.id}>
-                {sessionSpacers.has(i) && (
+                {!isMobile && sessionSpacers.has(i) && (
                   <div className={styles.spacer} />
                 )}
                 <Link
                   to={`/portfolio/${project.slug}`}
-                  className={`${styles.card} ${styles[size]}`}
-                  style={{ marginTop: `${nudge}px`, marginBottom: `${sessionMargins[i]}px` }}
+                  className={`${styles.card} ${isMobile ? "" : styles[size]}`}
+                  style={isMobile ? undefined : { marginTop: `${nudge}px`, marginBottom: `${sessionMargins[i]}px` }}
                   onClick={() => sessionStorage.setItem("workScroll", window.scrollY)}
                 >
                   {project.thumbnail ? (

@@ -24,11 +24,14 @@ function Layout() {
   }, []);
 
   // Keep Safari's toolbar chrome in sync with whichever background is
-  // actually visible — home's dominant color is the big blurred pink
-  // circle in Radialgradient.jsx (#FFD6F9), not the cream page background
-  // it sits on top of.
+  // actually visible. Home's circle (Radialgradient.jsx) is a heavily
+  // blurred ellipse, not a flat fill — its raw color (#FFD6F9) is far more
+  // saturated than what's actually visible near the screen edges where the
+  // toolbar sits, since the blur fades it out there. #fce7f5 is sampled
+  // directly from the rendered edge (canvas pixel read, composited over the
+  // cream body background), not guessed.
   useEffect(() => {
-    const color = isWork || isWorkDetail ? "#C93500" : isHome ? "#FFD6F9" : "#FAF7F2";
+    const color = isWork || isWorkDetail ? "#C93500" : isHome ? "#fce7f5" : "#FAF7F2";
     const meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.setAttribute('content', color);
   }, [isHome, isWork, isWorkDetail]);
