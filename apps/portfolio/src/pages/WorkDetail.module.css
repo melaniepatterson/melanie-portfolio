@@ -19,6 +19,8 @@
   text-transform: uppercase;
   border-bottom: 2px solid #FAF7F2;
   z-index: 100;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
 }
 
 .layout {

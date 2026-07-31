@@ -4,8 +4,6 @@ export default function Logo({ isWork, isHidden }) {
   return (
     <div className="site-logo" style={{
       position: "fixed",
-      bottom: "2rem",
-      right: "2rem",
       zIndex: 50,
       width: "clamp(190px, 42vw, 580px)",
       pointerEvents: "none"

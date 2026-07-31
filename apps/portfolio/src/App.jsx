@@ -36,6 +36,30 @@ function Layout() {
     if (meta) meta.setAttribute('content', color);
   }, [isHome, isWork, isWorkDetail]);
 
+  // iOS Safari only repaints its status bar/toolbar chrome on a scroll
+  // event, not immediately when theme-color changes via JS (client-side
+  // route changes never trigger one on their own) — so the meta tag was
+  // updating correctly but the visible chrome stayed stale until the user
+  // happened to scroll. Forcing a tiny real scroll nudges Safari into
+  // resampling it. Same fix already used in the GlowUp app.
+  useEffect(() => {
+    const html = document.documentElement;
+    const prevMinHeight = html.style.minHeight;
+    html.style.minHeight = 'calc(100vh + 2px)';
+    const raf = requestAnimationFrame(() => {
+      window.scrollTo(window.scrollX, window.scrollY + 2);
+    });
+    const timeout = setTimeout(() => {
+      window.scrollTo(window.scrollX, window.scrollY - 2);
+      html.style.minHeight = prevMinHeight;
+    }, 120);
+    return () => {
+      cancelAnimationFrame(raf);
+      clearTimeout(timeout);
+      html.style.minHeight = prevMinHeight;
+    };
+  }, [isHome, isWork, isWorkDetail]);
+
   useEffect(() => {
     const titles = {
       "/": "melanie.studio",

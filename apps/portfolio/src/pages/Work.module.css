@@ -4,7 +4,14 @@
   width: 100%;
   background-color: #C93500;
   position: relative;
-  z-index: 2;
+  /* .page's own z-index (not the sheet's internal 300) is what actually
+     gets compared against sibling elements outside it, like the fixed
+     logo (z-index 50) — since position:relative + z-index here creates a
+     stacking context, everything inside (including the z-index:300 sheet)
+     was capped at "2" from the outside, so the logo painted on top of the
+     whole page regardless of the sheet's own stacking. Needs to clear 50,
+     but stay under .sidenav's 100. */
+  z-index: 60;
   flex: 1;
 }
 
@@ -25,6 +32,12 @@
   align-items: center;
   gap: 0.5rem;
   font-family: inherit;
+  /* iOS Safari can visually detach position:fixed elements from the
+     viewport during rubber-band/momentum scroll, making them appear to
+     drift with the page instead of staying pinned. Forcing this onto its
+     own GPU compositing layer is the standard fix. */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
 }
 
 /* Drawer */
@@ -287,8 +300,10 @@
   z-index: 300;
   background: #C93500;
   border-radius: 16px 16px 0 0;
-  padding: 0 1.5rem 2rem;
+  padding: 0 1.5rem 3.5rem;
+  padding-bottom: calc(3.5rem + env(safe-area-inset-bottom, 0px));
   max-height: 75vh;
+  max-height: 85dvh; /* mobile Safari's vh ignores its own toolbar — same fix as .layout */
   overflow-y: auto;
   box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.25);
   animation: slideUp 0.22s ease;

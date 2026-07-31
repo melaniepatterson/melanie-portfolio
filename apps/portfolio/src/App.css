@@ -24,6 +24,8 @@ main {
   padding-right: 2rem;
   gap: 2rem;
   z-index: 100;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
 }
 
 .sidenav a {
@@ -58,6 +60,11 @@ main {
 
 .home-nav {
   gap: 3rem;
+}
+
+.site-logo {
+  bottom: 2rem;
+  right: 2rem;
 }
 
 @media (max-width: 640px) {
