@@ -13,9 +13,12 @@ import BlogComingSoon from './BlogComingSoon'
 import GlowUpAbout from './GlowUpAbout'
 import BetaSurvey from './BetaSurvey'
 import T from './theme'
-import { supabase } from './supabase'
+import { supabase, realSupabase } from './supabase'
 import CookieNotice from './CookieNotice'
 import NotFound from './NotFound'
+import DemoBanner from './DemoBanner'
+
+const IS_DEMO = import.meta.env.VITE_GLOWUP_DEMO === 'true'
 
 const PUBLIC_PATHS = ["/privacy", "/blog", "/about-glowup"]
 
@@ -81,6 +84,27 @@ function Layout() {
       setShowSurvey(true)
     }
   }, [location.search])
+
+  // Demo build only: log one visit per ?ref= tag (e.g. ?ref=acme) so
+  // Melanie can tell which company/application a click-through came from.
+  // Stored in sessionStorage so the tag survives in-app navigation without
+  // needing to stay in the URL bar, and only logged once per session.
+  useEffect(() => {
+    if (!IS_DEMO || !realSupabase) return
+    const params = new URLSearchParams(window.location.search)
+    const ref = params.get('ref')
+    if (ref) sessionStorage.setItem('glowup_demo_ref', ref)
+    if (sessionStorage.getItem('glowup_demo_visit_logged')) return
+    sessionStorage.setItem('glowup_demo_visit_logged', '1')
+    realSupabase.from('demo_visits').insert({
+      ref: sessionStorage.getItem('glowup_demo_ref') || null,
+      path: window.location.pathname,
+    }).then(({ error }) => {
+      // Non-fatal — the demo_visits table may not exist yet if Melanie
+      // hasn't run the setup SQL. Never let this affect the demo itself.
+      if (error) console.warn('Demo visit logging failed (is the demo_visits table set up?):', error.message)
+    })
+  }, [])
 
   // Load beta tester + survey status when session is available
   useEffect(() => {
@@ -167,9 +191,12 @@ function Layout() {
 
 function App() {
   return (
-    <BrowserRouter>
-      <Layout />
-    </BrowserRouter>
+    <>
+      {IS_DEMO && <DemoBanner />}
+      <BrowserRouter>
+        <Layout />
+      </BrowserRouter>
+    </>
   );
 }
 
