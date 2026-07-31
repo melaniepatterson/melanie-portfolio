@@ -38,6 +38,24 @@ export const PROJECTS = [
   { src: "https://placehold.co/600x600/1a1a1a/FAF7F2", alt: "The full piece installed at..." },
 ]
   },
+    {
+    id: 2,
+    slug: "glow-up",
+    title: "Glow Up",
+    disciplines: ["Interactive Design", "Design & Print"],
+    topics: null,
+    client: null,
+    year: "2026",
+    description: "Glow Up is a skincare tracking, organizing, and discovery app built to help users navigate their way through a multi-step routine safely and confidently. It walks users through phased, dermatology-inspired onboarding programs that ramp up active ingredients and exfoliants gradually, tracks routine extras like haircare and gua sha, and detects when a scheduled treatment—like a chemical peel, laser session, or microneedling—conflicts with ingredients in someone/'s routine. It also includes a product library with ethics/values tracking and expiry tracking, a calendar export, and a feedback system. Designed and built with React/Supabase architecture, custom typography and brand system, and accessibility built in from the start.",
+    externalLink: "",
+    thumbnail: null, // or: () => import('../projects/project-one/Thumbnail')
+    hero: null,      // or: () => import('../projects/project-one/Hero')
+    images: [
+    { src: "https://placehold.co/1200x800/1a1a1a/FAF7F2", alt: "A watercolor painting of..." },
+    { src: "https://placehold.co/800x1000/1a1a1a/FAF7F2", alt: "Detail shot of the upper left corner showing..." },
+    { src: "https://placehold.co/600x600/1a1a1a/FAF7F2", alt: "The full piece installed at..." },
+  ]
+  } /*,
   {
     id: 2,
     slug: "project-two",
@@ -163,5 +181,5 @@ export const PROJECTS = [
   { src: "https://placehold.co/800x1000/1a1a1a/FAF7F2", alt: "Detail shot of the upper left corner showing..." },
   { src: "https://placehold.co/600x600/1a1a1a/FAF7F2", alt: "The full piece installed at..." },
 ]
-  },
+  },*/
 ];
