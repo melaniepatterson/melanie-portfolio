@@ -35,18 +35,18 @@ export default function ConfirmDialog({
   return (
     <div onClick={() => !busy && onCancel?.()} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
       <div onClick={e => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby={titleId.current}
-        style={{ background: T.white, border: `1px solid ${T.hairline}`, borderRadius: 0, width: '100%', maxWidth: 400, padding: '24px 20px' }}>
+        style={{ background: T.white, border: 'none', borderRadius: T.radius.modal, width: '100%', maxWidth: 400, padding: '24px 20px' }}>
         <h3 id={titleId.current} style={{ fontSize: 16, fontWeight: 700, color: danger ? T.darkPink : T.text, margin: '0 0 10px' }}>{title}</h3>
         <p style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.7, margin: '0 0 20px' }}>{message}</p>
         <div style={{ display: 'flex', gap: 8 }}>
           {onCancel && (
             <button onClick={onCancel} disabled={busy}
-              style={{ flex: 1, padding: '10px', borderRadius: 0, border: `1px solid ${T.hairline}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit' }}>
+              style={{ flex: 1, padding: '10px', borderRadius: T.radius.pill, border: `1px solid ${T.hairline}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 13, fontFamily: 'inherit' }}>
               {cancelLabel}
             </button>
           )}
           <button ref={confirmRef} onClick={onConfirm} disabled={busy}
-            style={{ flex: 1, padding: '10px', borderRadius: 0, border: 'none', background: danger ? T.darkPink : T.text, color: '#fff', cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 600 }}>
+            style={{ flex: 1, padding: '10px', borderRadius: T.radius.pill, border: 'none', background: danger ? T.darkPink : T.text, color: '#fff', cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 600 }}>
             {confirmLabel}
           </button>
         </div>
