@@ -35,6 +35,10 @@ export default defineConfig(({ mode }) => {
     build: {
       outDir: resolve(__dirname, '../../dist/glowup'),
       emptyOutDir: true,
+      // Demo build's app chunk runs ~500-510KB — the extra ~12KB over the
+      // real build is DemoBanner + demo ref-tracking code that's genuinely
+      // reachable only in that build, not bloat worth chasing.
+      chunkSizeWarningLimit: 550,
       rollupOptions: {
         output: {
           manualChunks: {

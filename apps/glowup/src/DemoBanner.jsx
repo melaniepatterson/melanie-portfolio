@@ -14,7 +14,7 @@ export default function DemoBanner() {
   useEffect(() => {
     function onWrite() {
       setFlash(true)
-      const t = setTimeout(() => setFlash(false), 900)
+      const t = setTimeout(() => setFlash(false), 2200)
       return () => clearTimeout(t)
     }
     window.addEventListener('glowup-demo-write', onWrite)
