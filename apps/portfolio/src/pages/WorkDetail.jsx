@@ -154,7 +154,7 @@ export default function WorkDetail() {
               className={styles.link}
             >
               <SplitText>View Project</SplitText>
-              {project.externalLink.startsWith("http") ? " ↗" : ""}
+              {project.externalLink.startsWith("http") ? " ↗︎" : ""}
             </a>
           )}
         </div>

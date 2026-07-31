@@ -119,10 +119,12 @@
 
 .link {
   display: inline-flex;
+  align-self: flex-start;
   align-items: center;
   gap: 0.5rem;
-  color: #C93500;
-  background: #FAF7F2;
+  color: #FAF7F2;
+  background: transparent;
+  border: 1px solid #FAF7F2;
   text-decoration: none;
   font-size: 0.85rem;
   font-weight: 700;
@@ -131,7 +133,6 @@
   padding: 0.75rem 1.25rem;
   transition: opacity 0.2s ease;
   border-radius: 25px;
-  margin: 0rem -1.25rem;
 }
 
 .client {
@@ -219,6 +220,11 @@
   .layout {
     grid-template-columns: 1fr;
     gap: 2rem;
+  }
+
+  .back {
+    top: 1.5rem;
+    left: 1.25rem;
   }
 
   .info {
