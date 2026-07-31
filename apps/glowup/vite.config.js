@@ -17,6 +17,13 @@ export default defineConfig({
   build: {
     outDir: resolve(__dirname, '../../dist/glowup'),
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom', '@supabase/supabase-js', 'react-easy-crop'],
+        },
+      },
+    },
   },
   esbuild: {
     loader: 'jsx',

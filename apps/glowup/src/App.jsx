@@ -1,17 +1,20 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense, lazy } from "react";
 import "./App.css";
 import GlowUpCalendar from './GlowUpCalendar'
 import GlowUpLoader from './GlowUpLoader'
 import { ErrorBoundary } from './ErrorBoundary'
 import Auth from './Auth'
-import Profile from './Profile'
-import RoutineHistory from './RoutineHistory'
-import ProductsPage from './ProductsPage'
-import PrivacyPolicy from './PrivacyPolicy'
 import BlogComingSoon from './BlogComingSoon'
 import GlowUpAbout from './GlowUpAbout'
 import BetaSurvey from './BetaSurvey'
+
+// Split out of the main bundle — visited far less often than the calendar
+// home route, and this is what keeps the build under the 500KB chunk warning.
+const Profile = lazy(() => import('./Profile'))
+const RoutineHistory = lazy(() => import('./RoutineHistory'))
+const ProductsPage = lazy(() => import('./ProductsPage'))
+const PrivacyPolicy = lazy(() => import('./PrivacyPolicy'))
 import T from './theme'
 import { supabase, realSupabase } from './supabase'
 import CookieNotice from './CookieNotice'
@@ -147,45 +150,47 @@ function Layout() {
   if (!isPublicPage && !session) return <Auth />
 
   return (
-    <Routes>
-      <Route path="/privacy" element={<PrivacyPolicy />} />
-      <Route path="/blog" element={<BlogComingSoon />} />
-      <Route path="/about-glowup" element={<GlowUpAbout />} />
-      <Route path="/" element={
-        <>
-          <ErrorBoundary><GlowUpCalendar session={session} /></ErrorBoundary>
-          <CookieNotice />
-        </>
-      } />
-      <Route path="/profile" element={
-        <>
-          <Profile session={session} onOpenSurvey={() => setShowSurvey(true)} />
-          <CookieNotice />
-          {showSurvey && session && (
-            <BetaSurvey
-              session={session}
-              onClose={() => setShowSurvey(false)}
-              onSubmitted={() => { setSurveySubmitted(true); setShowSurvey(false) }}
-              betaTester={betaTester}
-              alreadySubmitted={surveySubmitted}
-            />
-          )}
-        </>
-      } />
-      <Route path="/history" element={
-        <>
-          <RoutineHistory session={session} betaTester={betaTester} />
-          <CookieNotice />
-        </>
-      } />
-      <Route path="/products" element={
-        <>
-          <ProductsPage session={session} betaTester={betaTester} />
-          <CookieNotice />
-        </>
-      } />
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+    <Suspense fallback={<GlowUpLoader />}>
+      <Routes>
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/blog" element={<BlogComingSoon />} />
+        <Route path="/about-glowup" element={<GlowUpAbout />} />
+        <Route path="/" element={
+          <>
+            <ErrorBoundary><GlowUpCalendar session={session} /></ErrorBoundary>
+            <CookieNotice />
+          </>
+        } />
+        <Route path="/profile" element={
+          <>
+            <Profile session={session} onOpenSurvey={() => setShowSurvey(true)} />
+            <CookieNotice />
+            {showSurvey && session && (
+              <BetaSurvey
+                session={session}
+                onClose={() => setShowSurvey(false)}
+                onSubmitted={() => { setSurveySubmitted(true); setShowSurvey(false) }}
+                betaTester={betaTester}
+                alreadySubmitted={surveySubmitted}
+              />
+            )}
+          </>
+        } />
+        <Route path="/history" element={
+          <>
+            <RoutineHistory session={session} betaTester={betaTester} />
+            <CookieNotice />
+          </>
+        } />
+        <Route path="/products" element={
+          <>
+            <ProductsPage session={session} betaTester={betaTester} />
+            <CookieNotice />
+          </>
+        } />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </Suspense>
   );
 }
 
