@@ -1,70 +1,42 @@
-# Getting Started with Create React App
+# melanie-portfolio
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Two Vite/React apps in one repo, deployed as separate Vercel projects off `main`:
 
-## Available Scripts
+- `apps/portfolio` → [melanie.studio](https://melanie.studio)
+- `apps/glowup` → skincare routine tracker, deployed twice from the same source:
+  - [glowup.melanie.studio](https://glowup.melanie.studio) — the real app
+  - [glowupdemo.melanie.studio](https://glowupdemo.melanie.studio) — read-only demo, linked from the portfolio case study
 
-In the project directory, you can run:
+Backend is Supabase (Postgres + auth + storage). Edge functions in `supabase/functions/`.
 
-### `npm start`
+## Setup
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+```bash
+npm install
+```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+`.env.local`:
 
-### `npm test`
+```
+VITE_SUPABASE_URL=...
+VITE_SUPABASE_ANON_KEY=...
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```bash
+npm run dev:portfolio   # localhost:5173
+npm run dev:glowup      # localhost:5174
+```
 
-### `npm run build`
+Same pattern for `build:` and `preview:`.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Deploys
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Three Vercel projects, same repo, same `main` branch — a push redeploys all three:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- **melanie-portfolio**: `npm run build:portfolio` → `dist/portfolio`
+- **glowup**: `npm run build:glowup` → `dist/glowup`
+- **glowup-demo**: same as glowup, plus `VITE_GLOWUP_DEMO=true`
 
-### `npm run eject`
+## Demo build
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+`VITE_GLOWUP_DEMO=true` swaps the real Supabase client for a mock (`demoClient.js` + static `demoData.js`) — everything routes through one client export, so that one swap makes the whole app read-only. `DemoBanner.jsx` shows it's a demo and flashes on any blocked write.
