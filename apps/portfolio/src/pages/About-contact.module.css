@@ -48,9 +48,9 @@
 
 @media (max-width: 640px) {
   .page {
-    /* Extra bottom padding clears the fixed WORK/INFO nav bar so the
-       last bit of scrolled content isn't hidden underneath it. */
-    padding: 2rem 1.5rem calc(4.5rem + env(safe-area-inset-bottom, 0px));
+    /* WORK/INFO moved to the top — nothing's fixed at the bottom of this
+       page anymore, so just the footer's own clearance is needed here. */
+    padding: 2rem 1.5rem 2rem;
     max-width: 100%;
   }
 
@@ -60,7 +60,7 @@
   }
 
   .text {
-    padding-top: 4.5rem; /* clears the centered top logo */
+    padding-top: 5.5rem; /* clears the centered top logo + WORK/INFO nav below it */
   }
 
   .bio {

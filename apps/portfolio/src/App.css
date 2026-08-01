@@ -40,20 +40,20 @@ main {
 }
 
 @media (max-width: 640px) {
-  /* Bottom nav bar, WORK left / INFO right — the top row is reserved for
-     page-specific controls (filter button, back link) plus the centered
-     mobile wordmark, so the main nav moves to the bottom on mobile. */
+  /* WORK left / INFO right, just below the centered top logo. Page-specific
+     controls (Work's filter button) are now a floating pill fixed to the
+     bottom instead, so the top row is free for the main nav. */
   .sidenav {
     width: auto;
-    top: auto;
-    bottom: 0;
+    top: 3.5rem;
+    bottom: auto;
     left: 0;
     right: 0;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
     gap: 0;
-    padding: 0 1.5rem calc(1.5rem + env(safe-area-inset-bottom, 0px));
+    padding: 0 1.5rem;
   }
 }
 
@@ -67,10 +67,11 @@ main {
 }
 
 @media (max-width: 640px) {
-  /* Clears the fixed bottom WORK/INFO nav bar so the copyright line
-     doesn't sit underneath it. */
+  /* WORK/INFO moved to the top — this now only needs to clear Work's
+     floating filter pill (About/WorkDetail have nothing fixed at the
+     bottom, so this is harmlessly generous there). */
   .site-footer {
-    padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
   }
 }
 

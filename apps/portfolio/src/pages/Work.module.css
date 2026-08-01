@@ -323,6 +323,7 @@
 }
 
 .sheetInner {
+  position: relative;
   background: #C93500;
   border-radius: 16px 16px 0 0;
   padding: 0 1.5rem 3.5rem;
@@ -331,6 +332,25 @@
   max-height: 85dvh; /* mobile Safari's vh ignores its own toolbar — same fix as .layout */
   overflow-y: auto;
   box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.25);
+}
+
+/* A generous, fixed-size color-bleed below the sheet's own bottom edge —
+   not calculated from the toolbar's actual height (dvh/visualViewport
+   proved unreliable across several attempts), just a flat buffer larger
+   than any real Safari toolbar can be, so there's never a gap regardless
+   of timing/measurement precision. Same idea as Airbnb's persistent solid-
+   color bottom bar: give Liquid Glass something solid to sample no matter
+   what. Purely decorative — sits outside .sheetInner's own scrollable
+   content, so it never affects layout or scrolling. */
+.sheetInner::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 200px;
+  background: #C93500;
+  pointer-events: none;
 }
 
 @keyframes slideUp {
@@ -367,16 +387,24 @@
 }
 
 @media (max-width: 640px) {
+  /* Floating pill, fixed to the bottom — WORK/INFO now own the top row
+     (below the logo), so the filter trigger moves down here instead. */
   .filterButton {
-    /* Falls just below the centered top logo instead of sharing its row. */
-    top: 3.5rem;
-    left: 1.25rem;
+    top: auto;
+    left: 50%;
+    bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
+    transform: translateX(-50%) translateZ(0);
+    background: #FAF7F2;
+    color: #C93500;
+    padding: 0.85rem 1.75rem;
+    border-radius: 999px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
   }
 
   .content {
-    /* Extra bottom padding clears the fixed WORK/INFO nav bar so the
-       last bit of scrolled content isn't hidden underneath it. */
-    padding: 7rem 1.25rem calc(4.5rem + env(safe-area-inset-bottom, 0px));
+    /* Extra bottom padding clears the floating filter pill so the last
+       bit of scrolled content isn't hidden underneath it. */
+    padding: 7rem 1.25rem calc(5.5rem + env(safe-area-inset-bottom, 0px));
   }
 
   .grid {
