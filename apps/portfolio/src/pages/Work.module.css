@@ -283,25 +283,38 @@
    directly on fixed/sticky elements near viewport edges and tints the
    Safari toolbar with it — so .sheet and .sheetBackdrop stay transparent
    positioning shells, and the actual visible color lives on a plain
-   (non-fixed) child instead. */
+   (non-fixed) child instead.
+
+   .sheet is nested inside .sheetBackdrop (not a separate fixed sibling
+   anchored via its own bottom:0) so both share one 100dvh-tall flex
+   container. bottom:0 on its own didn't reliably track Safari's toolbar
+   height changing between its collapsed/expanded states on a real
+   device — content behind the sheet was visible, undimmed, in the gap
+   left below it when the toolbar grew. 100dvh recalculates live with
+   the toolbar, and flex (justify-content: flex-end) keeps the sheet
+   pinned to whatever the container's current bottom edge actually is. */
 .sheetBackdrop {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100vh;
+  height: 100dvh;
   z-index: 250;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 }
 
 .sheetBackdropFill {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.55);
 }
 
 .sheet {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 300;
+  position: relative;
+  z-index: 1;
   animation: slideUp 0.22s ease;
 }
 
@@ -309,16 +322,9 @@
   background: #C93500;
   border-radius: 16px 16px 0 0;
   padding: 0 1.5rem 3.5rem;
-  /* Extends the sheet's solid color 56px past the viewport bottom edge —
-     an estimate of the Liquid Glass bottom toolbar's height in its
-     expanded/"big" state — so that area samples this color instead of
-     showing a gap underneath when the toolbar is tall. Unverified on a
-     real iOS 26 device; the extra padding-bottom keeps the actual
-     clickable filter content clear of that overflow region. */
-  margin-bottom: -56px;
-  padding-bottom: calc(3.5rem + 56px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: calc(3.5rem + env(safe-area-inset-bottom, 0px));
   max-height: 75vh;
-  max-height: calc(85dvh + 56px); /* mobile Safari's vh ignores its own toolbar — same fix as .layout */
+  max-height: 85dvh; /* mobile Safari's vh ignores its own toolbar — same fix as .layout */
   overflow-y: auto;
   box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.25);
 }

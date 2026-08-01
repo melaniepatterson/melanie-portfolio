@@ -85,11 +85,6 @@ main {
 
 .site-logo-mobile {
   display: none;
-  pointer-events: none;
-}
-
-.site-logo-mobile a {
-  pointer-events: auto;
 }
 
 @media (max-width: 640px) {
@@ -100,11 +95,19 @@ main {
   .site-logo-mobile {
     display: block;
     position: fixed;
-    top: 1.25rem;
+    /* Padding enlarges the tap target well past the letterforms — the
+       link previously only registered clicks on painted SVG pixels — the
+       negative top offset keeps the visible logo in the same spot. */
+    top: calc(1.25rem - 14px);
     left: 50%;
     transform: translateX(-50%);
-    width: min(160px, 40vw);
+    padding: 14px 18px;
     z-index: 50;
+  }
+
+  .site-logo-mobile svg {
+    display: block;
+    width: min(160px, 40vw);
   }
 }
 

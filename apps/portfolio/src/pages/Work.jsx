@@ -223,17 +223,17 @@ useEffect(() => {
                   Escaping .page's subtree entirely sidesteps that. */}
               <div className={styles.sheetBackdrop} onClick={() => setDrawerOpen(false)}>
                 <div className={styles.sheetBackdropFill} />
-              </div>
-              <div className={styles.sheet}>
-                <div className={styles.sheetInner}>
-                  <div className={styles.sheetHandleRow}>
-                    <div className={styles.sheetHandle} />
+                <div className={styles.sheet} onClick={(e) => e.stopPropagation()}>
+                  <div className={styles.sheetInner}>
+                    <div className={styles.sheetHandleRow}>
+                      <div className={styles.sheetHandle} />
+                    </div>
+                    <div className={styles.sheetHeader}>
+                      <div className={styles.sheetTitle}>Filters</div>
+                      <button className={styles.drawerClose} onClick={() => setDrawerOpen(false)}>✕</button>
+                    </div>
+                    {filterContent}
                   </div>
-                  <div className={styles.sheetHeader}>
-                    <div className={styles.sheetTitle}>Filters</div>
-                    <button className={styles.drawerClose} onClick={() => setDrawerOpen(false)}>✕</button>
-                  </div>
-                  {filterContent}
                 </div>
               </div>
             </>,
