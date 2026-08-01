@@ -66,11 +66,16 @@ export default function Work() {
   }, []);
 
   useEffect(() => {
-  document.documentElement.style.backgroundColor = "#C93500";
-  return () => {
-    document.documentElement.style.backgroundColor = "";
-  };
-}, []);
+    // iOS 26 Liquid Glass ignores theme-color entirely and falls back to
+    // html/body's actual background-color when no qualifying fixed element
+    // is sampled — body needs this too, not just documentElement.
+    document.documentElement.style.backgroundColor = "#C93500";
+    document.body.style.backgroundColor = "#C93500";
+    return () => {
+      document.documentElement.style.backgroundColor = "";
+      document.body.style.backgroundColor = "";
+    };
+  }, []);
 
   useEffect(() => {
     const saved = sessionStorage.getItem("workScroll");
@@ -216,16 +221,20 @@ useEffect(() => {
                   a sibling of .page) was comparing against .page's own low
                   z-index and painting on top of the whole sheet regardless.
                   Escaping .page's subtree entirely sidesteps that. */}
-              <div className={styles.sheetBackdrop} onClick={() => setDrawerOpen(false)} />
+              <div className={styles.sheetBackdrop} onClick={() => setDrawerOpen(false)}>
+                <div className={styles.sheetBackdropFill} />
+              </div>
               <div className={styles.sheet}>
-                <div className={styles.sheetHandleRow}>
-                  <div className={styles.sheetHandle} />
+                <div className={styles.sheetInner}>
+                  <div className={styles.sheetHandleRow}>
+                    <div className={styles.sheetHandle} />
+                  </div>
+                  <div className={styles.sheetHeader}>
+                    <div className={styles.sheetTitle}>Filters</div>
+                    <button className={styles.drawerClose} onClick={() => setDrawerOpen(false)}>✕</button>
+                  </div>
+                  {filterContent}
                 </div>
-                <div className={styles.sheetHeader}>
-                  <div className={styles.sheetTitle}>Filters</div>
-                  <button className={styles.drawerClose} onClick={() => setDrawerOpen(false)}>✕</button>
-                </div>
-                {filterContent}
               </div>
             </>,
             document.body

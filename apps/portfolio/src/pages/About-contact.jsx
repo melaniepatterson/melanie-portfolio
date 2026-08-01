@@ -6,9 +6,13 @@ export default function AboutContact() {
   const [hovered, setHovered] = useState(false);
   
   useEffect(() => {
+    // See Work.jsx — Liquid Glass falls back to html/body's real
+    // background-color, so body needs this synced too, not just html.
     document.documentElement.style.backgroundColor = "#FAF7F2";
+    document.body.style.backgroundColor = "#FAF7F2";
     return () => {
       document.documentElement.style.backgroundColor = "";
+      document.body.style.backgroundColor = "";
     };
   }, []);
 

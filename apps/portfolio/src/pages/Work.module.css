@@ -277,12 +277,23 @@
 }
 
 /* Bottom-sheet filter panel — mobile only, replaces the left slide-in
-   drawer. Same visual pattern as GlowUp's ProductsPage.jsx filter sheet. */
+   drawer. Same visual pattern as GlowUp's ProductsPage.jsx filter sheet.
+
+   iOS 26 Liquid Glass samples background-color/backdrop-filter set
+   directly on fixed/sticky elements near viewport edges and tints the
+   Safari toolbar with it — so .sheet and .sheetBackdrop stay transparent
+   positioning shells, and the actual visible color lives on a plain
+   (non-fixed) child instead. */
 .sheetBackdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.3);
   z-index: 250;
+}
+
+.sheetBackdropFill {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
 }
 
 .sheet {
@@ -291,6 +302,10 @@
   left: 0;
   right: 0;
   z-index: 300;
+  animation: slideUp 0.22s ease;
+}
+
+.sheetInner {
   background: #C93500;
   border-radius: 16px 16px 0 0;
   padding: 0 1.5rem 3.5rem;
@@ -299,7 +314,6 @@
   max-height: 85dvh; /* mobile Safari's vh ignores its own toolbar — same fix as .layout */
   overflow-y: auto;
   box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.25);
-  animation: slideUp 0.22s ease;
 }
 
 @keyframes slideUp {

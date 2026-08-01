@@ -89,9 +89,13 @@ export default function WorkDetail() {
   }, []);
 
   useEffect(() => {
+    // See Work.jsx — Liquid Glass falls back to html/body's real
+    // background-color, so body needs this synced too, not just html.
     document.documentElement.style.backgroundColor = "#C93500";
+    document.body.style.backgroundColor = "#C93500";
     return () => {
       document.documentElement.style.backgroundColor = "";
+      document.body.style.backgroundColor = "";
     };
   }, []);
 
