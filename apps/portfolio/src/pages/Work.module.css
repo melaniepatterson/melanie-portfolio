@@ -295,14 +295,12 @@
    Work.jsx (the API browsers provide specifically for toolbar/keyboard-
    aware real-time viewport size) and takes priority when available;
    flex (justify-content: flex-end) keeps the sheet pinned to whatever
-   the container's current bottom edge actually is.
-
-   padding-bottom on the container stops the sheet well short of that
-   true bottom edge instead of reaching flush against it — deliberate
-   breathing room between the sheet and the toolbar boundary itself,
-   rather than depending on pixel-precise coverage all the way down to
-   it. The gap is still covered by .sheetBackdropFill's dim, and past
-   that, the real page (background-color synced to match the sheet). */
+   the container's current bottom edge actually is. Tried stopping the
+   sheet short of that edge on purpose (deliberate gap) — worse, not
+   better: it exposed the real footer and a second "Filters" pill
+   dimmed underneath. Reverted — flush to the container's bottom is
+   correct, the nudge-scroll fix and .sheetInner::after bleed below
+   handle the actual coverage. */
 .sheetBackdrop {
   position: fixed;
   top: 0;
@@ -311,7 +309,6 @@
   height: 100vh;
   height: 100dvh;
   height: var(--sheet-vh, 100dvh);
-  padding-bottom: 90px;
   z-index: 250;
   display: flex;
   flex-direction: column;
