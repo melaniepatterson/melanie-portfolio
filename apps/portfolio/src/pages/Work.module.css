@@ -295,7 +295,14 @@
    Work.jsx (the API browsers provide specifically for toolbar/keyboard-
    aware real-time viewport size) and takes priority when available;
    flex (justify-content: flex-end) keeps the sheet pinned to whatever
-   the container's current bottom edge actually is. */
+   the container's current bottom edge actually is.
+
+   padding-bottom on the container stops the sheet well short of that
+   true bottom edge instead of reaching flush against it — deliberate
+   breathing room between the sheet and the toolbar boundary itself,
+   rather than depending on pixel-precise coverage all the way down to
+   it. The gap is still covered by .sheetBackdropFill's dim, and past
+   that, the real page (background-color synced to match the sheet). */
 .sheetBackdrop {
   position: fixed;
   top: 0;
@@ -304,6 +311,7 @@
   height: 100vh;
   height: 100dvh;
   height: var(--sheet-vh, 100dvh);
+  padding-bottom: 90px;
   z-index: 250;
   display: flex;
   flex-direction: column;
@@ -422,6 +430,12 @@
   .cardTitle {
     font-size: 1.1rem;
     line-height: 1.2;
+  }
+
+  /* No hover on touch — show the year statically instead of gating it
+     behind a hover state that mobile can't reach. */
+  .cardYear {
+    opacity: 1;
   }
 
   .clearButton {
