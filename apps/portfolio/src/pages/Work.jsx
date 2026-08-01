@@ -101,6 +101,32 @@ export default function Work() {
   }, [drawerOpen]);
 
   useEffect(() => {
+    // Confirmed: the gap only shows up when the sheet opens before the
+    // user has scrolled at all — Safari's Liquid Glass toolbar only
+    // resamples what's behind it on a genuine scroll event, not on DOM/
+    // paint changes. If the sheet opens pre-scroll, the toolbar is still
+    // showing a stale render from before the sheet's fixed overlay
+    // existed. Same "nudge a real scroll" trick as App.jsx's route-change
+    // fix, fired when the sheet opens instead.
+    if (!drawerOpen) return;
+    const html = document.documentElement;
+    const prevMinHeight = html.style.minHeight;
+    html.style.minHeight = 'calc(100vh + 2px)';
+    const raf = requestAnimationFrame(() => {
+      window.scrollTo(window.scrollX, window.scrollY + 2);
+    });
+    const timeout = setTimeout(() => {
+      window.scrollTo(window.scrollX, window.scrollY - 2);
+      html.style.minHeight = prevMinHeight;
+    }, 120);
+    return () => {
+      cancelAnimationFrame(raf);
+      clearTimeout(timeout);
+      html.style.minHeight = prevMinHeight;
+    };
+  }, [drawerOpen]);
+
+  useEffect(() => {
     const saved = sessionStorage.getItem("workScroll");
     if (saved) {
       window.scrollTo(0, parseInt(saved));
