@@ -210,8 +210,8 @@ export default function RepulseLogo() {
     {/* Stars in their own unclipped layer so overflow doesn't swallow their movement.
         zIndex:1 keeps them below .home-nav's zIndex:10 (WORK/INFO links stay on top). */}
     <div style={{ position: "fixed", inset: 0, zIndex: 1, pointerEvents: "none" }}>
-      <Star1 ref={star1Ref} style={isMobile ? { left: "66%", bottom: "0" } : { left: "55%", bottom: "-40px" }} />
-      <Star2 ref={star2Ref} style={isMobile ? { left: "75%", top: "66%" } : { left: "65%", top: "90%" }} />
+      <Star1 ref={star1Ref} style={isMobile ? { left: "calc(40%)", bottom: "-49px" } : { left: "55%", bottom: "-40px" }} />
+      <Star2 ref={star2Ref} style={isMobile ? { right: "-55px", top: "calc(55%)" } : { left: "65%", top: "90%" }} />
       <Star3 ref={star3Ref} style={{ left: "-50px", top: "20%" }} />
     </div>
 
@@ -271,6 +271,7 @@ export default function RepulseLogo() {
         position: "fixed",
         inset: 0,
         display: "flex",
+        flexDirection: isMobile ? "column" : "row",
         alignItems: "center",
         justifyContent: "center",
         zIndex: 10,

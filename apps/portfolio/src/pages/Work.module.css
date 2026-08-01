@@ -309,9 +309,16 @@
   background: #C93500;
   border-radius: 16px 16px 0 0;
   padding: 0 1.5rem 3.5rem;
-  padding-bottom: calc(3.5rem + env(safe-area-inset-bottom, 0px));
+  /* Extends the sheet's solid color 56px past the viewport bottom edge —
+     an estimate of the Liquid Glass bottom toolbar's height in its
+     expanded/"big" state — so that area samples this color instead of
+     showing a gap underneath when the toolbar is tall. Unverified on a
+     real iOS 26 device; the extra padding-bottom keeps the actual
+     clickable filter content clear of that overflow region. */
+  margin-bottom: -56px;
+  padding-bottom: calc(3.5rem + 56px + env(safe-area-inset-bottom, 0px));
   max-height: 75vh;
-  max-height: 85dvh; /* mobile Safari's vh ignores its own toolbar — same fix as .layout */
+  max-height: calc(85dvh + 56px); /* mobile Safari's vh ignores its own toolbar — same fix as .layout */
   overflow-y: auto;
   box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.25);
 }
@@ -382,5 +389,9 @@
   .clearButton {
     padding: 0.4rem 0.75rem;
     font-size: 0.65rem;
+  }
+
+  .scrollHint {
+    display: none;
   }
 }
