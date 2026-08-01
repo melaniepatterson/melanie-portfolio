@@ -78,6 +78,29 @@ export default function Work() {
   }, []);
 
   useEffect(() => {
+    // 100dvh alone left a real, undimmed gap between the sheet and Safari's
+    // bottom toolbar on a real device — the CSS unit isn't recalculating
+    // live enough to track the toolbar's current height. window.visualViewport
+    // is the API browsers actually provide for this exact problem (keyboard/
+    // toolbar-aware real-time viewport size), so drive the sheet's height
+    // from it directly via a CSS var instead of trusting dvh alone.
+    if (!drawerOpen) return;
+    const vv = window.visualViewport;
+    if (!vv) return;
+    const setHeight = () => {
+      document.documentElement.style.setProperty("--sheet-vh", `${vv.height}px`);
+    };
+    setHeight();
+    vv.addEventListener("resize", setHeight);
+    vv.addEventListener("scroll", setHeight);
+    return () => {
+      vv.removeEventListener("resize", setHeight);
+      vv.removeEventListener("scroll", setHeight);
+      document.documentElement.style.removeProperty("--sheet-vh");
+    };
+  }, [drawerOpen]);
+
+  useEffect(() => {
     const saved = sessionStorage.getItem("workScroll");
     if (saved) {
       window.scrollTo(0, parseInt(saved));

@@ -286,13 +286,16 @@
    (non-fixed) child instead.
 
    .sheet is nested inside .sheetBackdrop (not a separate fixed sibling
-   anchored via its own bottom:0) so both share one 100dvh-tall flex
+   anchored via its own bottom:0) so both share one full-height flex
    container. bottom:0 on its own didn't reliably track Safari's toolbar
    height changing between its collapsed/expanded states on a real
-   device — content behind the sheet was visible, undimmed, in the gap
-   left below it when the toolbar grew. 100dvh recalculates live with
-   the toolbar, and flex (justify-content: flex-end) keeps the sheet
-   pinned to whatever the container's current bottom edge actually is. */
+   device, and 100dvh alone wasn't enough either — a real, undimmed gap
+   from page content below the sheet was still visible when the toolbar
+   was expanded. --sheet-vh is set from window.visualViewport.height in
+   Work.jsx (the API browsers provide specifically for toolbar/keyboard-
+   aware real-time viewport size) and takes priority when available;
+   flex (justify-content: flex-end) keeps the sheet pinned to whatever
+   the container's current bottom edge actually is. */
 .sheetBackdrop {
   position: fixed;
   top: 0;
@@ -300,6 +303,7 @@
   right: 0;
   height: 100vh;
   height: 100dvh;
+  height: var(--sheet-vh, 100dvh);
   z-index: 250;
   display: flex;
   flex-direction: column;
