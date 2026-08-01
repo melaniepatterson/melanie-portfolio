@@ -40,22 +40,38 @@ main {
 }
 
 @media (max-width: 640px) {
-  /* Stacked instead of split left/right — WorkDetail's fixed "back" link
-     also lives in the top-left, so pushing WORK out that far would collide
-     with it. Keeping both links together in the top-right corner avoids that. */
+  /* Bottom nav bar, WORK left / INFO right — the top row is reserved for
+     page-specific controls (filter button, back link) plus the centered
+     mobile wordmark, so the main nav moves to the bottom on mobile. */
   .sidenav {
     width: auto;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 0.75rem;
-    padding-top: 1.5rem;
-    padding-right: 1.5rem;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0;
+    padding: 0 1.5rem calc(1.5rem + env(safe-area-inset-bottom, 0px));
   }
 }
 
 .content {
   flex: 1;
   min-width: 0;
+}
+
+.site-footer {
+  padding-bottom: 1rem;
+}
+
+@media (max-width: 640px) {
+  /* Clears the fixed bottom WORK/INFO nav bar so the copyright line
+     doesn't sit underneath it. */
+  .site-footer {
+    padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
+  }
 }
 
 .home-nav {
@@ -67,15 +83,28 @@ main {
   right: 2rem;
 }
 
+.site-logo-mobile {
+  display: none;
+  pointer-events: none;
+}
+
+.site-logo-mobile a {
+  pointer-events: auto;
+}
+
 @media (max-width: 640px) {
-  .home-nav {
-    flex-direction: column;
-    gap: 1.5rem;
+  .site-logo {
+    display: none;
   }
 
-  .site-logo {
-    bottom: 1rem;
-    right: 1rem;
+  .site-logo-mobile {
+    display: block;
+    position: fixed;
+    top: 1.25rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(160px, 40vw);
+    z-index: 50;
   }
 }
 

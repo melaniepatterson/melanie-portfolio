@@ -48,7 +48,9 @@
 
 @media (max-width: 640px) {
   .page {
-    padding: 2rem 1.5rem;
+    /* Extra bottom padding clears the fixed WORK/INFO nav bar so the
+       last bit of scrolled content isn't hidden underneath it. */
+    padding: 2rem 1.5rem calc(4.5rem + env(safe-area-inset-bottom, 0px));
     max-width: 100%;
   }
 

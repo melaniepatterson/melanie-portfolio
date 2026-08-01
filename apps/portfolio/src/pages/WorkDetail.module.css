@@ -216,7 +216,10 @@
 
 @media (max-width: 640px) {
   .page {
-    padding: 4rem 1.25rem 3rem;
+    /* Extra top padding clears the centered logo + the back link that now
+       falls below it; extra bottom padding clears the fixed WORK/INFO nav
+       bar so the last bit of scrolled content isn't hidden underneath it. */
+    padding: 5.5rem 1.25rem calc(4.5rem + env(safe-area-inset-bottom, 0px));
   }
 
   .layout {
@@ -225,7 +228,8 @@
   }
 
   .back {
-    top: 1.5rem;
+    /* Falls just below the centered top logo instead of sharing its row. */
+    top: 3.5rem;
     left: 1.25rem;
   }
 

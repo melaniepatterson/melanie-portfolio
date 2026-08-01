@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Nav from "./Nav";
 import Hero from "./Radialgradient";
 import Logo from "./Logo";
+import LogoHorizontal from "./LogoHorizontal";
 import Work from "./pages/Work";
 import AboutContact from "./pages/About-contact";
 import "./App.css";
@@ -80,6 +81,7 @@ function Layout() {
     <div className="layout">
       {!isHome && <Nav isWork={isWork || isWorkDetail} />}
       <Logo isWork={isWork || isWorkDetail} />
+      <LogoHorizontal isWork={isWork || isWorkDetail} />
       <div className="page-wrapper" style={{
         backgroundColor: isWork || isWorkDetail ? "#C93500" : "#FAF7F2",
       }}>
@@ -94,9 +96,11 @@ function Layout() {
             </Routes>
           </PageTransition>
         </main>
-        <footer style={{
+        <footer className="site-footer" style={{
           marginTop: "auto",
-          padding: "1rem 2rem",
+          paddingTop: "1rem",
+          paddingLeft: "2rem",
+          paddingRight: "2rem",
           fontSize: "0.6rem",
           letterSpacing: "0.1em",
           opacity: 0.4,

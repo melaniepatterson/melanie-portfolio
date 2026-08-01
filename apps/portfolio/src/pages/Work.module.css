@@ -351,12 +351,15 @@
 
 @media (max-width: 640px) {
   .filterButton {
-    top: 1.5rem;
+    /* Falls just below the centered top logo instead of sharing its row. */
+    top: 3.5rem;
     left: 1.25rem;
   }
 
   .content {
-    padding: 7rem 1.25rem 3rem;
+    /* Extra bottom padding clears the fixed WORK/INFO nav bar so the
+       last bit of scrolled content isn't hidden underneath it. */
+    padding: 7rem 1.25rem calc(4.5rem + env(safe-area-inset-bottom, 0px));
   }
 
   .grid {

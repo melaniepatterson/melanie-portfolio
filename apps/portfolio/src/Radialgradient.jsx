@@ -86,6 +86,19 @@ const Star3 = forwardRef(({ style }, ref) => (
 ));
 Star3.displayName = "Star3";
 
+function homeNavLinkStyle() {
+  return {
+    fontSize: "2rem",
+    fontWeight: 500,
+    letterSpacing: "0.1em",
+    textTransform: "uppercase",
+    textDecoration: "none",
+    borderBottom: "3px solid #C93500",
+    color: "#C93500",
+    pointerEvents: "all",
+  };
+}
+
 export default function RepulseLogo() {
   const imgRef = useRef(null);
   const chaserRef = useRef(null);
@@ -95,6 +108,13 @@ export default function RepulseLogo() {
 
   const [chaserImage, setChaserImage] = useState(null);
   const [chaserVisible, setChaserVisible] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 640);
+
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 640);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
   const chaserPos = useRef({ x: 0, y: 0 });
   const cursorPos = useRef({ x: 0, y: 0 });
@@ -187,10 +207,11 @@ export default function RepulseLogo() {
 
   return (
     <>
-    {/* Stars in their own unclipped layer so overflow doesn't swallow their movement */}
+    {/* Stars in their own unclipped layer so overflow doesn't swallow their movement.
+        zIndex:1 keeps them below .home-nav's zIndex:10 (WORK/INFO links stay on top). */}
     <div style={{ position: "fixed", inset: 0, zIndex: 1, pointerEvents: "none" }}>
-      <Star1 ref={star1Ref} style={{ left: "55%", bottom: "-40px" }} />
-      <Star2 ref={star2Ref} style={{ left: "65%", top: "90%" }} />
+      <Star1 ref={star1Ref} style={isMobile ? { left: "66%", bottom: "0" } : { left: "55%", bottom: "-40px" }} />
+      <Star2 ref={star2Ref} style={isMobile ? { left: "75%", top: "66%" } : { left: "65%", top: "90%" }} />
       <Star3 ref={star3Ref} style={{ left: "-50px", top: "20%" }} />
     </div>
 
@@ -259,31 +280,13 @@ export default function RepulseLogo() {
           to="/portfolio"
           onMouseEnter={handleLinkEnter}
           onMouseLeave={handleLinkLeave}
-          style={{
-            fontSize: "2rem",
-            fontWeight: 500,
-            letterSpacing: "0.1em",
-            textTransform: "uppercase",
-            textDecoration: "none",
-            borderBottom: "3px solid #C93500",
-            color: "#C93500",
-            pointerEvents: "all",
-          }}
+          style={homeNavLinkStyle()}
         ><SplitText>Work</SplitText></Link>
         <Link
           to="/about-contact"
           onMouseEnter={handleLinkEnter}
           onMouseLeave={handleLinkLeave}
-          style={{
-            fontSize: "2rem",
-            fontWeight: 500,
-            letterSpacing: "0.1em",
-            textTransform: "uppercase",
-            textDecoration: "none",
-            borderBottom: "3px solid #C93500",
-            color: "#C93500",
-            pointerEvents: "all",
-          }}
+          style={homeNavLinkStyle()}
         ><SplitText>Info</SplitText></Link>
       </div>
     </div>
