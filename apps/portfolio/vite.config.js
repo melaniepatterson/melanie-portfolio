@@ -13,6 +13,7 @@ export default defineConfig({
     alias: {
       '@shared': resolve(__dirname, '../../shared'),
     },
+    dedupe: ['react', 'react-dom'],
   },
   build: {
     outDir: resolve(__dirname, '../../dist/portfolio'),
@@ -24,6 +25,7 @@ export default defineConfig({
     exclude: [],
   },
   optimizeDeps: {
+    include: ['vaul', '@radix-ui/react-dialog'],
     esbuildOptions: {
       loader: {
         '.js': 'jsx',

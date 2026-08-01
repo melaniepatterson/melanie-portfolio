@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef, Suspense, lazy } from "react";
-import { createPortal } from "react-dom";
+import { Drawer } from "vaul";
 import styles from "./Work.module.css";
 import { PROJECTS } from "../data/projects";
 import { Link } from "react-router-dom";
@@ -76,55 +76,6 @@ export default function Work() {
       document.body.style.backgroundColor = "";
     };
   }, []);
-
-  useEffect(() => {
-    // 100dvh alone left a real, undimmed gap between the sheet and Safari's
-    // bottom toolbar on a real device — the CSS unit isn't recalculating
-    // live enough to track the toolbar's current height. window.visualViewport
-    // is the API browsers actually provide for this exact problem (keyboard/
-    // toolbar-aware real-time viewport size), so drive the sheet's height
-    // from it directly via a CSS var instead of trusting dvh alone.
-    if (!drawerOpen) return;
-    const vv = window.visualViewport;
-    if (!vv) return;
-    const setHeight = () => {
-      document.documentElement.style.setProperty("--sheet-vh", `${vv.height}px`);
-    };
-    setHeight();
-    vv.addEventListener("resize", setHeight);
-    vv.addEventListener("scroll", setHeight);
-    return () => {
-      vv.removeEventListener("resize", setHeight);
-      vv.removeEventListener("scroll", setHeight);
-      document.documentElement.style.removeProperty("--sheet-vh");
-    };
-  }, [drawerOpen]);
-
-  useEffect(() => {
-    // Confirmed: the gap only shows up when the sheet opens before the
-    // user has scrolled at all — Safari's Liquid Glass toolbar only
-    // resamples what's behind it on a genuine scroll event, not on DOM/
-    // paint changes. If the sheet opens pre-scroll, the toolbar is still
-    // showing a stale render from before the sheet's fixed overlay
-    // existed. Same "nudge a real scroll" trick as App.jsx's route-change
-    // fix, fired when the sheet opens instead.
-    if (!drawerOpen) return;
-    const html = document.documentElement;
-    const prevMinHeight = html.style.minHeight;
-    html.style.minHeight = 'calc(100vh + 2px)';
-    const raf = requestAnimationFrame(() => {
-      window.scrollTo(window.scrollX, window.scrollY + 2);
-    });
-    const timeout = setTimeout(() => {
-      window.scrollTo(window.scrollX, window.scrollY - 2);
-      html.style.minHeight = prevMinHeight;
-    }, 120);
-    return () => {
-      cancelAnimationFrame(raf);
-      clearTimeout(timeout);
-      html.style.minHeight = prevMinHeight;
-    };
-  }, [drawerOpen]);
 
   useEffect(() => {
     const saved = sessionStorage.getItem("workScroll");
@@ -262,32 +213,19 @@ useEffect(() => {
         );
 
         return isMobile ? (
-          drawerOpen && createPortal(
-            <>
-              {/* Portaled straight to <body> — .page creates its own stacking
-                  context (position:relative + z-index), which trapped the
-                  sheet's z-index:300 inside it, so the fixed logo (z-index:50,
-                  a sibling of .page) was comparing against .page's own low
-                  z-index and painting on top of the whole sheet regardless.
-                  Escaping .page's subtree entirely sidesteps that. */}
-              <div className={styles.sheetBackdrop} onClick={() => setDrawerOpen(false)}>
-                <div className={styles.sheetBackdropFill} />
-                <div className={styles.sheet} onClick={(e) => e.stopPropagation()}>
-                  <div className={styles.sheetInner}>
-                    <div className={styles.sheetHandleRow}>
-                      <div className={styles.sheetHandle} />
-                    </div>
-                    <div className={styles.sheetHeader}>
-                      <div className={styles.sheetTitle}>Filters</div>
-                      <button className={styles.drawerClose} onClick={() => setDrawerOpen(false)}>✕</button>
-                    </div>
-                    {filterContent}
-                  </div>
+          <Drawer.Root open={drawerOpen} onOpenChange={setDrawerOpen}>
+            <Drawer.Portal>
+              <Drawer.Overlay className={styles.sheetOverlay} />
+              <Drawer.Content className={styles.sheetContent}>
+                <Drawer.Handle className={styles.sheetHandle} />
+                <div className={styles.sheetHeader}>
+                  <Drawer.Title className={styles.sheetTitle}>Filters</Drawer.Title>
+                  <Drawer.Close className={styles.drawerClose}>✕</Drawer.Close>
                 </div>
-              </div>
-            </>,
-            document.body
-          )
+                {filterContent}
+              </Drawer.Content>
+            </Drawer.Portal>
+          </Drawer.Root>
         ) : (
           <div className={`${styles.drawer} ${drawerOpen ? styles.drawerOpen : ""}`}>
             <button className={styles.drawerClose} onClick={() => setDrawerOpen(false)}>✕</button>

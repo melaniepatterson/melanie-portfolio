@@ -277,103 +277,46 @@
 }
 
 /* Bottom-sheet filter panel — mobile only, replaces the left slide-in
-   drawer. Same visual pattern as GlowUp's ProductsPage.jsx filter sheet.
-
-   iOS 26 Liquid Glass samples background-color/backdrop-filter set
-   directly on fixed/sticky elements near viewport edges and tints the
-   Safari toolbar with it — so .sheet and .sheetBackdrop stay transparent
-   positioning shells, and the actual visible color lives on a plain
-   (non-fixed) child instead.
-
-   .sheet is nested inside .sheetBackdrop (not a separate fixed sibling
-   anchored via its own bottom:0) so both share one full-height flex
-   container. bottom:0 on its own didn't reliably track Safari's toolbar
-   height changing between its collapsed/expanded states on a real
-   device, and 100dvh alone wasn't enough either — a real, undimmed gap
-   from page content below the sheet was still visible when the toolbar
-   was expanded. --sheet-vh is set from window.visualViewport.height in
-   Work.jsx (the API browsers provide specifically for toolbar/keyboard-
-   aware real-time viewport size) and takes priority when available;
-   flex (justify-content: flex-end) keeps the sheet pinned to whatever
-   the container's current bottom edge actually is. Tried stopping the
-   sheet short of that edge on purpose (deliberate gap) — worse, not
-   better: it exposed the real footer and a second "Filters" pill
-   dimmed underneath. Reverted — flush to the container's bottom is
-   correct, the nudge-scroll fix and .sheetInner::after bleed below
-   handle the actual coverage. */
-.sheetBackdrop {
+   drawer. Built on vaul (github.com/emilkowalski/vaul) instead of a
+   hand-rolled fixed-position sheet — several rounds of manually chasing
+   Safari's Liquid Glass toolbar (dvh, visualViewport, nudge-scroll,
+   fixed-size color bleeds) never fully closed the gap. vaul already ships
+   a `::after` on the drawer that inherits its background-color and
+   extends it 200% past its own edge — the same color-bleed technique
+   this file used to hand-roll, just battle-tested against real iOS
+   Safari by a much larger userbase. .sheetContent's own background-color
+   is what that inherited bleed picks up, so it has to live directly on
+   this element, not a nested child. */
+.sheetOverlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 100vh;
-  height: 100dvh;
-  height: var(--sheet-vh, 100dvh);
-  z-index: 250;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-}
-
-.sheetBackdropFill {
-  position: absolute;
   inset: 0;
   background: rgba(0, 0, 0, 0.55);
+  z-index: 250;
 }
 
-.sheet {
-  position: relative;
-  z-index: 1;
-  animation: slideUp 0.22s ease;
-}
-
-.sheetInner {
-  position: relative;
+.sheetContent {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 300;
   background: #C93500;
   border-radius: 16px 16px 0 0;
-  padding: 0 1.5rem 3.5rem;
-  padding-bottom: calc(3.5rem + env(safe-area-inset-bottom, 0px));
+  padding: 1rem 1.5rem calc(3.5rem + env(safe-area-inset-bottom, 0px));
   max-height: 75vh;
   max-height: 85dvh; /* mobile Safari's vh ignores its own toolbar — same fix as .layout */
   overflow-y: auto;
   box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.25);
+  outline: none;
 }
 
-/* A generous, fixed-size color-bleed below the sheet's own bottom edge —
-   not calculated from the toolbar's actual height (dvh/visualViewport
-   proved unreliable across several attempts), just a flat buffer larger
-   than any real Safari toolbar can be, so there's never a gap regardless
-   of timing/measurement precision. Same idea as Airbnb's persistent solid-
-   color bottom bar: give Liquid Glass something solid to sample no matter
-   what. Purely decorative — sits outside .sheetInner's own scrollable
-   content, so it never affects layout or scrolling. */
-.sheetInner::after {
-  content: "";
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  height: 200px;
-  background: #C93500;
-  pointer-events: none;
-}
-
-@keyframes slideUp {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
-}
-
-.sheetHandleRow {
-  display: flex;
-  justify-content: center;
-  padding: 0.75rem 0 1rem;
-}
-
-.sheetHandle {
-  width: 36px;
-  height: 4px;
-  border-radius: 2px;
+/* vaul's own [data-vaul-handle] default styling (gray, from its injected
+   stylesheet) needs the attribute selector matched alongside the class to
+   reliably win the cascade — its CSS is inserted at runtime, after this
+   module's stylesheet, so a plain class alone can lose on source order. */
+.sheetHandle[data-vaul-handle] {
   background: rgba(250, 247, 242, 0.3);
+  margin-bottom: 0.75rem;
 }
 
 .sheetHeader {
@@ -389,6 +332,7 @@
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: #FAF7F2;
+  margin: 0;
 }
 
 @media (max-width: 640px) {
