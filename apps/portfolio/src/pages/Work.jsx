@@ -89,18 +89,17 @@ export default function Work() {
     // (toolbar height + buffer), matching the sheet's own color. Only
     // present while the sheet is open — closing it removes the class.
     //
-    // -1px: confirmed via live device measurement that a box starting
-    // exactly at visualViewport.height (zero overlap with the reported-
-    // visible area) renders with correct geometry but paints nothing —
-    // consistent with Safari culling anything with zero intersection
-    // with the visible viewport before it ever reaches the chrome region.
-    // Overlapping by 1px tests whether any intersection is enough to
-    // keep it in the painted layer as it extends past the edge.
+    // Confirmed via live device measurement: at -1px overlap, exactly the
+    // 1px within the visible viewport painted, and everything past
+    // innerHeight (even by 1px) did not — a hard boundary, not a fade or
+    // a threshold. -10px tests whether that holds proportionally (10px
+    // paints, rest still cut off exactly at the boundary) or whether a
+    // bigger overlap behaves differently.
     if (!drawerOpen) return;
     const updatePatch = () => {
       const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
       if (chromePatchRef.current) {
-        chromePatchRef.current.style.top = `${vh - 1}px`;
+        chromePatchRef.current.style.top = `${vh - 10}px`;
       }
     };
     updatePatch();
