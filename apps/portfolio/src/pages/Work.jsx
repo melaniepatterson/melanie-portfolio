@@ -95,13 +95,15 @@ export default function Work() {
     // proportional reveal, more like a compositing-inclusion threshold:
     // some minimum overlap with the visible viewport determines whether
     // Safari includes the whole layer at all, not just the visible part
-    // of it. 90px overlap for a comfortable margin across other devices/
-    // toolbar states, now that we know a small one is enough on this one.
+    // of it. 20px keeps a bit of margin over the working 10px without
+    // covering much of the sheet's own visible content above it (the
+    // patch sits on top there — see Work.module.css — but its color now
+    // matches the sheet exactly, so a small overlap reads as seamless).
     if (!drawerOpen) return;
     const updatePatch = () => {
       const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
       if (chromePatchRef.current) {
-        chromePatchRef.current.style.top = `${vh - 90}px`;
+        chromePatchRef.current.style.top = `${vh - 20}px`;
       }
     };
     updatePatch();
