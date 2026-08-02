@@ -97,6 +97,27 @@ export default function Work() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const openFilters = () => {
+    // Confirmed cause of the Liquid Glass toolbar gap: Safari only
+    // resamples what's behind it on a genuine scroll event, not on DOM/
+    // paint changes. If the sheet opens before the page has ever been
+    // scrolled, the toolbar can be stuck showing a stale pre-sheet render.
+    // vaul's own scroll lock prevents scrolling once open, so this nudge
+    // has to happen — and finish — before setDrawerOpen engages it, not
+    // in a useEffect racing against vaul's own effects.
+    const html = document.documentElement;
+    const prevMinHeight = html.style.minHeight;
+    html.style.minHeight = 'calc(100vh + 2px)';
+    requestAnimationFrame(() => {
+      window.scrollTo(window.scrollX, window.scrollY + 2);
+    });
+    setTimeout(() => {
+      window.scrollTo(window.scrollX, window.scrollY - 2);
+      html.style.minHeight = prevMinHeight;
+      setDrawerOpen(true);
+    }, 120);
+  };
+
   const toggleFilter = (value, selected, setSelected) => {
   setGridVisible(false);
   setTimeout(() => {
@@ -141,7 +162,7 @@ useEffect(() => {
 
   return (
     <div className={styles.page}>
-      <button className={styles.filterButton} onClick={() => setDrawerOpen(true)}>
+      <button className={styles.filterButton} onClick={openFilters}>
         ☰ Filters
       </button>
 
