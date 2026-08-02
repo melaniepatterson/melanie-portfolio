@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef, Suspense, lazy } from "react";
+import { createPortal } from "react-dom";
 import { Drawer } from "vaul";
 import styles from "./Work.module.css";
 import { PROJECTS } from "../data/projects";
@@ -58,6 +59,7 @@ export default function Work() {
   const gridRef = useRef(null);
   const [gridVisible, setGridVisible] = useState(true);
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < 640);
+  const chromePatchRef = useRef(null);
 
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth < 640);
@@ -76,6 +78,31 @@ export default function Work() {
       document.body.style.backgroundColor = "";
     };
   }, []);
+
+  useEffect(() => {
+    // A real, separate DOM element (not a CSS pseudo-element tied to the
+    // sheet's own box) whose top position is set directly from a JS-
+    // measured coordinate rather than a CSS unit — dvh proved unreliable
+    // for tracking Safari's actual current toolbar-adjusted viewport
+    // edge. window.visualViewport.height is that measured coordinate;
+    // the patch sits flush against it and extends 100px further down
+    // (toolbar height + buffer), matching the sheet's own color. Only
+    // present while the sheet is open — closing it removes the class.
+    if (!drawerOpen) return;
+    const updatePatch = () => {
+      const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      if (chromePatchRef.current) {
+        chromePatchRef.current.style.top = `${vh}px`;
+      }
+    };
+    updatePatch();
+    window.visualViewport?.addEventListener("resize", updatePatch);
+    window.visualViewport?.addEventListener("scroll", updatePatch);
+    return () => {
+      window.visualViewport?.removeEventListener("resize", updatePatch);
+      window.visualViewport?.removeEventListener("scroll", updatePatch);
+    };
+  }, [drawerOpen]);
 
   useEffect(() => {
     const saved = sessionStorage.getItem("workScroll");
@@ -246,6 +273,13 @@ useEffect(() => {
                 {filterContent}
               </Drawer.Content>
             </Drawer.Portal>
+            {createPortal(
+              <div
+                ref={chromePatchRef}
+                className={`${styles.chromePatch} ${drawerOpen ? styles.chromePatchVisible : ""}`}
+              />,
+              document.body
+            )}
           </Drawer.Root>
         ) : (
           <div className={`${styles.drawer} ${drawerOpen ? styles.drawerOpen : ""}`}>

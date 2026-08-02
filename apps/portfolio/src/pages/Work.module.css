@@ -335,6 +335,27 @@
   margin: 0;
 }
 
+/* A real, separate element (not a pseudo-element tied to the sheet's own
+   box) whose position is set directly from a JS-measured coordinate
+   (window.visualViewport.height, in Work.jsx) rather than a CSS unit —
+   patches the toolbar-height region right at the current true bottom
+   edge with solid color, matching the sheet. Only visible while the
+   sheet is open. */
+.chromePatch {
+  position: fixed;
+  left: 0;
+  right: 0;
+  height: 100px;
+  background: #C93500;
+  z-index: 300;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.chromePatchVisible {
+  visibility: visible;
+}
+
 @media (max-width: 640px) {
   /* Floating pill, fixed to the bottom — WORK/INFO now own the top row
      (below the logo), so the filter trigger moves down here instead. */
