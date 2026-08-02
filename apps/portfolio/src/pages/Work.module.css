@@ -346,7 +346,7 @@
   left: 0;
   right: 0;
   height: 100px;
-  background: #C93500;
+  background: limegreen; /* TEMP: visibility check — revert to #C93500 */
   z-index: 300;
   visibility: hidden;
   pointer-events: none;
