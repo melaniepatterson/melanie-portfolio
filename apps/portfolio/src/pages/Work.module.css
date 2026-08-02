@@ -352,7 +352,7 @@
      instead of trying to match the measurement exactly, matching the
      "flat buffer, not a precise calculation" philosophy used elsewhere. */
   height: 260px;
-  background: limegreen; /* TEMP: visibility check — revert to #C93500 */
+  background: #C93500;
   /* Above the sheet (300), not below — putting an opaque sheet directly
      on top of the overlap region apparently reads to Safari as "this
      part is fully occluded," which seems to have removed the "some
@@ -360,8 +360,10 @@
      (see Work.jsx — a small overlap into the visible viewport is what
      makes this render below innerHeight in the first place). Staying on
      top avoids that, and since the color now matches the sheet exactly,
-     the overlap reads as seamless rather than a visible block. */
-  z-index: 310;
+     the overlap reads as seamless rather than a visible block.
+     z-index: 10000 — confirmed on-device this reliably composites the
+     layer; 310 (just above the sheet) did not reproduce that reliably. */
+  z-index: 10000;
   visibility: hidden;
   pointer-events: none;
 }
