@@ -39,4 +39,4 @@ Three Vercel projects, same repo, same `main` branch — a push redeploys all th
 
 ## Demo build
 
-`VITE_GLOWUP_DEMO=true` swaps the real Supabase client for a mock (`demoClient.js` + static `demoData.js`) — everything routes through one client export, so that one swap makes the whole app read-only. `DemoBanner.jsx` shows it's a demo and flashes on any blocked write.
+`VITE_GLOWUP_DEMO=true` swaps the real Supabase client for a mock (`demoClient.js` + static `demoData.js`) — everything routes through one client export, so that one swap is enough. Demo writes apply in-memory, so a visitor can click around and see their own changes (add a program, log a treatment, edit a product), but nothing is ever persisted anywhere — each page load starts fresh from the same seed data in `demoData.js`, with no state shared across tabs, reloads, or devices. `DemoBanner.jsx` shows it's a demo and flashes on every write as a reminder that it won't stick.

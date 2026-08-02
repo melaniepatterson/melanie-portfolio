@@ -2854,6 +2854,12 @@ function ProgramEnrollmentPreview({ program, onConfirm, onBack, timezone }) {
   const [bhaDay, setBhaDay] = useState(6) // default Saturday
   const selectedTier = PACE_TIERS.find(t => t.id === pace)
 
+  // Matches this program's calendar badge color (T.tret/T.bha in theme.js) —
+  // this screen now lives on the full-screen green 'program' background
+  // (see the outer panel's background ternary), so labels/buttons pick up
+  // the same program-specific accent instead of the old fixed darkPink.
+  const accentColor = isLinear ? T.darkGreen : isBha ? T.darkBlue : T.darkPink
+
   const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
 
   const loadPhases = useCallback(() => {
@@ -2895,11 +2901,11 @@ function ProgramEnrollmentPreview({ program, onConfirm, onBack, timezone }) {
       </button>
 
       <div style={{ marginBottom: 20 }}>
-        <div style={{ fontSize: 9, fontWeight: 700, color: T.darkPink, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 6 }}>Program overview</div>
+        <div style={{ fontSize: 9, fontWeight: 700, color: accentColor, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 6 }}>Program overview</div>
         <div style={{ fontSize: 18, fontWeight: 800, color: T.text, letterSpacing: '-0.03em', marginBottom: 8 }}>{program.name}</div>
         <div style={{ fontSize: 13, color: T.textMuted, lineHeight: 1.7, marginBottom: 10 }}>{program.description}</div>
         {displayedTotal > 0 && (
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 11, color: T.textMuted, background: T.surfaceMuted, border: `0.5px solid ${T.hairline}`, padding: '4px 10px' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 11, color: T.text, background: T.white, borderRadius: T.radius.pill, padding: '5px 12px' }}>
             📅 ~{displayedTotal} days ({Math.round(displayedTotal / 7)} weeks) · {phases.length} phases
           </div>
         )}
@@ -2915,18 +2921,18 @@ function ProgramEnrollmentPreview({ program, onConfirm, onBack, timezone }) {
           {isLinear && (
             <div style={{ marginBottom: 20 }}>
               <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 10 }}>Choose your pace</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {PACE_TIERS.map(tier => (
                   <button key={tier.id} onClick={() => setPace(tier.id)}
-                    style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderRadius: 0, border: `1px solid ${pace === tier.id ? T.text : T.hairline}`, background: pace === tier.id ? T.text : 'transparent', cursor: 'pointer', fontFamily: 'inherit' }}>
+                    style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderRadius: T.radius.card, border: 'none', background: pace === tier.id ? accentColor : T.white, cursor: 'pointer', fontFamily: 'inherit' }}>
                     <div>
                       <div style={{ fontSize: 12, fontWeight: 600, color: pace === tier.id ? '#fff' : T.text }}>
                         {tier.label}
-                        {tier.default && <span style={{ fontSize: 10, fontWeight: 400, color: pace === tier.id ? 'rgba(255,255,255,0.6)' : T.darkPink, marginLeft: 8 }}>recommended</span>}
+                        {tier.default && <span style={{ fontSize: 10, fontWeight: 400, color: pace === tier.id ? 'rgba(255,255,255,0.7)' : accentColor, marginLeft: 8 }}>recommended</span>}
                       </div>
-                      <div style={{ fontSize: 11, color: pace === tier.id ? 'rgba(255,255,255,0.7)' : T.textMuted }}>{tier.sublabel}</div>
+                      <div style={{ fontSize: 11, color: pace === tier.id ? 'rgba(255,255,255,0.75)' : T.textMuted }}>{tier.sublabel}</div>
                     </div>
-                    <div style={{ fontSize: 11, color: pace === tier.id ? 'rgba(255,255,255,0.7)' : T.textMuted, flexShrink: 0, marginLeft: 12 }}>
+                    <div style={{ fontSize: 11, color: pace === tier.id ? 'rgba(255,255,255,0.75)' : T.textMuted, flexShrink: 0, marginLeft: 12 }}>
                       ~{Math.round(tier.total / 7)} weeks
                     </div>
                   </button>
@@ -2946,7 +2952,7 @@ function ProgramEnrollmentPreview({ program, onConfirm, onBack, timezone }) {
               return (
                 <div key={p.id} style={{ display: 'flex', gap: 14, marginBottom: 14 }}>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <div style={{ width: 24, height: 24, borderRadius: 0, background: i === 0 ? T.text : T.surfaceMuted, border: `1px solid ${i === 0 ? T.text : T.hairline}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: i === 0 ? '#fff' : T.textMuted, flexShrink: 0 }}>
+                    <div style={{ width: 24, height: 24, borderRadius: T.radius.pill, background: i === 0 ? accentColor : T.white, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: i === 0 ? '#fff' : T.textMuted, flexShrink: 0 }}>
                       {p.phase_number}
                     </div>
                     {i < phases.length - 1 && (
@@ -2954,7 +2960,7 @@ function ProgramEnrollmentPreview({ program, onConfirm, onBack, timezone }) {
                     )}
                   </div>
                   <div style={{ paddingTop: 3 }}>
-                    <div style={{ fontSize: 10, fontWeight: 700, color: T.darkPink, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 2 }}>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: accentColor, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 2 }}>
                       Phase {p.phase_number}
                     </div>
                     <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>
@@ -2973,13 +2979,13 @@ function ProgramEnrollmentPreview({ program, onConfirm, onBack, timezone }) {
       )}
 
       {!loading && !loadFailed && (
-        <div style={{ borderTop: `0.5px solid ${T.hairline}`, paddingTop: 16 }}>
+        <div style={{ paddingTop: 4 }}>
           <div style={{ fontSize: 12, fontWeight: 600, color: T.text, marginBottom: 4 }}>When did/will you start?</div>
           <div style={{ fontSize: 11, color: T.textMuted, marginBottom: 10, lineHeight: 1.6 }}>
             Already using this? Set the date you actually started so the calendar reflects where you are.
           </div>
           <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)}
-            style={{ width: '100%', boxSizing: 'border-box', fontSize: 12, padding: '6px 2px', border: 'none', borderBottom: `1px solid ${T.text}`, borderRadius: 0, background: 'transparent', color: T.text, fontFamily: 'inherit', outline: 'none', marginBottom: 14 }} />
+            style={{ width: '100%', boxSizing: 'border-box', fontSize: 12, padding: '10px 14px', border: 'none', borderRadius: T.radius.input, background: T.white, color: T.text, fontFamily: 'inherit', outline: 'none', marginBottom: 14 }} />
 
           {/* AHA/BHA day picker */}
           {isBha && (
@@ -2988,7 +2994,7 @@ function ProgramEnrollmentPreview({ program, onConfirm, onBack, timezone }) {
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                 {DAYS.map((d, i) => (
                   <button key={i} onClick={() => setBhaDay(i)}
-                    style={{ padding: '5px 10px', borderRadius: 0, border: `1px solid ${bhaDay === i ? T.text : T.hairline}`, background: bhaDay === i ? T.text : 'transparent', color: bhaDay === i ? '#fff' : T.textMuted, cursor: 'pointer', fontSize: 11, fontFamily: 'inherit' }}>
+                    style={{ padding: '6px 12px', borderRadius: T.radius.pill, border: 'none', background: bhaDay === i ? accentColor : T.white, color: bhaDay === i ? '#fff' : T.textMuted, cursor: 'pointer', fontSize: 11, fontFamily: 'inherit' }}>
                     {d.slice(0, 3)}
                   </button>
                 ))}
@@ -3001,7 +3007,7 @@ function ProgramEnrollmentPreview({ program, onConfirm, onBack, timezone }) {
 
           <div style={{ display: 'flex', gap: 8 }}>
             <button onClick={onBack} disabled={confirming}
-              style={{ flex: 1, padding: '11px', borderRadius: 0, border: `1px solid ${T.hairline}`, background: 'transparent', color: T.text, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
+              style={{ flex: 1, padding: '12px', borderRadius: T.radius.pill, border: 'none', background: T.white, color: T.text, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
               Cancel
             </button>
             <button onClick={async () => {
@@ -3009,7 +3015,7 @@ function ProgramEnrollmentPreview({ program, onConfirm, onBack, timezone }) {
               await onConfirm(startDate, isLinear ? selectedTier?.durations : null, isBha ? bhaDay : null)
               setConfirming(false)
             }} disabled={confirming}
-              style={{ flex: 2, padding: '11px', borderRadius: 0, border: 'none', background: T.darkPink, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
+              style={{ flex: 2, padding: '12px', borderRadius: T.radius.pill, border: 'none', background: accentColor, color: '#fff', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 600 }}>
               {confirming ? 'Starting…' : `Start ${program.name}`}
             </button>
           </div>
@@ -4378,9 +4384,30 @@ export default function GlowUpCalendar({ session }) {
   // First-time guided tour — 'calendar-cell' | 'product-row' | 'add-treatment' | 'shower-extras' | null.
   // Shows once ever per device; ends (and is marked seen) the moment it starts,
   // so an interrupted tour never re-triggers on a later visit.
-  const [tourStep, setTourStep] = useState(() => {
-    try { return localStorage.getItem('glowup_calendar_tour_done') === '1' ? null : 'calendar-cell' } catch { return 'calendar-cell' }
-  })
+  const [tourStep, setTourStep] = useState(null)
+  const tourPromptedRef = useRef(false)
+  // Ask before dropping the spotlight overlay on a first-time user, instead
+  // of just greening out the screen with no warning — "Skip" here counts as
+  // having seen the tour, same as skipping mid-way through.
+  useEffect(() => {
+    if (tourPromptedRef.current) return
+    tourPromptedRef.current = true
+    let alreadyDone = false
+    try { alreadyDone = localStorage.getItem('glowup_calendar_tour_done') === '1' } catch {}
+    if (alreadyDone) return
+    ;(async () => {
+      const start = await confirm({
+        title: 'Want a quick tour?',
+        message: "We'll walk through logging your routine, tracking programs, and finding products in your library — takes about a minute.",
+        confirmLabel: 'Start tour',
+        cancelLabel: 'Skip',
+        danger: false,
+      })
+      if (start) setTourStep('calendar-cell')
+      else endTour()
+    })()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   function endTour() {
     setTourStep(null)
     setDayFlyout(null)
@@ -5476,6 +5503,7 @@ export default function GlowUpCalendar({ session }) {
                 : showExport ? T.pink
                 : routineChooserOpen === 'chooser' ? T.blue
                 : routineChooserOpen === 'skincare' ? T.green
+                : routineChooserOpen === 'program' ? T.green
                 : routineChooserOpen === 'daily' ? T.pink
                 : routineChooserOpen === 'shower' ? T.yellow
                 : T.white,

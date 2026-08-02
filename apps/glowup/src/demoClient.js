@@ -96,23 +96,68 @@ class DemoQueryBuilder {
   }
 }
 
+// Real, if throwaway, mutations against DEMO_TABLES — so a visitor's
+// actions actually show up as they click around (add a program, log a
+// treatment, edit a product) instead of silently vanishing. DEMO_TABLES is
+// rebuilt fresh from the literal source in demoData.js on every page load,
+// so there's nothing to reset on the way out: a reload (or a different
+// tab, or a different device entirely) just starts over from the same
+// seed. Nothing here ever leaves this one JS module instance.
+let genIdCounter = 0
+const genId = (table) => `demo-${table}-${Date.now()}-${genIdCounter++}`
+
 class DemoWriteBuilder {
-  constructor(payload, wantsArray) {
+  constructor(table, op, payload) {
+    this.table = table
+    this.op = op // 'insert' | 'update' | 'upsert' | 'delete'
     this.payload = payload
-    this.wantsArray = wantsArray
+    this.filters = []
     this.wantSingle = false
   }
-  eq() { return this }
-  neq() { return this }
-  in() { return this }
-  match() { return this }
+  eq(col, val) { this.filters.push({ col, op: 'eq', val }); return this }
+  neq(col, val) { this.filters.push({ col, op: 'neq', val }); return this }
+  in(col, val) { this.filters.push({ col, op: 'in', val }); return this }
+  match(obj) {
+    Object.entries(obj).forEach(([col, val]) => this.filters.push({ col, op: 'eq', val }))
+    return this
+  }
   select() { return this }
   single() { this.wantSingle = true; return this._resolve() }
   maybeSingle() { return this._resolve() }
   _resolve() {
     announceDemoWrite()
-    const echo = Array.isArray(this.payload) ? this.payload : (this.payload ? [this.payload] : [])
-    return Promise.resolve({ data: this.wantSingle ? (echo[0] ?? null) : echo, error: null })
+    const rows = DEMO_TABLES[this.table] || (DEMO_TABLES[this.table] = [])
+    let result
+
+    if (this.op === 'insert') {
+      const incoming = Array.isArray(this.payload) ? this.payload : (this.payload ? [this.payload] : [])
+      result = incoming.map(row => {
+        const saved = { id: genId(this.table), ...row }
+        rows.push(saved)
+        return saved
+      })
+    } else if (this.op === 'upsert') {
+      const incoming = Array.isArray(this.payload) ? this.payload : (this.payload ? [this.payload] : [])
+      result = incoming.map(row => {
+        const existing = row.id != null ? rows.find(r => r.id === row.id) : undefined
+        if (existing) { Object.assign(existing, row); return existing }
+        const saved = { id: row.id ?? genId(this.table), ...row }
+        rows.push(saved)
+        return saved
+      })
+    } else if (this.op === 'update') {
+      const matched = this.filters.length ? applyFilters(rows, this.filters) : rows
+      matched.forEach(row => Object.assign(row, this.payload))
+      result = matched
+    } else if (this.op === 'delete') {
+      const matched = applyFilters(rows, this.filters)
+      DEMO_TABLES[this.table] = rows.filter(r => !matched.includes(r))
+      result = matched
+    } else {
+      result = []
+    }
+
+    return Promise.resolve({ data: this.wantSingle ? (result[0] ?? null) : result, error: null })
   }
   then(onFulfilled, onRejected) {
     return this._resolve().then(onFulfilled, onRejected)
@@ -122,10 +167,10 @@ class DemoWriteBuilder {
 function from(table) {
   return {
     select: () => new DemoQueryBuilder(table),
-    insert: (payload) => new DemoWriteBuilder(payload),
-    update: (payload) => new DemoWriteBuilder(payload),
-    upsert: (payload) => new DemoWriteBuilder(payload),
-    delete: () => new DemoWriteBuilder(null),
+    insert: (payload) => new DemoWriteBuilder(table, 'insert', payload),
+    update: (payload) => new DemoWriteBuilder(table, 'update', payload),
+    upsert: (payload) => new DemoWriteBuilder(table, 'upsert', payload),
+    delete: () => new DemoWriteBuilder(table, 'delete', null),
   }
 }
 

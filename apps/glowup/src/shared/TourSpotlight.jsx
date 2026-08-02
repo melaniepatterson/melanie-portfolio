@@ -36,6 +36,20 @@ export default function TourSpotlight({ targetSelector, targetSelectors, message
     }
   }, [selectors.join('|')])
 
+  // A step's target can land below the fold on mount — e.g. today's calendar
+  // cell when today is in the last week-row of the month grid. Without this,
+  // the spotlight silently computes an off-screen rect and the user just
+  // sees the screen dim with nothing to look at. Scroll it into view once
+  // per step (not on every 200ms measure tick, so it can't fight a user who
+  // scrolls away on purpose).
+  useEffect(() => {
+    const el = selectors.map(sel => document.querySelector(sel)).find(Boolean)
+    if (!el) return
+    const r = el.getBoundingClientRect()
+    const fullyVisible = r.top >= 0 && r.bottom <= window.innerHeight && r.left >= 0 && r.right <= window.innerWidth
+    if (!fullyVisible) el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }, [selectors.join('|')])
+
   if (!rect) return null
 
   const PAD = 8

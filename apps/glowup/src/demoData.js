@@ -27,6 +27,28 @@ const program_phases = [
   { id: 'ph-tret-1', program_id: 'p-tret', phase_number: 1, name: 'Twice a week', description: 'Tretinoin, twice a week, to let your skin acclimate.', preview_description: 'Twice a week, low and slow.', duration_days: 14 },
   { id: 'ph-tret-2', program_id: 'p-tret', phase_number: 2, name: 'Every other night', description: 'Stepping up to every other night as your skin adjusts.', preview_description: 'Every other night.', duration_days: 21 },
   { id: 'ph-tret-3', program_id: 'p-tret', phase_number: 3, name: 'Nightly', description: 'Full nightly use — the maintenance phase.', preview_description: 'Nightly, ongoing.', duration_days: null },
+
+  // Every other seeded program gets phases too — otherwise starting them in
+  // the demo silently renders nothing (ProgramAdvancement bails out with no
+  // phases to show).
+  { id: 'ph-basic-1', program_id: 'p-basic', phase_number: 1, name: 'Foundation', description: 'Cleanse, moisturize, SPF — the basics before anything else.', preview_description: 'Cleanse, moisturize, SPF.', duration_days: 14 },
+  { id: 'ph-basic-2', program_id: 'p-basic', phase_number: 2, name: 'Build your routine', description: 'Layer in whatever your skin needs next.', preview_description: 'Ongoing.', duration_days: null },
+
+  { id: 'ph-ahabha-1', program_id: 'p-ahabha', phase_number: 1, name: 'Once a week', description: 'One exfoliation night, to see how your skin responds.', preview_description: 'Once a week.', duration_days: 14 },
+  { id: 'ph-ahabha-2', program_id: 'p-ahabha', phase_number: 2, name: 'Twice a week', description: 'Stepping up to twice a week.', preview_description: 'Twice a week.', duration_days: 21 },
+  { id: 'ph-ahabha-3', program_id: 'p-ahabha', phase_number: 3, name: 'Maintenance', description: 'Three nights a week, ongoing.', preview_description: 'Three nights a week.', duration_days: null },
+
+  { id: 'ph-bpo-1', program_id: 'p-bpo', phase_number: 1, name: 'Every other night', description: 'Benzoyl peroxide every other night to let your skin adjust.', preview_description: 'Every other night.', duration_days: 14 },
+  { id: 'ph-bpo-2', program_id: 'p-bpo', phase_number: 2, name: 'Nightly', description: 'Stepping up to nightly use.', preview_description: 'Nightly.', duration_days: 21 },
+  { id: 'ph-bpo-3', program_id: 'p-bpo', phase_number: 3, name: 'Maintenance', description: 'Nightly, ongoing — watch for overdrying.', preview_description: 'Nightly, ongoing.', duration_days: null },
+
+  { id: 'ph-hp-1', program_id: 'p-hp', phase_number: 1, name: 'Introduce brightening serum', description: 'One brightening active layered into your existing routine.', preview_description: 'One brightening active.', duration_days: 14 },
+  { id: 'ph-hp-2', program_id: 'p-hp', phase_number: 2, name: 'Add a second active', description: 'Layering in a second brightening step.', preview_description: 'Two brightening actives.', duration_days: 21 },
+  { id: 'ph-hp-3', program_id: 'p-hp', phase_number: 3, name: 'Maintenance', description: 'Full brightening routine, ongoing.', preview_description: 'Ongoing.', duration_days: null },
+
+  { id: 'ph-barrier-1', program_id: 'p-barrier', phase_number: 1, name: 'Strip back to basics', description: 'Cleanser, moisturizer, SPF only — nothing else while your barrier heals.', preview_description: 'Basics only.', duration_days: 14 },
+  { id: 'ph-barrier-2', program_id: 'p-barrier', phase_number: 2, name: 'Reintroduce slowly', description: 'Adding actives back in one at a time, watching for irritation.', preview_description: 'Reintroducing actives.', duration_days: 21 },
+  { id: 'ph-barrier-3', program_id: 'p-barrier', phase_number: 3, name: 'Maintenance', description: 'Full routine, barrier-safe pace.', preview_description: 'Ongoing.', duration_days: null },
 ]
 
 const user_programs = [
