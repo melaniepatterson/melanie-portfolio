@@ -345,13 +345,17 @@
   position: fixed;
   left: 0;
   right: 0;
-  height: 100px;
+  /* Measured live on device: screen.height (844) minus visualViewport.height
+     (699) = 145px of actual chrome-occupied region, but this was only
+     100px tall — leaving the bottom ~45px genuinely uncovered, which is
+     what was still showing real page content through. Generous buffer
+     instead of trying to match the measurement exactly, matching the
+     "flat buffer, not a precise calculation" philosophy used elsewhere. */
+  height: 260px;
   background: limegreen; /* TEMP: visibility check — revert to #C93500 */
-  /* Below the sheet (300) and its dim backdrop's paint order, above the
-     raw page content (2) — was tied with the sheet at 300, which (since
-     its portal mounts after vaul's own) actually put it ON TOP of the
-     sheet, backwards from intended. */
-  z-index: 290;
+  /* Above .layout::after's grain texture overlay (z-index: 9999) too,
+     just to rule out any interference from it while debugging. */
+  z-index: 10000;
   visibility: hidden;
   pointer-events: none;
 }
