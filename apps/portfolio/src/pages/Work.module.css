@@ -353,9 +353,13 @@
      "flat buffer, not a precise calculation" philosophy used elsewhere. */
   height: 260px;
   background: #C93500;
-  /* Above .layout::after's grain texture overlay (z-index: 9999) too,
-     just to rule out any interference from it while debugging. */
-  z-index: 10000;
+  /* Below the sheet (300), above the dim backdrop (250) and raw page (2).
+     The 90px overlap into the visible viewport (needed so Safari actually
+     composites this layer at all — see Work.jsx) sits behind the sheet's
+     own box in that shared region, which already has the same solid
+     color painted there anyway — this only needs to be visible below the
+     sheet's own bottom edge, where nothing else covers it. */
+  z-index: 260;
   visibility: hidden;
   pointer-events: none;
 }
