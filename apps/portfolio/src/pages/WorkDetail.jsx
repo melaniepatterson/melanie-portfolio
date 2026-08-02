@@ -115,7 +115,7 @@ export default function WorkDetail() {
 
   return (
     <div className={styles.page}>
-      <Link to="/portfolio" className={styles.back}><SplitText>← Work</SplitText></Link>
+      <Link to="/portfolio" className={styles.back}><SplitText>{isMobile ? "← Back" : "← Work"}</SplitText></Link>
 
       <div className={styles.layout}>
         <div className={styles.images}>
