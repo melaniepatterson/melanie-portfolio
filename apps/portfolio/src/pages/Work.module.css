@@ -352,7 +352,7 @@
      instead of trying to match the measurement exactly, matching the
      "flat buffer, not a precise calculation" philosophy used elsewhere. */
   height: 260px;
-  background: limegreen; /* TEMP: visibility check — revert to #C93500 */
+  background: #C93500;
   /* Above .layout::after's grain texture overlay (z-index: 9999) too,
      just to rule out any interference from it while debugging. */
   z-index: 10000;
