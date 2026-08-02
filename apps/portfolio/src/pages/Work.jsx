@@ -5,6 +5,10 @@ import styles from "./Work.module.css";
 import { PROJECTS } from "../data/projects";
 import { Link } from "react-router-dom";
 
+// Gated off temporarily to test the raw vaul drawer without it in the way.
+// Flip back to true to re-enable.
+const CHROME_PATCH_ENABLED = false;
+
 const SIZES = ["small", "medium", "wide", "large"];
 const sessionSizes = PROJECTS.map(() => SIZES[Math.floor(Math.random() * SIZES.length)]);
 const sessionOrder = [...PROJECTS].sort(() => Math.random() - 0.5);
@@ -99,7 +103,7 @@ export default function Work() {
     // covering much of the sheet's own visible content above it (the
     // patch sits on top there — see Work.module.css — but its color now
     // matches the sheet exactly, so a small overlap reads as seamless).
-    if (!drawerOpen) return;
+    if (!CHROME_PATCH_ENABLED || !drawerOpen) return;
     const updatePatch = () => {
       const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
       if (chromePatchRef.current) {
@@ -284,7 +288,7 @@ useEffect(() => {
                 {filterContent}
               </Drawer.Content>
             </Drawer.Portal>
-            {createPortal(
+            {CHROME_PATCH_ENABLED && createPortal(
               <div
                 ref={chromePatchRef}
                 className={`${styles.chromePatch} ${drawerOpen ? styles.chromePatchVisible : ""}`}
