@@ -89,17 +89,19 @@ export default function Work() {
     // (toolbar height + buffer), matching the sheet's own color. Only
     // present while the sheet is open — closing it removes the class.
     //
-    // Confirmed via live device measurement: at -1px overlap, exactly the
-    // 1px within the visible viewport painted, and everything past
-    // innerHeight (even by 1px) did not — a hard boundary, not a fade or
-    // a threshold. -10px tests whether that holds proportionally (10px
-    // paints, rest still cut off exactly at the boundary) or whether a
-    // bigger overlap behaves differently.
+    // Confirmed via live device measurement: at -1px overlap, only that
+    // 1px painted (hard cutoff at innerHeight). At -10px overlap, the
+    // *entire* element painted correctly, chrome region included — not a
+    // proportional reveal, more like a compositing-inclusion threshold:
+    // some minimum overlap with the visible viewport determines whether
+    // Safari includes the whole layer at all, not just the visible part
+    // of it. 90px overlap for a comfortable margin across other devices/
+    // toolbar states, now that we know a small one is enough on this one.
     if (!drawerOpen) return;
     const updatePatch = () => {
       const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
       if (chromePatchRef.current) {
-        chromePatchRef.current.style.top = `${vh - 10}px`;
+        chromePatchRef.current.style.top = `${vh - 90}px`;
       }
     };
     updatePatch();
