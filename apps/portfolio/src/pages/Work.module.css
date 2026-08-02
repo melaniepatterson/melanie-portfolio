@@ -352,7 +352,7 @@
      instead of trying to match the measurement exactly, matching the
      "flat buffer, not a precise calculation" philosophy used elsewhere. */
   height: 260px;
-  background: #C93500;
+  background: limegreen; /* TEMP: visibility check — revert to #C93500 */
   /* Above the sheet (300), not below — putting an opaque sheet directly
      on top of the overlap region apparently reads to Safari as "this
      part is fully occluded," which seems to have removed the "some
