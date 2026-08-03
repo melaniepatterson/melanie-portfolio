@@ -16,7 +16,7 @@
 
 .wordmark {
   font-family: 'Naskle', 'DM Sans', sans-serif;
-  font-size: clamp(2.5rem, 14cqi, 6rem);
+  font-size: clamp(3rem, 20cqi, 7.5rem);
   line-height: 1;
   letter-spacing: -0.01em;
   color: #FFFFFF;
