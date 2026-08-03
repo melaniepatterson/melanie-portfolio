@@ -78,13 +78,17 @@ With thanks to Brian Clark (Director of Digital Experience), Ruben Rodriguez (We
     type: "applet-result",
     appletComponent: () => import('../applets/GridFisheye.jsx'),
     appletAlt: "A blue grid on black that bulges toward the cursor, like a fisheye lens following the pointer.",
-    appletCaption: "Cursor-following fisheye grid — one of a small series of interactive canvas experiments. Hit the refresh icon to restart it.",
-    showRefresh: true,
-    bannerComponent: () => import('../applets/SunburstLines.jsx'),
-    bannerAlt: "White lines fanning out from two off-screen pivots on a blue background, looping through a fall and rise cycle.",
-    bannerCaption: "A looping sunburst fan, from the same series.",
+    appletCaption: "Cursor-following fisheye grid — one of a small series of interactive canvas experiments.",
+    showRefresh: false,
+    bannerSrc: "/images/projects/RISD/Fisheye-Grid-Applet-This-Week-Header.webp",
+    bannerAlt: "The same blue grid now has text that reads 'This Week' over top.",
+    bannerCaption: "A lo-fi screen recording of the canvas grid animation used as a backdrop for email banners.",
   },
-  { src: "https://placehold.co/600x600/1a1a1a/FAF7F2", alt: "The full piece installed at..." },
+  {
+  type: "banner-stack",
+  images: [{ src: "/images/projects/RISD/Banner-1-RISD-Portolio-Day.webp", alt: "" }, { src: "/images/projects/RISD/Banner-2-Grad_Campus_Tour.webp", alt: "" }, { src: "/images/projects/RISD/Banner-3-This-Week.webp", alt: "" }],
+  caption: "One caption for all three",
+},
 ]
   },
     {
@@ -112,7 +116,7 @@ With thanks to Brian Clark (Director of Digital Experience), Ruben Rodriguez (We
     topics: null,
     client: { name: "Brightline", url: "https://www.gobrightline.com/" },
     year: "2017",
-    description: "Mural-scale illustrated maps of Florida, combining digital illustration with traditional techniques — hand-lettering and painted texture work — installed across Brightline's Miami, Fort Lauderdale, and West Palm Beach stations. Each map depicts train routes, stations, landmarks, and highways within Brightline's brand color system.",
+    description: "Mural-scale illustrated maps of South Florida, combining digital illustration with traditional techniques — hand-lettering and painted texture work — installed across Brightline's Miami, Fort Lauderdale, and West Palm Beach stations. Each map depicts train routes, stations, landmarks, and highways within Brightline's brand color system.",
     externalLink: "",
     thumbnail: "/images/projects/Brightline/Brightline_Maps_Melanie_Patterson_Crop.webp", // or: () => import('../projects/project-one/Thumbnail')
     hero: null,      // or: () => import('../projects/project-one/Hero')
