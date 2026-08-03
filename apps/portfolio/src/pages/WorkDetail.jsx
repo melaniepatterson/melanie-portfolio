@@ -5,12 +5,14 @@ import { SplitText } from "../utils";
 import InspirationResult from "../components/InspirationResult";
 import AppletResult from "../components/AppletResult";
 import BannerStack from "../components/BannerStack";
+import DeviceCompare from "../components/DeviceCompare";
 import Lightbox from "../components/Lightbox";
 import CodeReveal from "../components/CodeReveal";
 import BrowserFrame from "../components/BrowserFrame";
 import React, { useEffect, Suspense, lazy, useState } from "react";
 
 const heroCache = {};
+const galleryComponentCache = {};
 const sessionGalleryData = {};
 
 function getGalleryData(project) {
@@ -47,6 +49,22 @@ function LazyHero({ loader, fallbackSrc, fallbackAlt }) {
   );
 }
 
+// Generic slot for dropping any one-off custom component (e.g. GlowUpFloat,
+// DeviceCompare) into the gallery grid like it was just another image —
+// type: "component" + component: () => import(...), same lazy-loader
+// convention as the hero/thumbnail/applet slots elsewhere in this codebase.
+function LazyGalleryComponent({ loader }) {
+  if (!galleryComponentCache[loader]) {
+    galleryComponentCache[loader] = lazy(loader);
+  }
+  const Component = galleryComponentCache[loader];
+  return (
+    <Suspense fallback={null}>
+      <Component />
+    </Suspense>
+  );
+}
+
 // Pre-pass: returns indices that need a 1-col spacer inserted before them
 // to prevent two large items from filling an entire row side by side.
 // Works with grid-auto-flow: dense so small items can backfill the gap.
@@ -55,7 +73,7 @@ function computeRowBreaks(images, offsets) {
   let col = 1;
 
   images.forEach((img, i) => {
-    const isLarge = img.size === "large" || img.type === "inspiration-result" || img.type === "applet-result";
+    const isLarge = img.size === "large" || img.type === "inspiration-result" || img.type === "applet-result" || img.type === "device-compare";
     const span = isLarge ? 2 : 1;
     // browser-frame large items use gridColumn: "span 2" (auto-placed, no explicit start)
     const isAutoPlaced = img.type === "browser-frame" && img.size === "large";
@@ -198,6 +216,17 @@ export default function WorkDetail() {
               );
             }
 
+            if (img.type === "device-compare") {
+              return (
+                <React.Fragment key={i}>
+                  {!isMobile && rowBreaks.has(i) && <div className={styles.galleryRowBreak} />}
+                  <div className={`${styles.galleryItem} ${styles.galleryLarge}`}>
+                    <DeviceCompare {...img} />
+                  </div>
+                </React.Fragment>
+              );
+            }
+
             if (img.type === "banner-stack") {
               return (
                 <React.Fragment key={i}>
@@ -211,6 +240,21 @@ export default function WorkDetail() {
                       caption={img.caption}
                       onLightbox={(src, alt) => setLightbox({ src, alt })}
                     />
+                  </div>
+                </React.Fragment>
+              );
+            }
+
+            if (img.type === "component") {
+              return (
+                <React.Fragment key={i}>
+                  {!isMobile && rowBreaks.has(i) && <div className={styles.galleryRowBreak} />}
+                  <div
+                    className={`${styles.galleryItem} ${img.size === "large" ? styles.galleryLarge : styles.gallerySmall}`}
+                    style={isMobile ? undefined : { gridColumnStart: offsets[i] }}
+                  >
+                    <LazyGalleryComponent loader={img.component} />
+                    {img.caption && <p className={styles.caption}>{img.caption}</p>}
                   </div>
                 </React.Fragment>
               );

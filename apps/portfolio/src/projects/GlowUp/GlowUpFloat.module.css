@@ -1,0 +1,37 @@
+@font-face {
+  font-family: 'Naskle';
+  src: local('Naskle'), url(./fonts/Naskle-Regular.woff) format('woff'), url(./fonts/Naskle-Regular.woff2) format('woff2');
+}
+
+.stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  container-type: inline-size;
+}
+
+.wordmark {
+  font-family: 'Naskle', 'DM Sans', sans-serif;
+  font-size: clamp(2.5rem, 14cqi, 6rem);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: #197A3C;
+  text-align: center;
+  user-select: none;
+  animation: glowupFloat 3s cubic-bezier(0.445, 0.05, 0.55, 0.95) infinite;
+}
+
+@keyframes glowupFloat {
+  0%, 100% { transform: translateY(-8px); }
+  50%      { transform: translateY(8px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wordmark {
+    animation: none;
+  }
+}
