@@ -19,7 +19,7 @@
   font-size: clamp(2.5rem, 14cqi, 6rem);
   line-height: 1;
   letter-spacing: -0.01em;
-  color: #197A3C;
+  color: #FFFFFF;
   text-align: center;
   user-select: none;
   animation: glowupFloat 3s cubic-bezier(0.445, 0.05, 0.55, 0.95) infinite;
