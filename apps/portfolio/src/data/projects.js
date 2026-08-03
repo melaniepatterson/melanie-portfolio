@@ -2,25 +2,64 @@ import React from 'react';
 
 export const PROJECTS = [
   {
-    id: 1,
+    id: 2,
     slug: "RISD",
     title: "Rhode Island School of Design",
     disciplines: ["Interactive Design", "Design & Print", "Photography, Film & Animation"],
     topics: null,
     client: null,
     year: "2021– ",
-    description: "A description of this project and your process, materials, and intent behind the work.",
+    description: <>As part of a lean admissions team, I work across visual design, interactive systems, and CRM infrastructure, translating brand and UX decisions into shipped, functional work. My scope spans hand-coded email systems and CRM portal builds to print collateral and cross-team brand governance.<br></br><br></br>
+
+
+<h2>Interactive & Systems Design</h2>
+<b>Admitted Students Day Portal</b><br></br><br></br>
+Slate's CRM had been running on my own inline-style overrides for a few years (a stopgap that kept our portals usable while official brand assets caught up to RISD's 2022 identity refresh.) I proposed and coordinated a native CRM upgrade with our Associate Director of Admissions Operations, MarComm Director of Digital Experience and a web developer, replacing the overrides with a fully brand-matched build.<br></br><br></br>
+
+The portal uses conditional Liquid logic (built through Slate's query and filtering system, which generates the underlying SQL) to change what a student sees based on registration state: general event info before registering, specific time and location details after.<br></br><br></br>
+<b>Admitted Student "Hooray!" Confetti Animation</b><br></br><br></br>
+Slate's native celebratory effect was a snowfall-style script that was functional, but visually flat and out of step with a design school's brand standards. When our production designer created new "Hooray!" confetti graphics as part of an admitted student visual refresh, I saw the opportunity to build something more considered than the built-in option.<br></br><br></br>
+
+I took the SVG assets and built a custom confetti-fall script, layering multiple pieces at different fall speeds to create real depth rather than a flat, uniform drop. When an admitted student logs into their portal and their status has changed to admitted, the animation plays over their decision letter on load, adding to the emotion of the celebratory occasion.<br></br><br></br>
+<b>Generative Canvas Animations for Email Banners</b><br></br><br></br>
+A recurring challenge in admissions email design: much of what we communicate is necessarily repetitive (deadlines, next steps, program details), and static banners made that redundancy feel even flatter. I built a series of interactive canvas animations to use as dynamic motion backdrops, alternating them with animated photographic banners to keep repeat communications visually alive rather than duplicated.<br></br><br></br>
+
+Animations are viewable and replayable here alongside the finished banner it was built for. This is an ongoing series and more are in development.<br></br><br></br>
+
+<b>Audience Segmentation for Mailing Campaigns</b>
+I established RISD Admissions' population groups. This is the segmentation logic used to organize prospective students for both physical and digital mailings, enabling the team to target campaigns by audience rather than treating our list as one undifferentiated pool. This structure runs year-round, with heavier use during summer mailing cycles, and reflects the same data-filtering skill set behind the CRM portal work above.<br></br><br></br>
+
+
+<h2>Web Strategy & UX Collaboration</h2>
+Beyond print and email, I actively shape UX and content strategy on RISD's live admissions pages — working alongside MarComm Digital Content Operations lead and his team. My input ranges from granular content edits (some I make directly; others I hand off with specific direction, including cases that require cross-department consultation to implement correctly) to structural recommendations that shape how prospective students navigate the site.<br></br><br></br>
+
+A few examples:<br></br><br></br>
+
+<ul>
+  <li>Restoring a high-visibility CTA: Identified an opportunity to reintroduce a prominent "Schedule a Tour" call-to-action into the new brand system—a small change that contributed to a measurable lift in tour engagement.</li>
+<li>Menu reordering: Pushed to prioritize touring and events higher in site navigation, surfacing the actions prospective students are most likely to take.</li>
+<li>Contextual CTA design: Proposed and helped define use specs for double-CTA button treatments (a new pattern in the brand system) and date-dependent CTA content that adjusts messaging around key deadlines.</li></ul>
+
+<br></br>I've also been developing a complementary email and content strategy including new header treatments and increased promotional cadence, aimed at building visibility and engagement earlier in a prospective student's journey.<br></br><br></br>
+
+
+<h2>Content & Visual Production</h2>
+Alongside the interactive work above, I contribute to RISD Admissions' print and content ecosystem: an animated email promo built from viewbook photography, postcards accompanying MarComm's print collateral, our recruitment presentation deck, and swag curation (including sketchbooks from Uglybooks).<br></br><br></br>
+
+
+With thanks to Brian Clark (Director of Digital Experience), Ruben Rodriguez (Web Developer), Rob Albanese (Associate Director, Digital Content Production and Operations), Alex Rapport (Production Designer), and Takeya Hollant (Associate Director, Admissions Operations) for their collaboration on this work. Viewbook design by Mary Banas (Senior Visual Designer) and Jordan Gushwa (Associate Director, Design) for RISD Marketing & Communications under Huy Vu (Creative Director).
+</>,
     externalLink: "",
     thumbnail: () => import('../projects/RISD/Thumbnail'),
     hero: () => import('../projects/RISD/Hero'),      // or: () => import('../projects/project-one/Hero')
     images: [
   { src: "/images/projects/RISD/melanie-patterson-risd.webp", alt: "Textured blue liquid gradient with the RISD seal in the center." },
-  { src: "/images/projects/RISD/Rhode-Island-School-of-Design-Viewbook-Flip.webp", alt: "A gif flipping through the RISD viewbook. It's colorful pages and white debossed cover contrast a living wall of climbing philodendrons, pothos, and spider plants.", caption: "Viewbook design by Mary Banas and Jordan Gushwa (RISD Marketing & Communications); Video by me!", size: "small", lightbox: true },
+  { src: "/images/projects/RISD/Rhode-Island-School-of-Design-Viewbook-Flip.webp", alt: "A gif flipping through the RISD viewbook. It's colorful pages and white debossed cover contrast a living wall of climbing philodendrons, pothos, and spider plants.", caption: "Photography for a promotional campaign of our annual viewbook. Viewbook design by Mary Banas and Jordan Gushwa (RISD Marketing & Communications.)", size: "small", lightbox: true },
   { 
     type: "inspiration-result",
     inspirationSrc: "/images/projects/RISD/RISD-Hooray-by-Alex-Rapport.webp",
     inspirationAlt: "'Hooray' text animation spelled out of yellow, orange, pink and white confetti against a blue background. Confetti falls and resets the animation.",
-    inspirationCaption: <><i>Hooray</i> banner by Alex Rapport (RISD Marketing & Communications) </>,
+    inspirationCaption: <><i>Hooray!</i> banner by Alex Rapport (RISD Marketing & Communications) </>,
     resultSrc: "/images/projects/melanie-patterson-risd-admissions-decision-letter.webp",
     resultAlt: "Admissions admit decision letter screenshot with confetti in orange, pink, yellow and white and falling RISD seals in javascript",
     resultCaption: "Confetti script for RISD admitted students decision letter",
@@ -31,15 +70,25 @@ export const PROJECTS = [
   { 
   type: "browser-frame",
   src: "/images/projects/RISD/melanie-patterson-risd-admitted-student-portal.webp",
-  alt: "Screenshot of...",
+  alt: "The Admitted Students Day event portal screenshot displaying a program of events, custom event Google map, and other event details designed in the RISD identity.",
   size: "large",
-  caption: "Text caption",
+  caption: "Scrollable screenshot of the Admitted Students Day event portal, including a program of events, custom event Google map for wayfinding, and other day-of extras.",
+  },
+  {
+    type: "applet-result",
+    appletComponent: () => import('../applets/GridFisheye.jsx'),
+    appletAlt: "A blue grid on black that bulges toward the cursor, like a fisheye lens following the pointer.",
+    appletCaption: "Cursor-following fisheye grid — one of a small series of interactive canvas experiments. Hit the refresh icon to restart it.",
+    showRefresh: true,
+    bannerComponent: () => import('../applets/SunburstLines.jsx'),
+    bannerAlt: "White lines fanning out from two off-screen pivots on a blue background, looping through a fall and rise cycle.",
+    bannerCaption: "A looping sunburst fan, from the same series.",
   },
   { src: "https://placehold.co/600x600/1a1a1a/FAF7F2", alt: "The full piece installed at..." },
 ]
   },
     {
-    id: 2,
+    id: 1,
     slug: "glow-up",
     title: "Glow Up",
     disciplines: ["Interactive Design", "Design & Print"],
@@ -55,6 +104,23 @@ export const PROJECTS = [
     { src: "https://placehold.co/800x1000/1a1a1a/FAF7F2", alt: "Detail shot of the upper left corner showing..." },
     { src: "https://placehold.co/600x600/1a1a1a/FAF7F2", alt: "The full piece installed at..." },
   ]
+  },   {
+    id: 3,
+    slug: "brightline",
+    title: "Brightline",
+    disciplines: ["Fine Art", "Design & Print"],
+    topics: null,
+    client: { name: "Brightline", url: "https://www.gobrightline.com/" },
+    year: "2017",
+    description: "Mural-scale illustrated maps of Florida, combining digital illustration with traditional techniques — hand-lettering and painted texture work — installed across Brightline's Miami, Fort Lauderdale, and West Palm Beach stations. Each map depicts train routes, stations, landmarks, and highways within Brightline's brand color system.",
+    externalLink: "",
+    thumbnail: "/images/projects/Brightline/Brightline_Maps_Melanie_Patterson_Crop.webp", // or: () => import('../projects/project-one/Thumbnail')
+    hero: null,      // or: () => import('../projects/project-one/Hero')
+    images: [
+  { src: "https://placehold.co/1200x800/1a1a1a/FAF7F2", alt: "A watercolor painting of..." },
+  { src: "https://placehold.co/800x1000/1a1a1a/FAF7F2", alt: "Detail shot of the upper left corner showing..." },
+  { src: "https://placehold.co/600x600/1a1a1a/FAF7F2", alt: "The full piece installed at..." },
+]
   } /*,
   {
     id: 9,
@@ -75,7 +141,7 @@ export const PROJECTS = [
 ]
   },
   {
-    id: 3,
+    id: 10,
     slug: "project-three",
     title: "Project Three",
     disciplines: ["Fine Art"],

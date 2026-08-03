@@ -3,6 +3,8 @@ import { PROJECTS } from "../data/projects";
 import styles from "./WorkDetail.module.css";
 import { SplitText } from "../utils";
 import InspirationResult from "../components/InspirationResult";
+import AppletResult from "../components/AppletResult";
+import BannerStack from "../components/BannerStack";
 import Lightbox from "../components/Lightbox";
 import CodeReveal from "../components/CodeReveal";
 import BrowserFrame from "../components/BrowserFrame";
@@ -53,7 +55,7 @@ function computeRowBreaks(images, offsets) {
   let col = 1;
 
   images.forEach((img, i) => {
-    const isLarge = img.size === "large" || img.type === "inspiration-result";
+    const isLarge = img.size === "large" || img.type === "inspiration-result" || img.type === "applet-result";
     const span = isLarge ? 2 : 1;
     // browser-frame large items use gridColumn: "span 2" (auto-placed, no explicit start)
     const isAutoPlaced = img.type === "browser-frame" && img.size === "large";
@@ -175,6 +177,38 @@ export default function WorkDetail() {
                   <div className={`${styles.galleryItem} ${styles.galleryLarge}`}>
                     <InspirationResult
                       {...img}
+                      onLightbox={(src, alt) => setLightbox({ src, alt })}
+                    />
+                  </div>
+                </React.Fragment>
+              );
+            }
+
+            if (img.type === "applet-result") {
+              return (
+                <React.Fragment key={i}>
+                  {!isMobile && rowBreaks.has(i) && <div className={styles.galleryRowBreak} />}
+                  <div className={`${styles.galleryItem} ${styles.galleryLarge}`}>
+                    <AppletResult
+                      {...img}
+                      onLightbox={(src, alt) => setLightbox({ src, alt })}
+                    />
+                  </div>
+                </React.Fragment>
+              );
+            }
+
+            if (img.type === "banner-stack") {
+              return (
+                <React.Fragment key={i}>
+                  {!isMobile && rowBreaks.has(i) && <div className={styles.galleryRowBreak} />}
+                  <div
+                    className={`${styles.galleryItem} ${img.size === "large" ? styles.galleryLarge : styles.gallerySmall}`}
+                    style={isMobile ? undefined : { gridColumnStart: offsets[i] }}
+                  >
+                    <BannerStack
+                      images={img.images}
+                      caption={img.caption}
                       onLightbox={(src, alt) => setLightbox({ src, alt })}
                     />
                   </div>

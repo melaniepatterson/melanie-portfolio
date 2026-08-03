@@ -1,0 +1,136 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  width: 100%;
+  position: relative;
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.large {
+  flex: 2;
+}
+
+.small {
+  flex: 1;
+}
+
+.item img,
+.item video {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.label {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.5;
+}
+
+.itemHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.refreshButton {
+  background: none;
+  border: none;
+  /* Negative margin cancels the padding out visually — the icon stays put,
+     but the actual clickable box grows from 14x14 to a much easier-to-hit
+     30x30. */
+  padding: 8px;
+  margin: -8px;
+  color: inherit;
+  opacity: 0.5;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: opacity 0.2s ease, transform 0.3s ease;
+}
+
+.refreshButton:hover {
+  opacity: 1;
+  transform: rotate(90deg);
+}
+
+.refreshButton svg {
+  width: 14px;
+  height: 14px;
+}
+
+.caption {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  line-height: 1.5;
+  opacity: 0.7;
+  margin: 0;
+}
+
+.arrow {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  opacity: 0.5;
+}
+
+.arrow svg {
+  width: 24px;
+  height: 24px;
+}
+
+.lightboxable {
+  cursor: zoom-in;
+  position: relative;
+}
+
+.lightboxHint {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  color: #FAF7F2;
+  font-size: 1.2rem;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+  line-height: 1;
+  z-index: 2;
+}
+
+.lightboxable:hover .lightboxHint {
+  opacity: 1;
+}
+
+.hoverHint {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #FAF7F2;
+  opacity: 0.5;
+  position: absolute;
+  right: -1.5rem;
+  top: 0;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  white-space: nowrap;
+  pointer-events: none;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
