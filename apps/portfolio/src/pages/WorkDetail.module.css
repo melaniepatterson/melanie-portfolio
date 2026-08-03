@@ -119,6 +119,16 @@
   line-height: 1.7;
 }
 
+.description ul,
+.description ol {
+  padding-left: 1.5rem;
+  margin: 0.5em 0;
+}
+
+.description li {
+  margin-bottom: 0.4em;
+}
+
 .link {
   display: inline-flex;
   align-self: flex-start;

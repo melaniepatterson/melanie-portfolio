@@ -148,7 +148,7 @@ export default function WorkDetail() {
               )}
             </p>
           )}
-          <p className={styles.description}>{project.description}</p>
+          <div className={styles.description}>{project.description}</div>
           {project.topics && (
             <p className={styles.topics}>{project.topics.join(" · ")}</p>
           )}

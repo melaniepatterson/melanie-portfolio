@@ -12,7 +12,7 @@ export const PROJECTS = [
     description: <>As part of a lean admissions team, I work across visual design, interactive systems, and CRM infrastructure, translating brand and UX decisions into shipped, functional work. My scope spans hand-coded email systems and CRM portal builds to print collateral and cross-team brand governance.<br></br><br></br>
 
 
-<h2>Interactive & Systems Design</h2>
+<h2>Interactive & Systems Design</h2><br></br>
 <b>Admitted Students Day Portal</b><br></br><br></br>
 Slate's CRM had been running on my own inline-style overrides for a few years (a stopgap that kept our portals usable while official brand assets caught up to RISD's 2022 identity refresh.) I proposed and coordinated a native CRM upgrade with our Associate Director of Admissions Operations, MarComm Director of Digital Experience and a web developer, replacing the overrides with a fully brand-matched build.<br></br><br></br>
 
@@ -30,22 +30,22 @@ Animations are viewable and replayable here alongside the finished banner it was
 I established RISD Admissions' population groups. This is the segmentation logic used to organize prospective students for both physical and digital mailings, enabling the team to target campaigns by audience rather than treating our list as one undifferentiated pool. This structure runs year-round, with heavier use during summer mailing cycles, and reflects the same data-filtering skill set behind the CRM portal work above.<br></br><br></br>
 
 
-<h2>Web Strategy & UX Collaboration</h2>
+<h2>Web Strategy & UX Collaboration</h2><br></br>
 Beyond print and email, I actively shape UX and content strategy on RISD's live admissions pages — working alongside MarComm Digital Content Operations lead and his team. My input ranges from granular content edits (some I make directly; others I hand off with specific direction, including cases that require cross-department consultation to implement correctly) to structural recommendations that shape how prospective students navigate the site.<br></br><br></br>
 
 A few examples:<br></br><br></br>
 
 <ul>
-  <li>Restoring a high-visibility CTA: Identified an opportunity to reintroduce a prominent "Schedule a Tour" call-to-action into the new brand system—a small change that contributed to a measurable lift in tour engagement.</li>
-<li>Menu reordering: Pushed to prioritize touring and events higher in site navigation, surfacing the actions prospective students are most likely to take.</li>
-<li>Contextual CTA design: Proposed and helped define use specs for double-CTA button treatments (a new pattern in the brand system) and date-dependent CTA content that adjusts messaging around key deadlines.</li></ul>
+  <li><b>Restoring a high-visibility CTA:</b> Identified an opportunity to reintroduce a prominent "Schedule a Tour" call-to-action into the new brand system—a small change that contributed to a measurable lift in tour engagement.</li>
+<li><b>Menu reordering:</b> Pushed to prioritize touring and events higher in site navigation, surfacing the actions prospective students are most likely to take.</li>
+<li><b>Contextual CTA design:</b> Proposed and helped define use specs for double-CTA button treatments (a new pattern in the brand system) and date-dependent CTA content that adjusts messaging around key deadlines.</li></ul>
 
 <br></br>I've also been developing a complementary email and content strategy including new header treatments and increased promotional cadence, aimed at building visibility and engagement earlier in a prospective student's journey.<br></br><br></br>
 
 
-<h2>Content & Visual Production</h2>
-Alongside the interactive work above, I contribute to RISD Admissions' print and content ecosystem: an animated email promo built from viewbook photography, postcards accompanying MarComm's print collateral, our recruitment presentation deck, and swag curation (including sketchbooks from Uglybooks).<br></br><br></br>
-
+<h2>Content & Visual Production</h2><br></br>
+Alongside the interactive work above, I contribute to RISD Admissions' print and content ecosystem: an animated email promo built from viewbook photography, postcards accompanying MarComm's print collateral, our recruitment presentation deck, and swag curation (including sketchbooks from Uglybooks).<br></br><br></br>----
+<br></br><br></br>
 
 With thanks to Brian Clark (Director of Digital Experience), Ruben Rodriguez (Web Developer), Rob Albanese (Associate Director, Digital Content Production and Operations), Alex Rapport (Production Designer), and Takeya Hollant (Associate Director, Admissions Operations) for their collaboration on this work. Viewbook design by Mary Banas (Senior Visual Designer) and Jordan Gushwa (Associate Director, Design) for RISD Marketing & Communications under Huy Vu (Creative Director).
 </>,
@@ -86,8 +86,8 @@ With thanks to Brian Clark (Director of Digital Experience), Ruben Rodriguez (We
   },
   {
   type: "banner-stack",
-  images: [{ src: "/images/projects/RISD/Banner-1-RISD-Portolio-Day.webp", alt: "" }, { src: "/images/projects/RISD/Banner-2-Grad_Campus_Tour.webp", alt: "" }, { src: "/images/projects/RISD/Banner-3-This-Week.webp", alt: "" }],
-  caption: "One caption for all three",
+  images: [{ src: "/images/projects/RISD/Banner-1-RISD-Portolio-Day.webp", alt: "Banner reading 'RISD Portfolio Days' with photos of a blue paint brush and students holding up a large, human-scale piece." }, { src: "/images/projects/RISD/Banner-2-Grad_Campus_Tour.webp", alt: "Text reads 'Grad Campus Tours' over top an image of the RISD Nature Lab with a blue filter, and one of the windows cut out in full color." }, { src: "/images/projects/RISD/Banner-3-This-Week.webp", alt: "A banner reading 'This Week' over top a scrolling selection of images of students, artwork, and other campus life photos." }],
+  caption: "New email banners incorporating cut-out styling as part of our image treatment system.",
 },
 ]
   },

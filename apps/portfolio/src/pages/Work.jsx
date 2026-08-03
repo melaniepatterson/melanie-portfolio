@@ -325,7 +325,7 @@ useEffect(() => {
                   style={isMobile ? undefined : { marginTop: `${nudge}px`, marginBottom: `${sessionMargins[i]}px` }}
                   onClick={() => sessionStorage.setItem("workScroll", window.scrollY)}
                 >
-                  {project.thumbnail ? (
+                  {typeof project.thumbnail === "function" ? (
                     <LazyThumbnail
                       loader={project.thumbnail}
                       hovered={false}
@@ -333,7 +333,7 @@ useEffect(() => {
                       fallbackAlt={project.images[0].alt}
                     />
                   ) : (
-                    <img src={project.images[0].src} alt={project.images[0].alt} />
+                    <img src={project.thumbnail || project.images[0].src} alt={project.images[0].alt} />
                   )}
                   <div className={styles.cardTitle}>{project.title}</div>
                   <div className={styles.cardYear}>{project.year}</div>
