@@ -9,7 +9,7 @@ import DeviceCompare from "../components/DeviceCompare";
 import Lightbox from "../components/Lightbox";
 import CodeReveal from "../components/CodeReveal";
 import BrowserFrame from "../components/BrowserFrame";
-import { useEffect, Suspense, lazy, useState } from "react";
+import { Fragment, useEffect, Suspense, lazy, useState } from "react";
 
 const heroCache = {};
 const galleryComponentCache = {};
@@ -23,7 +23,13 @@ function getGalleryData(project) {
       const j = Math.floor(Math.random() * (i + 1));
       [images[i], images[j]] = [images[j], images[i]];
     }
-    sessionGalleryData[project.slug] = { images };
+    // Same spirit as the old Work.jsx sessionSpacers — an empty cell before
+    // ~40% of items, so the 2-col grid gets some breathing room instead of
+    // packing edge to edge every time.
+    const spacers = new Set(
+      images.map((_, i) => i).filter(() => Math.random() > 0.6)
+    );
+    sessionGalleryData[project.slug] = { images, spacers };
   }
   return sessionGalleryData[project.slug];
 }
@@ -90,7 +96,7 @@ export default function WorkDetail() {
     </div>
   );
 
-  const { images: galleryImages } = getGalleryData(project);
+  const { images: galleryImages, spacers } = getGalleryData(project);
 
   // These types are always the wide/large slot — same list this codebase
   // has used all along (see the old computeRowBreaks isLarge check) —
@@ -213,7 +219,12 @@ export default function WorkDetail() {
               gallery used to use. */}
           {!isMobile && galleryImages.length > 0 && (
             <div className={styles.galleryFlow}>
-              {galleryImages.map(renderGalleryItem)}
+              {galleryImages.map((img, i) => (
+                <Fragment key={i}>
+                  {spacers.has(i) && <div className={styles.gallerySpacer} />}
+                  {renderGalleryItem(img, i)}
+                </Fragment>
+              ))}
             </div>
           )}
         </div>
