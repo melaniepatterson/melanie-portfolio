@@ -92,17 +92,27 @@ export default function WorkDetail() {
 
   const { images: galleryImages } = getGalleryData(project);
 
+  // These types are always the wide/large slot — same list this codebase
+  // has used all along (see the old computeRowBreaks isLarge check) —
+  // everything else falls back to img.size === "large".
+  function isLargeItem(img) {
+    return img.size === "large"
+      || img.type === "inspiration-result"
+      || img.type === "applet-result"
+      || img.type === "device-compare";
+  }
+
   // One render path shared by both placements below — on desktop these
-  // flow inside the hero's own column so they keep pace with a long
-  // description instead of waiting for the whole two-column block to
-  // finish; on mobile they render in their own section after it, same as
-  // before. Either way it's just a single-column stack now (no more
-  // masonry offsets/row-breaks), since a narrow column doesn't have room
-  // for the old side-by-side sizing anyway.
+  // flow inside the hero's own column (in a 2-col mini-masonry, see
+  // .galleryFlow) so they keep pace with a long description instead of
+  // waiting for the whole two-column block to finish; on mobile they
+  // render in their own full-width section after it, same as before.
   function renderGalleryItem(img, i) {
+    const sizeClass = isLargeItem(img) ? styles.galleryLarge : styles.gallerySmall;
+
     if (img.type === "inspiration-result") {
       return (
-        <div key={i} className={styles.galleryItem}>
+        <div key={i} className={`${styles.galleryItem} ${sizeClass}`}>
           <InspirationResult
             {...img}
             onLightbox={(src, alt) => setLightbox({ src, alt })}
@@ -113,7 +123,7 @@ export default function WorkDetail() {
 
     if (img.type === "applet-result") {
       return (
-        <div key={i} className={styles.galleryItem}>
+        <div key={i} className={`${styles.galleryItem} ${sizeClass}`}>
           <AppletResult
             {...img}
             onLightbox={(src, alt) => setLightbox({ src, alt })}
@@ -124,7 +134,7 @@ export default function WorkDetail() {
 
     if (img.type === "device-compare") {
       return (
-        <div key={i} className={styles.galleryItem}>
+        <div key={i} className={`${styles.galleryItem} ${sizeClass}`}>
           <DeviceCompare {...img} />
         </div>
       );
@@ -132,7 +142,7 @@ export default function WorkDetail() {
 
     if (img.type === "banner-stack") {
       return (
-        <div key={i} className={styles.galleryItem}>
+        <div key={i} className={`${styles.galleryItem} ${sizeClass}`}>
           <BannerStack
             images={img.images}
             caption={img.caption}
@@ -144,7 +154,7 @@ export default function WorkDetail() {
 
     if (img.type === "component") {
       return (
-        <div key={i} className={styles.galleryItem}>
+        <div key={i} className={`${styles.galleryItem} ${sizeClass}`}>
           <LazyGalleryComponent loader={img.component} />
           {img.caption && <p className={styles.caption}>{img.caption}</p>}
         </div>
@@ -153,7 +163,7 @@ export default function WorkDetail() {
 
     if (img.type === "code-reveal") {
       return (
-        <div key={i} className={styles.galleryItem}>
+        <div key={i} className={`${styles.galleryItem} ${sizeClass}`}>
           <CodeReveal still={img.still} alt={img.alt} code={img.code} />
         </div>
       );
@@ -161,7 +171,7 @@ export default function WorkDetail() {
 
     if (img.type === "browser-frame") {
       return (
-        <div key={i} className={styles.galleryItem}>
+        <div key={i} className={`${styles.galleryItem} ${sizeClass}`}>
           <BrowserFrame src={img.src} alt={img.alt} />
           {img.caption && <p className={styles.caption}>{img.caption}</p>}
         </div>
@@ -171,7 +181,7 @@ export default function WorkDetail() {
     return (
       <div
         key={i}
-        className={`${styles.galleryItem} ${img.lightbox ? styles.lightboxable : ""}`}
+        className={`${styles.galleryItem} ${sizeClass} ${img.lightbox ? styles.lightboxable : ""}`}
         onClick={() => img.lightbox && setLightbox({ src: img.src, alt: img.alt })}
       >
         <img src={img.src} alt={img.alt} loading="lazy" />
@@ -198,8 +208,14 @@ export default function WorkDetail() {
             <img src={project.images[0].src} alt={project.images[0].alt} />
           )}
           {/* Desktop only — flows down this column alongside the description
-              on the right, instead of waiting for that column to finish. */}
-          {!isMobile && galleryImages.map(renderGalleryItem)}
+              on the right (instead of waiting for that column to finish),
+              in the same 2-col small/large mini-masonry the full-width
+              gallery used to use. */}
+          {!isMobile && galleryImages.length > 0 && (
+            <div className={styles.galleryFlow}>
+              {galleryImages.map(renderGalleryItem)}
+            </div>
+          )}
         </div>
 
         <div className={styles.info}>

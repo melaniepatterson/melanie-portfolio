@@ -43,8 +43,29 @@
   display: block;
 }
 
+/* Desktop gallery — a 2-col mini-masonry (dense packing fills small items
+   into any gap a large item leaves) living inside the hero's own column,
+   so small/large sizing reads again instead of every item being full
+   column width. Old 4-col version's JS-computed offsets/row-breaks aren't
+   needed at only 2 columns — grid-auto-flow: dense handles packing on its
+   own. */
+.galleryFlow {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-auto-flow: dense;
+  gap: 1.5rem;
+}
+
+.gallerySmall {
+  grid-column: span 1;
+}
+
+.galleryLarge {
+  grid-column: span 2;
+}
+
 /* Mobile only now — desktop flows its gallery items inside .images instead
-   (see .images below), so it can keep pace with a long description
+   (see .galleryFlow above), so it can keep pace with a long description
    instead of waiting for the whole two-column block to finish. */
 .gallery {
   display: flex;
