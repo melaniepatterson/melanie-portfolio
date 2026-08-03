@@ -94,7 +94,7 @@ With thanks to Brian Clark (Director of Digital Experience), Ruben Rodriguez (We
     {
     id: 1,
     slug: "glow-up",
-    title: "Glow Up",
+    title: "Glow Up (App)",
     disciplines: ["Interactive Design", "Design & Print"],
     topics: null,
     client: null,
@@ -107,11 +107,12 @@ With thanks to Brian Clark (Director of Digital Experience), Ruben Rodriguez (We
     { src: "https://placehold.co/1200x800/1a1a1a/FAF7F2", alt: "A watercolor painting of..." },
     { src: "https://placehold.co/800x1000/1a1a1a/FAF7F2", alt: "Detail shot of the upper left corner showing..." },
     { src: "https://placehold.co/600x600/1a1a1a/FAF7F2", alt: "The full piece installed at..." },
+    { type: "component", component: () => import('../projects/GlowUp/GlowUpFloat.jsx') },
   ]
   },   {
     id: 3,
     slug: "brightline",
-    title: "Brightline",
+    title: "Brightline Maps",
     disciplines: ["Fine Art", "Design & Print"],
     topics: null,
     client: { name: "Brightline", url: "https://www.gobrightline.com/" },

@@ -9,14 +9,28 @@ import { Link } from "react-router-dom";
 // Flip back to true to re-enable.
 const CHROME_PATCH_ENABLED = false;
 
+// The scattered "poster wall" look — mixed card sizes, randomized vertical
+// nudges/margins, and randomly-inserted spacers. Looks great with a big,
+// dense grid; with only a handful of projects it just reads as gaps and
+// misalignment, so it's off for now — every card renders at the uniform
+// "large" size instead, with no nudge/margin/spacer randomness. Flip back
+// to true once there's enough work to fill it out.
+const POSTER_WALL_ENABLED = false;
+
+// Off for now: projects show in project id order instead of shuffled.
+const RANDOM_ORDER_ENABLED = false;
+
 const SIZES = ["small", "medium", "wide", "large"];
-const sessionSizes = PROJECTS.map(() => SIZES[Math.floor(Math.random() * SIZES.length)]);
-const sessionOrder = [...PROJECTS].sort(() => Math.random() - 0.5);
-const sessionNudges = PROJECTS.map(() => Math.floor(Math.random() * 200));
-const sessionMargins = PROJECTS.map(() => Math.floor(Math.random() * 200));
+const sessionSizes = PROJECTS.map(() => POSTER_WALL_ENABLED ? SIZES[Math.floor(Math.random() * SIZES.length)] : "large");
+const sessionOrder = RANDOM_ORDER_ENABLED
+  ? [...PROJECTS].sort(() => Math.random() - 0.5)
+  : [...PROJECTS].sort((a, b) => a.id - b.id);
+const sessionNudges = PROJECTS.map(() => POSTER_WALL_ENABLED ? Math.floor(Math.random() * 200) : 0);
+const sessionMargins = PROJECTS.map(() => POSTER_WALL_ENABLED ? Math.floor(Math.random() * 200) : 0);
 const sessionSpacers = new Set(
-  PROJECTS.map((_, i) => i)
-    .filter(() => Math.random() > 0.6)
+  POSTER_WALL_ENABLED
+    ? PROJECTS.map((_, i) => i).filter(() => Math.random() > 0.6)
+    : []
 );
 const componentCache = {};
 
