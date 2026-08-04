@@ -29,8 +29,21 @@ export default function FallingRectangles() {
     const WALL = 300;
     let ground, leftWall, rightWall;
 
-    const CLEARANCE_RATIO = 0.19; // fraction of height left empty below the stack
-    const SIDE_PADDING = 60; // clearance kept clear on both edges
+    const CLEARANCE_RATIO = 0.1; // fraction of height left empty below the stack
+
+    // All the size constants below (piece height, padding, drop-zone width) were
+    // tuned against a full-width standalone page (~900px+). Embedded here as a
+    // gallery card, the container can be much smaller — so every size scales
+    // with the container's own width instead of using those pixel values
+    // directly, preserving the same proportions at any embed size instead of
+    // the pile reliably overflowing a small card.
+    let SCALE = 1;
+    let SIDE_PADDING = 60;
+    let RECT_H = 100;
+    let RECT_W = RECT_H * (9 / 32); // fixed 9:32 aspect ratio, uniform for every rectangle
+    let LEFT_ZONE_START = 0;
+    let LEFT_ZONE_WIDTH = 320;
+    let TAIL_ZONE_WIDTH = 150;
 
     function buildBounds() {
       if (ground) World.remove(world, [ground, leftWall, rightWall]);
@@ -54,6 +67,15 @@ export default function FallingRectangles() {
       canvas.width = W * dpr;
       canvas.height = H * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      SCALE = W / 900; // 900 ≈ the reference width these values were tuned at
+      SIDE_PADDING = 60 * SCALE;
+      RECT_H = 100 * SCALE;
+      RECT_W = RECT_H * (9 / 32);
+      LEFT_ZONE_START = SIDE_PADDING + 10 * SCALE;
+      LEFT_ZONE_WIDTH = 320 * SCALE;
+      TAIL_ZONE_WIDTH = 150 * SCALE;
+
       buildBounds();
     }
 
@@ -62,8 +84,6 @@ export default function FallingRectangles() {
     resize();
 
     const MAX_RECTS = 36;
-    const RECT_H = 100;
-    const RECT_W = RECT_H * (9 / 32); // fixed 9:32 aspect ratio, uniform for every rectangle
     let spawnTimer = null;
     let spawnIndex = 0;
 
@@ -72,9 +92,6 @@ export default function FallingRectangles() {
     // and cascade the pile further right; nothing constrains that. The tail
     // reinforces just the left portion of the drop zone, on top of the first
     // wave's own share there, building extra height on the left.
-    const LEFT_ZONE_START = SIDE_PADDING + 10;
-    const LEFT_ZONE_WIDTH = 320;
-    const TAIL_ZONE_WIDTH = 150;
     const LEFT_BIAS_FROM = 22;
 
     function spawnRect() {
@@ -88,7 +105,7 @@ export default function FallingRectangles() {
       const isTail = spawnIndex >= LEFT_BIAS_FROM;
       spawnIndex++;
       const x = LEFT_ZONE_START + RECT_W / 2 + Common.random(0, isTail ? TAIL_ZONE_WIDTH : LEFT_ZONE_WIDTH);
-      const y = -RECT_H / 2 - Common.random(0, 120);
+      const y = -RECT_H / 2 - Common.random(0, 120 * SCALE);
 
       const TILT = 15 * (Math.PI / 180); // degrees to radians
       const body = Bodies.rectangle(x, y, RECT_W, RECT_H, {
@@ -103,8 +120,8 @@ export default function FallingRectangles() {
 
       // A bit of downward push and sideways life so they read as launched, not dropped.
       // The tail gets a touch of extra leftward push, reinforcing the bias.
-      const vx = isTail ? Common.random(-1.1, -0.3) : Common.random(-0.6, 0.6);
-      Body.setVelocity(body, { x: vx, y: Common.random(2, 4) });
+      const vx = isTail ? Common.random(-1.1, -0.3) * SCALE : Common.random(-0.6, 0.6) * SCALE;
+      Body.setVelocity(body, { x: vx, y: Common.random(2, 4) * SCALE });
 
       body.rectW = RECT_W;
       body.rectH = RECT_H;
