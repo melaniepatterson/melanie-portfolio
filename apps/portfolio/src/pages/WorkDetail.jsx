@@ -257,7 +257,7 @@ export default function WorkDetail() {
               rel={project.externalLink.startsWith("http") ? "noopener noreferrer" : undefined}
               className={styles.link}
             >
-              <SplitText>View Project</SplitText>
+              <SplitText>{project.externalLinkLabel || "View Project"}</SplitText>
               {project.externalLink.startsWith("http") ? " ↗︎" : ""}
             </a>
           )}

@@ -1,4 +1,5 @@
 import BrowserFrame from "./BrowserFrame";
+import MobileFrame from "./MobileFrame";
 import Caption from "./Caption";
 import styles from "./DeviceCompare.module.css";
 
@@ -18,13 +19,9 @@ export default function DeviceCompare({
           <BrowserFrame src={desktopSrc} alt={desktopAlt} />
         </div>
         <div className={styles.phone}>
-          <div className={styles.phoneFrame}>
-            <div className={styles.notch} />
-            <div className={styles.phoneScreen}>
-              <img src={mobileSrc} alt={mobileAlt} />
-            </div>
-            <div className={styles.homeIndicator} />
-          </div>
+          <MobileFrame>
+            <img src={mobileSrc} alt={mobileAlt} />
+          </MobileFrame>
         </div>
       </div>
       {caption && <Caption className={styles.caption}>{caption}</Caption>}

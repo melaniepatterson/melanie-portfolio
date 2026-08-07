@@ -1,0 +1,73 @@
+@font-face {
+  font-family: 'Naskle';
+  src: local('Naskle'), url(./fonts/Naskle-Regular.woff) format('woff'), url(./fonts/Naskle-Regular.woff2) format('woff2');
+}
+
+.stage {
+  position: absolute;
+  inset: 0;
+  background: #197A3C;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 10%;
+  box-sizing: border-box;
+}
+
+.wordmark {
+  font-family: 'Naskle', 'DM Sans', sans-serif;
+  font-size: clamp(28px, 15cqw, 44px);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: #FFFFFF;
+  text-align: center;
+  user-select: none;
+  animation: glowupLoaderFloat 3s cubic-bezier(0.445, 0.05, 0.55, 0.95) infinite;
+}
+
+.barTrack {
+  width: 60%;
+  height: 5px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #FFFFFF;
+}
+
+.bar {
+  width: 100%;
+  height: 100%;
+  background-repeat: repeat-x;
+  animation-name: glowupLoaderBarRoll;
+  animation-duration: 12.5s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.saying {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 0.65rem;
+  color: #FFFFFF;
+  letter-spacing: 0.02em;
+  min-height: 14px;
+  text-align: center;
+}
+
+@keyframes glowupLoaderFloat {
+  0%, 100% { transform: translateY(-4px); }
+  50%      { transform: translateY(4px); }
+}
+
+/* SLOT (60) * BAR_COLORS.length (5) from GlowUpLoaderPreview.jsx — both are
+   fixed constants, so this doesn't need to be computed dynamically. */
+@keyframes glowupLoaderBarRoll {
+  0%   { background-position: -300px 0; }
+  100% { background-position: 0px 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wordmark, .bar {
+    animation: none;
+  }
+}
