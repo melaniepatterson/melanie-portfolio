@@ -19,6 +19,7 @@
   font-weight: 700;
   letter-spacing: 0.15em;
   text-transform: uppercase;
+  line-height: 1.2;
   cursor: pointer;
   z-index: 200;
   display: flex;
@@ -64,6 +65,7 @@
   cursor: pointer;
   font-family: inherit;
   font-weight: 700;
+  line-height: 1;
 }
 
 .filterSection {
@@ -75,6 +77,7 @@
   font-weight: 700;
   letter-spacing: 0.2em;
   text-transform: uppercase;
+  line-height: 1.2;
   margin-bottom: 1rem;
   color: #FAF7F2;
   opacity: 0.6;
@@ -86,6 +89,7 @@
   gap: 0.6rem;
   margin-bottom: 0.6rem;
   font-size: 0.9rem;
+  line-height: 1.4;
   cursor: pointer;
   color: #FAF7F2;
 }
@@ -168,6 +172,7 @@
   font-size: 0.85rem;
   font-weight: 400;
   letter-spacing: 0.1em;
+  line-height: 1.2;
   color: #C93500;
   mix-blend-mode: multiply;
   padding: 0.25rem 0rem;
@@ -199,6 +204,7 @@
   color: #FAF7F2;
   opacity: 0.6;
   font-size: 1rem;
+  line-height: 1.5;
   padding: 2rem 0;
 }
 
@@ -235,6 +241,7 @@
   font-weight: 700;
   letter-spacing: 0.15em;
   text-transform: uppercase;
+  line-height: 1.2;
   padding: 0.6rem 1rem;
   cursor: pointer;
   margin-top: 1rem;
@@ -260,6 +267,7 @@
   font-weight: 700;
   letter-spacing: 0.2em;
   text-transform: uppercase;
+  line-height: 1.2;
   transition: opacity 0.5s ease;
   pointer-events: none;
   z-index: 50;
@@ -331,6 +339,7 @@
   font-weight: 700;
   letter-spacing: 0.15em;
   text-transform: uppercase;
+  line-height: 1.2;
   color: #FAF7F2;
   margin: 0;
 }

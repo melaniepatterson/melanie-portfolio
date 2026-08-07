@@ -19,3 +19,26 @@ html {
 p, h1, h2, h3 {
   text-wrap: pretty;
 }
+
+h1 {
+  font-size: 2.5rem;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  font-size: 1.5em;
+  line-height: 1.25;
+}
+
+h3 {
+  font-size: 1.17em;
+  line-height: 1.25;
+  padding-bottom: 10px;
+}
+
+p.small {
+  font-size: 0.8rem;
+  line-height: 1.5;
+}

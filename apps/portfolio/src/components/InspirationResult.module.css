@@ -32,13 +32,14 @@
   font-weight: 700;
   letter-spacing: 0.2em;
   text-transform: uppercase;
+  line-height: 1.2;
   opacity: 0.5;
 }
 
 .caption {
   font-family: 'Bricolage Grotesque', sans-serif;
   font-optical-sizing: auto;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 0.85rem;
   letter-spacing: 0.05em;
   line-height: 1.5;
@@ -86,6 +87,7 @@
   font-weight: 700;
   letter-spacing: 0.2em;
   text-transform: uppercase;
+  line-height: 1.2;
   color: #FAF7F2;
   opacity: 0.5;
   position: absolute;
