@@ -22,7 +22,6 @@ export default function FallingRectangles() {
     const { Engine, World, Bodies, Body, Composite, Common } = Matter;
 
     const engine = Engine.create();
-    engine.gravity.y = 1.6; // snappier so the whole sequence resolves within about 6s
     const world = engine.world;
 
     let W = 0, H = 0;
@@ -69,6 +68,11 @@ export default function FallingRectangles() {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
       SCALE = W / 900; // 900 ≈ the reference width these values were tuned at
+      // Gravity scales too, not just sizes/velocities — position, velocity, and
+      // acceleration all need the same factor or the motion's timing compresses
+      // at smaller sizes (shorter falls, same acceleration = everything reads
+      // as landing almost instantly instead of a visibly staggered cascade).
+      engine.gravity.y = 1.6 * SCALE;
       SIDE_PADDING = 60 * SCALE;
       RECT_H = 100 * SCALE;
       RECT_W = RECT_H * (9 / 32);
@@ -196,20 +200,18 @@ export default function FallingRectangles() {
     canvas.addEventListener("click", reset);
     scheduleSpawn();
 
-    let raf;
-    let lastTime = null;
+    // setInterval rather than requestAnimationFrame — matches the standalone
+    // page this was ported from. rAF can get throttled/stalled in contexts
+    // that don't treat the tab as fully active (seen in automated preview
+    // tooling), silently freezing the physics after the first few frames.
     const STEP = 1000 / 60;
-    function frame(now) {
-      if (lastTime === null) lastTime = now;
+    const stepInterval = setInterval(() => {
       Engine.update(engine, STEP);
       if (W && H) draw();
-      lastTime = now;
-      raf = requestAnimationFrame(frame);
-    }
-    raf = requestAnimationFrame(frame);
+    }, STEP);
 
     return () => {
-      cancelAnimationFrame(raf);
+      clearInterval(stepInterval);
       clearTimeout(spawnTimer);
       ro.disconnect();
       canvas.removeEventListener("click", reset);
