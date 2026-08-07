@@ -134,10 +134,14 @@ export default function TourSpotlight({ targetSelector, targetSelectors, message
         )}
       </div>
 
-      {/* Skip tour — persistent, top-right, visible on every step */}
+      {/* Skip tour — persistent, top-right, visible on every step. Secondary
+          treatment (transparent + bordered) per the STYLES — BUTTONS spec,
+          since it's a supporting action next to the bubble's primary Next —
+          colors flipped to white since it sits on the dark green wash
+          rather than the app's usual white surfaces. */}
       <button onClick={onSkip} style={{
         position: 'fixed', top: 20, right: 20, zIndex: 603,
-        border: 'none', background: 'rgba(0,0,0,0.35)', color: T.white,
+        border: `1.5px solid ${T.white}`, background: 'transparent', color: T.white,
         borderRadius: T.radius.pill, padding: '7px 14px', fontSize: 11, fontWeight: 700,
         cursor: 'pointer', fontFamily: 'inherit', letterSpacing: '0.02em',
       }}>

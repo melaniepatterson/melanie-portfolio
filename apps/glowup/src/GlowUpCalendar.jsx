@@ -46,6 +46,8 @@ import GlowUpFooter from './shared/GlowUpFooter'
 import TourSpotlight, { TourLogo } from './shared/TourSpotlight'
 import Skeleton from './shared/Skeleton'
 
+const IS_DEMO = import.meta.env.VITE_GLOWUP_DEMO === 'true'
+
 // A few skeleton rows shaped like a numbered timeline entry — used for
 // both phase-detail and program-list loading, where the real content is
 // text-heavy and doesn't reduce to one repeatable card shape.
@@ -4288,6 +4290,7 @@ export default function GlowUpCalendar({ session }) {
       // localStorage-based initial guess so clearing cookies doesn't
       // bring the tour back.
       if (profileRR?.calendar_tour_completed_at) setTourStep(null)
+      tourCompletedOnServerRef.current = !!profileRR?.calendar_tour_completed_at
       catalogIds.current = new Set()
       ;(pr || []).forEach(p => {
         if (p.is_catalog) catalogIds.current.add(p.id)
@@ -4386,15 +4389,30 @@ export default function GlowUpCalendar({ session }) {
   // so an interrupted tour never re-triggers on a later visit.
   const [tourStep, setTourStep] = useState(null)
   const tourPromptedRef = useRef(false)
+  const tourCompletedOnServerRef = useRef(false)
   // Ask before dropping the spotlight overlay on a first-time user, instead
   // of just greening out the screen with no warning — "Skip" here counts as
   // having seen the tour, same as skipping mid-way through.
+  //
+  // Waits for `loading` to resolve before deciding: checking only
+  // localStorage let a returning real user get re-prompted on every login
+  // from a new device or a cleared browser profile, since the server
+  // already knew they'd finished it but that answer hadn't loaded yet.
+  // Demo mode skips the server/localStorage check entirely and always
+  // offers the tour fresh — the seed profile is permanently marked
+  // "completed" (so the real-account gate wouldn't work for it anyway),
+  // and every demo visit should offer it, matching the banner's "resets
+  // when you reload" promise.
   useEffect(() => {
-    if (tourPromptedRef.current) return
+    if (tourPromptedRef.current || loading) return
     tourPromptedRef.current = true
-    let alreadyDone = false
-    try { alreadyDone = localStorage.getItem('glowup_calendar_tour_done') === '1' } catch {}
-    if (alreadyDone) return
+    if (!IS_DEMO) {
+      let alreadyDone = tourCompletedOnServerRef.current
+      if (!alreadyDone) {
+        try { alreadyDone = localStorage.getItem('glowup_calendar_tour_done') === '1' } catch {}
+      }
+      if (alreadyDone) return
+    }
     ;(async () => {
       const start = await confirm({
         title: 'Want a quick tour?',
@@ -4406,8 +4424,7 @@ export default function GlowUpCalendar({ session }) {
       if (start) setTourStep('calendar-cell')
       else endTour()
     })()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [loading])
   function endTour() {
     setTourStep(null)
     setDayFlyout(null)
