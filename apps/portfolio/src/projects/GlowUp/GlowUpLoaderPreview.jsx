@@ -20,8 +20,12 @@ const SAYINGS = [
 ];
 
 const BAR_COLORS = ["#ED6FBB", "#98AAF8", "#7BE3A5", "#F5C222", "#F07040"];
-const SLOT = 60;
-const BAND_HALF = 11;
+// SLOT sized against the 140px track (see .barTrack) at the same
+// track-width/SLOT ratio as the real loader (200px / 240px) — this is what
+// keeps only one color dominant in view at a time instead of several
+// smaller bands showing at once.
+const SLOT = 168;
+const BAND_HALF = 32;
 const UNIT = SLOT * BAR_COLORS.length;
 
 function shuffle(arr) {

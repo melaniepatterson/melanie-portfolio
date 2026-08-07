@@ -28,7 +28,7 @@
 }
 
 .barTrack {
-  width: 60%;
+  width: min(140px, 60%);
   height: 5px;
   border-radius: 999px;
   overflow: hidden;
@@ -59,10 +59,10 @@
   50%      { transform: translateY(4px); }
 }
 
-/* SLOT (60) * BAR_COLORS.length (5) from GlowUpLoaderPreview.jsx — both are
+/* SLOT (168) * BAR_COLORS.length (5) from GlowUpLoaderPreview.jsx — both are
    fixed constants, so this doesn't need to be computed dynamically. */
 @keyframes glowupLoaderBarRoll {
-  0%   { background-position: -300px 0; }
+  0%   { background-position: -840px 0; }
   100% { background-position: 0px 0; }
 }
 

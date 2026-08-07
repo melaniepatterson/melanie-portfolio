@@ -118,7 +118,6 @@ With thanks to Brian Clark (Director of Digital Experience), Ruben Rodriguez (We
       type: "browser-frame",
       src: "/images/projects/GlowUp/melanie-patterson-glow-up-products-desktop.webp",
       alt: "The Glow Up product library, showing a filterable grid of skincare products with brand, finish count, and affiliate links.",
-      size: "large",
       caption: "Scrollable screenshot of the product library, with ethics/values and finish-count tracking per product.",
     },
     {
