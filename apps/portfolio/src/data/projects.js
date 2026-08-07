@@ -86,7 +86,7 @@ With thanks to Brian Clark (Director of Digital Experience), Ruben Rodriguez (We
   },
   {
   type: "banner-stack",
-  images: [{ src: "/images/projects/RISD/Banner-1-RISD-Portolio-Day.webp", alt: "Banner reading 'RISD Portfolio Days' with photos of a blue paint brush and students holding up a large, human-scale piece." }, { src: "/images/projects/RISD/Banner-2-Grad_Campus_Tour.webp", alt: "Text reads 'Grad Campus Tours' over top an image of the RISD Nature Lab with a blue filter, and one of the windows cut out in full color." }, { src: "/images/projects/RISD/Banner-3-This-Week.webp", alt: "A banner reading 'This Week' over top a scrolling selection of images of students, artwork, and other campus life photos." }],
+  images: [{ src: "/images/projects/RISD/Banner-1-RISD-Portolio-Day.webp", alt: "Banner reading 'RISD Portfolio Days' with photos of a blue paint brush and students holding up a large, human-scale piece." }, { src: "/images/projects/RISD/Banner-2-Grad_Campus_Tour.webp", alt: "Text reads 'Grad Campus Tours' over top an image of the RISD Nature Lab with a blue filter, and one of the windows cut out in full color." }, { src: "/images/projects/RISD/Banner-3-This-Week.webp", alt: "A banner reading 'This Week' over top a scrolling selection of images of students, artwork, and other campus life photos." }, { src: "/images/projects/RISD/Banner-3-This-Week.webp", alt: "A banner reading 'This Week' over top a scrolling selection of images of students, artwork, and other campus life photos." }],
   caption: "New email banners incorporating cut-out styling as part of our image treatment system.",
 },
 ]
