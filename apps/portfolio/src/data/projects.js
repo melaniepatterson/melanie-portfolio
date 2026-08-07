@@ -71,7 +71,7 @@ With thanks to Brian Clark (Director of Digital Experience), Ruben Rodriguez (We
   type: "browser-frame",
   src: "/images/projects/RISD/melanie-patterson-risd-admitted-student-portal.webp",
   alt: "The Admitted Students Day event portal screenshot displaying a program of events, custom event Google map, and other event details designed in the RISD identity.",
-  size: "large",
+  size: "small",
   caption: "Scrollable screenshot of the Admitted Students Day event portal, including a program of events, custom event Google map for wayfinding, and other day-of extras.",
   },
   {
