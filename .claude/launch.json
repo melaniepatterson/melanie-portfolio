@@ -12,6 +12,12 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev:glowup", "--", "--port", "5174"],
       "port": 5174
+    },
+    {
+      "name": "glowup-demo-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev:glowup:demo", "--", "--port", "5175"],
+      "port": 5175
     }
   ]
 }

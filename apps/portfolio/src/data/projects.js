@@ -104,9 +104,15 @@ With thanks to Brian Clark (Director of Digital Experience), Ruben Rodriguez (We
     thumbnail: null, // or: () => import('../projects/project-one/Thumbnail')
     hero: null,      // or: () => import('../projects/project-one/Hero')
     images: [
-    { src: "https://placehold.co/1200x800/1a1a1a/FAF7F2", alt: "A watercolor painting of..." },
-    { src: "https://placehold.co/800x1000/1a1a1a/FAF7F2", alt: "Detail shot of the upper left corner showing..." },
-    { src: "https://placehold.co/600x600/1a1a1a/FAF7F2", alt: "The full piece installed at..." },
+    { src: "/images/projects/GlowUp/melanie-patterson-glow-up-calendar-desktop.webp", alt: "The Glow Up calendar on desktop, showing a month grid with AM/PM routine slots colored by day type and an active Tretinoin Onboarding program banner." },
+    {
+      type: "device-compare",
+      desktopSrc: "/images/projects/GlowUp/melanie-patterson-glow-up-calendar-desktop.webp",
+      desktopAlt: "The Glow Up calendar on desktop, showing a month grid with AM/PM routine slots colored by day type and an active Tretinoin Onboarding program banner.",
+      mobileSrc: "/images/projects/GlowUp/melanie-patterson-glow-up-calendar-mobile.webp",
+      mobileAlt: "The same Glow Up calendar view, reflowed for mobile.",
+      caption: "The skincare calendar — desktop and mobile.",
+    },
     {
       type: "component",
       component: () => import('../projects/GlowUp/GlowUpFloat.jsx'),

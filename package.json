@@ -17,6 +17,7 @@
   "scripts": {
     "dev:portfolio": "vite --config apps/portfolio/vite.config.js",
     "dev:glowup": "vite --config apps/glowup/vite.config.js",
+    "dev:glowup:demo": "VITE_GLOWUP_DEMO=true vite --config apps/glowup/vite.config.js",
     "build:portfolio": "vite build --config apps/portfolio/vite.config.js",
     "build:glowup": "vite build --config apps/glowup/vite.config.js",
     "preview:portfolio": "vite preview --config apps/portfolio/vite.config.js",
