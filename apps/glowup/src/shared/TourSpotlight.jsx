@@ -8,7 +8,7 @@ import GlowUpLogo from '../GlowUpWordmark'
 // are physically blocked everywhere except the spotlighted element — the
 // cutout area itself has no overlay on top of it, so real clicks reach the
 // real element underneath.
-export default function TourSpotlight({ targetSelector, targetSelectors, message, onNext, nextLabel = 'Next', onSkip }) {
+export default function TourSpotlight({ targetSelector, targetSelectors, message, onNext, nextLabel = 'Next', onSkip, blockCutoutClicks = false }) {
   const [rect, setRect] = useState(null)
   const selectors = targetSelectors || (targetSelector ? [targetSelector] : [])
 
@@ -99,6 +99,21 @@ export default function TourSpotlight({ targetSelector, targetSelectors, message
         animation: 'glowupTourPulse 1.6s ease-in-out infinite',
         pointerEvents: 'none', zIndex: 599,
       }} />
+
+      {/* Click-absorbing pane over the cutout itself — for steps that are
+          "look, don't touch": the real element underneath is still fully
+          legible (nothing painted over it), but a real click on it no
+          longer reaches the real element, so the visible Next button is
+          the only way to advance. Without this, clicking through to the
+          real control (e.g. switching the AM/PM tab, opening a product
+          picker) changes real app state mid-tour, which desyncs whatever
+          the next step's message assumes about what's on screen. */}
+      {blockCutoutClicks && (
+        <div
+          onClick={e => { e.preventDefault(); e.stopPropagation() }}
+          style={{ position: 'fixed', top, left, width, height, zIndex: 601, cursor: 'default' }}
+        />
+      )}
 
       {/* Message bubble — stopPropagation so clicking Next/the bubble itself
           doesn't bubble up to page-level "click anywhere closes the flyout"

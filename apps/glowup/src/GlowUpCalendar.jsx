@@ -2739,7 +2739,7 @@ function DayFlyout({ flyout, borderColor, bodyIsWhite, period, dailyHistory, sho
       </div>
 
       {/* 2. Morning / Night tabs */}
-      <div style={{ display: 'flex', gap: 6, marginBottom: 8, marginTop: 10 }}>
+      <div data-tour-target="am-pm-tabs" style={{ display: 'flex', gap: 6, marginBottom: 8, marginTop: 10 }}>
         <button onClick={() => switchTab('am')} aria-pressed={tab === 'am'} style={{ padding: '7px 18px', borderRadius: T.radius.pill, border: tab === 'am' ? 'none' : `1px solid ${T.hairline}`, background: tab === 'am' ? T.text : T.white, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', cursor: 'pointer', color: tab === 'am' ? T.white : T.text }}>Morning (AM)</button>
         <button onClick={() => switchTab('pm')} aria-pressed={tab === 'pm'} style={{ padding: '7px 18px', borderRadius: T.radius.pill, border: tab === 'pm' ? 'none' : `1px solid ${T.hairline}`, background: tab === 'pm' ? T.text : T.white, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', cursor: 'pointer', color: tab === 'pm' ? T.white : T.text }}>Evening (PM)</button>
       </div>
@@ -5709,29 +5709,32 @@ export default function GlowUpCalendar({ session }) {
           message="We pre-populated the product library with products we recommend, but you can add anything you want into your library. Tap any step to assign one."
           onNext={() => setTourStep('add-treatment')}
           onSkip={endTour}
+          blockCutoutClicks
         />
       )}
       {tourStep === 'add-treatment' && (
         <TourSpotlight
           targetSelector='[data-tour-target="add-treatment-btn"]'
           message="Add any skin treatments — like lasers, facials, or Botox — and Glow Up tracks your pre-treatment pause and recovery window automatically."
-          onNext={() => setTourStep('shower-extras')}
+          onNext={() => setTourStep('my-treatments')}
           onSkip={endTour}
-        />
-      )}
-      {tourStep === 'shower-extras' && (
-        <TourSpotlight
-          targetSelectors={['[data-tour-target="shower-section"]', '[data-tour-target="extras-section"]']}
-          message="You can also add products to your shower routine or extras — like hair growth serums, eye patches, or anything else you want to keep a regular rotation of."
-          onNext={() => { setDayFlyout(null); setTourStep('my-treatments') }}
-          onSkip={endTour}
+          blockCutoutClicks
         />
       )}
       {tourStep === 'my-treatments' && (
         <TourSpotlight
           targetSelector='[data-tour-target="my-treatments-btn"]'
           message="You can also add treatments from here."
-          onNext={() => setTourStep('program-banner')}
+          onNext={() => setTourStep('shower-extras')}
+          onSkip={endTour}
+          blockCutoutClicks
+        />
+      )}
+      {tourStep === 'shower-extras' && (
+        <TourSpotlight
+          targetSelectors={['[data-tour-target="shower-section"]', '[data-tour-target="am-pm-tabs"]', '[data-tour-target="extras-section"]']}
+          message="You can also add products to your shower routine or extras — like hair growth serums, eye patches, or anything else you want to keep a regular rotation of. Use these tabs to switch between your morning and evening routine."
+          onNext={() => { setDayFlyout(null); setTourStep('program-banner') }}
           onSkip={endTour}
         />
       )}
