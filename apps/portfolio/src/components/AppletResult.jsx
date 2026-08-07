@@ -1,4 +1,5 @@
 import styles from "./AppletResult.module.css";
+import Caption from "./Caption";
 import { Suspense, lazy, useState, useEffect } from "react";
 
 const appletComponentCache = {};
@@ -99,7 +100,7 @@ export default function AppletResult({
         ) : (
           <img src={appletSrc} alt={appletAlt} />
         )}
-        {appletCaption && <p className={styles.caption}>{appletCaption}</p>}
+        {appletCaption && <Caption className={styles.caption}>{appletCaption}</Caption>}
       </div>
 
       <div className={styles.arrow}>
@@ -125,7 +126,7 @@ export default function AppletResult({
         ) : (
           <img src={bannerSrc} alt={bannerAlt} />
         )}
-        {bannerCaption && <p className={styles.caption}>{bannerCaption}</p>}
+        {bannerCaption && <Caption className={styles.caption}>{bannerCaption}</Caption>}
       </div>
     </div>
   );

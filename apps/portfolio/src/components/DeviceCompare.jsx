@@ -1,4 +1,5 @@
 import BrowserFrame from "./BrowserFrame";
+import Caption from "./Caption";
 import styles from "./DeviceCompare.module.css";
 
 // A phone mockup beside BrowserFrame's existing browser-window chrome, for
@@ -26,7 +27,7 @@ export default function DeviceCompare({
           </div>
         </div>
       </div>
-      {caption && <p className={styles.caption}>{caption}</p>}
+      {caption && <Caption className={styles.caption}>{caption}</Caption>}
     </div>
   );
 }

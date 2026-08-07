@@ -1,5 +1,6 @@
 import styles from "./InspirationResult.module.css";
 import CodeReveal from "./CodeReveal";
+import Caption from "./Caption";
 import { Suspense, lazy } from "react";
 
 const resultComponentCache = {};
@@ -36,7 +37,7 @@ export default function InspirationResult({
       <div className={`${styles.item} ${dominates === "inspiration" ? styles.large : styles.small}`}>
         <span className={styles.label}>Inspiration</span>
         <img src={inspirationSrc} alt={inspirationAlt} />
-        {inspirationCaption && <p className={styles.caption}>{inspirationCaption}</p>}
+        {inspirationCaption && <Caption className={styles.caption}>{inspirationCaption}</Caption>}
       </div>
 
       <div className={styles.arrow}>
@@ -60,7 +61,7 @@ export default function InspirationResult({
         ) : (
           <img src={resultSrc} alt={resultAlt} />
         )}
-        {resultCaption && <p className={styles.caption}>{resultCaption}</p>}
+        {resultCaption && <Caption className={styles.caption}>{resultCaption}</Caption>}
       </div>
     </div>
   );

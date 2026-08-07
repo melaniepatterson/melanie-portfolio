@@ -1,0 +1,53 @@
+.wrapper {
+  position: relative;
+}
+
+.trigger {
+  display: block;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  line-height: 1.5;
+  opacity: 0.7;
+}
+
+@media (max-width: 640px) {
+  .trigger {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.flyout {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background: #FAF7F2;
+  color: #C93500;
+  border-radius: 4px;
+  padding: 0.75rem 0.85rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  line-height: 1.5;
+}

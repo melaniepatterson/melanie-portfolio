@@ -9,6 +9,7 @@ import DeviceCompare from "../components/DeviceCompare";
 import Lightbox from "../components/Lightbox";
 import CodeReveal from "../components/CodeReveal";
 import BrowserFrame from "../components/BrowserFrame";
+import Caption from "../components/Caption";
 import { Fragment, useEffect, Suspense, lazy, useState } from "react";
 
 const heroCache = {};
@@ -162,7 +163,7 @@ export default function WorkDetail() {
       return (
         <div key={i} className={`${styles.galleryItem} ${sizeClass}`}>
           <LazyGalleryComponent loader={img.component} />
-          {img.caption && <p className={styles.caption}>{img.caption}</p>}
+          {img.caption && <Caption className={styles.caption}>{img.caption}</Caption>}
         </div>
       );
     }
@@ -179,7 +180,7 @@ export default function WorkDetail() {
       return (
         <div key={i} className={`${styles.galleryItem} ${sizeClass}`}>
           <BrowserFrame src={img.src} alt={img.alt} />
-          {img.caption && <p className={styles.caption}>{img.caption}</p>}
+          {img.caption && <Caption className={styles.caption}>{img.caption}</Caption>}
         </div>
       );
     }
@@ -192,7 +193,7 @@ export default function WorkDetail() {
       >
         <img src={img.src} alt={img.alt} loading="lazy" />
         {img.lightbox && <div className={styles.lightboxHint}>⊕</div>}
-        {img.caption && <p className={styles.caption}>{img.caption}</p>}
+        {img.caption && <Caption className={styles.caption}>{img.caption}</Caption>}
         {img.hoverHint && <p className={styles.hoverHint}>Hover to interact</p>}
       </div>
     );

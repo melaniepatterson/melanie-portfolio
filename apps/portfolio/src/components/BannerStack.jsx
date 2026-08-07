@@ -1,4 +1,5 @@
 import styles from "./BannerStack.module.css";
+import Caption from "./Caption";
 
 // Groups a run of banners (default: 3) that belong together — one shared
 // caption underneath, instead of repeating the same credit/description
@@ -16,7 +17,7 @@ export default function BannerStack({ images = [], caption, onLightbox }) {
           <img src={img.src} alt={img.alt} />
         </div>
       ))}
-      {caption && <p className={styles.caption}>{caption}</p>}
+      {caption && <Caption className={styles.caption}>{caption}</Caption>}
     </div>
   );
 }
