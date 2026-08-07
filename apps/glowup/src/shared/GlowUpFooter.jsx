@@ -22,9 +22,9 @@ function FooterLink({ href, onClick, children }) {
 export default function GlowUpFooter({ onFeedback, betaTester }) {
   return (
     <footer style={{ width: '100%', flexShrink: 0, marginTop: 'auto' }}>
-      <div style={{ position: 'relative', height: 340, overflow: 'hidden', background: T.white }}>
+      <div style={{ position: 'relative', height: 'clamp(113px, 36.43vw, 340px)', overflow: 'hidden', background: T.white }}>
         <GlowUpLogo
-          size={420}
+          size="clamp(140px, 45vw, 420px)"
           style={{
             position: 'absolute',
             top: '30%',
