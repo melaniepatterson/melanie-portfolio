@@ -19,7 +19,7 @@ export default function DeviceCompare({
           <BrowserFrame src={desktopSrc} alt={desktopAlt} />
         </div>
         <div className={styles.phone}>
-          <MobileFrame>
+          <MobileFrame scrollable>
             <img src={mobileSrc} alt={mobileAlt} />
           </MobileFrame>
         </div>
