@@ -124,7 +124,7 @@
 }
 
 .description {
-  font-size: 1rem;
+  font-size: 1.125rem;
   line-height: 1.7;
 }
 
@@ -189,6 +189,7 @@
   opacity: 0.7;
   margin: 0.5rem 0 0 0;
   color: #FAF7F2;
+  text-transform: uppercase;
 }
 
 .lightboxable {
