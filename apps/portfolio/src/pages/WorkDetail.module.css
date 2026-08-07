@@ -108,6 +108,14 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  /* Logo.jsx's melanie.studio signature is position:fixed in the
+     bottom-right corner, always occupying the same viewport rect
+     regardless of scroll. This trailing space is what the reader lands
+     on once they've scrolled to the true end of the page (info's last
+     real content, then this padding) — it ensures the finished-reading
+     resting state shows blank space under the logo, not the closing CTA
+     or credit line. Scales on the same curve as the logo itself. */
+  padding-bottom: clamp(180px, 30vw, 430px);
 }
 
 .title {
