@@ -116,7 +116,7 @@ With thanks to Brian Clark (Director of Digital Experience), Ruben Rodriguez (We
     {
       type: "component",
       component: () => import('../projects/GlowUp/GlowUpFloat.jsx'),
-      caption: "The Glow Up wordmark, in its native floating treatment from the app's own loading screen — set in Naskle.",
+      caption: "The Glow Up wordmark, set in Naskle.",
     },
   ]
   },   {
