@@ -28,14 +28,24 @@ export default function DeviceCompare({
     const el = wrapperRef.current;
     if (!el) return;
 
-    function measure() {
+    // Setting height on the element we're observing changes its own resize
+    // entries too (border-box size includes height), which would otherwise
+    // re-trigger this observer every time it runs. Gating on width — the
+    // only thing that should ever move the computed height — breaks that
+    // feedback loop instead of chasing sub-pixel float jitter forever.
+    let lastWidth = null;
+    function measure(width) {
+      if (lastWidth !== null && Math.abs(width - lastWidth) < 0.5) return;
+      lastWidth = width;
       const gap = parseFloat(getComputedStyle(el).columnGap) || 0;
-      const availableWidth = el.clientWidth - gap;
-      setHeight(availableWidth / (DESKTOP_RATIO + PHONE_RATIO));
+      setHeight((width - gap) / (DESKTOP_RATIO + PHONE_RATIO));
     }
 
-    measure();
-    const observer = new ResizeObserver(measure);
+    measure(el.getBoundingClientRect().width);
+    const observer = new ResizeObserver(([entry]) => {
+      const width = entry.contentBoxSize?.[0]?.inlineSize ?? entry.contentRect.width;
+      measure(width);
+    });
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
