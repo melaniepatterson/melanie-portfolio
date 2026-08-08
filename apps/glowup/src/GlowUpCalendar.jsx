@@ -5213,9 +5213,9 @@ export default function GlowUpCalendar({ session }) {
       {/* Sticky top bar — same structural pattern as Profile/ProductsPage/
           RoutineHistory (sticky, full-bleed) so the side drawer covers it
           consistently everywhere, but white instead of black since this is
-          the home page, and the logo stays centered (desktop-only, as
-          before) instead of left-aligned since there's no "back to
-          calendar" link needed here. Unlike the page content below it,
+          the home page, and the logo stays centered instead of left-aligned
+          since there's no "back to calendar" link needed here. Unlike the
+          page content below it,
           this bar is NOT maxWidth-constrained — it needs to reach the true
           viewport edge so the fixed-position drawer (which anchors to the
           real edge, not the centered content column) actually covers it. */}
@@ -5274,7 +5274,7 @@ export default function GlowUpCalendar({ session }) {
         </div>
       </div>
     <div onClick={() => { if (dayFlyout) setDayFlyout(null) }} style={{ fontFamily: 'inherit', padding: '1rem 0.75rem', maxWidth: 900, width: 'min(100vw, 900px)', boxSizing: 'border-box', position: 'relative', margin: '0 auto', overflow: 'hidden' }}>
-      <style>{`html, body { overflow-x: hidden; } @keyframes slideDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } } @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } } @keyframes panelIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } } @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } } .glowup-cal-logo { display: flex } @media (max-width: 639px) { .glowup-cal-logo { display: none } }`}</style>
+      <style>{`html, body { overflow-x: hidden; } @keyframes slideDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } } @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } } @keyframes panelIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } } @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } } .glowup-cal-logo { display: flex }`}</style>
 
       {/* Program nudge — for users who built their routine manually and have never enrolled in a program */}
       {activePrograms.length === 0 && !programNudgeDismissed && routineHistory.length > 0 && completedPrograms.length === 0 && (() => {
