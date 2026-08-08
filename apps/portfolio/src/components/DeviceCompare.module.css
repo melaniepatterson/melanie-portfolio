@@ -1,19 +1,22 @@
 .wrapper {
   display: flex;
-  align-items: flex-end;
+  align-items: stretch;
   gap: 1.5rem;
   width: 100%;
 }
 
 .desktop {
-  flex: 2.2;
+  flex: 0 0 auto;
+  aspect-ratio: 3420 / 1899;
+  height: 100%;
   min-width: 0;
 }
 
 .phone {
-  flex: 1;
+  flex: 0 0 auto;
+  aspect-ratio: 927.98 / 1920;
+  height: 100%;
   min-width: 0;
-  max-width: 260px;
 }
 
 .caption {

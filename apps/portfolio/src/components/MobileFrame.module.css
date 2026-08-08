@@ -1,31 +1,54 @@
-.phoneFrame {
+.wrapper {
   position: relative;
   width: 100%;
   max-width: 320px;
   margin: 0 auto;
-  aspect-ratio: 9 / 19.5;
-  background: #982511;
-  border-radius: 13% / 6%;
-  padding: 3.2% 2.6%;
-  box-sizing: border-box;
 }
 
-.phoneScreen {
-  position: relative;
+.wrapper.matchHeight {
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  margin: 0;
+}
+
+.svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.matchHeight .svg {
   width: 100%;
   height: 100%;
-  border-radius: 10% / 4.6%;
+}
+
+.body {
+  fill: #982511;
+}
+
+.button {
+  fill: none;
+  stroke: #982511;
+  stroke-miterlimit: 10;
+  stroke-width: 3px;
+}
+
+.screen {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
   overflow: hidden;
   background: #FAF7F2;
 }
 
-.phoneScreen.scrollable {
+.screen.scrollable {
   overflow-y: auto;
   overflow-x: hidden;
   scroll-behavior: smooth;
 }
 
-.phoneScreen img {
+.screen img {
   width: 100%;
   height: 100%;
   display: block;
@@ -33,33 +56,8 @@
   object-position: top;
 }
 
-.phoneScreen.scrollable img {
+.screen.scrollable img {
   height: auto;
-}
-
-.notch {
-  position: absolute;
-  top: 1.6%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 32%;
-  height: 3%;
-  background: #982511;
-  border-radius: 999px;
-  z-index: 2;
-}
-
-.homeIndicator {
-  position: absolute;
-  bottom: 1.4%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 34%;
-  height: 1.1%;
-  background: #FAF7F2;
-  border-radius: 999px;
-  z-index: 2;
-  opacity: 0.85;
 }
 
 .scrollHint {
@@ -71,8 +69,8 @@
   line-height: 1.2;
   color: #982511;
   position: absolute;
-  right: 6%;
-  top: 60%;
+  right: 3%;
+  top: 62%;
   transform: rotate(90deg) translateX(-50%);
   transform-origin: right center;
   white-space: nowrap;
