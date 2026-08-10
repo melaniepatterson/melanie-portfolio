@@ -8,7 +8,7 @@ const SWATCHES = [
   { name: "Dark green", hex: "#197A3C" },
   { name: "Pink", hex: "#ED6FBB" },
   { name: "Blue", hex: "#98AAF8" },
-  { name: "Green", hex: "#7BE3A5" },
+  { name: "Green", hex: "#7BE3A5", textDark: true },
   { name: "Yellow", hex: "#F5C222", textDark: true },
   { name: "Orange", hex: "#F07040" },
   { name: "White", hex: "#FFFFFF", textDark: true },

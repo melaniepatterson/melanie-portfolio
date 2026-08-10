@@ -77,12 +77,10 @@ export default function MobileFrame({ children, scrollable = false, matchHeight 
             className={styles.body}
             d="m854.57 26.1c25.92 0 47 21.08 47 47v1773.8c0 25.92-21.08 47-47 47h-781.85c-25.92 0-47-21.08-47-47v-1773.8c0-25.92 21.08-47 47-47h781.85zm0-3h-781.85c-27.5 0-50 22.5-50 50v1773.8c0 27.5 22.5 50 50 50h781.85c27.5 0 50-22.5 50-50v-1773.8c0-27.5-22.5-50-50-50z"
           />
-          {/* No chrome drawn for the camera pill itself — mix-blend-mode
-              only blends against other shapes drawn inside this SVG, so a
-              ring drawn over the mask's hole (nothing behind it, within the
-              SVG) would just render as a flat opaque fill instead of
-              blending with the page. Leaving the hole bare is what makes it
-              read as a true cutout straight through to the page background. */}
+          <path
+            className={styles.body}
+            d="m548.79 56.72c12.47 0 22.61 10.14 22.61 22.61s-10.14 22.61-22.61 22.61h-175.63c-12.47 0-22.61-10.14-22.61-22.61s10.14-22.61 22.61-22.61h175.63zm0-3h-175.63c-14.08 0-25.61 11.52-25.61 25.61s11.52 25.61 25.61 25.61h175.63c14.08 0 25.61-11.52 25.61-25.61s-11.52-25.61-25.61-25.61z"
+          />
           <path
             className={styles.button}
             d="m903.25 419.79h8.62c1.66 0 3 1.34 3 3v187.25c0 1.66-1.34 3-3 3h-8.62v-193.25z"

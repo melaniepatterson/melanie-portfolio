@@ -35,9 +35,9 @@ export default function GlowUpFooter({ onFeedback, betaTester }) {
 
   return (
     <footer style={{ width: '100%', flexShrink: 0, marginTop: 'auto' }}>
-      <div style={{ position: 'relative', height: isMobile ? 'clamp(95px, 30vw, 340px)' : 'clamp(113px, 36.43vw, 340px)', overflow: 'hidden', background: T.white }}>
+      <div style={{ position: 'relative', height: isMobile ? 'clamp(82px, 26vw, 340px)' : 'clamp(113px, 36.43vw, 340px)', overflow: 'hidden', background: T.white }}>
         <GlowUpLogo
-          size={isMobile ? 'clamp(100px, 32vw, 420px)' : 'clamp(140px, 45vw, 420px)'}
+          size={isMobile ? 'clamp(110px, 35vw, 420px)' : 'clamp(140px, 45vw, 420px)'}
           style={{
             position: 'absolute',
             top: '30%',

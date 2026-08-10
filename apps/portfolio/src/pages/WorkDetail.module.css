@@ -61,15 +61,6 @@
   grid-column: span 1;
 }
 
-/* An empty cell, same spirit as Work.jsx's old sessionSpacers — random
-   breathing room instead of every item packing edge to edge. Needs its own
-   height since it has no content to size a grid row by (dense packing can
-   otherwise put it alone in a row and collapse it to nothing). */
-.gallerySpacer {
-  grid-column: span 1;
-  min-height: 140px;
-}
-
 .galleryLarge {
   grid-column: span 2;
 }
