@@ -11,15 +11,22 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 14px;
+  gap: 70px;
   padding: 10%;
   box-sizing: border-box;
-  container-type: inline-size;
 }
 
+/* This whole stage is dropped into MobileFrame's SVG via a foreignObject,
+   authored at the SVG's own (927.98-wide) user-unit scale — the outer <svg>
+   then visually shrinks that entire coordinate space down to however big
+   the frame is actually rendered (as small as ~120px wide standalone).
+   Regular CSS px values in here are in that fixed, pre-shrink space, so
+   they end up far smaller on screen than the number suggests — a 44px
+   font here rendered at roughly 6px on screen. Sizes below are chosen for
+   how they look post-shrink, not as literal on-screen pixel values. */
 .wordmark {
   font-family: 'Naskle', 'DM Sans', sans-serif;
-  font-size: clamp(28px, 15cqw, 44px);
+  font-size: 200px;
   line-height: 1;
   letter-spacing: -0.01em;
   color: #FFFFFF;
@@ -29,8 +36,8 @@
 }
 
 .barTrack {
-  width: min(140px, 60%);
-  height: 5px;
+  width: min(500px, 60%);
+  height: 18px;
   border-radius: 999px;
   overflow: hidden;
   background: #FFFFFF;
@@ -48,22 +55,22 @@
 
 .saying {
   font-family: 'Bricolage Grotesque', sans-serif;
-  font-size: 0.65rem;
+  font-size: 65px;
   color: #FFFFFF;
   letter-spacing: 0.02em;
-  min-height: 14px;
+  min-height: 70px;
   text-align: center;
 }
 
 @keyframes glowupLoaderFloat {
-  0%, 100% { transform: translateY(-4px); }
-  50%      { transform: translateY(4px); }
+  0%, 100% { transform: translateY(-20px); }
+  50%      { transform: translateY(20px); }
 }
 
-/* SLOT (168) * BAR_COLORS.length (5) from GlowUpLoaderPreview.jsx — both are
+/* SLOT (600) * BAR_COLORS.length (5) from GlowUpLoaderPreview.jsx — both are
    fixed constants, so this doesn't need to be computed dynamically. */
 @keyframes glowupLoaderBarRoll {
-  0%   { background-position: -840px 0; }
+  0%   { background-position: -3000px 0; }
   100% { background-position: 0px 0; }
 }
 

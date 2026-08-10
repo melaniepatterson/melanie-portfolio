@@ -1,7 +1,11 @@
 .wrapper {
   position: relative;
   width: 100%;
-  max-width: 320px;
+  /* A percentage, not a fixed px cap, so this scales down with whatever
+     column it's dropped into instead of always maxing out at one fixed
+     size — tuned so it lands close to DeviceCompare's own phone height
+     (a fixed 320px cap rendered nearly 2.25x taller than that). */
+  max-width: 40%;
   margin: 0 auto;
 }
 
