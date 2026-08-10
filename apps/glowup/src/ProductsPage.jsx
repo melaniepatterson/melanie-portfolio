@@ -1001,13 +1001,13 @@ function ProductLibrary({ products, catalogProducts, userProductData, activeRout
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginTop: 8 }} onClick={e => e.stopPropagation()}>
                       {p.purchaseUrl && (
                         <a href={p.purchaseUrl} target="_blank" rel="noopener noreferrer"
-                          style={{ display: 'block', fontSize: 9, padding: '4px 8px', borderRadius: T.radius.pill, background: getBrandColor(p.brand, p.id), color: T.text, textDecoration: 'none', border: 'none', textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'inherit', boxSizing: 'border-box' }}>
+                          style={{ display: 'block', fontSize: 9, padding: '4px 8px', borderRadius: T.radius.pill, background: T.white, color: T.text, textDecoration: 'none', border: `1px solid ${T.text}`, textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'inherit', boxSizing: 'border-box' }}>
                           Buy from {p.store_name || 'affiliate'} ↗
                         </a>
                       )}
                       {p.direct_url && (
                         <a href={p.direct_url} target="_blank" rel="noopener noreferrer"
-                          style={{ display: 'block', fontSize: 9, padding: '4px 8px', borderRadius: T.radius.pill, background: getBrandColor(p.brand, p.id), color: T.text, textDecoration: 'none', border: 'none', textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'inherit', boxSizing: 'border-box' }}>
+                          style={{ display: 'block', fontSize: 9, padding: '4px 8px', borderRadius: T.radius.pill, background: T.white, color: T.text, textDecoration: 'none', border: `1px solid ${T.text}`, textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'inherit', boxSizing: 'border-box' }}>
                           Buy from {p.direct_store_name || 'brand site'} ↗
                         </a>
                       )}
