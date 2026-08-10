@@ -11,7 +11,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 70px;
+  gap: 55px;
   padding: 10%;
   box-sizing: border-box;
 }
@@ -26,7 +26,7 @@
    how they look post-shrink, not as literal on-screen pixel values. */
 .wordmark {
   font-family: 'Naskle', 'DM Sans', sans-serif;
-  font-size: 200px;
+  font-size: 155px;
   line-height: 1;
   letter-spacing: -0.01em;
   color: #FFFFFF;
@@ -36,8 +36,8 @@
 }
 
 .barTrack {
-  width: min(500px, 60%);
-  height: 18px;
+  width: min(380px, 60%);
+  height: 14px;
   border-radius: 999px;
   overflow: hidden;
   background: #FFFFFF;
@@ -55,10 +55,10 @@
 
 .saying {
   font-family: 'Bricolage Grotesque', sans-serif;
-  font-size: 65px;
+  font-size: 50px;
   color: #FFFFFF;
   letter-spacing: 0.02em;
-  min-height: 70px;
+  min-height: 55px;
   text-align: center;
 }
 
@@ -67,10 +67,10 @@
   50%      { transform: translateY(20px); }
 }
 
-/* SLOT (600) * BAR_COLORS.length (5) from GlowUpLoaderPreview.jsx — both are
+/* SLOT (456) * BAR_COLORS.length (5) from GlowUpLoaderPreview.jsx — both are
    fixed constants, so this doesn't need to be computed dynamically. */
 @keyframes glowupLoaderBarRoll {
-  0%   { background-position: -3000px 0; }
+  0%   { background-position: -2280px 0; }
   100% { background-position: 0px 0; }
 }
 
