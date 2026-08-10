@@ -6,6 +6,7 @@
 // when page content is shorter than the screen — the parent just needs to
 // be a flex column with minHeight: '100vh', same trick the portfolio's own
 // footer uses.
+import { useEffect, useState } from 'react'
 import GlowUpLogo from '../GlowUpWordmark'
 import T from '../theme'
 const GLOWUP_BASE = ''
@@ -20,11 +21,23 @@ function FooterLink({ href, onClick, children }) {
 }
 
 export default function GlowUpFooter({ onFeedback, betaTester }) {
+  // Mobile gets a smaller wordmark than the fluid vw formula alone would
+  // give it — 45vw/36.43vw is tuned for how much desktop can bleed off the
+  // crop box's edges and reads as too cropped (whole letters clipped) at
+  // phone widths, where the bleed is meant to be a subtle accent, not most
+  // of the word going missing.
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 640)
+  useEffect(() => {
+    function onResize() { setIsMobile(window.innerWidth < 640) }
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
+
   return (
     <footer style={{ width: '100%', flexShrink: 0, marginTop: 'auto' }}>
-      <div style={{ position: 'relative', height: 'clamp(113px, 36.43vw, 340px)', overflow: 'hidden', background: T.white }}>
+      <div style={{ position: 'relative', height: isMobile ? 'clamp(95px, 30vw, 340px)' : 'clamp(113px, 36.43vw, 340px)', overflow: 'hidden', background: T.white }}>
         <GlowUpLogo
-          size="clamp(140px, 45vw, 420px)"
+          size={isMobile ? 'clamp(100px, 32vw, 420px)' : 'clamp(140px, 45vw, 420px)'}
           style={{
             position: 'absolute',
             top: '30%',
