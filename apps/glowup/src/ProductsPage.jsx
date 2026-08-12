@@ -1421,9 +1421,9 @@ export default function ProductsPage({ session, betaTester }) {
         <div style={{ padding: '0 20px 0' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
             <div style={{ fontSize: 15, fontWeight: 600, color: T.white }}>Product Library</div>
-            <button onClick={() => setEditingProduct('new')}
-              style={{ border: 'none', background: T.darkGreen, color: T.white, borderRadius: T.radius.pill, padding: '7px 16px', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 700, whiteSpace: 'nowrap' }}>
-              + Add new product
+            <button onClick={() => setEditingProduct('new')} aria-label="Add new product"
+              style={{ border: 'none', background: T.darkGreen, color: T.white, borderRadius: T.radius.pill, width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: 16, fontFamily: 'inherit', fontWeight: 700, lineHeight: 1 }}>
+              +
             </button>
           </div>
           <div style={{ display: 'flex', justifyContent: 'flex-start', gap: 20, borderBottom: '1px solid rgba(255,255,255,0.25)' }}>
