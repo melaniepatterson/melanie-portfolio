@@ -32,10 +32,7 @@
 }
 
 .button {
-  fill: none;
-  stroke: #982511;
-  stroke-miterlimit: 10;
-  stroke-width: 3px;
+  fill: #982511;
 }
 
 .screen {
