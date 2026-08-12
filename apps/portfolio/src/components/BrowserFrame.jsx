@@ -35,8 +35,13 @@ export default function BrowserFrame({ src, alt = '' }) {
         aria-label={alt || 'Browser screenshot'}
       >
         <defs>
+          {/* Square top corners (flush against the flat bottom edge of the
+              top bar right above), rounded bottom corners matching the
+              body ring's own radius — a uniform rx/ry on a <rect> here
+              would round the top corners too, leaving a visible rounded
+              notch right under the top bar's flat edge. */}
           <clipPath id="browserFrameClip">
-            <rect x="21.6" y="137.45" width="3413.4" height="1756.4" rx="47" ry="47" />
+            <path d="M21.6 137.45H3435V1846.85A47 47 0 0 1 3388 1893.85H68.6A47 47 0 0 1 21.6 1846.85Z" />
           </clipPath>
         </defs>
 
