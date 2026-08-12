@@ -1173,46 +1173,6 @@ export default function ProductsPage({ session, betaTester }) {
           })
           setActiveRoutineNames(nameSet)
 
-          // Also build the current USER's routine name set (no BDS gate) for the filter
-          if (userId !== CURATOR_ID) {
-            const { data: userPeriods } = await supabase
-              .from('routine_periods')
-              .select('products')
-              .eq('user_id', userId)
-              .order('start_date', { ascending: false })
-              .limit(1)
-            if (userPeriods?.[0]) {
-              const userIds = [...new Set(
-                Object.values(userPeriods[0].products || {})
-                  .filter(id => id && !String(id).startsWith('seed-'))
-              )]
-              if (userIds.length > 0) {
-                const { data: userProds } = await supabase
-                  .from('products')
-                  .select('name, brand')
-                  .in('id', userIds)   // no is_catalog filter — includes personal non-BDS products
-                setUserRoutineNames(new Set(
-                  (userProds || []).map(p => (p.name + '|' + (p.brand || '')).toLowerCase())
-                ))
-              }
-            }
-          } else {
-            // User IS the curator — fetch ALL products in their routine (including non-BDS personal ones)
-            const allRouteIds = [...new Set(
-              Object.values(routinePeriods[0].products || {})
-                .filter(id => id && !String(id).startsWith('seed-'))
-            )]
-            if (allRouteIds.length > 0) {
-              const { data: allRoutineProds } = await supabase
-                .from('products')
-                .select('name, brand')
-                .in('id', allRouteIds)  // no is_catalog filter — gets everything
-              setUserRoutineNames(new Set(
-                (allRoutineProds || []).map(p => (p.name + '|' + (p.brand || '')).toLowerCase())
-              ))
-            }
-          }
-
           // Auto-add routine products to user's library (in_library=true) if not already tracked
           const autoRows = (routineProds || []).map(p => ({
             user_id: userId,
@@ -1228,6 +1188,32 @@ export default function ProductsPage({ session, betaTester }) {
             ;(newUpd || []).forEach(row => { updMap[row.product_id] = row })
             setUserProductData({ ...updMap })
           }
+        }
+      }
+
+      // Build the current USER's own routine name set (no BDS gate) for the
+      // "In my routine" badge — a sibling fetch, not nested under the
+      // curator's routine above: it must run even when the curator's own
+      // routine is empty, since it depends only on the user's own data.
+      const { data: userPeriods } = await supabase
+        .from('routine_periods')
+        .select('products')
+        .eq('user_id', userId)
+        .order('start_date', { ascending: false })
+        .limit(1)
+      if (userPeriods?.[0]) {
+        const userIds = [...new Set(
+          Object.values(userPeriods[0].products || {})
+            .filter(id => id && !String(id).startsWith('seed-'))
+        )]
+        if (userIds.length > 0) {
+          const { data: userProds } = await supabase
+            .from('products')
+            .select('name, brand')
+            .in('id', userIds)   // no is_catalog filter — includes personal non-BDS products
+          setUserRoutineNames(new Set(
+            (userProds || []).map(p => (p.name + '|' + (p.brand || '')).toLowerCase())
+          ))
         }
       }
       } catch (err) {
