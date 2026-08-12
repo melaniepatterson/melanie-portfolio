@@ -1403,10 +1403,6 @@ export default function ProductsPage({ session, betaTester }) {
             <GlowUpLogo size={32} style={{ color: T.white }} />
           </a>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <button onClick={() => setEditingProduct('new')}
-              style={{ border: 'none', background: T.darkGreen, color: T.white, borderRadius: T.radius.pill, padding: '7px 16px', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 700, whiteSpace: 'nowrap' }}>
-              + Add new product
-            </button>
             <NotificationBell session={session} />
             <button onClick={() => setShowMenu(true)}
               style={{ border: 'none', background: 'transparent', borderRadius: T.radius.pill, padding: '5px 10px', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center', justifyContent: 'center', width: 36, height: 32 }}>
@@ -1423,7 +1419,13 @@ export default function ProductsPage({ session, betaTester }) {
         </div>
         {/* Page title row with tabs */}
         <div style={{ padding: '0 20px 0' }}>
-          <div style={{ fontSize: 15, fontWeight: 600, color: T.white, marginBottom: 10 }}>Product Library</div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+            <div style={{ fontSize: 15, fontWeight: 600, color: T.white }}>Product Library</div>
+            <button onClick={() => setEditingProduct('new')}
+              style={{ border: 'none', background: T.darkGreen, color: T.white, borderRadius: T.radius.pill, padding: '7px 16px', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit', fontWeight: 700, whiteSpace: 'nowrap' }}>
+              + Add new product
+            </button>
+          </div>
           <div style={{ display: 'flex', justifyContent: 'flex-start', gap: 20, borderBottom: '1px solid rgba(255,255,255,0.25)' }}>
             {[['library', 'My Products'], ['history', 'Finish History']].map(([key, label]) => (
               <button key={key} onClick={() => setActiveTab(key)}
