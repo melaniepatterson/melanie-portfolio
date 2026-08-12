@@ -9,7 +9,7 @@ import styles from "./DeviceCompare.module.css";
 // make them share a height while exactly filling the row's width: one
 // combination of widths does that math, and it depends on the row's
 // current width, so it's computed here instead of guessed in CSS.
-const DESKTOP_RATIO = 3420 / 1899;
+const DESKTOP_RATIO = 3464.9 / 1920;
 const PHONE_RATIO = 927.98 / 1920;
 
 // A phone mockup beside BrowserFrame's existing browser-window chrome, for

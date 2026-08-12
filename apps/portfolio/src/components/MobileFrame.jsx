@@ -53,10 +53,7 @@ export default function MobileFrame({ children, scrollable = false, matchHeight 
               this hole's edge. */}
           <mask id={MASK_ID} maskUnits="userSpaceOnUse">
             <rect x="0" y="0" width="927.98" height="1920" fill="#FFFFFF" />
-            <path
-              fill="#000000"
-              d="m548.79 53.72h-175.63c-14.08 0-25.61 11.52-25.61 25.61s11.52 25.61 25.61 25.61h175.63c14.08 0 25.61-11.52 25.61-25.61s-11.52-25.61-25.61-25.61z"
-            />
+            <rect x="347.55" y="53.72" width="226.85" height="51.22" rx="25.61" ry="25.61" fill="#000000" />
           </mask>
         </defs>
 
@@ -77,9 +74,17 @@ export default function MobileFrame({ children, scrollable = false, matchHeight 
             className={styles.body}
             d="m854.57 26.1c25.92 0 47 21.08 47 47v1773.8c0 25.92-21.08 47-47 47h-781.85c-25.92 0-47-21.08-47-47v-1773.8c0-25.92 21.08-47 47-47h781.85zm0-3h-781.85c-27.5 0-50 22.5-50 50v1773.8c0 27.5 22.5 50 50 50h781.85c27.5 0 50-22.5 50-50v-1773.8c0-27.5-22.5-50-50-50z"
           />
-          <path
+          {/* The source SVG draws this as a solid-filled rect, but a solid
+              fill here would render opaque (mix-blend-mode only blends
+              against other shapes drawn inside this SVG, and there's
+              nothing behind the mask's hole within the SVG itself) —
+              stroking the same rect keeps a true hole in the middle so the
+              page background still shows through, same fix as the pill
+              needed before. */}
+          <rect
             className={styles.body}
-            d="m548.79 56.72c12.47 0 22.61 10.14 22.61 22.61s-10.14 22.61-22.61 22.61h-175.63c-12.47 0-22.61-10.14-22.61-22.61s10.14-22.61 22.61-22.61h175.63zm0-3h-175.63c-14.08 0-25.61 11.52-25.61 25.61s11.52 25.61 25.61 25.61h175.63c14.08 0 25.61-11.52 25.61-25.61s-11.52-25.61-25.61-25.61z"
+            x="347.55" y="53.72" width="226.85" height="51.22" rx="25.61" ry="25.61"
+            fill="none" stroke="#982511" strokeWidth="3"
           />
           <path
             className={styles.button}
