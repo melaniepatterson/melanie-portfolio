@@ -11,46 +11,25 @@ export const PROJECTS = [
     year: "2021– ",
     description: <>As part of a lean admissions team, I work across visual design, interactive systems, and CRM infrastructure, translating brand and UX decisions into shipped, functional work. My scope spans hand-coded email systems and CRM portal builds to print collateral and cross-team brand governance.<br></br><br></br>
 
+    <h2>Interactive & Systems Design</h2><br></br>
+  
+    <h3>Admitted Students Day Portal</h3>Created inline-style CRM overrides as a holdover during our multi-year identity transition. Eventually these overrides with a native, brand-matched build that gates information using conditional Liquid logic and Slate's query/filtering system (SQL). Coordinated the final identity upgrade with Admissions Operations, Digital Experience, and web dev. (Liquid · SQL · HTML/CSS)<br></br><br></br>
+    <h3>"Hooray!" Confetti Animation:</h3>Custom multi-layered confetti-fall script replacing Slate's flat native effect, built from the Marketing & Communications design team's SVG assets. Plays over a student's decision letter on admit. (JavaScript)<br></br><br></br>
+    <h3>Generative Canvas Email Banners:</h3>Ongoing series of interactive canvas animations used as dynamic email backdrops, keeping repetitive admissions content visually fresh. (JavaScript · Canvas)<br></br><br></br>
+    <h3>Audience Segmentation:</h3>Established the population-group logic used to target physical and digital mailing campaigns by audience. (SQL / Slate query logic)<br></br><br></br>
+    <h2>Web Strategy & UX</h2><br></br>
+    Ongoing UX and content input on RISD's live admissions pages, from granular edits to structural recommendations.
+    <ul><li>Worked with our digital content team to introduce a high-visibility "Schedule a Tour" CTA, contributing to a measurable lift in tour engagement</li>
+    <li>Reordered site navigation to prioritize high-intent actions (touring, events)</li>
+    <li>Defined use case for a new double-CTA pattern and introduced date-dependent content changes</li></ul><br></br>
+    <h2>Content & Visual Production</h2><br></br>
+    Recent print and content work: photography-based email promo for our annual viewbook, postcards for prospective families, recruitment deck, swag curation.<br></br><br></br>
 
-<h2>Interactive & Systems Design</h2><br></br>
-<b>Admitted Students Day Portal</b><br></br><br></br>
-Slate's CRM had been running on my own inline-style overrides for a few years (a stopgap that kept our portals usable while official brand assets caught up to RISD's 2022 identity refresh.) I proposed and coordinated a native CRM upgrade with our Associate Director of Admissions Operations, MarComm Director of Digital Experience and a web developer, replacing the overrides with a fully brand-matched build.<br></br><br></br>
-
-The portal uses conditional Liquid logic (built through Slate's query and filtering system, which generates the underlying SQL) to change what a student sees based on registration state: general event info before registering, specific time and location details after.<br></br><br></br>
-<b>Admitted Student "Hooray!" Confetti Animation</b><br></br><br></br>
-Slate's native celebratory effect was a snowfall-style script that was functional, but visually flat and out of step with a design school's brand standards. When our production designer created new "Hooray!" confetti graphics as part of an admitted student visual refresh, I saw the opportunity to build something more considered than the built-in option.<br></br><br></br>
-
-I took the SVG assets and built a custom confetti-fall script, layering multiple pieces at different fall speeds to create real depth rather than a flat, uniform drop. When an admitted student logs into their portal and their status has changed to admitted, the animation plays over their decision letter on load, adding to the emotion of the celebratory occasion.<br></br><br></br>
-<b>Generative Canvas Animations for Email Banners</b><br></br><br></br>
-A recurring challenge in admissions email design: much of what we communicate is necessarily repetitive (deadlines, next steps, program details), and static banners made that redundancy feel even flatter. I built a series of interactive canvas animations to use as dynamic motion backdrops, alternating them with animated photographic banners to keep repeat communications visually alive rather than duplicated.<br></br><br></br>
-
-Animations are viewable and replayable here alongside the finished banner it was built for. This is an ongoing series and more are in development.<br></br><br></br>
-
-<b>Audience Segmentation for Mailing Campaigns</b>
-I established RISD Admissions' population groups. This is the segmentation logic used to organize prospective students for both physical and digital mailings, enabling the team to target campaigns by audience rather than treating our list as one undifferentiated pool. This structure runs year-round, with heavier use during summer mailing cycles, and reflects the same data-filtering skill set behind the CRM portal work above.<br></br><br></br>
-
-
-<h2>Web Strategy & UX Collaboration</h2><br></br>
-Beyond print and email, I actively shape UX and content strategy on RISD's live admissions pages — working alongside MarComm Digital Content Operations lead and his team. My input ranges from granular content edits (some I make directly; others I hand off with specific direction, including cases that require cross-department consultation to implement correctly) to structural recommendations that shape how prospective students navigate the site.<br></br><br></br>
-
-A few examples:<br></br><br></br>
-
-<ul>
-  <li><b>Restoring a high-visibility CTA:</b> Identified an opportunity to reintroduce a prominent "Schedule a Tour" call-to-action into the new brand system—a small change that contributed to a measurable lift in tour engagement.</li>
-<li><b>Menu reordering:</b> Pushed to prioritize touring and events higher in site navigation, surfacing the actions prospective students are most likely to take.</li>
-<li><b>Contextual CTA design:</b> Proposed and helped define use specs for double-CTA button treatments (a new pattern in the brand system) and date-dependent CTA content that adjusts messaging around key deadlines.</li></ul>
-
-<br></br>I've also been developing a complementary email and content strategy including new header treatments and increased promotional cadence, aimed at building visibility and engagement earlier in a prospective student's journey.<br></br><br></br>
-
-
-<h2>Content & Visual Production</h2><br></br>
-Alongside the interactive work above, I contribute to RISD Admissions' print and content ecosystem: an animated email promo built from viewbook photography, postcards accompanying MarComm's print collateral, our recruitment presentation deck, and swag curation (including sketchbooks from Uglybooks).<br></br><br></br>----
-<br></br><br></br>
-
-With thanks to Brian Clark (Director of Digital Experience), Ruben Rodriguez (Web Developer), Rob Albanese (Associate Director, Digital Content Production and Operations), Alex Rapport (Production Designer), and Takeya Hollant (Associate Director, Admissions Operations) for their collaboration on this work. Viewbook design by Mary Banas (Senior Visual Designer) and Jordan Gushwa (Associate Director, Design) for RISD Marketing & Communications under Huy Vu (Creative Director).
-</>,
+    <p className="small">----
+    <br></br><br></br><i>With thanks to Brian Clark (Director of Digital Experience), Ruben Rodriguez (Web Developer), Rob Albanese (Associate Director, Digital Content Production and Operations), Alex Rapport (Production Designer), and Takeya Hollant (Associate Director, Admissions Operations) for their collaboration on this work. Viewbook design by Mary Banas (Senior Visual Designer) and Jordan Gushwa (Associate Director, Design) for RISD Marketing & Communications under Huy Vu (Creative Director).</i></p>
+    </>,
     externalLink: "",
-    thumbnail: () => import('../projects/RISD/Thumbnail'),
+    thumbnail: "/images/projects/RISD/risd_seal_grid.webp",
     hero: () => import('../projects/RISD/Hero'),      // or: () => import('../projects/project-one/Hero')
     images: [
   { src: "/images/projects/RISD/melanie-patterson-risd.webp", alt: "Textured blue liquid gradient with the RISD seal in the center." },
@@ -72,13 +51,13 @@ With thanks to Brian Clark (Director of Digital Experience), Ruben Rodriguez (We
   src: "/images/projects/RISD/melanie-patterson-risd-admitted-student-portal.webp",
   alt: "The Admitted Students Day event portal screenshot displaying a program of events, custom event Google map, and other event details designed in the RISD identity.",
   size: "small",
-  caption: "Scrollable screenshot of the Admitted Students Day event portal, including a program of events, custom event Google map for wayfinding, and other day-of extras.",
+  caption: "The shipped Admitted Students Day event portal, built over Slate's native portal framework.",
   },
   {
     type: "applet-result",
     appletComponent: () => import('../applets/GridFisheye.jsx'),
     appletAlt: "A blue grid on black that bulges toward the cursor, like a fisheye lens following the pointer.",
-    appletCaption: "Cursor-following fisheye grid — one of a small series of interactive canvas experiments.",
+    appletCaption: "Cursor-following fisheye grid—one of a small series of interactive canvas experiments.",
     showRefresh: false,
     bannerSrc: "/images/projects/RISD/Fisheye-Grid-Applet-This-Week-Header.webp",
     bannerAlt: "The same blue grid now has text that reads 'This Week' over top.",
@@ -87,8 +66,18 @@ With thanks to Brian Clark (Director of Digital Experience), Ruben Rodriguez (We
   {
   type: "banner-stack",
   images: [{ src: "/images/projects/RISD/Banner-1-RISD-Portolio-Day.webp", alt: "Banner reading 'RISD Portfolio Days' with photos of a blue paint brush and students holding up a large, human-scale piece." }, { src: "/images/projects/RISD/Banner-2-Grad_Campus_Tour.webp", alt: "Text reads 'Grad Campus Tours' over top an image of the RISD Nature Lab with a blue filter, and one of the windows cut out in full color." }, { src: "/images/projects/RISD/Banner-3-This-Week.webp", alt: "A banner reading 'This Week' over top a scrolling selection of images of students, artwork, and other campus life photos." }, { src: "/images/projects/RISD/Banner-3-This-Week.webp", alt: "A banner reading 'This Week' over top a scrolling selection of images of students, artwork, and other campus life photos." }],
-  caption: "New email banners incorporating cut-out styling as part of our image treatment system.",
+  caption: "Email banners incorporating cut-out styling as part of our image treatment system.",
 },
+{
+    type: "applet-result",
+    appletComponent: () => import('../applets/FallingRectangles.jsx'),
+    appletAlt: "Blue rectangles fall and stack on each other, accumulating on the right side and spreading left.",
+    appletCaption: "Canvas animation featuring blue stacking rectangles, informed by physics.",
+    showRefresh: true,
+    bannerSrc: "/images/projects/RISD/Falling-Blocks-Applet-This-Week-Header.webp",
+    bannerAlt: "The same falling rectangle now has text that reads 'This Week' over top.",
+    bannerCaption: "The canvas animation with added noise for email banners.",
+  },
 ]
   },
     {
@@ -102,7 +91,7 @@ With thanks to Brian Clark (Director of Digital Experience), Ruben Rodriguez (We
     description: "Glow Up (beta) is a skincare tracking, organizing, and discovery app built to help users navigate their way through a multi-step routine safely and confidently. It walks users through phased, dermatology-inspired onboarding programs that ramp up active ingredients and exfoliants gradually, tracks routine extras like haircare and gua sha, and detects when a scheduled treatment—like a chemical peel, laser session, or microneedling—conflicts with ingredients in someone's routine. It also includes a product library with ethics/values tracking and expiry tracking, a calendar export, and a feedback system. Designed and built with React/Supabase architecture, custom typography and brand system, and accessibility incorporated from the start.",
     externalLink: "https://glowupdemo.melanie.studio/",
     externalLinkLabel: "View demo",
-    thumbnail: null, // or: () => import('../projects/project-one/Thumbnail')
+    thumbnail: "/images/projects/GlowUp/glow_up_thumbnail.webp", // or: () => import('../projects/project-one/Thumbnail')
     hero: null,      // or: () => import('../projects/project-one/Hero')
     images: [
     { src: "/images/projects/GlowUp/melanie-patterson-glow-up-calendar-desktop.webp", alt: "The Glow Up calendar on desktop, showing a month grid with AM/PM routine slots colored by day type and an active Tretinoin Onboarding program banner." },
@@ -112,24 +101,24 @@ With thanks to Brian Clark (Director of Digital Experience), Ruben Rodriguez (We
       desktopAlt: "The Glow Up calendar on desktop, showing a month grid with AM/PM routine slots colored by day type and an active Tretinoin Onboarding program banner.",
       mobileSrc: "/images/projects/GlowUp/melanie-patterson-glow-up-calendar-mobile.webp",
       mobileAlt: "The same Glow Up calendar view, reflowed for mobile.",
-      caption: "The skincare calendar — desktop and mobile.",
+      caption: "The skincare calendar on desktop and mobile.",
     },
     {
       type: "browser-frame",
       src: "/images/projects/GlowUp/melanie-patterson-glow-up-products-desktop.webp",
       alt: "The Glow Up product library, showing a filterable grid of skincare products with brand, finish count, and affiliate links.",
-      caption: "Scrollable screenshot of the product library, with ethics/values and finish-count tracking per product.",
+      caption: "The product library, with brand, product type, and ethics/values filtering.",
     },
     {
       type: "component",
       component: () => import('../projects/GlowUp/GlowUpMobileLoader.jsx'),
-      caption: "The loading screen, live — cycling sayings and rolling color bar, shown in a stand-in mobile frame until a custom device SVG is ready.",
+      caption: "The loading screen, with rolling color progress bar and cute skincare-themed load phrases.",
     },
     {
       type: "component",
       component: () => import('../projects/GlowUp/GlowUpBrandPair.jsx'),
       size: "large",
-      caption: "The Glow Up wordmark, set in Naskle, beside a makeshift color palette — a holdover until the full style guide is built.",
+      caption: "The Glow Up wordmark (set in Naskle) and brand colors.",
     },
   ]
   },   {
@@ -140,7 +129,7 @@ With thanks to Brian Clark (Director of Digital Experience), Ruben Rodriguez (We
     topics: null,
     client: { name: "Brightline", url: "https://www.gobrightline.com/" },
     year: "2017",
-    description: "Mural-scale illustrated maps of South Florida, combining digital illustration with traditional techniques — hand-lettering and painted texture work — installed across Brightline's Miami, Fort Lauderdale, and West Palm Beach stations. Each map depicts train routes, stations, landmarks, and highways within Brightline's brand color system.",
+    description: "Mural-scale illustrated maps of South Florida, combining digital illustration with traditional techniques, including hand-lettering and painted texture work, installed across Brightline's Miami, Fort Lauderdale, and West Palm Beach stations. Each map depicts train routes, stations, landmarks, and highways within Brightline's brand color system.",
     externalLink: "",
     thumbnail: "/images/projects/Brightline/Brightline_Maps_Melanie_Patterson_Crop.webp", // or: () => import('../projects/project-one/Thumbnail')
     hero: null,      // or: () => import('../projects/project-one/Hero')
