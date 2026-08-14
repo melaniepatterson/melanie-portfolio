@@ -22,6 +22,37 @@
     -->
     <link rel="manifest" href="/manifest.json" />
     <title>melanie.studio</title>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Person",
+            "@id": "https://www.melanie.studio/#person",
+            "name": "Melanie Patterson",
+            "url": "https://www.melanie.studio/",
+            "image": "https://www.melanie.studio/images/melanie-patterson-headshot.webp",
+            "email": "hello@melanie.studio",
+            "jobTitle": "Artist & Designer",
+            "description": "Melanie Patterson is an Indo-Jamaican American artist and designer drawing inspiration from oratory histories, community dynamics, and just societal concepts. Through her work, she is compelled to document rare stories, celebrate difficult truths, and make meaningful work across print, code, and handmade processes alike.",
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Providence",
+              "addressRegion": "RI",
+              "addressCountry": "US"
+            }
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://www.melanie.studio/#website",
+            "url": "https://www.melanie.studio/",
+            "name": "melanie.studio",
+            "description": "Melanie Patterson is an Indo-Jamaican American artist and designer working across fine art, web development, and design. Based in Providence, RI.",
+            "publisher": { "@id": "https://www.melanie.studio/#person" }
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
