@@ -11,6 +11,7 @@ const Star1 = forwardRef(({ style }, ref) => (
     ref={ref}
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 142.184 137.886"
+    aria-hidden="true"
     style={{
       position: "absolute",
       width: 200,
@@ -32,6 +33,7 @@ const Star2 = forwardRef(({ style }, ref) => (
     ref={ref}
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 144.908 140.61"
+    aria-hidden="true"
     style={{
       position: "absolute",
       width: 200,
@@ -66,6 +68,7 @@ const Star3 = forwardRef(({ style }, ref) => (
     ref={ref}
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 142.184 159.136"
+    aria-hidden="true"
     style={{
       position: "absolute",
       width: 200,
@@ -207,6 +210,7 @@ export default function RepulseLogo() {
 
   return (
     <>
+    <h1 className="sr-only">Melanie Patterson — Artist &amp; Designer</h1>
     {/* Stars in their own unclipped layer so overflow doesn't swallow their movement.
         zIndex:1 keeps them below .home-nav's zIndex:10 (WORK/INFO links stay on top). */}
     <div style={{ position: "fixed", inset: 0, zIndex: 1, pointerEvents: "none" }}>
@@ -260,6 +264,7 @@ export default function RepulseLogo() {
       <img
         ref={imgRef}
         src="/images/melanie studio circle.svg"
+        alt=""
         style={{
           width: 1500,
           height: 1500,

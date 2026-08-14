@@ -234,6 +234,7 @@ export default function WorkDetail() {
               Client: {project.client.url ? (
                 <a href={project.client.url} target="_blank" rel="noopener noreferrer" className={styles.clientLink}>
                   {project.client.name}
+                  <span className="sr-only"> (opens in new window)</span>
                 </a>
               ) : (
                 project.client.name
@@ -253,6 +254,7 @@ export default function WorkDetail() {
             >
               <SplitText>{project.externalLinkLabel || "View Project"}</SplitText>
               {project.externalLink.startsWith("http") ? " ↗︎" : ""}
+              {project.externalLink.startsWith("http") && <span className="sr-only"> (opens in new window)</span>}
             </a>
           )}
         </div>

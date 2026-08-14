@@ -1,11 +1,13 @@
 export function SplitText({ children, className }) {
   return (
-    <span className={className}>
-      {children.split("").map((char, i) => (
-        <span key={i} className="split-char" style={{ "--i": i }}>
-          {char === " " ? " " : char}
-        </span>
-      ))}
+    <span className={className} aria-label={children}>
+      <span aria-hidden="true">
+        {children.split("").map((char, i) => (
+          <span key={i} className="split-char" style={{ "--i": i }}>
+            {char === " " ? " " : char}
+          </span>
+        ))}
+      </span>
     </span>
   );
 }

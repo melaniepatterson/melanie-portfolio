@@ -18,6 +18,7 @@ export default function AboutContact() {
 
   return (
     <div className={styles.page}>
+      <h1 className="sr-only">About Melanie Patterson</h1>
       <div className={styles.content}>
         <div className={styles.text}>
           <p className={styles.bio}>
@@ -31,7 +32,10 @@ export default function AboutContact() {
           </p>
          
           <div className={styles.links}>
-            <a href="/images/Melanie_Patterson_Resume.pdf" target="_blank" rel="noreferrer" ><SplitText>CV</SplitText></a>
+            <a href="/images/Melanie_Patterson_Resume.pdf" target="_blank" rel="noopener noreferrer">
+              <SplitText>CV</SplitText>
+              <span className="sr-only"> (opens in new window)</span>
+            </a>
             <span> / </span>
             <a href="mailto:hello@melanie.studio"><SplitText>Email</SplitText></a>
           </div>

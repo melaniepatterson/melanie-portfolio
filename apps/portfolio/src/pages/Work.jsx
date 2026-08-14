@@ -295,7 +295,7 @@ useEffect(() => {
                 <Drawer.Handle className={styles.sheetHandle} />
                 <div className={styles.sheetHeader}>
                   <Drawer.Title className={styles.sheetTitle}>Filters</Drawer.Title>
-                  <Drawer.Close className={styles.drawerClose}>✕</Drawer.Close>
+                  <Drawer.Close className={styles.drawerClose} aria-label="Close filters">✕</Drawer.Close>
                 </div>
                 {filterContent}
               </Drawer.Content>
@@ -310,7 +310,7 @@ useEffect(() => {
           </Drawer.Root>
         ) : (
           <div className={`${styles.drawer} ${drawerOpen ? styles.drawerOpen : ""}`}>
-            <button className={styles.drawerClose} onClick={() => setDrawerOpen(false)}>✕</button>
+            <button className={styles.drawerClose} onClick={() => setDrawerOpen(false)} aria-label="Close filters">✕</button>
             {filterContent}
           </div>
         );
@@ -369,7 +369,7 @@ useEffect(() => {
         </div>
         <div className={styles.scrollHint} style={{ opacity: showScroll && hasScroll ? 1 : 0 }}>
           <span>Scroll</span>
-          <svg viewBox="0 0 24 24" fill="none" stroke="#FAF7F2" strokeWidth="1.5" strokeLinecap="round">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#FAF7F2" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
             <line x1="12" y1="4" x2="12" y2="20" />
             <polyline points="6 14 12 20 18 14" />
           </svg>
