@@ -21,7 +21,12 @@ export default function EmailBrowserFrame({ src }) {
 
       <g clipPath="url(#risdEmailFrameClip)">
         <foreignObject x="18.57" y="134.45" width="1583.8" height="1664.45">
-          <div xmlns="http://www.w3.org/1999/xhtml" style={{ position: "relative", width: "1583.8px", height: "1664.45px", overflow: "hidden" }}>
+          {/* clip-path on the <g> above doesn't reliably clip an embedded
+              foreignObject's HTML content in every browser (the corner
+              region renders as a plain rectangle, leaving the rounded
+              area unfilled) — border-radius + overflow: hidden on the
+              actual HTML div is the reliable way to round it. */}
+          <div xmlns="http://www.w3.org/1999/xhtml" style={{ position: "relative", width: "1583.8px", height: "1664.45px", overflow: "hidden", borderRadius: "0 0 50px 50px" }}>
             <video
               src={src}
               autoPlay
