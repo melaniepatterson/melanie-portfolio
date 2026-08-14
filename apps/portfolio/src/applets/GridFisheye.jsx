@@ -58,6 +58,24 @@ export default function GridFisheye() {
     canvas.addEventListener("mousemove", onMove);
     canvas.addEventListener("mouseleave", onLeave);
 
+    // Touch devices have no cursor, so mousemove never fires and the grid
+    // would just sit flat forever — wander a simulated target around
+    // instead so the bulge effect is still visible. Picking a new random
+    // waypoint every couple seconds and letting the existing EASE lerp
+    // glide toward it (below) reuses the same chasing motion the rest of
+    // the site already uses (see Radialgradient.jsx's chaser image).
+    let wanderTimeout;
+    const canSimulateHover = !window.matchMedia("(hover: hover)").matches;
+    if (canSimulateHover) {
+      hasPointer = true;
+      const pickNextTarget = () => {
+        targetX = Math.random() * width;
+        targetY = Math.random() * height;
+        wanderTimeout = setTimeout(pickNextTarget, 1800 + Math.random() * 1200);
+      };
+      pickNextTarget();
+    }
+
     function smoothstep(edge0, edge1, x) {
       const t = Math.min(1, Math.max(0, (x - edge0) / (edge1 - edge0)));
       return t * t * (3 - 2 * t);
@@ -139,6 +157,7 @@ export default function GridFisheye() {
 
     return () => {
       cancelAnimationFrame(raf);
+      clearTimeout(wanderTimeout);
       ro.disconnect();
       canvas.removeEventListener("mousemove", onMove);
       canvas.removeEventListener("mouseleave", onLeave);
