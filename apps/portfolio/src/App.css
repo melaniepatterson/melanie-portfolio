@@ -76,13 +76,25 @@ main {
 
 .site-footer {
   padding-bottom: 1rem;
+  /* Home's circle background (Radialgradient.jsx) is `position: fixed`
+     with its own z-index — even at z-index:0, a positioned element
+     always paints above plain in-flow content like this footer,
+     regardless of DOM order. Giving the footer its own stacking
+     context beats that so the copyright line and Instagram icon
+     aren't washed out under the circle's edge. */
+  position: relative;
+  z-index: 10;
 }
 
 @media (max-width: 640px) {
-  /* WORK/INFO moved to the top — this now only needs to clear Work's
-     floating filter pill (About/WorkDetail have nothing fixed at the
-     bottom, so this is harmlessly generous there). */
   .site-footer {
+    padding-bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Only Work.jsx has a floating filter pill fixed to the bottom on
+     mobile (About/WorkDetail have nothing fixed down there), so only
+     it needs the footer pushed up to clear it. */
+  .site-footer.footerAboveFilters {
     padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
   }
 }
