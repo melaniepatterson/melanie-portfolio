@@ -138,14 +138,16 @@
   align-self: start;
 }
 
-.card img {
+.card img,
+.card video {
   width: 100%;
   height: auto;
   display: block;
   transition: transform 0.4s ease;
 }
 
-.card:hover img {
+.card:hover img,
+.card:hover video {
   transform: scale(1.03);
 }
 

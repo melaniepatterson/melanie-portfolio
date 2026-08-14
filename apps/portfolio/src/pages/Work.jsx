@@ -346,6 +346,17 @@ useEffect(() => {
                       fallbackSrc={project.images[0].src}
                       fallbackAlt={project.images[0].alt}
                     />
+                  ) : typeof project.thumbnail === "string" && project.thumbnail.endsWith(".webm") ? (
+                    <video
+                      src={project.thumbnail}
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      disablePictureInPicture
+                      controls={false}
+                      aria-label={project.images[0].alt}
+                    />
                   ) : (
                     <img src={project.thumbnail || project.images[0].src} alt={project.images[0].alt} />
                   )}
