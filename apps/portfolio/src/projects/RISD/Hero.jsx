@@ -27,17 +27,6 @@ export default function Hero() {
       >
         <EmailBrowserFrame src="/images/projects/RISD/app_open_email.webm" />
       </div>
-      <img
-        src={img3}
-        alt=""
-        style={{
-          position: "absolute",
-          bottom: "5%",
-          left: "5%",
-          width: "35%",
-          height: "auto",
-        }}
-      />
     </div>
   );
 }
