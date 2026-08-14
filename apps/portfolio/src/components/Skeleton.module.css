@@ -19,12 +19,18 @@
    the cursor leaves while the image is still mid-return. A transition
    applies using whichever rule is active at the END of the change, so
    the slow duration lives on the base (non-hover) rule and the instant
-   one lives on :hover — asymmetric on purpose, not a typo. */
+   one lives on :hover — asymmetric on purpose, not a typo.
+
+   No overflow: hidden here — the shimmer background is clipped to this
+   box on its own (background-clip defaults to border-box, independent
+   of overflow) and object-fit: cover self-clips the <img>'s content, so
+   nothing actually needed it. It was, however, clipping any caller that
+   transforms the image on hover (like the About photo's tilt), cropping
+   it wherever the rotated/translated image poked past the box. */
 .shimmer {
   position: relative;
   display: block;
   width: 100%;
-  overflow: hidden;
 }
 
 .shimmer::before {

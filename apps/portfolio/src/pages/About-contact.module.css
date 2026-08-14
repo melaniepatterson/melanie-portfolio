@@ -48,10 +48,7 @@
   padding-top: 0em;
   width: auto;
   max-width: 100%;
-  /* 85vh barely ever engaged — on a normal-height screen a wide 1fr
-     column times this photo's 2:3 portrait ratio comes out much taller
-     than the text column beside it. 60vh keeps it a similar scale. */
-  max-height: 60vh;
+  max-height: 85vh;
 }
 
 @media (max-width: 640px) {
