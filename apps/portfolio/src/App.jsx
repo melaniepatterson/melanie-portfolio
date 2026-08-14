@@ -1,16 +1,21 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Nav from "./Nav";
-import Hero from "./Radialgradient";
 import Logo from "./Logo";
 import LogoHorizontal from "./LogoHorizontal";
-import Work from "./pages/Work";
-import AboutContact from "./pages/About-contact";
 import "./App.css";
-import WorkDetail from "./pages/WorkDetail";
 import { PROJECTS } from "./data/projects";
-import { useEffect } from "react";
+import { useEffect, Suspense, lazy } from "react";
 import PageTransition from "./PageTransition";
 import NotFound from "./NotFound";
+
+// Route-level code splitting — each page's own JS only downloads when a
+// visitor actually navigates there, instead of the home page forcing a
+// download of Work/WorkDetail/About's code (and everything they in turn
+// pull in) upfront.
+const Hero = lazy(() => import("./Radialgradient"));
+const Work = lazy(() => import("./pages/Work"));
+const WorkDetail = lazy(() => import("./pages/WorkDetail"));
+const AboutContact = lazy(() => import("./pages/About-contact"));
 
 function Layout() {
   const location = useLocation();
@@ -87,13 +92,15 @@ function Layout() {
       }}>
         <main className="content">
           <PageTransition>
-            <Routes>
-              <Route path="/" element={<Hero />} />
-              <Route path="/portfolio" element={<Work />} />
-              <Route path="/portfolio/:slug" element={<WorkDetail />} />
-              <Route path="/about-contact" element={<AboutContact />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <Suspense fallback={null}>
+              <Routes>
+                <Route path="/" element={<Hero />} />
+                <Route path="/portfolio" element={<Work />} />
+                <Route path="/portfolio/:slug" element={<WorkDetail />} />
+                <Route path="/about-contact" element={<AboutContact />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
           </PageTransition>
         </main>
         <footer className="site-footer" style={{

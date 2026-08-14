@@ -1,6 +1,7 @@
 @font-face {
   font-family: 'Naskle';
   src: local('Naskle'), url(./fonts/Naskle-Regular.woff) format('woff'), url(./fonts/Naskle-Regular.woff2) format('woff2');
+  font-display: swap;
 }
 
 .stage {

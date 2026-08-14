@@ -1,0 +1,14 @@
+# melanie.studio
+
+> Portfolio site for Melanie Patterson, an Indo-Jamaican American artist and designer working across fine art, web development, and design. Based in Providence, RI.
+
+## Pages
+
+- [Work](https://www.melanie.studio/portfolio): Selected projects spanning interactive design, print, and fine art.
+- [Info / Contact](https://www.melanie.studio/about-contact): About Melanie Patterson, CV, and contact links.
+
+## Projects
+
+- [Rhode Island School of Design](https://www.melanie.studio/portfolio/RISD): Interactive design, CRM systems, and print work for RISD Admissions.
+- [Glow Up App](https://www.melanie.studio/portfolio/glow-up): A skincare tracking and routine-planning app built with React and Supabase.
+- [Brightline Maps](https://www.melanie.studio/portfolio/brightline): Mural-scale illustrated maps for Brightline's South Florida train stations.
