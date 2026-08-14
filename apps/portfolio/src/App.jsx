@@ -117,8 +117,24 @@ function Layout() {
           letterSpacing: "0.1em",
           color: isWork || isWorkDetail ? "#FAF7F2" : "#C93500",
           pointerEvents: "none",
+          display: "flex",
+          alignItems: "center",
+          gap: "0.6rem",
         }}>
-          © {new Date().getFullYear()} Melanie Patterson
+          <span>© {new Date().getFullYear()} Melanie Patterson</span>
+          <a
+            href="https://www.instagram.com/melanie.studio_/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Melanie Patterson on Instagram"
+            style={{ pointerEvents: "auto", color: "inherit", display: "inline-flex", lineHeight: 0 }}
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <rect x="3" y="3" width="18" height="18" rx="5" ry="5" />
+              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+            </svg>
+          </a>
         </footer>
       </div>
     </div>
