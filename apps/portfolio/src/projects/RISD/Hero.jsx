@@ -1,7 +1,7 @@
 import { useState } from "react";
 import img1 from "./images/melanie-patterson-risd.webp";
-
 import img3 from "./images/03.webp";
+import EmailBrowserFrame from "./EmailBrowserFrame";
 
 export default function Hero() {
   const [hovered, setHovered] = useState(false);
@@ -15,25 +15,18 @@ export default function Hero() {
         alt=""
         style={{ width: "100%", height: "auto", display: "block" }}
       />
-      <video
-        src="/images/projects/RISD/app_open_email.webm"
-        autoPlay
-        loop
-        muted
-        playsInline
-        disablePictureInPicture
-        controls={false}
-        aria-hidden="true"
+      <div
         style={{
           position: "absolute",
           bottom: "5%",
           right: "5%",
           width: "45%",
-          height: "auto",
           transition: "transform 0.4s ease",
           transform: hovered ? "translate(4px, -4px)" : "none",
         }}
-      />
+      >
+        <EmailBrowserFrame src="/images/projects/RISD/app_open_email.webm" />
+      </div>
       <img
         src={img3}
         alt=""
