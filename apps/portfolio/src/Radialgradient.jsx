@@ -267,16 +267,6 @@ export default function RepulseLogo() {
           width: 1500,
           height: 1500,
           willChange: "transform",
-          // The ellipse's Gaussian blur (baked into the SVG, stdDeviation
-          // 200 against a ~524-radius shape) is huge relative to the
-          // shape itself — on a narrow mobile viewport, the flex-centered
-          // circle fills the screen with mostly its flattest, least
-          // saturated interior, since the actual edge falloff falls
-          // outside the visible area entirely. Boosting saturation only
-          // on mobile compensates for that lost visual weight without
-          // touching size/position (which would change the blur's
-          // relative softness too, since it scales with the image).
-          filter: isMobile ? "saturate(1.6)" : undefined,
         }}
       />
 

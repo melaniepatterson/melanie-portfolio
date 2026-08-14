@@ -29,9 +29,9 @@ export const PROJECTS = [
     <br></br><br></br><i>With thanks to Brian Clark (Director of Digital Experience), Ruben Rodriguez (Web Developer), Rob Albanese (Associate Director, Digital Content Production and Operations), Alex Rapport (Production Designer), and Takeya Hollant (Associate Director, Admissions Operations) for their collaboration on this work. Viewbook design by Mary Banas (Senior Visual Designer) and Jordan Gushwa (Associate Director, Design) for RISD Marketing & Communications under Huy Vu (Creative Director).</i></p>
     </>,
     externalLink: "",
-    thumbnail: "/images/projects/RISD/risd_seal_grid.webp",
-    thumbnailWidth: 702,
-    thumbnailHeight: 414,
+    thumbnail: "/images/projects/RISD/risd_seal_grid.webm",
+    thumbnailWidth: 878,
+    thumbnailHeight: 518,
     hero: () => import('../projects/RISD/Hero'),      // or: () => import('../projects/project-one/Hero')
     images: [
   { src: "/images/projects/RISD/melanie-patterson-risd.webp", width: 1200, height: 800, alt: "Textured blue liquid gradient with the RISD seal in the center." },
