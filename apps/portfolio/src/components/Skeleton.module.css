@@ -6,11 +6,12 @@
    naturally covers the shimmer without any onLoad/JS state needed.
 
    The shimmer itself lives on ::before (not .shimmer's own background)
-   so it can fade out on hover independently of the <img> — some callers
-   (e.g. the About page headshot) rotate/translate the image on hover,
-   which exposes slivers of the wrapper at the corners; fading the
-   background there instead of leaving it solid keeps those slivers from
-   reading as a random dark smear behind the tilt. */
+   so it can disappear on hover independently of the <img> — some
+   callers (e.g. the About page headshot) rotate/translate the image on
+   hover, which exposes slivers of the wrapper at the corners; hiding
+   the background there instead of leaving it solid keeps those slivers
+   from reading as a random dark smear behind the tilt. Cuts instantly
+   (no transition) rather than fading. */
 .shimmer {
   position: relative;
   display: block;
@@ -26,7 +27,6 @@
   background-image: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.35) 50%, transparent 70%);
   background-size: 200% 100%;
   animation: shimmerSweep 1.6s ease-in-out infinite;
-  transition: opacity 0.3s ease;
 }
 
 .shimmer:hover::before {

@@ -45,7 +45,7 @@
    shimmer's default width: 100% ignoring the height cap and rendering
    much larger than the photo actually ends up. */
 .photoShimmer.photoShimmer {
-  padding-top: 2em;
+  padding-top: 0em;
   width: auto;
   max-width: 100%;
   /* 85vh barely ever engaged — on a normal-height screen a wide 1fr
