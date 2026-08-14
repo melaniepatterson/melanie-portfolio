@@ -15,9 +15,15 @@ export default function Hero() {
         alt=""
         style={{ width: "100%", height: "auto", display: "block" }}
       />
-      <img
-        src=""
-        alt=""
+      <video
+        src="/images/projects/RISD/app_open_email.webm"
+        autoPlay
+        loop
+        muted
+        playsInline
+        disablePictureInPicture
+        controls={false}
+        aria-hidden="true"
         style={{
           position: "absolute",
           bottom: "5%",
