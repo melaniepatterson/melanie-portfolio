@@ -179,14 +179,19 @@ export default function WorkDetail() {
       );
     }
 
+    const openLightbox = () => img.lightbox && setLightbox({ src: img.src, alt: img.alt });
     return (
       <div
         key={i}
         className={`${styles.galleryItem} ${sizeClass} ${img.lightbox ? styles.lightboxable : ""}`}
-        onClick={() => img.lightbox && setLightbox({ src: img.src, alt: img.alt })}
+        onClick={openLightbox}
+        role={img.lightbox ? "button" : undefined}
+        tabIndex={img.lightbox ? 0 : undefined}
+        onKeyDown={img.lightbox ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openLightbox(); } } : undefined}
+        aria-label={img.lightbox ? `View larger: ${img.alt}` : undefined}
       >
         <img src={img.src} alt={img.alt} loading="lazy" />
-        {img.lightbox && <div className={styles.lightboxHint}>⊕</div>}
+        {img.lightbox && <div className={styles.lightboxHint} aria-hidden="true">⊕</div>}
         {img.caption && <Caption className={styles.caption}>{img.caption}</Caption>}
         {img.hoverHint && <p className={styles.hoverHint}>Hover to interact</p>}
       </div>

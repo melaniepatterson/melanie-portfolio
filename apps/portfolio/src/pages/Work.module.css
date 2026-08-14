@@ -94,11 +94,25 @@
   color: #FAF7F2;
 }
 
-.filterOption input[type="checkbox"] {
-  accent-color: #FAF7F2;
-  width: 14px;
-  height: 14px;
-  cursor: pointer;
+/* Visually hidden but still focusable/clickable — the star icon is the
+   visible indicator (aria-hidden, driven by :checked below), this is the
+   real control screen readers and keyboard users interact with. */
+.srOnlyCheckbox {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.srOnlyCheckbox:focus-visible + .starCheckbox {
+  outline: 2px solid #FAF7F2;
+  outline-offset: 3px;
+  border-radius: 50%;
 }
 
 .overlay {

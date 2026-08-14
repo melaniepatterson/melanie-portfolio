@@ -50,8 +50,12 @@ export default function InspirationResult({
       <div
         className={`${styles.item} ${dominates === "result" ? styles.large : styles.small} ${onLightbox && !resultComponent ? styles.lightboxable : ""}`}
         onClick={() => onLightbox && !resultComponent && onLightbox(resultSrc, resultAlt)}
+        role={onLightbox && !resultComponent ? "button" : undefined}
+        tabIndex={onLightbox && !resultComponent ? 0 : undefined}
+        onKeyDown={onLightbox && !resultComponent ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onLightbox(resultSrc, resultAlt); } } : undefined}
+        aria-label={onLightbox && !resultComponent ? `View larger: ${resultAlt}` : undefined}
       >
-        {onLightbox && !resultComponent && <div className={styles.lightboxHint}>⊕</div>}
+        {onLightbox && !resultComponent && <div className={styles.lightboxHint} aria-hidden="true">⊕</div>}
         {resultComponent ? (
           <LazyResultComponent
             loader={resultComponent}

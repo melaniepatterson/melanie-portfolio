@@ -7,8 +7,11 @@ export default function CodeReveal({ still, alt, code }) {
   return (
     <div
       className={styles.wrapper}
+      tabIndex={0}
       onMouseEnter={() => setRevealed(true)}
       onMouseLeave={() => setRevealed(false)}
+      onFocus={() => setRevealed(true)}
+      onBlur={() => setRevealed(false)}
     >
       <img src={still} alt={alt} className={styles.image} />
       <div className={`${styles.overlay} ${revealed ? styles.visible : ""}`}>

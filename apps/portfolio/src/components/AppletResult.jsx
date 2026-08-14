@@ -113,8 +113,12 @@ export default function AppletResult({
       <div
         className={`${styles.item} ${dominates === "banner" ? styles.large : styles.small} ${onLightbox && !bannerComponent ? styles.lightboxable : ""}`}
         onClick={() => onLightbox && !bannerComponent && onLightbox(bannerSrc, bannerAlt)}
+        role={onLightbox && !bannerComponent ? "button" : undefined}
+        tabIndex={onLightbox && !bannerComponent ? 0 : undefined}
+        onKeyDown={onLightbox && !bannerComponent ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onLightbox(bannerSrc, bannerAlt); } } : undefined}
+        aria-label={onLightbox && !bannerComponent ? `View larger: ${bannerAlt}` : undefined}
       >
-        {onLightbox && !bannerComponent && <div className={styles.lightboxHint}>⊕</div>}
+        {onLightbox && !bannerComponent && <div className={styles.lightboxHint} aria-hidden="true">⊕</div>}
         {useBannerVideo ? (
           <video src={bannerVideoSrc} autoPlay loop muted playsInline aria-label={bannerAlt} />
         ) : bannerComponent ? (

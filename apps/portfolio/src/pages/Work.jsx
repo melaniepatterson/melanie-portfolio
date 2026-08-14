@@ -59,7 +59,7 @@ const SHAPES = [
 
 function StarCheckbox({ checked, shape }) {
   return (
-    <div className={styles.starCheckbox}>
+    <div className={styles.starCheckbox} aria-hidden="true">
       <svg viewBox="0 0 24 24" className={`${styles.star} ${checked ? styles.starChecked : ""}`}>
         <path d={shape} />
       </svg>
@@ -236,14 +236,13 @@ useEffect(() => {
               <div className={styles.filterSection}>
                 <div className={styles.filterTitle}>Discipline</div>
                 {availableDisciplines.map(m => (
-                  <label
-                    key={m}
-                    className={styles.filterOption}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      toggleFilter(m, selectedDisciplines, setSelectedDisciplines);
-                    }}
-                  >
+                  <label key={m} className={styles.filterOption}>
+                    <input
+                      type="checkbox"
+                      className={styles.srOnlyCheckbox}
+                      checked={selectedDisciplines.includes(m)}
+                      onChange={() => toggleFilter(m, selectedDisciplines, setSelectedDisciplines)}
+                    />
                     <StarCheckbox checked={selectedDisciplines.includes(m)} shape={shapeMap[m]} />
                     {m}
                   </label>
@@ -255,14 +254,13 @@ useEffect(() => {
               <div className={styles.filterSection}>
                 <div className={styles.filterTitle}>Topic</div>
                 {availableTopics.map(m => (
-                  <label
-                    key={m}
-                    className={styles.filterOption}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      toggleFilter(m, selectedTopics, setSelectedTopics);
-                    }}
-                  >
+                  <label key={m} className={styles.filterOption}>
+                    <input
+                      type="checkbox"
+                      className={styles.srOnlyCheckbox}
+                      checked={selectedTopics.includes(m)}
+                      onChange={() => toggleFilter(m, selectedTopics, setSelectedTopics)}
+                    />
                     <StarCheckbox checked={selectedTopics.includes(m)} shape={shapeMap[m]} />
                     {m}
                   </label>
