@@ -4,6 +4,8 @@ import { Drawer } from "vaul";
 import styles from "./Work.module.css";
 import { PROJECTS } from "../data/projects";
 import { Link } from "react-router-dom";
+import ShimmerImage, { Skeleton } from "../components/Skeleton";
+import skeletonStyles from "../components/Skeleton.module.css";
 
 // Gated off temporarily to test the raw vaul drawer without it in the way.
 // Flip back to true to re-enable.
@@ -34,13 +36,13 @@ const sessionSpacers = new Set(
 );
 const componentCache = {};
 
-function LazyThumbnail({ loader, hovered, fallbackSrc, fallbackAlt }) {
+function LazyThumbnail({ loader, hovered, fallbackSrc, fallbackAlt, fallbackWidth, fallbackHeight }) {
   if (!componentCache[loader]) {
     componentCache[loader] = lazy(loader);
   }
   const Component = componentCache[loader];
   return (
-    <Suspense fallback={<img src={fallbackSrc} alt={fallbackAlt} />}>
+    <Suspense fallback={<ShimmerImage src={fallbackSrc} alt={fallbackAlt} width={fallbackWidth} height={fallbackHeight} />}>
       <Component hovered={hovered} />
     </Suspense>
   );
@@ -343,20 +345,35 @@ useEffect(() => {
                       hovered={false}
                       fallbackSrc={project.images[0].src}
                       fallbackAlt={project.images[0].alt}
+                      fallbackWidth={project.images[0].width}
+                      fallbackHeight={project.images[0].height}
                     />
                   ) : typeof project.thumbnail === "string" && project.thumbnail.endsWith(".webm") ? (
-                    <video
-                      src={project.thumbnail}
-                      autoPlay
-                      loop
-                      muted
-                      playsInline
-                      disablePictureInPicture
-                      controls={false}
-                      aria-label={project.images[0].alt}
-                    />
+                    <div
+                      className={skeletonStyles.shimmer}
+                      style={{ aspectRatio: project.thumbnailWidth && project.thumbnailHeight ? `${project.thumbnailWidth} / ${project.thumbnailHeight}` : undefined }}
+                    >
+                      <video
+                        src={project.thumbnail}
+                        width={project.thumbnailWidth}
+                        height={project.thumbnailHeight}
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        disablePictureInPicture
+                        controls={false}
+                        aria-label={project.images[0].alt}
+                        className={skeletonStyles.img}
+                      />
+                    </div>
                   ) : (
-                    <img src={project.thumbnail || project.images[0].src} alt={project.images[0].alt} />
+                    <ShimmerImage
+                      src={project.thumbnail || project.images[0].src}
+                      alt={project.images[0].alt}
+                      width={project.thumbnail ? project.thumbnailWidth : project.images[0].width}
+                      height={project.thumbnail ? project.thumbnailHeight : project.images[0].height}
+                    />
                   )}
                   <div className={styles.cardTitle}>{project.title}</div>
                   <div className={styles.cardYear}>{project.year}</div>

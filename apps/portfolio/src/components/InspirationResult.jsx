@@ -1,17 +1,18 @@
 import styles from "./InspirationResult.module.css";
 import CodeReveal from "./CodeReveal";
 import Caption from "./Caption";
+import ShimmerImage, { Skeleton } from "./Skeleton";
 import { Suspense, lazy } from "react";
 
 const resultComponentCache = {};
 
-function LazyResultComponent({ loader, fallbackSrc, fallbackAlt }) {
+function LazyResultComponent({ loader, fallbackSrc, fallbackAlt, fallbackWidth, fallbackHeight }) {
   if (!resultComponentCache[loader]) {
     resultComponentCache[loader] = lazy(loader);
   }
   const Component = resultComponentCache[loader];
   return (
-    <Suspense fallback={fallbackSrc ? <img src={fallbackSrc} alt={fallbackAlt} /> : null}>
+    <Suspense fallback={fallbackSrc ? <ShimmerImage src={fallbackSrc} alt={fallbackAlt} width={fallbackWidth} height={fallbackHeight} /> : <Skeleton />}>
       <Component />
     </Suspense>
   );
@@ -19,9 +20,13 @@ function LazyResultComponent({ loader, fallbackSrc, fallbackAlt }) {
 
 export default function InspirationResult({
   inspirationSrc,
+  inspirationWidth,
+  inspirationHeight,
   inspirationAlt,
   inspirationCaption,
   resultSrc,
+  resultWidth,
+  resultHeight,
   resultAlt,
   resultCaption,
   dominates = "result",
@@ -36,7 +41,7 @@ export default function InspirationResult({
       )}
       <div className={`${styles.item} ${dominates === "inspiration" ? styles.large : styles.small}`}>
         <span className={styles.label}>Inspiration</span>
-        <img src={inspirationSrc} alt={inspirationAlt} />
+        <ShimmerImage src={inspirationSrc} alt={inspirationAlt} width={inspirationWidth} height={inspirationHeight} />
         {inspirationCaption && <Caption className={styles.caption}>{inspirationCaption}</Caption>}
       </div>
 
@@ -61,9 +66,11 @@ export default function InspirationResult({
             loader={resultComponent}
             fallbackSrc={resultSrc}
             fallbackAlt={resultAlt}
+            fallbackWidth={resultWidth}
+            fallbackHeight={resultHeight}
           />
         ) : (
-          <img src={resultSrc} alt={resultAlt} />
+          <ShimmerImage src={resultSrc} alt={resultAlt} width={resultWidth} height={resultHeight} />
         )}
         {resultCaption && <Caption className={styles.caption}>{resultCaption}</Caption>}
       </div>

@@ -1,0 +1,34 @@
+/* Shared shimmer treatment — a dark base with a bright diagonal sweep, so
+   it reads as "loading" regardless of the page's own background color
+   (rust or cream). Used both as a bare placeholder (.shimmer alone, for
+   Suspense fallbacks with no image) and as the wrapper behind a real
+   <img> (.shimmer + .img) — the <img> is opaque once it decodes, so it
+   naturally covers the shimmer without any onLoad/JS state needed. */
+.shimmer {
+  position: relative;
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  background-color: rgba(0, 0, 0, 0.08);
+  background-image: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.35) 50%, transparent 70%);
+  background-size: 200% 100%;
+  animation: shimmerSweep 1.6s ease-in-out infinite;
+}
+
+.img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@keyframes shimmerSweep {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shimmer {
+    animation: none;
+  }
+}

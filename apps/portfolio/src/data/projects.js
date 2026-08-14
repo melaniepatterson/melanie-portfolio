@@ -30,23 +30,29 @@ export const PROJECTS = [
     </>,
     externalLink: "",
     thumbnail: "/images/projects/RISD/risd_seal_grid.webp",
+    thumbnailWidth: 702,
+    thumbnailHeight: 414,
     hero: () => import('../projects/RISD/Hero'),      // or: () => import('../projects/project-one/Hero')
     images: [
-  { src: "/images/projects/RISD/melanie-patterson-risd.webp", alt: "Textured blue liquid gradient with the RISD seal in the center." },
-  { src: "/images/projects/RISD/Rhode-Island-School-of-Design-Viewbook-Flip.webp", alt: "A gif flipping through the RISD viewbook. It's colorful pages and white debossed cover contrast a living wall of climbing philodendrons, pothos, and spider plants.", caption: "Photography for a promotional campaign of our annual viewbook. Viewbook design by Mary Banas and Jordan Gushwa (RISD Marketing & Communications.)", size: "small", lightbox: true },
-  { 
+  { src: "/images/projects/RISD/melanie-patterson-risd.webp", width: 1200, height: 800, alt: "Textured blue liquid gradient with the RISD seal in the center." },
+  { src: "/images/projects/RISD/Rhode-Island-School-of-Design-Viewbook-Flip.webp", width: 600, height: 338, alt: "A gif flipping through the RISD viewbook. It's colorful pages and white debossed cover contrast a living wall of climbing philodendrons, pothos, and spider plants.", caption: "Photography for a promotional campaign of our annual viewbook. Viewbook design by Mary Banas and Jordan Gushwa (RISD Marketing & Communications.)", size: "small", lightbox: true },
+  {
     type: "inspiration-result",
     inspirationSrc: "/images/projects/RISD/RISD-Hooray-by-Alex-Rapport.webp",
+    inspirationWidth: 936,
+    inspirationHeight: 527,
     inspirationAlt: "'Hooray' text animation spelled out of yellow, orange, pink and white confetti against a blue background. Confetti falls and resets the animation.",
     inspirationCaption: <><i>Hooray!</i> banner by Alex Rapport (RISD Marketing & Communications) </>,
-    resultSrc: "/images/projects/melanie-patterson-risd-admissions-decision-letter.webp",
+    resultSrc: "/images/projects/RISD/melanie-patterson-risd-admissions-decision-letter.webp",
+    resultWidth: 1550,
+    resultHeight: 1816,
     resultAlt: "Admissions admit decision letter screenshot with confetti in orange, pink, yellow and white and falling RISD seals in javascript",
     resultCaption: "Confetti script for RISD admitted students decision letter",
     dominates: "result",
     resultComponent: () => import('../projects/RISD/ConfettiDemo.jsx'),
     hoverHint: true,
   },
-  { 
+  {
   type: "browser-frame",
   src: "/images/projects/RISD/melanie-patterson-risd-admitted-student-portal.webp",
   alt: "The Admitted Students Day event portal screenshot displaying a program of events, custom event Google map, and other event details designed in the RISD identity.",
@@ -56,25 +62,31 @@ export const PROJECTS = [
   {
     type: "applet-result",
     appletComponent: () => import('../applets/GridFisheye.jsx'),
+    appletRatio: "3 / 2",
     appletAlt: "A blue grid on black that bulges toward the cursor, like a fisheye lens following the pointer.",
     appletCaption: "Cursor-following fisheye grid—one of a small series of interactive canvas experiments.",
     showRefresh: false,
     bannerSrc: "/images/projects/RISD/Fisheye-Grid-Applet-This-Week-Header.webp",
+    bannerWidth: 700,
+    bannerHeight: 413,
     bannerAlt: "The same blue grid now has text that reads 'This Week' over top.",
     bannerCaption: "A lo-fi screen recording of the canvas grid animation used as a backdrop for email banners.",
   },
   {
   type: "banner-stack",
-  images: [{ src: "/images/projects/RISD/Banner-1-RISD-Portolio-Day.webp", alt: "Banner reading 'RISD Portfolio Days' with photos of a blue paint brush and students holding up a large, human-scale piece." }, { src: "/images/projects/RISD/Banner-2-Grad_Campus_Tour.webp", alt: "Text reads 'Grad Campus Tours' over top an image of the RISD Nature Lab with a blue filter, and one of the windows cut out in full color." }, { src: "/images/projects/RISD/Banner-3-This-Week.webp", alt: "A banner reading 'This Week' over top a scrolling selection of images of students, artwork, and other campus life photos." }, { src: "/images/projects/RISD/Banner-3-This-Week.webp", alt: "A banner reading 'This Week' over top a scrolling selection of images of students, artwork, and other campus life photos." }],
+  images: [{ src: "/images/projects/RISD/Banner-1-RISD-Portolio-Day.webp", width: 878, height: 518, alt: "Banner reading 'RISD Portfolio Days' with photos of a blue paint brush and students holding up a large, human-scale piece." }, { src: "/images/projects/RISD/Banner-2-Grad_Campus_Tour.webp", width: 878, height: 518, alt: "Text reads 'Grad Campus Tours' over top an image of the RISD Nature Lab with a blue filter, and one of the windows cut out in full color." }, { src: "/images/projects/RISD/Banner-3-This-Week.webp", width: 650, height: 383, alt: "A banner reading 'This Week' over top a scrolling selection of images of students, artwork, and other campus life photos." }, { src: "/images/projects/RISD/Banner-3-This-Week.webp", width: 650, height: 383, alt: "A banner reading 'This Week' over top a scrolling selection of images of students, artwork, and other campus life photos." }],
   caption: "Email banners incorporating cut-out styling as part of our image treatment system.",
 },
 {
     type: "applet-result",
     appletComponent: () => import('../applets/FallingRectangles.jsx'),
+    appletRatio: "3 / 2",
     appletAlt: "Blue rectangles fall and stack on each other, accumulating on the right side and spreading left.",
     appletCaption: "Canvas animation featuring blue stacking rectangles, informed by physics.",
     showRefresh: true,
     bannerSrc: "/images/projects/RISD/Falling-Blocks-Applet-This-Week-Header.webp",
+    bannerWidth: 800,
+    bannerHeight: 529,
     bannerAlt: "The same falling rectangle now has text that reads 'This Week' over top.",
     bannerCaption: "The canvas animation with added noise for email banners.",
   },
@@ -92,9 +104,11 @@ export const PROJECTS = [
     externalLink: "https://glowupdemo.melanie.studio/",
     externalLinkLabel: "View demo",
     thumbnail: "/images/projects/GlowUp/glow_up_thumbnail.webm", // or: () => import('../projects/project-one/Thumbnail')
+    thumbnailWidth: 1200,
+    thumbnailHeight: 770,
     hero: null,      // or: () => import('../projects/project-one/Hero')
     images: [
-    { src: "/images/projects/GlowUp/melanie-patterson-glow-up-calendar-desktop.webp", alt: "The Glow Up calendar on desktop, showing a month grid with AM/PM routine slots colored by day type and an active Tretinoin Onboarding program banner." },
+    { src: "/images/projects/GlowUp/melanie-patterson-glow-up-calendar-desktop.webp", width: 1400, height: 1590, alt: "The Glow Up calendar on desktop, showing a month grid with AM/PM routine slots colored by day type and an active Tretinoin Onboarding program banner." },
     {
       type: "device-compare",
       desktopSrc: "/images/projects/GlowUp/melanie-patterson-glow-up-calendar-desktop.webp",
@@ -112,11 +126,13 @@ export const PROJECTS = [
     {
       type: "component",
       component: () => import('../projects/GlowUp/GlowUpMobileLoader.jsx'),
+      ratio: "927.98 / 1920",
       caption: "The loading screen, with rolling color progress bar and cute skincare-themed load phrases.",
     },
     {
       type: "component",
       component: () => import('../projects/GlowUp/GlowUpBrandPair.jsx'),
+      ratio: "8 / 3",
       size: "large",
       caption: "The Glow Up wordmark (set in Naskle) and brand colors.",
     },
@@ -132,11 +148,13 @@ export const PROJECTS = [
     description: "Mural-scale illustrated maps of South Florida, combining digital illustration with traditional techniques, including hand-lettering and painted texture work, installed across Brightline's Miami, Fort Lauderdale, and West Palm Beach stations. Each map depicts train routes, stations, landmarks, and highways within Brightline's brand color system.",
     externalLink: "",
     thumbnail: "/images/projects/Brightline/Brightline_Maps_Melanie_Patterson_Crop.webp", // or: () => import('../projects/project-one/Thumbnail')
+    thumbnailWidth: 1279,
+    thumbnailHeight: 853,
     hero: null,      // or: () => import('../projects/project-one/Hero')
     images: [
-  { src: "https://placehold.co/1200x800/1a1a1a/FAF7F2", alt: "A watercolor painting of..." },
-  { src: "https://placehold.co/800x1000/1a1a1a/FAF7F2", alt: "Detail shot of the upper left corner showing..." },
-  { src: "https://placehold.co/600x600/1a1a1a/FAF7F2", alt: "The full piece installed at..." },
+  { src: "https://placehold.co/1200x800/1a1a1a/FAF7F2", width: 1200, height: 800, alt: "A watercolor painting of..." },
+  { src: "https://placehold.co/800x1000/1a1a1a/FAF7F2", width: 800, height: 1000, alt: "Detail shot of the upper left corner showing..." },
+  { src: "https://placehold.co/600x600/1a1a1a/FAF7F2", width: 600, height: 600, alt: "The full piece installed at..." },
 ]
   } /*,
   {

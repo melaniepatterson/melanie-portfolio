@@ -1,29 +1,35 @@
 import styles from "./AppletResult.module.css";
 import Caption from "./Caption";
+import ShimmerImage, { Skeleton } from "./Skeleton";
 import { Suspense, lazy, useState, useEffect } from "react";
 
 const appletComponentCache = {};
 const bannerComponentCache = {};
 
-function LazyAppletComponent({ loader, fallbackSrc, fallbackAlt }) {
+// AppletCanvas.module.css (what every current appletComponent renders
+// into) is fixed at 3:2 — used as the Skeleton's fallback ratio whenever
+// there's no fallbackSrc image to size against instead.
+const DEFAULT_APPLET_RATIO = "3 / 2";
+
+function LazyAppletComponent({ loader, fallbackSrc, fallbackAlt, fallbackWidth, fallbackHeight, ratio }) {
   if (!appletComponentCache[loader]) {
     appletComponentCache[loader] = lazy(loader);
   }
   const Component = appletComponentCache[loader];
   return (
-    <Suspense fallback={fallbackSrc ? <img src={fallbackSrc} alt={fallbackAlt} /> : null}>
+    <Suspense fallback={fallbackSrc ? <ShimmerImage src={fallbackSrc} alt={fallbackAlt} width={fallbackWidth} height={fallbackHeight} /> : <Skeleton ratio={ratio || DEFAULT_APPLET_RATIO} />}>
       <Component />
     </Suspense>
   );
 }
 
-function LazyBannerComponent({ loader, fallbackSrc, fallbackAlt }) {
+function LazyBannerComponent({ loader, fallbackSrc, fallbackAlt, fallbackWidth, fallbackHeight }) {
   if (!bannerComponentCache[loader]) {
     bannerComponentCache[loader] = lazy(loader);
   }
   const Component = bannerComponentCache[loader];
   return (
-    <Suspense fallback={fallbackSrc ? <img src={fallbackSrc} alt={fallbackAlt} /> : null}>
+    <Suspense fallback={fallbackSrc ? <ShimmerImage src={fallbackSrc} alt={fallbackAlt} width={fallbackWidth} height={fallbackHeight} /> : <Skeleton />}>
       <Component />
     </Suspense>
   );
@@ -31,9 +37,14 @@ function LazyBannerComponent({ loader, fallbackSrc, fallbackAlt }) {
 
 export default function AppletResult({
   appletSrc,
+  appletWidth,
+  appletHeight,
+  appletRatio,
   appletAlt,
   appletCaption,
   bannerSrc,
+  bannerWidth,
+  bannerHeight,
   bannerAlt,
   bannerCaption,
   dominates = "applet",
@@ -96,9 +107,12 @@ export default function AppletResult({
             loader={appletComponent}
             fallbackSrc={appletSrc}
             fallbackAlt={appletAlt}
+            fallbackWidth={appletWidth}
+            fallbackHeight={appletHeight}
+            ratio={appletRatio}
           />
         ) : (
-          <img src={appletSrc} alt={appletAlt} />
+          <ShimmerImage src={appletSrc} alt={appletAlt} width={appletWidth} height={appletHeight} />
         )}
         {appletCaption && <Caption className={styles.caption}>{appletCaption}</Caption>}
       </div>
@@ -126,9 +140,11 @@ export default function AppletResult({
             loader={bannerComponent}
             fallbackSrc={bannerSrc}
             fallbackAlt={bannerAlt}
+            fallbackWidth={bannerWidth}
+            fallbackHeight={bannerHeight}
           />
         ) : (
-          <img src={bannerSrc} alt={bannerAlt} />
+          <ShimmerImage src={bannerSrc} alt={bannerAlt} width={bannerWidth} height={bannerHeight} />
         )}
         {bannerCaption && <Caption className={styles.caption}>{bannerCaption}</Caption>}
       </div>

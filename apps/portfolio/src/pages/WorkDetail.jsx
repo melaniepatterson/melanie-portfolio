@@ -10,6 +10,7 @@ import Lightbox from "../components/Lightbox";
 import CodeReveal from "../components/CodeReveal";
 import BrowserFrame from "../components/BrowserFrame";
 import Caption from "../components/Caption";
+import ShimmerImage, { Skeleton } from "../components/Skeleton";
 import { useEffect, Suspense, lazy, useState } from "react";
 
 const heroCache = {};
@@ -29,13 +30,13 @@ function getGalleryData(project) {
   return sessionGalleryData[project.slug];
 }
 
-function LazyHero({ loader, fallbackSrc, fallbackAlt }) {
+function LazyHero({ loader, fallbackSrc, fallbackAlt, fallbackWidth, fallbackHeight }) {
   if (!heroCache[loader]) {
     heroCache[loader] = lazy(loader);
   }
   const Component = heroCache[loader];
   return (
-    <Suspense fallback={<img src={fallbackSrc} alt={fallbackAlt} />}>
+    <Suspense fallback={<ShimmerImage src={fallbackSrc} alt={fallbackAlt} width={fallbackWidth} height={fallbackHeight} />}>
       <Component />
     </Suspense>
   );
@@ -45,13 +46,16 @@ function LazyHero({ loader, fallbackSrc, fallbackAlt }) {
 // DeviceCompare) into the gallery grid like it was just another image —
 // type: "component" + component: () => import(...), same lazy-loader
 // convention as the hero/thumbnail/applet slots elsewhere in this codebase.
-function LazyGalleryComponent({ loader }) {
+// `ratio` (CSS aspect-ratio, e.g. "927.98 / 1920") sizes the shimmer
+// fallback to roughly match what the component will render, so it doesn't
+// pop in at full height from nothing once the chunk loads.
+function LazyGalleryComponent({ loader, ratio }) {
   if (!galleryComponentCache[loader]) {
     galleryComponentCache[loader] = lazy(loader);
   }
   const Component = galleryComponentCache[loader];
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<Skeleton ratio={ratio} />}>
       <Component />
     </Suspense>
   );
@@ -156,7 +160,7 @@ export default function WorkDetail() {
     if (img.type === "component") {
       return (
         <div key={i} className={`${styles.galleryItem} ${sizeClass}`}>
-          <LazyGalleryComponent loader={img.component} />
+          <LazyGalleryComponent loader={img.component} ratio={img.ratio} />
           {img.caption && <Caption className={styles.caption}>{img.caption}</Caption>}
         </div>
       );
@@ -190,7 +194,7 @@ export default function WorkDetail() {
         onKeyDown={img.lightbox ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openLightbox(); } } : undefined}
         aria-label={img.lightbox ? `View larger: ${img.alt}` : undefined}
       >
-        <img src={img.src} alt={img.alt} loading="lazy" />
+        <ShimmerImage src={img.src} alt={img.alt} width={img.width} height={img.height} loading="lazy" />
         {img.lightbox && <div className={styles.lightboxHint} aria-hidden="true">⊕</div>}
         {img.caption && <Caption className={styles.caption}>{img.caption}</Caption>}
         {img.hoverHint && <p className={styles.hoverHint}>Hover to interact</p>}
@@ -209,9 +213,11 @@ export default function WorkDetail() {
               loader={project.hero}
               fallbackSrc={project.images[0].src}
               fallbackAlt={project.images[0].alt}
+              fallbackWidth={project.images[0].width}
+              fallbackHeight={project.images[0].height}
             />
           ) : (
-            <img src={project.images[0].src} alt={project.images[0].alt} />
+            <ShimmerImage src={project.images[0].src} alt={project.images[0].alt} width={project.images[0].width} height={project.images[0].height} />
           )}
           {/* Desktop only — flows down this column alongside the description
               on the right (instead of waiting for that column to finish),

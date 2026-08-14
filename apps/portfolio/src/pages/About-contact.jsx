@@ -1,5 +1,6 @@
 import { SplitText } from "../utils";
 import styles from "./About-contact.module.css";
+import ShimmerImage from "../components/Skeleton";
 import { useEffect, useState } from "react";
 
 export default function AboutContact() {
@@ -42,9 +43,11 @@ export default function AboutContact() {
        
         </div>
         <div className={styles.photo}>
-          <img
+          <ShimmerImage
             src="/images/melanie-patterson-headshot.webp"
             alt="Melanie Patterson"
+            width={800}
+            height={1200}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
             style={{
