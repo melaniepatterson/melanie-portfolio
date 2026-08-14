@@ -103,7 +103,6 @@ function Layout() {
           paddingRight: "2rem",
           fontSize: "0.6rem",
           letterSpacing: "0.1em",
-          opacity: 0.4,
           color: isWork || isWorkDetail ? "#FAF7F2" : "#C93500",
           pointerEvents: "none",
         }}>

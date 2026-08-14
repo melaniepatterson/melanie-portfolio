@@ -121,7 +121,6 @@
   letter-spacing: 0.1em;
   text-transform: uppercase;
   line-height: 1.2;
-  opacity: 0.7;
 }
 
 .description {
@@ -181,7 +180,6 @@
   letter-spacing: 0.1em;
   text-transform: uppercase;
   line-height: 1.4;
-  opacity: 0.5;
   color: #FAF7F2;
 }
 
@@ -214,22 +212,23 @@
   text-transform: uppercase;
   line-height: 1.2;
   color: #FAF7F2;
-  opacity: 0.4;
   position: absolute;
   right: 0.75rem; /* was -0.5rem — now sits inside the padding area */
   top: 50%;
-  transform: rotate(90deg) translateX(-50%);
   transform-origin: right center;
   white-space: nowrap;
   pointer-events: none;
+  /* Animates scale instead of opacity — the previous 0.4/0.8 opacity pulse
+     dipped well under the 4.5:1 contrast this text needs against the page
+     background at its low point. */
   animation: pulse 2s ease-in-out infinite;
   animation-fill-mode: both;
   animation-delay: 0s;
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 0.8; }
+  0%, 100% { transform: rotate(90deg) translateX(-50%) scale(1); }
+  50% { transform: rotate(90deg) translateX(-50%) scale(1.08); }
 }
 
 @media (max-width: 640px) {

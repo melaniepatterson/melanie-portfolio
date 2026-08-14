@@ -116,7 +116,6 @@
   text-transform: uppercase;
   line-height: 1.2;
   color: #FAF7F2;
-  opacity: 0.5;
   position: absolute;
   right: -1.5rem;
   top: 0;
@@ -124,10 +123,14 @@
   text-orientation: mixed;
   white-space: nowrap;
   pointer-events: none;
+  transform-origin: top center;
+  /* Animates scale instead of opacity — the previous 0.4/0.8 opacity pulse
+     dipped well under the 4.5:1 contrast this text needs against the page
+     background at its low point. */
   animation: pulse 2s ease-in-out infinite;
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 0.8; }
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
 }
