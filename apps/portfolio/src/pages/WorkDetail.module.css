@@ -254,6 +254,11 @@
   .info {
     position: static;
     top: auto;
+    /* The desktop padding-bottom reserves space under the fixed
+       bottom-right Logo.jsx signature — on mobile that logo is hidden
+       (replaced by a top-centered one, see .site-logo-mobile in
+       App.css), so the reserved space is just unused scroll. */
+    padding-bottom: 0;
   }
 
   .title {
