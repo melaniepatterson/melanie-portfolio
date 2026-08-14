@@ -20,13 +20,19 @@ export default function EmailBrowserFrame({ src }) {
       </defs>
 
       <g clipPath="url(#risdEmailFrameClip)">
-        <foreignObject x="18.57" y="134.45" width="1583.8" height="1664.45">
+        {/* Height reaches the border path's true bottom (1848.9), not just
+            its straight run before the corner curve (1798.9 = 134.45 +
+            1664.45) — the rounded corner adds another 50 units below that,
+            and border-radius needs the box to already extend that far or
+            it just rounds inward from the shorter box, landing the video's
+            corner short of where the border curve actually ends. */}
+        <foreignObject x="18.57" y="134.45" width="1583.8" height="1714.45">
           {/* clip-path on the <g> above doesn't reliably clip an embedded
               foreignObject's HTML content in every browser (the corner
               region renders as a plain rectangle, leaving the rounded
               area unfilled) — border-radius + overflow: hidden on the
               actual HTML div is the reliable way to round it. */}
-          <div xmlns="http://www.w3.org/1999/xhtml" style={{ position: "relative", width: "1583.8px", height: "1664.45px", overflow: "hidden", borderRadius: "0 0 50px 50px" }}>
+          <div xmlns="http://www.w3.org/1999/xhtml" style={{ position: "relative", width: "1583.8px", height: "1714.45px", overflow: "hidden", borderRadius: "0 0 50px 50px" }}>
             <video
               src={src}
               autoPlay
