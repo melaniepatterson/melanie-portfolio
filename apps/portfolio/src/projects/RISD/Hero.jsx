@@ -1,5 +1,4 @@
 import { useState } from "react";
-import img1 from "./images/melanie-patterson-risd.webp";
 import img3 from "./images/03.webp";
 import EmailBrowserFrame from "./EmailBrowserFrame";
 
@@ -9,7 +8,7 @@ export default function Hero() {
   return (
     <div style={{ position: "relative", width: "100%" }}>
       <img
-        src={img1}
+        src="/images/projects/RISD/melanie-patterson-risd.webp"
         width="1200"
         height="800"
         alt=""
@@ -18,14 +17,20 @@ export default function Hero() {
       <div
         style={{
           position: "absolute",
-          bottom: "5%",
-          right: "5%",
+          top: "50%",
+          right: "7%",
           width: "45%",
-          transition: "transform 0.4s ease",
-          transform: hovered ? "translate(4px, -4px)" : "none",
+          transform: "translateY(-50%)",
         }}
       >
-        <EmailBrowserFrame src="/images/projects/RISD/app_open_email.webm" />
+        <div
+          style={{
+            transition: "transform 0.4s ease",
+            transform: hovered ? "translate(4px, -4px)" : "none",
+          }}
+        >
+          <EmailBrowserFrame src="/images/projects/RISD/app_open_email.webm" />
+        </div>
       </div>
     </div>
   );
