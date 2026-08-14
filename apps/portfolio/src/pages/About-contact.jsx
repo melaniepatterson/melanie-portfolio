@@ -48,6 +48,7 @@ export default function AboutContact() {
             alt="Melanie Patterson"
             width={800}
             height={1200}
+            className={styles.photoShimmer}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
             style={{
