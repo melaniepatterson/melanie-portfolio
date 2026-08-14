@@ -18,6 +18,12 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev:glowup:demo", "--", "--port", "5175"],
       "port": 5175
+    },
+    {
+      "name": "portfolio-preview",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "preview:portfolio", "--", "--port", "4173"],
+      "port": 4173
     }
   ]
 }

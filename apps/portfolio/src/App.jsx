@@ -3,16 +3,21 @@ import Nav from "./Nav";
 import Logo from "./Logo";
 import LogoHorizontal from "./LogoHorizontal";
 import "./App.css";
-import { PROJECTS } from "./data/projects";
+import { PROJECT_TITLES } from "./data/projectTitles";
 import { useEffect, Suspense, lazy } from "react";
 import PageTransition from "./PageTransition";
 import NotFound from "./NotFound";
+// "/" is the default landing page for nearly every visitor, so it's kept
+// eager rather than lazy — lazy-loading it only adds a sequential
+// network round-trip to the critical path (main bundle, then this chunk,
+// then its font) with no real payoff, since it's needed on initial load
+// almost every time regardless.
+import Hero from "./Radialgradient";
 
-// Route-level code splitting — each page's own JS only downloads when a
-// visitor actually navigates there, instead of the home page forcing a
-// download of Work/WorkDetail/About's code (and everything they in turn
-// pull in) upfront.
-const Hero = lazy(() => import("./Radialgradient"));
+// Route-level code splitting for genuinely secondary navigation — each
+// of these only downloads when a visitor actually clicks through to it,
+// instead of the home page forcing a download of all three (and
+// everything they in turn pull in, like the full project data) upfront.
 const Work = lazy(() => import("./pages/Work"));
 const WorkDetail = lazy(() => import("./pages/WorkDetail"));
 const AboutContact = lazy(() => import("./pages/About-contact"));
@@ -77,7 +82,7 @@ function Layout() {
       document.title = title;
     } else if (location.pathname.startsWith("/portfolio/")) {
       const slug = location.pathname.replace("/portfolio/", "");
-      const project = PROJECTS.find(p => p.slug === slug);
+      const project = PROJECT_TITLES.find(p => p.slug === slug);
       document.title = project ? `${project.title} — melanie.studio` : "melanie.studio";
     }
   }, [location.pathname]);
