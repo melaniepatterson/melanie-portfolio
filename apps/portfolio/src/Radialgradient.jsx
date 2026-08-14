@@ -1,9 +1,7 @@
 import { useEffect, useRef, useState, forwardRef } from "react";
 import { Link } from "react-router-dom";
-import { PROJECTS } from "./data/projects";
+import { CHASER_IMAGES } from "./data/chaserImages";
 import { SplitText } from "./utils";
-
-const CHASER_IMAGES = PROJECTS.map(p => p.images[0].src);
 
 // Star 1 (doc 6) — placed at 55% x, bottom cropped 20%
 const Star1 = forwardRef(({ style }, ref) => (
