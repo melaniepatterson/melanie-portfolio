@@ -43,7 +43,13 @@ export default function VisibilityGatedVideo({ src, width, height, alt }) {
         playsInline
         disablePictureInPicture
         controls={false}
-        aria-label={alt}
+        // No dialogue/narration to caption — this is silent background
+        // motion. When there's no alt text it's purely decorative (e.g.
+        // the RISD hero), so hide it from assistive tech entirely rather
+        // than expose an empty accessible name; otherwise keep the label,
+        // since some of these videos are the actual work being shown.
+        aria-hidden={alt ? undefined : "true"}
+        aria-label={alt || undefined}
         className={skeletonStyles.img}
       />
     </div>

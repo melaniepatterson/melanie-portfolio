@@ -69,6 +69,7 @@
 
     const el = document.createElement('img');
     el.src = def.src;
+    el.alt = ''; // decorative confetti piece
     el.style.cssText = `
       position: absolute;
       top: -${size * 1.5}px;
