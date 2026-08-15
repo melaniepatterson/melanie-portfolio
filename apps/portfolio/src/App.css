@@ -183,9 +183,9 @@ main {
 
 @keyframes starDrift {
   0%   { transform: translate(0, 0) rotate(0deg); }
-  25%  { transform: translate(1px, -1.5px) rotate(-0.2deg); }
-  50%  { transform: translate(-1.5px, 1px) rotate(0.15deg); }
-  75%  { transform: translate(1px, 1px) rotate(-0.1deg); }
+  25%  { transform: translate(2.5px, -3.5px) rotate(-0.45deg); }
+  50%  { transform: translate(-3.5px, 2.5px) rotate(0.35deg); }
+  75%  { transform: translate(2.5px, 2.5px) rotate(-0.25deg); }
   100% { transform: translate(0, 0) rotate(0deg); }
 }
 

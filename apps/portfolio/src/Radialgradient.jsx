@@ -311,8 +311,8 @@ export default function RepulseLogo() {
         src="/images/melanie studio circle.svg"
         alt=""
         style={{
-          width: isMobile ? 950 : 1500,
-          height: isMobile ? 950 : 1500,
+          width: isMobile ? 980 : 1500,
+          height: isMobile ? 980 : 1500,
           willChange: "transform",
         }}
       />
