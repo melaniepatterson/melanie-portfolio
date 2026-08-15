@@ -178,7 +178,7 @@ export default function WorkDetail() {
     if (img.type === "browser-frame") {
       return (
         <div key={i} className={`${styles.galleryItem} ${sizeClass}`}>
-          <BrowserFrame src={img.src} alt={img.alt} />
+          <BrowserFrame src={img.src} alt={img.alt} width={img.width} height={img.height} />
           {img.caption && <Caption className={styles.caption}>{img.caption}</Caption>}
         </div>
       );

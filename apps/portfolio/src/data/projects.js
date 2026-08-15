@@ -53,6 +53,8 @@ export const PROJECTS = [
   {
   type: "browser-frame",
   src: "/images/projects/RISD/melanie-patterson-risd-admitted-student-portal.webp",
+  width: 3490,
+  height: 9385,
   alt: "The Admitted Students Day event portal screenshot displaying a program of events, custom event Google map, and other event details designed in the RISD identity.",
   size: "small",
   caption: "The shipped Admitted Students Day event portal, built over Slate's native portal framework.",

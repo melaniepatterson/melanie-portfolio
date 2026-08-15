@@ -49,6 +49,11 @@
   let spawnTimer = null;
   let clearTimer = null;
   let spawned = 0;
+  // Read once instead of every frame — container size doesn't change
+  // during the fall, so re-reading it per piece per frame was a forced
+  // reflow (a geometry read interleaved with the style writes below).
+  const containerWidth = container.offsetWidth;
+  const containerHeight = container.offsetHeight;
 
   // ── Helpers ───────────────────────────────────────────────────────────────
   function rand(min, max) {
@@ -78,8 +83,7 @@
 
     return {
       el,
-      x: parseFloat(el.style.left), // vw % converted below
-      xPct: rand(0, 100), // starting x as % of viewport
+      xDriftPx: 0, // cumulative slow drift, in px — folded into transform below
       y: -size * 1.5,
       fallSpeed: rand(FALL_SPEED.min, FALL_SPEED.max),
       driftAmp:
@@ -100,13 +104,16 @@
   function updatePiece(p) {
     p.tick += p.driftFreq;
     p.y += p.fallSpeed;
-    p.xPct += Math.sin(p.tick) * p.driftAmp * 0.05;
+    // Same drift rate as before (0.05% of container width per frame),
+    // just expressed in px so it can fold into transform instead of a
+    // separate `left` write.
+    p.xDriftPx += Math.sin(p.tick) * p.driftAmp * 0.05 * containerWidth / 100;
     if (p.rotate) p.rotation += p.rotateSpeed;
 
-    p.el.style.transform = `translate(${Math.sin(p.tick) * p.driftAmp * 6}px, ${p.y}px) rotate(${p.rotation}deg)`;
-    p.el.style.left = `${p.xPct}%`;
+    const wobblePx = Math.sin(p.tick) * p.driftAmp * 6;
+    p.el.style.transform = `translate(${p.xDriftPx + wobblePx}px, ${p.y}px) rotate(${p.rotation}deg)`;
 
-    if (p.y > container.offsetHeight + p.size * 2) {
+    if (p.y > containerHeight + p.size * 2) {
       p.dead = true;
       p.el.remove();
     }

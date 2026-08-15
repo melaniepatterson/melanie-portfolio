@@ -1,3 +1,4 @@
+import { useState } from "react";
 import styles from "./Skeleton.module.css";
 
 // Bare shimmer placeholder — for Suspense fallbacks that aren't loading an
@@ -31,9 +32,14 @@ export default function ShimmerImage({
   onKeyDown,
   ...rest
 }) {
+  // The shimmer sweep otherwise keeps animating forever once loaded —
+  // it's just invisible, covered by the now-opaque <img>, but the
+  // browser still has to do the work. Stopping it once the real image
+  // has actually decoded is pure waste avoided, no visual difference.
+  const [loaded, setLoaded] = useState(false);
   return (
     <div
-      className={`${styles.shimmer} ${className || ""}`}
+      className={`${styles.shimmer} ${loaded ? styles.loaded : ""} ${className || ""}`}
       style={{ aspectRatio: width && height ? `${width} / ${height}` : undefined }}
       onClick={onClick}
       role={role}
@@ -48,6 +54,7 @@ export default function ShimmerImage({
         loading={loading}
         className={`${styles.img} ${imgClassName || ""}`}
         {...rest}
+        onLoad={() => setLoaded(true)}
       />
     </div>
   );

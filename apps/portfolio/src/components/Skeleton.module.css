@@ -49,6 +49,13 @@
   transition: opacity 0s;
 }
 
+/* Once the real <img> has decoded, the sweep is permanently covered —
+   fully stop it (not just hide it) so it's not still animating,
+   invisibly, forever underneath. */
+.shimmer.loaded::before {
+  animation: none;
+}
+
 .img {
   position: relative;
   display: block;

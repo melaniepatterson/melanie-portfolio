@@ -9,8 +9,10 @@ import styles from './BrowserFrame.module.css';
  * Props:
  *   src      — image URL/path for the screenshot
  *   alt      — alt text for the screenshot image (optional)
+ *   width    — intrinsic pixel width of the screenshot (avoids CLS)
+ *   height   — intrinsic pixel height of the screenshot (avoids CLS)
  */
-export default function BrowserFrame({ src, alt = '' }) {
+export default function BrowserFrame({ src, alt = '', width, height }) {
   const [isScrolling, setIsScrolling] = useState(false);
   const scrollTimer = useRef(null);
 
@@ -52,7 +54,7 @@ export default function BrowserFrame({ src, alt = '' }) {
               className={styles.scrollContainer}
               onScroll={handleScroll}
             >
-              <img src={src} alt={alt} className={styles.screenshot} />
+              <img src={src} alt={alt} width={width} height={height} className={styles.screenshot} />
             </div>
           </foreignObject>
         </g>

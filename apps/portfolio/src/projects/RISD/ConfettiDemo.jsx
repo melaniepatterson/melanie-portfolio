@@ -66,7 +66,7 @@ export default function ConfettiDemo() {
         onMouseEnter={() => runConfetti(wrapperRef.current, runningInline)}
         onClick={() => setExpanded(true)}
       >
-        <img src={still} alt="RISD admit decision letter" className={styles.image} />
+        <img src={still} alt="RISD admit decision letter" width={1200} height={1406} className={styles.image} />
         <div className={styles.expandHint}>⊕</div>
       </div>
 
@@ -81,6 +81,8 @@ export default function ConfettiDemo() {
             <img
               src={still}
               alt="RISD admit decision letter"
+              width={1200}
+              height={1406}
               className={styles.lightboxImage}
               onMouseEnter={() => runConfetti(lightboxRef.current, runningLightbox)}
             />
