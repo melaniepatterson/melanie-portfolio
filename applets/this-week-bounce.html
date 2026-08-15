@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>This Week — Bounce Loop</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background: #0a0a0a;
+    overflow: auto;
+  }
+  .page-pad {
+    min-width: 100%;
+    min-height: 100%;
+    padding: 64px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Fixed 6:4 landscape stage. Position and color are both driven by
+     one requestAnimationFrame loop (see script) rather than CSS @keyframes,
+     so the loop stays exact even under aggressive browser throttling.
+     Bounce: Tx=6s horizontal round trip, Ty=4s vertical round trip
+     (LCM=12s). Color: 24s crossfade cycle, 8 evenly-spaced stops of 3s
+     each. Full perfect loop = LCM(12s, 24s) = 24s. A fixed margin keeps
+     the logo from ever touching the stage edge (see MARGIN in script). */
+  .stage {
+    position: relative;
+    width: 1500px;
+    height: 1000px;
+    overflow: hidden;
+    outline: 1px solid rgba(255, 255, 255, 0.08);
+    outline-offset: -1px;
+  }
+
+  .bg {
+    position: absolute;
+    inset: 0;
+    background: #000000;
+  }
+
+  .bounce {
+    position: absolute;
+    top: 0;
+    left: 0;
+    will-change: transform;
+  }
+
+  .logo-mask {
+    width: 480px;
+    height: 345px;
+    background: #ffffff;
+    filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.35));
+    -webkit-mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0NjIgMzMyIj48cGF0aCBmaWxsPSIjZmZmIiBkPSJNNDYuOTggMTQ1LjU0VjEzOC42Nkg2Ni44MlYyOS4yMkgzOC4xOFY1Mi4yNkgyNC4yNlYyMi42NkgxMjQuNDJWNTIuMjZIMTEwLjVWMjkuMjJIODEuODZWMTM4LjY2SDEwMS43VjE0NS41NEg0Ni45OFpNMTM2LjQxOCAxNDUuNTRWMTM4LjY2SDE0Ni4zMzhWMjMuNzhIMTM2LjQxOFYxNi45SDE2MC43MzhWNzEuNDZIMTYyLjAxOEMxNjcuOTM4IDY0LjEgMTc1LjYxOCA2MC40MiAxODYuMTc4IDYwLjQyQzIwNS41MzggNjAuNDIgMjE0LjgxOCA3Mi43NCAyMTQuODE4IDg3LjYyVjEzOC42NkgyMjQuMDk4VjE0NS41NEgxODguODk4VjEzOC42NkgyMDAuNDE4Vjg5LjIyQzIwMC40MTggNzQuMTggMTkzLjUzOCA2Ny45NCAxODEuODU4IDY3Ljk0QzE2OS41MzggNjcuOTQgMTYwLjczOCA3NS4xNCAxNjAuNzM4IDkwLjM0VjEzOC42NkgxNzIuMjU4VjE0NS41NEgxMzYuNDE4Wk0yMzkuNzY4IDQwLjI2VjIyLjY2SDI1NS42MDhWNDAuMjZIMjM5Ljc2OFpNMjMwLjY0OCAxNDUuNTRWMTM4LjY2SDI0MC41NjhWNjguNzRIMjMwLjY0OFY2MS44NkgyNTQuOTY4VjEzOC42NkgyNjQuNDA4VjE0NS41NEgyMzAuNjQ4Wk0yNzcuOTE4IDE0NS41NFYxMjEuMDZMMjkwLjg3OCAxMjAuNzRWMTIxLjU0QzI5MC44NzggMTMyLjkgMjk3Ljc1OCAxNDAuNDIgMzEwLjcxOCAxNDAuNDJDMzIyLjIzOCAxNDAuNDIgMzI4Ljc5OCAxMzQuNjYgMzI4LjYzOCAxMjYuMzRDMzI4LjYzOCAxMTkuOTQgMzI1LjU5OCAxMTUuOTQgMzE2LjMxOCAxMTMuMDZMMjk4LjA3OCAxMDcuM0MyODQuOTU4IDEwMy4xNCAyNzguODc4IDk1LjYyIDI3OC44NzggODQuNThDMjc4Ljg3OCA3MC41IDI5MC4wNzggNjAuNDIgMzA2Ljg3OCA2MC40MkMzMTYuNDc4IDYwLjQyIDMyMi44NzggNjQuMSAzMjYuMzk4IDY5LjU0SDMyNy42NzhWNjEuODZIMzM3Ljc1OFY4NS4wNkgzMjUuMTE4Vjg0LjFDMzI1LjExOCA3My4zOCAzMTguMzk4IDY2Ljk4IDMwNi41NTggNjYuOThDMjk0LjcxOCA2Ni45OCAyODkuNDM4IDcyLjc0IDI4OS41OTggODAuNThDMjg5LjkxOCA4Ni41IDI5My45MTggOTAuMTggMzAyLjA3OCA5Mi43NEwzMjAuNzk4IDk4LjY2QzMzNS41MTggMTAzLjMgMzM5Ljk5OCAxMTAuODIgMzM5Ljk5OCAxMjIuMDJDMzM5Ljk5OCAxMzcuMDYgMzI3Ljk5OCAxNDYuOTggMzEwLjcxOCAxNDYuOThDMjk5LjY3OCAxNDYuOTggMjkyLjk1OCAxNDIuODIgMjg5LjI3OCAxMzYuOUgyODcuOTk4VjE0NS41NEgyNzcuOTE4Wk02NS41NCAzMDUuNTRMMzIuNzQgMTg5LjU0SDIwLjlWMTgyLjY2SDcxLjNWMTg5LjU0SDQ4LjlMNzUuNzggMjg4LjQyTDEwMC41OCAxOTcuN0w5NS45NCAxODIuNjZIMTEwLjk4TDE0NC4yNiAyODguNThMMTY4LjI2IDE4OS41NEgxNDUuMzhWMTgyLjY2SDE4OC4yNlYxODkuNTRIMTc2LjI2TDE0OC4xIDMwNS41NEgxMzQuNUwxMDQuNTggMjEwLjE4TDc4LjUgMzA1LjU0SDY1LjU0Wk0yMjQuNDE2IDMwNi45OEMyMDEuNTM2IDMwNi45OCAxODUuMzc2IDI5MS45NCAxODUuMzc2IDI2NC43NEMxODUuMzc2IDIzOC4zNCAyMDEuMzc2IDIyMC40MiAyMjIuOTc2IDIyMC40MkMyNDEuMDU2IDIyMC40MiAyNTUuMjk2IDIzNC4wMiAyNTguMzM2IDI1Ny4wNkgxOTkuNjE2QzE5OS42MTYgMjU3LjU0IDE5OS42MTYgMjU4LjAyIDE5OS42MTYgMjU4LjVDMTk5LjYxNiAyODQuNTggMjExLjYxNiAyOTYuNzQgMjI4LjA5NiAyOTYuNzRDMjQyLjk3NiAyOTYuNzQgMjUxLjQ1NiAyODYuOTggMjUzLjUzNiAyNzEuNzhIMjU5LjYxNkMyNTcuNTM2IDI5NC4wMiAyNDMuMTM2IDMwNi45OCAyMjQuNDE2IDMwNi45OFpNMjIyLjMzNiAyMjcuMTRDMjA5Ljg1NiAyMjcuMTQgMjAyLjAxNiAyMzQuOTggMjAwLjA5NiAyNTAuNUgyNDAuNzM2QzI0MC40MTYgMjM0LjY2IDIzMy44NTYgMjI3LjE0IDIyMi4zMzYgMjI3LjE0Wk0zMTEuMTM1IDMwNi45OEMyODguMjU1IDMwNi45OCAyNzIuMDk1IDI5MS45NCAyNzIuMDk1IDI2NC43NEMyNzIuMDk1IDIzOC4zNCAyODguMDk1IDIyMC40MiAzMDkuNjk1IDIyMC40MkMzMjcuNzc1IDIyMC40MiAzNDIuMDE1IDIzNC4wMiAzNDUuMDU1IDI1Ny4wNkgyODYuMzM1QzI4Ni4zMzUgMjU3LjU0IDI4Ni4zMzUgMjU4LjAyIDI4Ni4zMzUgMjU4LjVDMjg2LjMzNSAyODQuNTggMjk4LjMzNSAyOTYuNzQgMzE0LjgxNSAyOTYuNzRDMzI5LjY5NSAyOTYuNzQgMzM4LjE3NSAyODYuOTggMzQwLjI1NSAyNzEuNzhIMzQ2LjMzNUMzNDQuMjU1IDI5NC4wMiAzMjkuODU1IDMwNi45OCAzMTEuMTM1IDMwNi45OFpNMzA5LjA1NSAyMjcuMTRDMjk2LjU3NSAyMjcuMTQgMjg4LjczNSAyMzQuOTggMjg2LjgxNSAyNTAuNUgzMjcuNDU1QzMyNy4xMzUgMjM0LjY2IDMyMC41NzUgMjI3LjE0IDMwOS4wNTUgMjI3LjE0Wk0zNTYuNTc0IDMwNS41NFYyOTguNjZIMzY1Ljg1NFYxODMuNzhIMzU2LjU3NFYxNzYuOUgzODAuMjU0VjI2NS4wNkw0MTguMTc0IDIyOC43NEg0MDIuMTc0VjIyMS44Nkg0MzguMzM0VjIyOC43NEg0MjguMjU0TDQwNC4wOTQgMjUxLjNMNDQwLjU3NCAzMDUuNTRINDIyLjk3NEwzOTMuMzc0IDI2MC41OEwzODAuMjU0IDI3My4wNlYyOTguNjZIMzk2LjQxNFYzMDUuNTRIMzU2LjU3NFoiLz48L3N2Zz4K");
+    mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0NjIgMzMyIj48cGF0aCBmaWxsPSIjZmZmIiBkPSJNNDYuOTggMTQ1LjU0VjEzOC42Nkg2Ni44MlYyOS4yMkgzOC4xOFY1Mi4yNkgyNC4yNlYyMi42NkgxMjQuNDJWNTIuMjZIMTEwLjVWMjkuMjJIODEuODZWMTM4LjY2SDEwMS43VjE0NS41NEg0Ni45OFpNMTM2LjQxOCAxNDUuNTRWMTM4LjY2SDE0Ni4zMzhWMjMuNzhIMTM2LjQxOFYxNi45SDE2MC43MzhWNzEuNDZIMTYyLjAxOEMxNjcuOTM4IDY0LjEgMTc1LjYxOCA2MC40MiAxODYuMTc4IDYwLjQyQzIwNS41MzggNjAuNDIgMjE0LjgxOCA3Mi43NCAyMTQuODE4IDg3LjYyVjEzOC42NkgyMjQuMDk4VjE0NS41NEgxODguODk4VjEzOC42NkgyMDAuNDE4Vjg5LjIyQzIwMC40MTggNzQuMTggMTkzLjUzOCA2Ny45NCAxODEuODU4IDY3Ljk0QzE2OS41MzggNjcuOTQgMTYwLjczOCA3NS4xNCAxNjAuNzM4IDkwLjM0VjEzOC42NkgxNzIuMjU4VjE0NS41NEgxMzYuNDE4Wk0yMzkuNzY4IDQwLjI2VjIyLjY2SDI1NS42MDhWNDAuMjZIMjM5Ljc2OFpNMjMwLjY0OCAxNDUuNTRWMTM4LjY2SDI0MC41NjhWNjguNzRIMjMwLjY0OFY2MS44NkgyNTQuOTY4VjEzOC42NkgyNjQuNDA4VjE0NS41NEgyMzAuNjQ4Wk0yNzcuOTE4IDE0NS41NFYxMjEuMDZMMjkwLjg3OCAxMjAuNzRWMTIxLjU0QzI5MC44NzggMTMyLjkgMjk3Ljc1OCAxNDAuNDIgMzEwLjcxOCAxNDAuNDJDMzIyLjIzOCAxNDAuNDIgMzI4Ljc5OCAxMzQuNjYgMzI4LjYzOCAxMjYuMzRDMzI4LjYzOCAxMTkuOTQgMzI1LjU5OCAxMTUuOTQgMzE2LjMxOCAxMTMuMDZMMjk4LjA3OCAxMDcuM0MyODQuOTU4IDEwMy4xNCAyNzguODc4IDk1LjYyIDI3OC44NzggODQuNThDMjc4Ljg3OCA3MC41IDI5MC4wNzggNjAuNDIgMzA2Ljg3OCA2MC40MkMzMTYuNDc4IDYwLjQyIDMyMi44NzggNjQuMSAzMjYuMzk4IDY5LjU0SDMyNy42NzhWNjEuODZIMzM3Ljc1OFY4NS4wNkgzMjUuMTE4Vjg0LjFDMzI1LjExOCA3My4zOCAzMTguMzk4IDY2Ljk4IDMwNi41NTggNjYuOThDMjk0LjcxOCA2Ni45OCAyODkuNDM4IDcyLjc0IDI4OS41OTggODAuNThDMjg5LjkxOCA4Ni41IDI5My45MTggOTAuMTggMzAyLjA3OCA5Mi43NEwzMjAuNzk4IDk4LjY2QzMzNS41MTggMTAzLjMgMzM5Ljk5OCAxMTAuODIgMzM5Ljk5OCAxMjIuMDJDMzM5Ljk5OCAxMzcuMDYgMzI3Ljk5OCAxNDYuOTggMzEwLjcxOCAxNDYuOThDMjk5LjY3OCAxNDYuOTggMjkyLjk1OCAxNDIuODIgMjg5LjI3OCAxMzYuOUgyODcuOTk4VjE0NS41NEgyNzcuOTE4Wk02NS41NCAzMDUuNTRMMzIuNzQgMTg5LjU0SDIwLjlWMTgyLjY2SDcxLjNWMTg5LjU0SDQ4LjlMNzUuNzggMjg4LjQyTDEwMC41OCAxOTcuN0w5NS45NCAxODIuNjZIMTEwLjk4TDE0NC4yNiAyODguNThMMTY4LjI2IDE4OS41NEgxNDUuMzhWMTgyLjY2SDE4OC4yNlYxODkuNTRIMTc2LjI2TDE0OC4xIDMwNS41NEgxMzQuNUwxMDQuNTggMjEwLjE4TDc4LjUgMzA1LjU0SDY1LjU0Wk0yMjQuNDE2IDMwNi45OEMyMDEuNTM2IDMwNi45OCAxODUuMzc2IDI5MS45NCAxODUuMzc2IDI2NC43NEMxODUuMzc2IDIzOC4zNCAyMDEuMzc2IDIyMC40MiAyMjIuOTc2IDIyMC40MkMyNDEuMDU2IDIyMC40MiAyNTUuMjk2IDIzNC4wMiAyNTguMzM2IDI1Ny4wNkgxOTkuNjE2QzE5OS42MTYgMjU3LjU0IDE5OS42MTYgMjU4LjAyIDE5OS42MTYgMjU4LjVDMTk5LjYxNiAyODQuNTggMjExLjYxNiAyOTYuNzQgMjI4LjA5NiAyOTYuNzRDMjQyLjk3NiAyOTYuNzQgMjUxLjQ1NiAyODYuOTggMjUzLjUzNiAyNzEuNzhIMjU5LjYxNkMyNTcuNTM2IDI5NC4wMiAyNDMuMTM2IDMwNi45OCAyMjQuNDE2IDMwNi45OFpNMjIyLjMzNiAyMjcuMTRDMjA5Ljg1NiAyMjcuMTQgMjAyLjAxNiAyMzQuOTggMjAwLjA5NiAyNTAuNUgyNDAuNzM2QzI0MC40MTYgMjM0LjY2IDIzMy44NTYgMjI3LjE0IDIyMi4zMzYgMjI3LjE0Wk0zMTEuMTM1IDMwNi45OEMyODguMjU1IDMwNi45OCAyNzIuMDk1IDI5MS45NCAyNzIuMDk1IDI2NC43NEMyNzIuMDk1IDIzOC4zNCAyODguMDk1IDIyMC40MiAzMDkuNjk1IDIyMC40MkMzMjcuNzc1IDIyMC40MiAzNDIuMDE1IDIzNC4wMiAzNDUuMDU1IDI1Ny4wNkgyODYuMzM1QzI4Ni4zMzUgMjU3LjU0IDI4Ni4zMzUgMjU4LjAyIDI4Ni4zMzUgMjU4LjVDMjg2LjMzNSAyODQuNTggMjk4LjMzNSAyOTYuNzQgMzE0LjgxNSAyOTYuNzRDMzI5LjY5NSAyOTYuNzQgMzM4LjE3NSAyODYuOTggMzQwLjI1NSAyNzEuNzhIMzQ2LjMzNUMzNDQuMjU1IDI5NC4wMiAzMjkuODU1IDMwNi45OCAzMTEuMTM1IDMwNi45OFpNMzA5LjA1NSAyMjcuMTRDMjk2LjU3NSAyMjcuMTQgMjg4LjczNSAyMzQuOTggMjg2LjgxNSAyNTAuNUgzMjcuNDU1QzMyNy4xMzUgMjM0LjY2IDMyMC41NzUgMjI3LjE0IDMwOS4wNTUgMjI3LjE0Wk0zNTYuNTc0IDMwNS41NFYyOTguNjZIMzY1Ljg1NFYxODMuNzhIMzU2LjU3NFYxNzYuOUgzODAuMjU0VjI2NS4wNkw0MTguMTc0IDIyOC43NEg0MDIuMTc0VjIyMS44Nkg0MzguMzM0VjIyOC43NEg0MjguMjU0TDQwNC4wOTQgMjUxLjNMNDQwLjU3NCAzMDUuNTRINDIyLjk3NEwzOTMuMzc0IDI2MC41OEwzODAuMjU0IDI3My4wNlYyOTguNjZIMzk2LjQxNFYzMDUuNTRIMzU2LjU3NFoiLz48L3N2Zz4K");
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-position: center;
+    mask-position: center;
+  }
+</style>
+</head>
+<body>
+<div class="page-pad">
+  <div class="stage" id="stage">
+    <div class="bg" id="bg"></div>
+    <div class="bounce" id="bounce">
+      <div class="logo-mask" id="logo"></div>
+    </div>
+  </div>
+</div>
+<script>
+(function () {
+  var stage = document.getElementById('stage');
+  var bg = document.getElementById('bg');
+  var bounce = document.getElementById('bounce');
+  var logo = document.getElementById('logo');
+
+  var STAGE_W = 1500, STAGE_H = 1000;
+  var LOGO_W = 480, LOGO_H = 345;
+  var MARGIN = 40; // keeps the logo clear of the stage edge at all times
+  var DIST_X = STAGE_W - LOGO_W - 2 * MARGIN;
+  var DIST_Y = STAGE_H - LOGO_H - 2 * MARGIN;
+
+  var TX = 6;   // seconds per horizontal round trip (halved speed from before)
+  var TY = 4;   // seconds per vertical round trip (LCM(TX,TY) = 12s bounce loop)
+  var CYCLE = 24; // color-cycle length in seconds (much slower crossfades);
+                  // LCM(12s bounce, 24s color) = 24s for the full perfect loop
+
+  // Solid color crossfade, ping-ponged so the cycle ends exactly where it
+  // started (no jump cut): white -> black -> white -> blue -> black
+  // -> blue -> white -> black -> white. Background runs the same pattern
+  // with white/black swapped, so it's never the same color as the logo
+  // at rest points.
+  var WHITE = [255, 255, 255];
+  var BLACK = [0, 0, 0];
+  var BLUE = [0x24, 0x54, 0xff];
+
+  var LOGO_STOPS = [WHITE, BLACK, WHITE, BLUE, BLACK, BLUE, WHITE, BLACK, WHITE];
+  var BG_STOPS = [BLACK, WHITE, BLACK, BLUE, WHITE, BLUE, BLACK, WHITE, BLACK];
+  var SEGMENT = CYCLE / (LOGO_STOPS.length - 1); // 0.75s per stop
+
+  function triangle(t, period, dist) {
+    var p = (((t % period) + period) % period) / period; // 0..1
+    return p < 0.5 ? dist * (p * 2) : dist * (2 - p * 2);
+  }
+
+  function colorAt(t, stops) {
+    var pos = (((t % CYCLE) + CYCLE) % CYCLE) / SEGMENT; // 0..8
+    var i = Math.floor(pos);
+    var f = pos - i;
+    var c1 = stops[i], c2 = stops[i + 1];
+    var r = Math.round(c1[0] + (c2[0] - c1[0]) * f);
+    var g = Math.round(c1[1] + (c2[1] - c1[1]) * f);
+    var b = Math.round(c1[2] + (c2[2] - c1[2]) * f);
+    return 'rgb(' + r + ',' + g + ',' + b + ')';
+  }
+
+  var start = null;
+  function frame(now) {
+    if (start === null) start = now;
+    var t = (now - start) / 1000;
+
+    var x = MARGIN + triangle(t, TX, DIST_X);
+    var y = MARGIN + triangle(t, TY, DIST_Y);
+    bounce.style.transform = 'translate(' + x + 'px,' + y + 'px)';
+
+    logo.style.backgroundColor = colorAt(t, LOGO_STOPS);
+    bg.style.backgroundColor = colorAt(t, BG_STOPS);
+
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
