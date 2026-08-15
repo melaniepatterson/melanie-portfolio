@@ -178,8 +178,12 @@ export default function RepulseLogo() {
     };
   }, []);
 
-  // Repulsion effect — logo + all three stars
+  // Repulsion effect — logo + all three stars. Desktop only: there's no
+  // real cursor to repel from on touch, so skip attaching the listener
+  // (and doing the per-mousemove rect/transform work) entirely instead
+  // of just relying on it coincidentally never firing.
   useEffect(() => {
+    if (isMobile) return;
     const handleMouseMove = (e) => {
       cursorPos.current = { x: e.clientX, y: e.clientY };
 
@@ -203,10 +207,13 @@ export default function RepulseLogo() {
 
     window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
+  }, [isMobile]);
 
-  // Chaser animation loop
+  // Chaser animation loop — desktop only, same reasoning as the
+  // repulsion effect above (nothing drives cursorPos on touch, so this
+  // would otherwise just spin forever lerping toward a stale position).
   useEffect(() => {
+    if (isMobile) return;
     const animate = () => {
       chaserPos.current.x += (cursorPos.current.x - chaserPos.current.x) * 0.08;
       chaserPos.current.y += (cursorPos.current.y - chaserPos.current.y) * 0.08;
@@ -217,15 +224,17 @@ export default function RepulseLogo() {
     };
     animFrame.current = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(animFrame.current);
-  }, []);
+  }, [isMobile]);
 
   const handleLinkEnter = () => {
+    if (isMobile) return;
     const randomImg = CHASER_IMAGES[Math.floor(Math.random() * CHASER_IMAGES.length)];
     setChaserImage(randomImg);
     setChaserVisible(true);
   };
 
   const handleLinkLeave = () => {
+    if (isMobile) return;
     setChaserVisible(false);
   };
 
