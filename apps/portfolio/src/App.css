@@ -172,6 +172,29 @@ main {
   100% { transform: translate(2%, -3%); }
 }
 
+/* Home page stars, mobile only — same loose-wander idea as the About
+   page photo's float, but pushed way down in amplitude ("is that even
+   moving?" per spec) since these sit behind body text and shouldn't
+   pull focus. Desktop uses the cursor-repulsion effect instead (see
+   Radialgradient.jsx) — this class is never applied there. */
+.starDrift {
+  animation: starDrift 18s ease-in-out infinite;
+}
+
+@keyframes starDrift {
+  0%   { transform: translate(0, 0) rotate(0deg); }
+  25%  { transform: translate(1px, -1.5px) rotate(-0.2deg); }
+  50%  { transform: translate(-1.5px, 1px) rotate(0.15deg); }
+  75%  { transform: translate(1px, 1px) rotate(-0.1deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .starDrift {
+    animation: none;
+  }
+}
+
 /* Visually hidden but still exposed to screen readers/find-on-page —
    for headings that exist for document structure without a matching
    visual design element. */

@@ -4,9 +4,10 @@ import { CHASER_IMAGES } from "./data/chaserImages";
 import { SplitText } from "./utils";
 
 // Star 1 (doc 6) — placed at 55% x, bottom cropped 20%
-const Star1 = forwardRef(({ style }, ref) => (
+const Star1 = forwardRef(({ style, className }, ref) => (
   <svg
     ref={ref}
+    className={className}
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 142.184 137.886"
     aria-hidden="true"
@@ -26,9 +27,10 @@ const Star1 = forwardRef(({ style }, ref) => (
 Star1.displayName = "Star1";
 
 // Star 2 (doc 5) — placed at 65% x, 90% down
-const Star2 = forwardRef(({ style }, ref) => (
+const Star2 = forwardRef(({ style, className }, ref) => (
   <svg
     ref={ref}
+    className={className}
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 144.908 140.61"
     aria-hidden="true"
@@ -61,9 +63,10 @@ const Star2 = forwardRef(({ style }, ref) => (
 Star2.displayName = "Star2";
 
 // Star 3 (doc 7) — placed at 0% x (25% cropped left), 35% down
-const Star3 = forwardRef(({ style }, ref) => (
+const Star3 = forwardRef(({ style, className }, ref) => (
   <svg
     ref={ref}
+    className={className}
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 142.184 159.136"
     aria-hidden="true"
@@ -244,9 +247,21 @@ export default function RepulseLogo() {
     {/* Stars in their own unclipped layer so overflow doesn't swallow their movement.
         zIndex:1 keeps them below .home-nav's zIndex:10 (WORK/INFO links stay on top). */}
     <div style={{ position: "fixed", inset: 0, zIndex: 1, pointerEvents: "none" }}>
-      <Star1 ref={star1Ref} style={isMobile ? { left: "calc(40%)", bottom: "-49px" } : { left: "55%", bottom: "-40px" }} />
-      <Star2 ref={star2Ref} style={isMobile ? { right: "-55px", top: "calc(55%)" } : { left: "65%", top: "90%" }} />
-      <Star3 ref={star3Ref} style={{ left: "-50px", top: "20%" }} />
+      <Star1
+        ref={star1Ref}
+        className={isMobile ? "starDrift" : undefined}
+        style={isMobile ? { left: "calc(40%)", bottom: "-49px", animationDelay: "0s" } : { left: "55%", bottom: "-40px" }}
+      />
+      <Star2
+        ref={star2Ref}
+        className={isMobile ? "starDrift" : undefined}
+        style={isMobile ? { right: "-55px", top: "calc(55%)", animationDelay: "-6s" } : { left: "65%", top: "90%" }}
+      />
+      <Star3
+        ref={star3Ref}
+        className={isMobile ? "starDrift" : undefined}
+        style={isMobile ? { left: "-50px", top: "20%", animationDelay: "-12s" } : { left: "-50px", top: "20%" }}
+      />
     </div>
 
     <div style={{
