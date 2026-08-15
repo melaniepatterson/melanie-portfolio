@@ -59,12 +59,15 @@ export default function AboutContact() {
             srcSet="/images/melanie-patterson-headshot-mobile.webp 480w, /images/melanie-patterson-headshot.webp 960w"
             sizes="(max-width: 640px) 234px, 480px"
             alt="Melanie Patterson"
-            // Mobile swaps to the star mask's own near-square ratio
-            // (122.64/114.84, rounded) so mask-size: contain in the CSS
-            // fills the box edge-to-edge instead of leaving empty space
-            // above/below a portrait-shaped box.
-            width={isMobile ? 123 : 960}
-            height={isMobile ? 115 : 1440}
+            // Mobile swaps to the star mask's own ratio — not the full
+            // SVG viewBox (122.64/114.84), but the star artwork's tight
+            // bounding box (87.52/88.23, measured via getBBox — the
+            // original viewBox has a lot of padding baked in around the
+            // shape) — so mask-size: contain in the CSS fills the box
+            // edge-to-edge instead of rendering the star small in the
+            // middle of a mostly-empty box.
+            width={isMobile ? 88 : 960}
+            height={isMobile ? 89 : 1440}
             className={styles.photoShimmer}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
