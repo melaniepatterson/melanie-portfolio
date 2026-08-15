@@ -35,7 +35,7 @@ export const PROJECTS = [
     hero: () => import('../projects/RISD/Hero'),      // or: () => import('../projects/project-one/Hero')
     images: [
   { src: "/images/projects/RISD/melanie-patterson-risd.webp", width: 1200, height: 800, alt: "Textured blue liquid gradient with the RISD seal in the center." },
-  { src: "/images/projects/RISD/Rhode-Island-School-of-Design-Viewbook-Flip.webp", width: 600, height: 338, alt: "A gif flipping through the RISD viewbook. It's colorful pages and white debossed cover contrast a living wall of climbing philodendrons, pothos, and spider plants.", caption: "Photography for a promotional campaign of our annual viewbook. Viewbook design by Mary Banas and Jordan Gushwa (RISD Marketing & Communications.)", size: "small", lightbox: true },
+  { src: "/images/projects/RISD/Rhode-Island-School-of-Design-Viewbook-Flip.webm", width: 1200, height: 674, alt: "A video flipping through the RISD viewbook. It's colorful pages and white debossed cover contrast a living wall of climbing philodendrons, pothos, and spider plants.", caption: "Photography for a promotional campaign of our annual viewbook. Viewbook design by Mary Banas and Jordan Gushwa (RISD Marketing & Communications.)", size: "small" },
   {
     type: "inspiration-result",
     inspirationSrc: "/images/projects/RISD/RISD-Hooray-by-Alex-Rapport.webp",

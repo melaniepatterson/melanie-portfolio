@@ -224,11 +224,12 @@
      during that window instead of holding its correct position. */
   transform: rotate(90deg) translateX(-50%) scale(1);
   /* Matches BrowserFrame's scroll hint's rhythm (delayed fade-in, then a
-     repeating pulse) without reusing its opacity-based pulse — that
-     dips to 0.4 at its low point, which fails 4.5:1 contrast for this
-     text's color against its background here (BrowserFrame's hint
-     doesn't have that problem, given its own color/background pairing).
-     Scale stands in for the pulse instead, same cadence and easing. */
+     repeating pulse), with the pulse itself also opacity-based — but
+     #FAF7F2 on this page's #C93500 background only clears 4.5:1 contrast
+     down to ~0.94 opacity (full opacity is already just 4.92:1), so the
+     pulse's low point is clamped to 0.95 rather than BrowserFrame's 0.4.
+     The swing reads as a subtle shimmer, not a strong pulse — that's the
+     tradeoff for staying compliant with this color pairing. */
   opacity: 0;
   animation: hoverHintFadeIn 0.8s ease 1.2s both, pulse 2s ease-in-out 2s infinite;
 }
@@ -239,8 +240,8 @@
 }
 
 @keyframes pulse {
-  0%, 100% { transform: rotate(90deg) translateX(-50%) scale(1); }
-  50% { transform: rotate(90deg) translateX(-50%) scale(1.08); }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.95; }
 }
 
 @media (max-width: 640px) {

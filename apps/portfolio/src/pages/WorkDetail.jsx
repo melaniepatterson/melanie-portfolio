@@ -12,6 +12,7 @@ import BrowserFrame from "../components/BrowserFrame";
 import Caption from "../components/Caption";
 import ShimmerImage, { Skeleton } from "../components/Skeleton";
 import LazyOnVisible from "../components/LazyOnVisible";
+import VisibilityGatedVideo from "../components/VisibilityGatedVideo";
 import { useEffect, Suspense, lazy, useState } from "react";
 
 const heroCache = {};
@@ -188,19 +189,28 @@ export default function WorkDetail() {
       );
     }
 
-    const openLightbox = () => img.lightbox && setLightbox({ src: img.src, alt: img.alt });
+    // Lightbox only knows how to render <img> — video items skip it
+    // entirely rather than opening a broken image, same treatment as
+    // BannerStack's video items.
+    const isVideo = typeof img.src === "string" && img.src.endsWith(".webm");
+    const lightboxable = img.lightbox && !isVideo;
+    const openLightbox = () => lightboxable && setLightbox({ src: img.src, alt: img.alt });
     return (
       <div
         key={i}
-        className={`${styles.galleryItem} ${sizeClass} ${img.lightbox ? styles.lightboxable : ""}`}
+        className={`${styles.galleryItem} ${sizeClass} ${lightboxable ? styles.lightboxable : ""}`}
         onClick={openLightbox}
-        role={img.lightbox ? "button" : undefined}
-        tabIndex={img.lightbox ? 0 : undefined}
-        onKeyDown={img.lightbox ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openLightbox(); } } : undefined}
-        aria-label={img.lightbox ? `View larger: ${img.alt}` : undefined}
+        role={lightboxable ? "button" : undefined}
+        tabIndex={lightboxable ? 0 : undefined}
+        onKeyDown={lightboxable ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openLightbox(); } } : undefined}
+        aria-label={lightboxable ? `View larger: ${img.alt}` : undefined}
       >
-        <ShimmerImage src={img.src} alt={img.alt} width={img.width} height={img.height} loading="lazy" />
-        {img.lightbox && <div className={styles.lightboxHint} aria-hidden="true">⊕</div>}
+        {isVideo ? (
+          <VisibilityGatedVideo src={img.src} alt={img.alt} width={img.width} height={img.height} />
+        ) : (
+          <ShimmerImage src={img.src} alt={img.alt} width={img.width} height={img.height} loading="lazy" />
+        )}
+        {lightboxable && <div className={styles.lightboxHint} aria-hidden="true">⊕</div>}
         {img.caption && <Caption className={styles.caption}>{img.caption}</Caption>}
         {img.hoverHint && hoverCapable && <p className={styles.hoverHint}>Hover to interact</p>}
       </div>
