@@ -11,6 +11,7 @@ import CodeReveal from "../components/CodeReveal";
 import BrowserFrame from "../components/BrowserFrame";
 import Caption from "../components/Caption";
 import ShimmerImage, { Skeleton } from "../components/Skeleton";
+import LazyOnVisible from "../components/LazyOnVisible";
 import { useEffect, Suspense, lazy, useState } from "react";
 
 const heroCache = {};
@@ -54,10 +55,13 @@ function LazyGalleryComponent({ loader, ratio }) {
     galleryComponentCache[loader] = lazy(loader);
   }
   const Component = galleryComponentCache[loader];
+  const fallback = <Skeleton ratio={ratio} />;
   return (
-    <Suspense fallback={<Skeleton ratio={ratio} />}>
-      <Component />
-    </Suspense>
+    <LazyOnVisible placeholder={fallback}>
+      <Suspense fallback={fallback}>
+        <Component />
+      </Suspense>
+    </LazyOnVisible>
   );
 }
 

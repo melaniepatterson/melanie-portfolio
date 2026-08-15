@@ -2,6 +2,7 @@ import styles from "./InspirationResult.module.css";
 import CodeReveal from "./CodeReveal";
 import Caption from "./Caption";
 import ShimmerImage, { Skeleton } from "./Skeleton";
+import LazyOnVisible from "./LazyOnVisible";
 import { Suspense, lazy } from "react";
 import { useHoverCapable } from "../utils";
 
@@ -12,10 +13,15 @@ function LazyResultComponent({ loader, fallbackSrc, fallbackAlt, fallbackWidth, 
     resultComponentCache[loader] = lazy(loader);
   }
   const Component = resultComponentCache[loader];
+  const fallback = fallbackSrc
+    ? <ShimmerImage src={fallbackSrc} alt={fallbackAlt} width={fallbackWidth} height={fallbackHeight} />
+    : <Skeleton ratio={fallbackRatio} />;
   return (
-    <Suspense fallback={fallbackSrc ? <ShimmerImage src={fallbackSrc} alt={fallbackAlt} width={fallbackWidth} height={fallbackHeight} /> : <Skeleton ratio={fallbackRatio} />}>
-      <Component />
-    </Suspense>
+    <LazyOnVisible placeholder={fallback}>
+      <Suspense fallback={fallback}>
+        <Component />
+      </Suspense>
+    </LazyOnVisible>
   );
 }
 

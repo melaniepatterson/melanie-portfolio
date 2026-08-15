@@ -1,6 +1,7 @@
 import styles from "./AppletResult.module.css";
 import Caption from "./Caption";
 import ShimmerImage, { Skeleton } from "./Skeleton";
+import LazyOnVisible from "./LazyOnVisible";
 import { Suspense, lazy, useState, useEffect } from "react";
 import { useHoverCapable } from "../utils";
 
@@ -12,15 +13,25 @@ const bannerComponentCache = {};
 // there's no fallbackSrc image to size against instead.
 const DEFAULT_APPLET_RATIO = "3 / 2";
 
-function LazyAppletComponent({ loader, fallbackSrc, fallbackAlt, fallbackWidth, fallbackHeight, ratio }) {
+// resetKey (not React's own `key`) remounts just the inner Suspense/
+// Component on "restart applet" — keeping LazyOnVisible itself stable
+// so restarting an already-visible, already-loaded applet doesn't also
+// reset its visibility gate and wait on a fresh IntersectionObserver
+// callback before remounting.
+function LazyAppletComponent({ loader, fallbackSrc, fallbackAlt, fallbackWidth, fallbackHeight, ratio, resetKey }) {
   if (!appletComponentCache[loader]) {
     appletComponentCache[loader] = lazy(loader);
   }
   const Component = appletComponentCache[loader];
+  const fallback = fallbackSrc
+    ? <ShimmerImage src={fallbackSrc} alt={fallbackAlt} width={fallbackWidth} height={fallbackHeight} />
+    : <Skeleton ratio={ratio || DEFAULT_APPLET_RATIO} />;
   return (
-    <Suspense fallback={fallbackSrc ? <ShimmerImage src={fallbackSrc} alt={fallbackAlt} width={fallbackWidth} height={fallbackHeight} /> : <Skeleton ratio={ratio || DEFAULT_APPLET_RATIO} />}>
-      <Component />
-    </Suspense>
+    <LazyOnVisible placeholder={fallback}>
+      <Suspense key={resetKey} fallback={fallback}>
+        <Component />
+      </Suspense>
+    </LazyOnVisible>
   );
 }
 
@@ -29,10 +40,15 @@ function LazyBannerComponent({ loader, fallbackSrc, fallbackAlt, fallbackWidth, 
     bannerComponentCache[loader] = lazy(loader);
   }
   const Component = bannerComponentCache[loader];
+  const fallback = fallbackSrc
+    ? <ShimmerImage src={fallbackSrc} alt={fallbackAlt} width={fallbackWidth} height={fallbackHeight} />
+    : <Skeleton />;
   return (
-    <Suspense fallback={fallbackSrc ? <ShimmerImage src={fallbackSrc} alt={fallbackAlt} width={fallbackWidth} height={fallbackHeight} /> : <Skeleton />}>
-      <Component />
-    </Suspense>
+    <LazyOnVisible placeholder={fallback}>
+      <Suspense fallback={fallback}>
+        <Component />
+      </Suspense>
+    </LazyOnVisible>
   );
 }
 
@@ -105,7 +121,7 @@ export default function AppletResult({
           <video src={appletVideoSrc} autoPlay loop muted playsInline aria-label={appletAlt} />
         ) : appletComponent ? (
           <LazyAppletComponent
-            key={appletKey}
+            resetKey={appletKey}
             loader={appletComponent}
             fallbackSrc={appletSrc}
             fallbackAlt={appletAlt}
