@@ -359,6 +359,8 @@ useEffect(() => {
                   ) : (
                     <ShimmerImage
                       src={project.thumbnail || project.images[0].src}
+                      srcSet={project.thumbnail ? project.thumbnailSrcSet : undefined}
+                      sizes={project.thumbnail ? project.thumbnailSizes : undefined}
                       alt={project.images[0].alt}
                       width={project.thumbnail ? project.thumbnailWidth : project.images[0].width}
                       height={project.thumbnail ? project.thumbnailHeight : project.images[0].height}

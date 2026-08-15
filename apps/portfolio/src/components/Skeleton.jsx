@@ -20,6 +20,8 @@ export function Skeleton({ ratio, className, style }) {
 // image decodes, since object-fit: cover fills the box opaquely.
 export default function ShimmerImage({
   src,
+  srcSet,
+  sizes,
   alt,
   width,
   height,
@@ -48,6 +50,8 @@ export default function ShimmerImage({
     >
       <img
         src={src}
+        srcSet={srcSet}
+        sizes={sizes}
         alt={alt}
         width={width}
         height={height}

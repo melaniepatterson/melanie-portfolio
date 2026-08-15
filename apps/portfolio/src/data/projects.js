@@ -148,6 +148,8 @@ export const PROJECTS = [
     description: "Mural-scale illustrated maps of South Florida, combining digital illustration with traditional techniques, including hand-lettering and painted texture work, installed across Brightline's Miami, Fort Lauderdale, and West Palm Beach stations. Each map depicts train routes, stations, landmarks, and highways within Brightline's brand color system.",
     externalLink: "",
     thumbnail: "/images/projects/Brightline/Brightline_Maps_Melanie_Patterson_Crop.webp", // or: () => import('../projects/project-one/Thumbnail')
+    thumbnailSrcSet: "/images/projects/Brightline/Brightline_Maps_Melanie_Patterson_Crop-700w.webp 700w, /images/projects/Brightline/Brightline_Maps_Melanie_Patterson_Crop.webp 1279w",
+    thumbnailSizes: "(max-width: 640px) 350px, 533px",
     thumbnailWidth: 1279,
     thumbnailHeight: 853,
     hero: null,      // or: () => import('../projects/project-one/Hero')
