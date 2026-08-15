@@ -45,9 +45,11 @@ export default function AboutContact() {
         <div className={styles.photo}>
           <ShimmerImage
             src="/images/melanie-patterson-headshot.webp"
+            srcSet="/images/melanie-patterson-headshot-mobile.webp 480w, /images/melanie-patterson-headshot.webp 960w"
+            sizes="(max-width: 640px) 234px, 480px"
             alt="Melanie Patterson"
-            width={800}
-            height={1200}
+            width={960}
+            height={1440}
             className={styles.photoShimmer}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}

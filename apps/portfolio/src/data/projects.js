@@ -38,9 +38,9 @@ export const PROJECTS = [
   { src: "/images/projects/RISD/Rhode-Island-School-of-Design-Viewbook-Flip.webm", width: 1200, height: 674, alt: "A video flipping through the RISD viewbook. It's colorful pages and white debossed cover contrast a living wall of climbing philodendrons, pothos, and spider plants.", caption: "Photography for a promotional campaign of our annual viewbook. Viewbook design by Mary Banas and Jordan Gushwa (RISD Marketing & Communications.)", size: "small" },
   {
     type: "inspiration-result",
-    inspirationSrc: "/images/projects/RISD/RISD-Hooray-by-Alex-Rapport.webp",
-    inspirationWidth: 936,
-    inspirationHeight: 527,
+    inspirationSrc: "/images/projects/RISD/RISD-Hooray-by-Alex-Rapport-mobile.webp",
+    inspirationWidth: 300,
+    inspirationHeight: 169,
     inspirationAlt: "'Hooray' text animation spelled out of yellow, orange, pink and white confetti against a blue background. Confetti falls and resets the animation.",
     inspirationCaption: <><i>Hooray!</i> banner by Alex Rapport (RISD Marketing & Communications) </>,
     resultRatio: "1200 / 1406",
