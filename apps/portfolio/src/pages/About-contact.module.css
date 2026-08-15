@@ -104,7 +104,7 @@
      top of the head and let the star's bottom point land past the
      bottom of the photo's real content. Shifts the crop window up. */
   .photoImgMobile {
-    object-position: center 40%;
+    object-position: center 25%;
   }
 }
 
