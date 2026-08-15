@@ -61,13 +61,13 @@ export default function AboutContact() {
             alt="Melanie Patterson"
             // Mobile swaps to the star mask's own ratio — not the full
             // SVG viewBox (122.64/114.84), but the star artwork's tight
-            // bounding box (87.52/88.23, measured via getBBox — the
+            // bounding box (89.59/88.48, measured via getBBox — the
             // original viewBox has a lot of padding baked in around the
             // shape) — so mask-size: contain in the CSS fills the box
             // edge-to-edge instead of rendering the star small in the
             // middle of a mostly-empty box.
-            width={isMobile ? 88 : 960}
-            height={isMobile ? 89 : 1440}
+            width={isMobile ? 90 : 960}
+            height={isMobile ? 88 : 1440}
             className={styles.photoShimmer}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
