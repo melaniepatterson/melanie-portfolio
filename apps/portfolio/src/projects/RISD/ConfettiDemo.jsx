@@ -6,6 +6,7 @@ import styles from "./ConfettiDemo.module.css";
 export default function ConfettiDemo() {
   const runningInline = useRef(false);
   const runningLightbox = useRef(false);
+  const hasAutoPlayedRef = useRef(false);
   const [expanded, setExpanded] = useState(false);
   const wrapperRef = useRef(null);
   const lightboxRef = useRef(null);
@@ -30,6 +31,32 @@ export default function ConfettiDemo() {
       runningLightbox.current = false;
     }
   }, [expanded]);
+
+  // The inline card only ever triggers confetti via onMouseEnter below,
+  // which never fires on touch devices — same root problem as
+  // GridFisheye's cursor dependency. Auto-play once, the first time the
+  // card actually enters view, rather than looping continuously (which
+  // wouldn't read as a deliberate "reveal" the way a single fall does).
+  // Tapping through to the lightbox already re-triggers it on open (the
+  // effect above isn't hover-gated), so there's a natural "see it again"
+  // path without needing a dedicated reset control.
+  useEffect(() => {
+    if (window.matchMedia("(hover: hover)").matches) return;
+    const el = wrapperRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasAutoPlayedRef.current) {
+          hasAutoPlayedRef.current = true;
+          runConfetti(el, runningInline);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.5 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <>

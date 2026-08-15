@@ -6,13 +6,13 @@ import { Suspense, lazy } from "react";
 
 const resultComponentCache = {};
 
-function LazyResultComponent({ loader, fallbackSrc, fallbackAlt, fallbackWidth, fallbackHeight }) {
+function LazyResultComponent({ loader, fallbackSrc, fallbackAlt, fallbackWidth, fallbackHeight, fallbackRatio }) {
   if (!resultComponentCache[loader]) {
     resultComponentCache[loader] = lazy(loader);
   }
   const Component = resultComponentCache[loader];
   return (
-    <Suspense fallback={fallbackSrc ? <ShimmerImage src={fallbackSrc} alt={fallbackAlt} width={fallbackWidth} height={fallbackHeight} /> : <Skeleton />}>
+    <Suspense fallback={fallbackSrc ? <ShimmerImage src={fallbackSrc} alt={fallbackAlt} width={fallbackWidth} height={fallbackHeight} /> : <Skeleton ratio={fallbackRatio} />}>
       <Component />
     </Suspense>
   );
@@ -27,6 +27,7 @@ export default function InspirationResult({
   resultSrc,
   resultWidth,
   resultHeight,
+  resultRatio,
   resultAlt,
   resultCaption,
   dominates = "result",
@@ -68,6 +69,7 @@ export default function InspirationResult({
             fallbackAlt={resultAlt}
             fallbackWidth={resultWidth}
             fallbackHeight={resultHeight}
+            fallbackRatio={resultRatio}
           />
         ) : (
           <ShimmerImage src={resultSrc} alt={resultAlt} width={resultWidth} height={resultHeight} />

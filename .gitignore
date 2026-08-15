@@ -28,5 +28,5 @@ node_modules/
 .env.local
 
 # too large to ship as-is — resize before removing from here
-apps/portfolio/public/images/projects/RISD/melanie-patterson-risd-admissions-decision-letter.webp
 apps/portfolio/src/projects/RISD/images/melanie-patterson-risd-email-1.webp
+.env*
