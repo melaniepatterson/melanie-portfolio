@@ -218,12 +218,24 @@
   transform-origin: right center;
   white-space: nowrap;
   pointer-events: none;
-  /* Animates scale instead of opacity — the previous 0.4/0.8 opacity pulse
-     dipped well under the 4.5:1 contrast this text needs against the page
-     background at its low point. */
-  animation: pulse 2s ease-in-out infinite;
-  animation-fill-mode: both;
-  animation-delay: 0s;
+  /* Static rest-state transform, matching pulse's own 0%/100% keyframe
+     value — pulse has a 2s delay before its first iteration, and
+     without this the element would render untransformed (unrotated)
+     during that window instead of holding its correct position. */
+  transform: rotate(90deg) translateX(-50%) scale(1);
+  /* Matches BrowserFrame's scroll hint's rhythm (delayed fade-in, then a
+     repeating pulse) without reusing its opacity-based pulse — that
+     dips to 0.4 at its low point, which fails 4.5:1 contrast for this
+     text's color against its background here (BrowserFrame's hint
+     doesn't have that problem, given its own color/background pairing).
+     Scale stands in for the pulse instead, same cadence and easing. */
+  opacity: 0;
+  animation: hoverHintFadeIn 0.8s ease 1.2s both, pulse 2s ease-in-out 2s infinite;
+}
+
+@keyframes hoverHintFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes pulse {
