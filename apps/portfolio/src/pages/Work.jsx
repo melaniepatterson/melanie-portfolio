@@ -6,6 +6,7 @@ import { PROJECTS } from "../data/projects";
 import { Link } from "react-router-dom";
 import ShimmerImage, { Skeleton } from "../components/Skeleton";
 import skeletonStyles from "../components/Skeleton.module.css";
+import VisibilityGatedVideo from "../components/VisibilityGatedVideo";
 
 // Gated off temporarily to test the raw vaul drawer without it in the way.
 // Flip back to true to re-enable.
@@ -45,54 +46,6 @@ function LazyThumbnail({ loader, hovered, fallbackSrc, fallbackAlt, fallbackWidt
     <Suspense fallback={<ShimmerImage src={fallbackSrc} alt={fallbackAlt} width={fallbackWidth} height={fallbackHeight} />}>
       <Component hovered={hovered} />
     </Suspense>
-  );
-}
-
-// Video thumbnails only play while actually on/near screen — with several
-// of these autoplaying at once (and more coming as more projects get the
-// video treatment), decoding every one of them continuously regardless of
-// scroll position is real, unbounded CPU/RAM cost on weaker machines. This
-// caps concurrent decode to roughly what's visible, no matter how many
-// video thumbnails end up on the page.
-function VideoThumbnail({ src, width, height, alt }) {
-  const videoRef = useRef(null);
-
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          video.play().catch(() => {});
-        } else {
-          video.pause();
-        }
-      },
-      { rootMargin: "150px" }
-    );
-    observer.observe(video);
-    return () => observer.disconnect();
-  }, []);
-
-  return (
-    <div
-      className={skeletonStyles.shimmer}
-      style={{ aspectRatio: width && height ? `${width} / ${height}` : undefined }}
-    >
-      <video
-        ref={videoRef}
-        src={src}
-        width={width}
-        height={height}
-        loop
-        muted
-        playsInline
-        disablePictureInPicture
-        controls={false}
-        aria-label={alt}
-        className={skeletonStyles.img}
-      />
-    </div>
   );
 }
 
@@ -397,7 +350,7 @@ useEffect(() => {
                       fallbackHeight={project.images[0].height}
                     />
                   ) : typeof project.thumbnail === "string" && project.thumbnail.endsWith(".webm") ? (
-                    <VideoThumbnail
+                    <VisibilityGatedVideo
                       src={project.thumbnail}
                       width={project.thumbnailWidth}
                       height={project.thumbnailHeight}

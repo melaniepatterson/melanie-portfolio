@@ -2,6 +2,7 @@ import styles from "./AppletResult.module.css";
 import Caption from "./Caption";
 import ShimmerImage, { Skeleton } from "./Skeleton";
 import LazyOnVisible from "./LazyOnVisible";
+import VisibilityGatedVideo from "./VisibilityGatedVideo";
 import { Suspense, lazy, useState, useEffect } from "react";
 import { useHoverCapable } from "../utils";
 
@@ -92,6 +93,10 @@ export default function AppletResult({
 
   const useAppletVideo = appletVideoFallback && isMobile && appletVideoSrc;
   const useBannerVideo = bannerVideoFallback && isMobile && bannerVideoSrc;
+  // Separate from the mobile-only useBannerVideo fallback above — this is
+  // bannerSrc itself just being a video file outright, same "no ui,
+  // infinite loop, no sound" treatment as the Work-grid thumbnails.
+  const bannerIsVideoFile = typeof bannerSrc === "string" && bannerSrc.endsWith(".webm");
   const hoverCapable = useHoverCapable();
 
   return (
@@ -143,14 +148,14 @@ export default function AppletResult({
       </div>
 
       <div
-        className={`${styles.item} ${dominates === "banner" ? styles.large : styles.small} ${onLightbox && !bannerComponent ? styles.lightboxable : ""}`}
-        onClick={() => onLightbox && !bannerComponent && onLightbox(bannerSrc, bannerAlt)}
-        role={onLightbox && !bannerComponent ? "button" : undefined}
-        tabIndex={onLightbox && !bannerComponent ? 0 : undefined}
-        onKeyDown={onLightbox && !bannerComponent ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onLightbox(bannerSrc, bannerAlt); } } : undefined}
-        aria-label={onLightbox && !bannerComponent ? `View larger: ${bannerAlt}` : undefined}
+        className={`${styles.item} ${dominates === "banner" ? styles.large : styles.small} ${onLightbox && !bannerComponent && !bannerIsVideoFile ? styles.lightboxable : ""}`}
+        onClick={() => onLightbox && !bannerComponent && !bannerIsVideoFile && onLightbox(bannerSrc, bannerAlt)}
+        role={onLightbox && !bannerComponent && !bannerIsVideoFile ? "button" : undefined}
+        tabIndex={onLightbox && !bannerComponent && !bannerIsVideoFile ? 0 : undefined}
+        onKeyDown={onLightbox && !bannerComponent && !bannerIsVideoFile ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onLightbox(bannerSrc, bannerAlt); } } : undefined}
+        aria-label={onLightbox && !bannerComponent && !bannerIsVideoFile ? `View larger: ${bannerAlt}` : undefined}
       >
-        {onLightbox && !bannerComponent && <div className={styles.lightboxHint} aria-hidden="true">⊕</div>}
+        {onLightbox && !bannerComponent && !bannerIsVideoFile && <div className={styles.lightboxHint} aria-hidden="true">⊕</div>}
         {useBannerVideo ? (
           <video src={bannerVideoSrc} autoPlay loop muted playsInline aria-label={bannerAlt} />
         ) : bannerComponent ? (
@@ -161,6 +166,8 @@ export default function AppletResult({
             fallbackWidth={bannerWidth}
             fallbackHeight={bannerHeight}
           />
+        ) : bannerIsVideoFile ? (
+          <VisibilityGatedVideo src={bannerSrc} alt={bannerAlt} width={bannerWidth} height={bannerHeight} />
         ) : (
           <ShimmerImage src={bannerSrc} alt={bannerAlt} width={bannerWidth} height={bannerHeight} />
         )}
