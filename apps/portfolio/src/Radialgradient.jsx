@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, forwardRef } from "react";
 import { Link } from "react-router-dom";
 import { CHASER_IMAGES } from "./data/chaserImages";
-import { SplitText } from "./utils";
+import { SplitText, computeRepulsion, applyRepulsionStyle } from "./utils";
 
 // Star 1 (doc 6) — placed at 55% x, bottom cropped 20%
 const Star1 = forwardRef(({ style, className }, ref) => (
@@ -129,43 +129,14 @@ export default function RepulseLogo() {
   // maxRotation = max degrees of rotation at full push (deg)
   // push transition = how fast it moves away
   // return transition = how slowly it drifts back
-  // Split into a pure calculation (reads a pre-fetched rect, writes
-  // nothing) and a style application (writes only) — interleaving
-  // getBoundingClientRect() reads with style writes across multiple
-  // elements, as the previous single combined function did when called
-  // 4x in a row, forces a synchronous layout recalculation between each
-  // pair (classic layout thrashing). handleMouseMove below reads all 4
-  // rects first, then writes all 4 styles, so the browser does one
-  // layout pass instead of up to four.
-  const computeRepulsion = (rect, mouseX, mouseY, threshold, force, maxRotation) => {
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    const dx = centerX - mouseX;
-    const dy = centerY - mouseY;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-
-    if (dist < threshold) {
-      const strength = (threshold - dist) / threshold;
-      const angle = Math.atan2(dy, dx);
-      const pushX = Math.cos(angle) * strength * force;
-      const pushY = Math.sin(angle) * strength * force;
-      // Rotate based on horizontal push direction — left push tilts negative, right tilts positive
-      const rotateDeg = -pushX / force * maxRotation;
-      return {
-        transition: "transform 3.5s cubic-bezier(0.22, 0.61, 0.36, 1)",
-        transform: `translate(${pushX}px, ${pushY}px) rotate(${rotateDeg}deg)`,
-      };
-    }
-    return {
-      transition: "transform 3.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
-      transform: "translate(0px, 0px) rotate(0deg)",
-    };
-  };
-
-  const applyStyle = (el, style) => {
-    el.style.transition = style.transition;
-    el.style.transform = style.transform;
-  };
+  // computeRepulsion/applyStyle live in utils.jsx (shared with the About
+  // page's own repulsion-driven star) — split into a pure calculation
+  // (reads a pre-fetched rect, writes nothing) and a style application
+  // (writes only) since interleaving getBoundingClientRect() reads with
+  // style writes across multiple elements forces a synchronous layout
+  // recalculation between each pair (classic layout thrashing).
+  // handleMouseMove below reads all 4 rects first, then writes all 4
+  // styles, so the browser does one layout pass instead of up to four.
 
   // Liquid Glass on iOS 26 ignores theme-color and falls back to html/body's
   // real background-color when sampling for toolbar tint — #fce7f5 is the
@@ -202,10 +173,10 @@ export default function RepulseLogo() {
       const star3Style = star3El && computeRepulsion(star3El.getBoundingClientRect(), e.clientX, e.clientY, 150, 45, 5);
 
       // Write phase.
-      if (logoStyle) applyStyle(logoEl, logoStyle);
-      if (star1Style) applyStyle(star1El, star1Style);
-      if (star2Style) applyStyle(star2El, star2Style);
-      if (star3Style) applyStyle(star3El, star3Style);
+      if (logoStyle) applyRepulsionStyle(logoEl, logoStyle);
+      if (star1Style) applyRepulsionStyle(star1El, star1Style);
+      if (star2Style) applyRepulsionStyle(star2El, star2Style);
+      if (star3Style) applyRepulsionStyle(star3El, star3Style);
     };
 
     window.addEventListener("mousemove", handleMouseMove);
