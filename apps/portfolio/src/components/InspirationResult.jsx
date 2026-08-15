@@ -3,6 +3,7 @@ import CodeReveal from "./CodeReveal";
 import Caption from "./Caption";
 import ShimmerImage, { Skeleton } from "./Skeleton";
 import { Suspense, lazy } from "react";
+import { useHoverCapable } from "../utils";
 
 const resultComponentCache = {};
 
@@ -35,9 +36,10 @@ export default function InspirationResult({
   resultComponent,
   hoverHint,
 }) {
+  const hoverCapable = useHoverCapable();
   return (
     <div className={styles.wrapper}>
-      {hoverHint && (
+      {hoverHint && hoverCapable && (
         <p className={styles.hoverHint}>Hover to interact</p>
       )}
       <div className={`${styles.item} ${dominates === "inspiration" ? styles.large : styles.small}`}>

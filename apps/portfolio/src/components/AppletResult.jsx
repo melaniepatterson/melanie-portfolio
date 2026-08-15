@@ -2,6 +2,7 @@ import styles from "./AppletResult.module.css";
 import Caption from "./Caption";
 import ShimmerImage, { Skeleton } from "./Skeleton";
 import { Suspense, lazy, useState, useEffect } from "react";
+import { useHoverCapable } from "../utils";
 
 const appletComponentCache = {};
 const bannerComponentCache = {};
@@ -75,10 +76,11 @@ export default function AppletResult({
 
   const useAppletVideo = appletVideoFallback && isMobile && appletVideoSrc;
   const useBannerVideo = bannerVideoFallback && isMobile && bannerVideoSrc;
+  const hoverCapable = useHoverCapable();
 
   return (
     <div className={styles.wrapper}>
-      {hoverHint && (
+      {hoverHint && hoverCapable && (
         <p className={styles.hoverHint}>Hover to interact</p>
       )}
       <div className={`${styles.item} ${dominates === "applet" ? styles.large : styles.small}`}>

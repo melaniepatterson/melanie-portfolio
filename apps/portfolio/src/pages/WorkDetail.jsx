@@ -1,7 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { PROJECTS } from "../data/projects";
 import styles from "./WorkDetail.module.css";
-import { SplitText } from "../utils";
+import { SplitText, useHoverCapable } from "../utils";
 import InspirationResult from "../components/InspirationResult";
 import AppletResult from "../components/AppletResult";
 import BannerStack from "../components/BannerStack";
@@ -66,6 +66,7 @@ export default function WorkDetail() {
   const project = PROJECTS.find(p => p.slug === slug);
   const [lightbox, setLightbox] = useState(null);
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < 640);
+  const hoverCapable = useHoverCapable();
 
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth < 640);
@@ -197,7 +198,7 @@ export default function WorkDetail() {
         <ShimmerImage src={img.src} alt={img.alt} width={img.width} height={img.height} loading="lazy" />
         {img.lightbox && <div className={styles.lightboxHint} aria-hidden="true">⊕</div>}
         {img.caption && <Caption className={styles.caption}>{img.caption}</Caption>}
-        {img.hoverHint && <p className={styles.hoverHint}>Hover to interact</p>}
+        {img.hoverHint && hoverCapable && <p className={styles.hoverHint}>Hover to interact</p>}
       </div>
     );
   }
