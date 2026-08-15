@@ -95,7 +95,7 @@ export const PROJECTS = [
     {
     id: 1,
     slug: "glow-up",
-    title: "Glow Up App",
+    title: "Glow Up",
     disciplines: ["Interactive Design", "Design & Print"],
     topics: null,
     client: null,
@@ -137,7 +137,23 @@ export const PROJECTS = [
       caption: "The Glow Up wordmark (set in Naskle) and brand colors.",
     },
   ]
-  },   {
+  },
+  {
+  id: 4,
+  slug: "DARE-body-count",
+  title: "D.O.D.",
+  disciplines: ["Design & Print"],
+  topics: ["Memory & Archive"],
+  client: ["Direct Action for Rights and Equality (DARE)"],
+  year: "2026",
+  description: "Coming soon.",
+  externalLink: "",
+  thumbnail: null, // or: () => import('../projects/project-one/Thumbnail')
+  hero: null,      // or: () => import('../projects/project-one/Hero')
+  images: [
+    { src: "https://placehold.co/1200x800/1a1a1a/FAF7F2", width: 1200, height: 800, alt: "Placeholder — project content coming soon." },
+  ]
+  }, /* {
     id: 3,
     slug: "brightline",
     title: "Brightline Maps",
@@ -158,7 +174,7 @@ export const PROJECTS = [
   { src: "https://placehold.co/800x1000/1a1a1a/FAF7F2", width: 800, height: 1000, alt: "Detail shot of the upper left corner showing..." },
   { src: "https://placehold.co/600x600/1a1a1a/FAF7F2", width: 600, height: 600, alt: "The full piece installed at..." },
 ]
-  } /*,
+  } ,
   {
     id: 9,
     slug: "project-two",
@@ -196,7 +212,7 @@ export const PROJECTS = [
 ]
   },
   {
-    id: 4,
+    id: 11,
     slug: "project-four",
     title: "Project Four",
     disciplines: ["Fine Art"],
