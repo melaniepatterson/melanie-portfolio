@@ -14,6 +14,16 @@ code {
 html {
   background-color: #FAF7F2;
   scroll-behavior: smooth;
+  /* Reserves the vertical scrollbar's width up front so it can never
+     toggle on mid-load (e.g. once web-font swap grows a long page's
+     height past the viewport). Without this, that toggle changes
+     window.innerWidth, which .layout::after in App.css directly reads
+     via inset:-50%/width:200% — since that overlay already blankets
+     ~the whole viewport, even its few-px recompute registers as a
+     near-1.0 layout-shift score (CLS impact_fraction is close to 1 for
+     anything that size), well out of proportion to the actual visual
+     change. */
+  scrollbar-gutter: stable;
 }
 
 p, h1, h2, h3 {
