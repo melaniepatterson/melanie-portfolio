@@ -99,6 +99,13 @@
        point is "always gently in motion," not a legible geometric path. */
     animation: photoDrift 14s ease-in-out infinite;
   }
+
+  /* object-fit: cover defaults to centering the crop, which cut off the
+     top of the head and let the star's bottom point land past the
+     bottom of the photo's real content. Shifts the crop window up. */
+  .photoImgMobile {
+    object-position: center 15%;
+  }
 }
 
 @keyframes photoDrift {

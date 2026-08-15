@@ -69,6 +69,7 @@ export default function AboutContact() {
             width={isMobile ? 90 : 960}
             height={isMobile ? 88 : 1440}
             className={styles.photoShimmer}
+            imgClassName={isMobile ? styles.photoImgMobile : undefined}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
             // On mobile the hover tilt never fires (no real hover) and
