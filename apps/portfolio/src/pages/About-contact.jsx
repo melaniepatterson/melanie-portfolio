@@ -59,15 +59,16 @@ export default function AboutContact() {
             srcSet="/images/melanie-patterson-headshot-mobile.webp 480w, /images/melanie-patterson-headshot.webp 960w"
             sizes="(max-width: 640px) 234px, 480px"
             alt="Melanie Patterson"
-            // Mobile swaps to the star mask's own ratio — not the full
-            // SVG viewBox (122.64/114.84), but the star artwork's tight
-            // bounding box (89.59/88.48, measured via getBBox — the
-            // original viewBox has a lot of padding baked in around the
-            // shape) — so mask-size: contain in the CSS fills the box
-            // edge-to-edge instead of rendering the star small in the
-            // middle of a mostly-empty box.
-            width={isMobile ? 90 : 960}
-            height={isMobile ? 88 : 1440}
+            // Mobile swaps to the star mask's own ratio — not the raw
+            // SVG viewBox, but the ROTATED shape's true bounding box
+            // (103.59/102.69, measured via getBoundingClientRect with
+            // the -10deg transform applied — a rotated shape's bbox is
+            // larger than its unrotated one, so reusing the unrotated
+            // bbox here clipped the star's bottom-right points) — so
+            // mask-size: contain fills the box edge-to-edge with
+            // nothing cut off.
+            width={isMobile ? 104 : 960}
+            height={isMobile ? 103 : 1440}
             className={styles.photoShimmer}
             imgClassName={isMobile ? styles.photoImgMobile : undefined}
             onMouseEnter={() => setHovered(true)}
