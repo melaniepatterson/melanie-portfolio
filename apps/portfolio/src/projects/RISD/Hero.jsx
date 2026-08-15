@@ -1,18 +1,17 @@
 import { useState } from "react";
-import img3 from "./images/03.webp";
 import EmailBrowserFrame from "./EmailBrowserFrame";
+import VisibilityGatedVideo from "../../components/VisibilityGatedVideo";
 
 export default function Hero() {
   const [hovered, setHovered] = useState(false);
 
   return (
     <div style={{ position: "relative", width: "100%" }}>
-      <img
-        src="/images/projects/RISD/melanie-patterson-risd.webp"
-        width="1200"
-        height="800"
+      <VisibilityGatedVideo
+        src="/images/projects/RISD/melanie-patterson-risd.webm"
+        width={1200}
+        height={800}
         alt=""
-        style={{ width: "100%", height: "auto", display: "block" }}
       />
       <div
         style={{

@@ -37,8 +37,15 @@ function LazyHero({ loader, fallbackSrc, fallbackAlt, fallbackWidth, fallbackHei
     heroCache[loader] = lazy(loader);
   }
   const Component = heroCache[loader];
+  // Same fallback convention as LazyAppletComponent/LazyBannerComponent in
+  // AppletResult.jsx — an image-backed fallback where one exists, otherwise
+  // a bare aspect-ratio skeleton (a custom Hero component's actual visual
+  // may not have a static image counterpart at all, e.g. RISD's is a video).
+  const fallback = fallbackSrc
+    ? <ShimmerImage src={fallbackSrc} alt={fallbackAlt} width={fallbackWidth} height={fallbackHeight} />
+    : <Skeleton ratio={fallbackWidth && fallbackHeight ? `${fallbackWidth} / ${fallbackHeight}` : undefined} />;
   return (
-    <Suspense fallback={<ShimmerImage src={fallbackSrc} alt={fallbackAlt} width={fallbackWidth} height={fallbackHeight} />}>
+    <Suspense fallback={fallback}>
       <Component />
     </Suspense>
   );
@@ -226,7 +233,7 @@ export default function WorkDetail() {
           {project.hero ? (
             <LazyHero
               loader={project.hero}
-              fallbackSrc={project.images[0].src}
+              fallbackSrc={project.images[0].src?.endsWith(".webm") ? undefined : project.images[0].src}
               fallbackAlt={project.images[0].alt}
               fallbackWidth={project.images[0].width}
               fallbackHeight={project.images[0].height}
