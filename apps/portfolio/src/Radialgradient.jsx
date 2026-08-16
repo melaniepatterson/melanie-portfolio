@@ -237,9 +237,8 @@ export default function RepulseLogo() {
   const handleLinkEnter = (variant) => {
     if (isMobile) return;
     if (variant === "work") {
-      const available = CHASER_IMAGES.filter((img) => !img.comingSoon);
-      const randomImg = available[Math.floor(Math.random() * available.length)];
-      setChaserImage(randomImg.src);
+      const randomImg = CHASER_IMAGES[Math.floor(Math.random() * CHASER_IMAGES.length)];
+      setChaserImage(randomImg);
       setChaserStar(null);
     } else {
       // Never repeat the same star shape twice in a row — a different
@@ -315,12 +314,25 @@ export default function RepulseLogo() {
               alt=""
               style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", filter: "grayscale(100%)" }}
             />
+            {/* Red-tint overlay masked to the image's own alpha channel
+                (via mask-image, not a plain covering rectangle) so a
+                transparent PNG's negative space stays transparent instead
+                of getting painted in as a solid red box. mask-size/
+                position match the img's own object-fit: cover framing. */}
             <div
               style={{
                 backgroundColor: "#c93500",
                 mixBlendMode: "screen",
                 position: "absolute",
-                inset: 0
+                inset: 0,
+                WebkitMaskImage: `url(${chaserImage})`,
+                maskImage: `url(${chaserImage})`,
+                WebkitMaskSize: "cover",
+                maskSize: "cover",
+                WebkitMaskPosition: "center",
+                maskPosition: "center",
+                WebkitMaskRepeat: "no-repeat",
+                maskRepeat: "no-repeat",
               }}
             />
           </>

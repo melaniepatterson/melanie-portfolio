@@ -32,6 +32,12 @@ export const PROJECTS = [
     thumbnail: "/images/projects/RISD/risd_seal_grid.webm",
     thumbnailWidth: 878,
     thumbnailHeight: 518,
+    // Shown on Home's WORK hover chaser instead of the hero image — the
+    // hero is a busy composite that reads poorly shrunk down to the
+    // chaser's small (160x120) box. Supports transparent PNGs; the
+    // chaser's red-tint overlay is masked to this image's own alpha so
+    // transparent areas don't get painted in as a solid red rectangle.
+    hoverImage: "/images/projects/RISD/melanie-patterson-risd.webp",
     hero: () => import('../projects/RISD/Hero'),      // or: () => import('../projects/project-one/Hero')
     images: [
   { src: "/images/projects/RISD/melanie-patterson-risd.webm", width: 1200, height: 800, alt: "Textured blue liquid gradient with the RISD seal in the center." },
@@ -106,6 +112,8 @@ export const PROJECTS = [
     thumbnail: "/images/projects/GlowUp/glow_up_thumbnail.webm", // or: () => import('../projects/project-one/Thumbnail')
     thumbnailWidth: 1200,
     thumbnailHeight: 770,
+    // See RISD's hoverImage comment above.
+    hoverImage: "/images/projects/GlowUp/melanie-patterson-glow-up-calendar-desktop.webp",
     hero: null,      // or: () => import('../projects/project-one/Hero')
     images: [
     { src: "/images/projects/GlowUp/melanie-patterson-glow-up-calendar-desktop.webp", width: 1400, height: 1590, alt: "The Glow Up calendar on desktop, showing a month grid with AM/PM routine slots colored by day type and an active Tretinoin Onboarding program banner." },
