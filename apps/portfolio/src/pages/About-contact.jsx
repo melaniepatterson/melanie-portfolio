@@ -172,7 +172,7 @@ export default function AboutContact() {
           // fixed) on mobile so the star scrolls with the page instead of
           // staying pinned to the viewport — .page is position: relative,
           // so percentages resolve against its box instead.
-          ? { position: "absolute", left: "-15%", top: "25%", width: 220, height: 197 }
+          ? { position: "absolute", left: "-15%", top: "24%", width: 220, height: 197 }
           : { left: "2.3%", top: "-36px", width: 253, height: 227 }
         }
       />
@@ -193,7 +193,7 @@ export default function AboutContact() {
       <div className={styles.content}>
         <div className={styles.text}>
           <p className={styles.bio}>
-            Melanie Patterson is an Indo-Jamaican American artist and designer drawing inspiration from oratory histories, community dynamics, and just societal concepts. Through her work, she is compelled to document rare stories, celebrate difficult truths, and make meaningful work across print, code, and handmade processes alike.
+            <span className={styles.name}>Melanie Patterson</span> is an Indo-Jamaican American artist and designer drawing inspiration from oratory histories, community dynamics, and just societal concepts. Through her work, she is compelled to document rare stories, celebrate difficult truths, and make meaningful work across print, code, and handmade processes alike.
           </p>
           <p className={styles.bio}>
             Born and raised in Miami, FL and based in Providence, RI since earning her BFA from Rhode Island School of Design, she works at the intersection of design, code, and community.

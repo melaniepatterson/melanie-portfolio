@@ -24,6 +24,16 @@
   font-size: 0.95rem;
   line-height: 1.7;
   color: #C93500;
+  /* Bricolage Grotesque's opsz axis (12-96) softens its ink-trap notches
+     into smooth curves as it climbs toward 96 — auto optical sizing
+     already pushes small body text toward the low end, but explicitly
+     pinning it to the floor guarantees the ink-trap emphasis regardless
+     of a given browser's font-optical-sizing support. */
+  font-variation-settings: 'opsz' 12;
+}
+
+.name {
+  font-weight: 600;
 }
 
 .links {
@@ -57,6 +67,13 @@
        page anymore, so just the footer's own clearance is needed here. */
     padding: 2rem 1.5rem 2rem;
     max-width: 100%;
+    /* StarLeft/StarBottom are position: absolute (not fixed) on mobile so
+       they scroll with the page — but unlike fixed, absolute descendants
+       DO count toward the document's horizontal scrollable area, and
+       StarBottom is deliberately positioned at right: -15% to hang off
+       the edge. Clips it there instead of letting it add ~90px of real
+       (if invisible) horizontal scroll to the whole page. */
+    overflow-x: hidden;
   }
 
   .content {
@@ -65,7 +82,7 @@
     /* Was on .text — now on the grid itself so it clears the top logo/nav
        for whichever child renders first, since .photo is reordered ahead
        of .text below. */
-    padding-top: 5.5rem;
+    padding-top: 5rem;
   }
 
   .text {
