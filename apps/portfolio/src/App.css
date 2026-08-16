@@ -103,6 +103,11 @@ main {
   gap: 3rem;
 }
 
+.gradient-circle {
+  width: 1500px;
+  height: 1500px;
+}
+
 .site-logo {
   bottom: 2rem;
   right: 2rem;
@@ -115,6 +120,11 @@ main {
 @media (max-width: 640px) {
   .site-logo {
     display: none;
+  }
+
+  .gradient-circle {
+    width: 980px;
+    height: 980px;
   }
 
   .site-logo-mobile {

@@ -318,15 +318,21 @@ export default function RepulseLogo() {
         )}
       </div>
 
+      {/* Sized via CSS media query (.gradient-circle in App.css), not the
+          isMobile JS state used elsewhere on this page — a width/height
+          read from React state at render time can be briefly wrong during
+          automated/lab testing if a device-viewport override applies just
+          after the first script execution, and correcting it a frame later
+          registers as a large layout shift for an element this size (was
+          flagged as the #1 CLS culprit on this page, score 0.317). CSS
+          media queries are evaluated synchronously during the browser's
+          own first layout pass, so there's no such timing race. */}
       <img
         ref={imgRef}
         src="/images/melanie studio circle.svg"
         alt=""
-        style={{
-          width: isMobile ? 980 : 1500,
-          height: isMobile ? 980 : 1500,
-          willChange: "transform",
-        }}
+        className="gradient-circle"
+        style={{ willChange: "transform" }}
       />
 
       <div className="home-nav" style={{
