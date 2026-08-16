@@ -54,6 +54,7 @@ export const PROJECTS = [
     resultCaption: "Confetti script for RISD admitted students decision letter",
     dominates: "result",
     resultComponent: () => import('../projects/RISD/ConfettiDemo.jsx'),
+    showRefresh: true,
     hoverHint: true,
   },
   {

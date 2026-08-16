@@ -3,12 +3,12 @@ import CodeReveal from "./CodeReveal";
 import Caption from "./Caption";
 import ShimmerImage, { Skeleton } from "./Skeleton";
 import LazyOnVisible from "./LazyOnVisible";
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useState } from "react";
 import { useHoverCapable } from "../utils";
 
 const resultComponentCache = {};
 
-function LazyResultComponent({ loader, fallbackSrc, fallbackAlt, fallbackWidth, fallbackHeight, fallbackRatio }) {
+function LazyResultComponent({ loader, fallbackSrc, fallbackAlt, fallbackWidth, fallbackHeight, fallbackRatio, resetKey }) {
   if (!resultComponentCache[loader]) {
     resultComponentCache[loader] = lazy(loader);
   }
@@ -18,7 +18,7 @@ function LazyResultComponent({ loader, fallbackSrc, fallbackAlt, fallbackWidth, 
     : <Skeleton ratio={fallbackRatio} />;
   return (
     <LazyOnVisible placeholder={fallback}>
-      <Suspense fallback={fallback}>
+      <Suspense key={resetKey} fallback={fallback}>
         <Component />
       </Suspense>
     </LazyOnVisible>
@@ -40,9 +40,14 @@ export default function InspirationResult({
   dominates = "result",
   onLightbox,
   resultComponent,
+  showRefresh = false,
   hoverHint,
 }) {
   const hoverCapable = useHoverCapable();
+  // Same restart mechanism as AppletResult's refresh button — bumping this
+  // remounts LazyResultComponent's inner Suspense via key, re-running the
+  // component's own effects from scratch.
+  const [resultKey, setResultKey] = useState(0);
   return (
     <div className={styles.wrapper}>
       {hoverHint && hoverCapable && (
@@ -70,8 +75,26 @@ export default function InspirationResult({
         aria-label={onLightbox && !resultComponent ? `View larger: ${resultAlt}` : undefined}
       >
         {onLightbox && !resultComponent && <div className={styles.lightboxHint} aria-hidden="true">⊕</div>}
+        {resultComponent && showRefresh && (
+          <div className={styles.itemHeader}>
+            <span className={styles.label}>Result</span>
+            <button
+              type="button"
+              className={styles.refreshButton}
+              onClick={(e) => { e.stopPropagation(); setResultKey(k => k + 1); }}
+              aria-label="Restart result"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M3 12a9 9 0 0 1 15.5-6.36M21 12a9 9 0 0 1-15.5 6.36" />
+                <polyline points="16 3 18.5 5.5 16 8" />
+                <polyline points="8 21 5.5 18.5 8 16" />
+              </svg>
+            </button>
+          </div>
+        )}
         {resultComponent ? (
           <LazyResultComponent
+            resetKey={resultKey}
             loader={resultComponent}
             fallbackSrc={resultSrc}
             fallbackAlt={resultAlt}

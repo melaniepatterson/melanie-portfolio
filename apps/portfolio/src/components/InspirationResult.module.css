@@ -33,6 +33,37 @@
   opacity: 0.5;
 }
 
+/* Same restart-button treatment as AppletResult's — see that file. */
+.itemHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.refreshButton {
+  background: none;
+  border: none;
+  padding: 8px;
+  margin: -8px;
+  color: inherit;
+  opacity: 0.5;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: opacity 0.2s ease, transform 0.3s ease;
+}
+
+.refreshButton:hover {
+  opacity: 1;
+  transform: rotate(90deg);
+}
+
+.refreshButton svg {
+  width: 14px;
+  height: 14px;
+}
+
 .caption {
   margin: 0;
 }
