@@ -4,6 +4,10 @@ import { useLocation } from "react-router-dom";
 const STORAGE_KEY = "melanie-studio-consent";
 const VISITOR_ID_KEY = "melanie-studio-visitor-id";
 const SIX_MONTHS_MS = 1000 * 60 * 60 * 24 * 182;
+// Fired by the Privacy page's "change cookie preferences" link — lets it
+// reopen this banner on demand without any direct relationship between
+// the two components (Privacy doesn't render or control ConsentBanner).
+export const OPEN_CONSENT_EVENT = "melanie-studio:open-consent";
 
 function updateConsent(granted) {
   if (typeof window.gtag !== "function") return;
@@ -70,6 +74,12 @@ export default function ConsentBanner() {
     } else {
       setVisible(true);
     }
+  }, []);
+
+  useEffect(() => {
+    const open = () => setVisible(true);
+    window.addEventListener(OPEN_CONSENT_EVENT, open);
+    return () => window.removeEventListener(OPEN_CONSENT_EVENT, open);
   }, []);
 
   const choose = (granted) => {

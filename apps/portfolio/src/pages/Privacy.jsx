@@ -1,4 +1,5 @@
 import styles from "./Privacy.module.css";
+import { OPEN_CONSENT_EVENT } from "../ConsentBanner";
 
 export default function Privacy() {
   return (
@@ -35,9 +36,14 @@ export default function Privacy() {
       <div className={styles.section}>
         <h2>Changing your mind</h2>
         <p>
-          Clear your browser's storage for this site and the banner will show again next visit —
-          or just wait, it re-asks automatically every 6 months either way.
+          It re-asks automatically every 6 months, or you can change your choice right now:
         </p>
+        <button
+          onClick={() => window.dispatchEvent(new Event(OPEN_CONSENT_EVENT))}
+          className={styles.preferencesButton}
+        >
+          Change cookie preferences
+        </button>
       </div>
 
       <div className={styles.section}>

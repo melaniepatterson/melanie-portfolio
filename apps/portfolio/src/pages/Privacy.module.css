@@ -35,6 +35,19 @@
   text-decoration: underline;
 }
 
+.preferencesButton {
+  margin-top: 0.75rem;
+  padding: 0.5rem 1.1rem;
+  border-radius: 9999px;
+  border: 1px solid #C93500;
+  background: transparent;
+  color: #C93500;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
 @media (max-width: 640px) {
   .page {
     padding: 5rem 1.5rem 2rem;
