@@ -142,7 +142,7 @@ export const PROJECTS = [
   id: 4,
   slug: "DARE-body-count",
   title: "D.O.D.",
-  disciplines: ["Design & Print"],
+  disciplines: ["Interactive Design"],
   topics: ["Memory & Archive"],
   client: ["Direct Action for Rights and Equality (DARE)"],
   year: "2026",
