@@ -1,8 +1,16 @@
 .wrapper {
   display: flex;
   align-items: stretch;
-  gap: 1.5rem;
+  gap: 2rem;
   width: 100%;
+  /* Both frames always show their own "Scroll to interact" hint, poked
+     outside their own right edge (see BrowserFrame/MobileFrame's own
+     scrollHint) — this is DeviceCompare's own reserved space for that,
+     since it's used directly in project heroes with no surrounding
+     .galleryItem to reserve it instead. The desktop frame's hint pokes
+     into the gap between the two frames rather than out here; the wider
+     gap above gives it room too. */
+  padding-right: 2rem;
 }
 
 .desktop {
@@ -21,4 +29,21 @@
 
 .caption {
   margin: 0.5rem 0 0;
+}
+
+@media (max-width: 640px) {
+  /* Side by side, each frame split the available width and rendered
+     tiny on a narrow screen. Stacked, each gets the full column width —
+     dramatically bigger. Height comes from each frame's own
+     aspect-ratio now (JS stops computing a shared height in this mode —
+     see DeviceCompare.jsx's isMobile check). */
+  .wrapper {
+    flex-direction: column;
+  }
+
+  .desktop,
+  .phone {
+    width: 100%;
+    height: auto;
+  }
 }

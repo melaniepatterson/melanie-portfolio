@@ -77,7 +77,7 @@ export default function BrowserFrame({ src, alt = '', width, height }) {
       </svg>
 
       <p className={`${styles.scrollHint} ${isScrolling ? styles.scrollHintHidden : ''}`}>
-        <span className={styles.scrollHintInner}>Scroll</span>
+        <span className={styles.scrollHintInner}>Scroll to interact</span>
       </p>
     </div>
   );

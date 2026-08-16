@@ -136,7 +136,7 @@ export default function WorkDetail() {
 
     if (img.type === "inspiration-result") {
       return (
-        <div key={i} className={`${styles.galleryItem} ${sizeClass} ${img.hoverHint && hoverCapable ? styles.hasHoverHint : ""}`}>
+        <div key={i} className={`${styles.galleryItem} ${sizeClass} ${img.hoverHint && hoverCapable ? styles.hasEdgeHint : ""}`}>
           <InspirationResult
             {...img}
             onLightbox={(src, alt) => setLightbox({ src, alt })}
@@ -147,7 +147,7 @@ export default function WorkDetail() {
 
     if (img.type === "applet-result") {
       return (
-        <div key={i} className={`${styles.galleryItem} ${sizeClass} ${img.hoverHint && hoverCapable ? styles.hasHoverHint : ""}`}>
+        <div key={i} className={`${styles.galleryItem} ${sizeClass} ${img.hoverHint && hoverCapable ? styles.hasEdgeHint : ""}`}>
           <AppletResult
             {...img}
             onLightbox={(src, alt) => setLightbox({ src, alt })}
@@ -195,7 +195,7 @@ export default function WorkDetail() {
 
     if (img.type === "browser-frame") {
       return (
-        <div key={i} className={`${styles.galleryItem} ${sizeClass}`}>
+        <div key={i} className={`${styles.galleryItem} ${sizeClass} ${styles.hasEdgeHint}`}>
           <BrowserFrame src={img.src} alt={img.alt} width={img.width} height={img.height} />
           {img.caption && <Caption className={styles.caption}>{img.caption}</Caption>}
         </div>
@@ -212,7 +212,7 @@ export default function WorkDetail() {
     return (
       <div
         key={i}
-        className={`${styles.galleryItem} ${sizeClass} ${lightboxable ? styles.lightboxable : ""} ${showHoverHint ? styles.hasHoverHint : ""}`}
+        className={`${styles.galleryItem} ${sizeClass} ${lightboxable ? styles.lightboxable : ""} ${showHoverHint ? styles.hasEdgeHint : ""}`}
         onClick={openLightbox}
         role={lightboxable ? "button" : undefined}
         tabIndex={lightboxable ? 0 : undefined}

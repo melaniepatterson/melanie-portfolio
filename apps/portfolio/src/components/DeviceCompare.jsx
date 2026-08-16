@@ -23,10 +23,26 @@ export default function DeviceCompare({
 }) {
   const wrapperRef = useRef(null);
   const [height, setHeight] = useState(null);
+  // Below 640px the two frames stack instead of sitting side by side (see
+  // .wrapper in the CSS) — each one just needs its own aspect-ratio-driven
+  // height at full container width, not a shared computed height solving
+  // for two different ratios sharing one row. Squeezed side by side at
+  // mobile widths, both frames rendered tiny; full width each, stacked,
+  // is dramatically bigger.
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 640);
+
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 640);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
   useEffect(() => {
     const el = wrapperRef.current;
-    if (!el) return;
+    if (!el || isMobile) {
+      setHeight(null);
+      return;
+    }
 
     // Setting height on the element we're observing changes its own resize
     // entries too (border-box size includes height), which would otherwise
@@ -48,7 +64,7 @@ export default function DeviceCompare({
     });
     observer.observe(el);
     return () => observer.disconnect();
-  }, []);
+  }, [isMobile]);
 
   return (
     <div>

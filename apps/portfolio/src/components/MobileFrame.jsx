@@ -110,7 +110,7 @@ export default function MobileFrame({ children, scrollable = false, matchHeight 
 
       {scrollable && (
         <p className={`${styles.scrollHint} ${isScrolling ? styles.scrollHintHidden : ""}`}>
-          <span className={styles.scrollHintInner}>Scroll</span>
+          <span className={styles.scrollHintInner}>Scroll to interact</span>
         </p>
       )}
     </div>

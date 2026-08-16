@@ -81,10 +81,10 @@
   position: relative;
 }
 
-/* Only the one item that actually renders .hoverHint needs this reserved
-   strip — every other item was getting it too, rendering narrower than
-   the grid column for no reason since nothing ever sat in that space. */
-.hasHoverHint {
+/* Reserved strip for items whose own edge hint ("Hover to interact" or
+   BrowserFrame/MobileFrame's "Scroll to interact") pokes outside the
+   item's own box — everything else stays unpadded, full grid width. */
+.hasEdgeHint {
   padding-right: 2rem;
 }
 

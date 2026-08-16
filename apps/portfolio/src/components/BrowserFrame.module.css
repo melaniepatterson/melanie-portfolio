@@ -27,6 +27,14 @@
   display: block;
 }
 
+/* Same treatment as the "Hover to interact" hint (InspirationResult/
+   AppletResult) — sits outside the frame's own right edge, in space the
+   parent reserves (see WorkDetail.module.css's .hasEdgeHint), rather
+   than overlaid on the chrome itself. writing-mode does the rotation
+   here instead of a transform, so there's no risk of the centering math
+   drifting the way the old rotate+translate version did. White — the
+   frame's own rust chrome color would be invisible against the page's
+   own rust background out here. */
 .scrollHint {
   font-family: 'Bricolage Grotesque', sans-serif;
   font-size: 0.7rem;
@@ -34,21 +42,18 @@
   letter-spacing: 0.2em;
   text-transform: uppercase;
   line-height: 1.2;
-  color: #982511;
+  color: #FAF7F2;
   position: absolute;
-  right: 3%;
-  top: 50%;
-  /* See MobileFrame.module.css's scrollHint for why this is
-     translateY(-50%)+rotate around center rather than the previous
-     rotate+translateX(-50%)+origin:right approach — that version left
-     the hint resting well above the wrapper's true vertical center. */
-  transform: translateY(-50%) rotate(90deg);
-  transform-origin: center;
+  right: -1.5rem;
+  top: 0;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
   white-space: nowrap;
   pointer-events: none;
   margin: 0;
   opacity: 1;
   transition: opacity 0.8s ease;
+  z-index: 3;
 }
 
 .scrollHintHidden {
