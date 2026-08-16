@@ -1,4 +1,4 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, Navigate } from "react-router-dom";
 import { PROJECTS } from "../data/projects";
 import styles from "./WorkDetail.module.css";
 import { SplitText, useHoverCapable } from "../utils";
@@ -107,6 +107,12 @@ export default function WorkDetail() {
       <Link to="/portfolio"><SplitText>← Back to Portfolio</SplitText></Link>
     </div>
   );
+
+  // Not public yet — bounce straight back to the grid instead of rendering
+  // the sparse placeholder content, so the URL never actually resolves to
+  // a real page while the project is gated (see the matching card gate in
+  // Work.jsx and the noindex entry in scripts/prerender-meta.mjs).
+  if (project.comingSoon) return <Navigate to="/portfolio" replace />;
 
   const { images: galleryImages } = getGalleryData(project);
 

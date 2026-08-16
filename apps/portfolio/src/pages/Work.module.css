@@ -243,6 +243,20 @@
   }
 }
 
+.comingSoonCard {
+  cursor: not-allowed;
+}
+
+/* Touch has no cursor to signal "blocked" with, so give tapping the inert
+   card a brief press-down instead — a tactile "nope" in place of the
+   desktop not-allowed cursor. */
+@media (max-width: 640px) {
+  .comingSoonCard:active {
+    transform: scale(0.98);
+    transition: transform 0.15s ease;
+  }
+}
+
 .small {
   grid-column: span 1;
 }

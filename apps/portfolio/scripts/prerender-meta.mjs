@@ -66,6 +66,18 @@ const routes = [
     description: 'How melanie.studio uses cookies and analytics.',
     image: defaultImage,
   },
+  {
+    // Gated in projects.js via comingSoon: true — WorkDetail.jsx redirects
+    // this path back to /portfolio at runtime, so this static file only
+    // ever matters to crawlers/unfurlers that read raw HTML without
+    // executing JS. noindex keeps it out of search results in the
+    // meantime; the redirect is what keeps it off the public site itself.
+    path: '/portfolio/DARE-body-count',
+    title: 'Coming Soon — melanie.studio',
+    description: "This project isn't public yet — check back soon.",
+    image: defaultImage,
+    noindex: true,
+  },
 ]
 
 const escapeAttr = (str) => str.replace(/&/g, '&amp;').replace(/"/g, '&quot;')
@@ -94,6 +106,14 @@ for (const route of routes) {
     html = html.replace(pattern, replacement)
   }
   html = html.replace(/(<title>.*?<\/title>)/, `$1\n    <link rel="canonical" href="${route.canonical}" />`)
+
+  if (route.noindex) {
+    const robotsPattern = /<meta name="robots" content="[^"]*" \/>/
+    if (!robotsPattern.test(html)) {
+      throw new Error(`prerender-meta: robots meta pattern did not match for route ${route.path} — index.html template may have changed shape.`)
+    }
+    html = html.replace(robotsPattern, `<meta name="robots" content="noindex, nofollow" />`)
+  }
 
   const outDir = route.path === '/' ? distDir : join(distDir, route.path)
   mkdirSync(outDir, { recursive: true })
