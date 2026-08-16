@@ -4,6 +4,14 @@
 // built for a fixed-loop <video> instead of a scrollable screenshot.
 export default function EmailBrowserFrame({ src }) {
   return (
+    // Real Safari has a longstanding bug where foreignObject content
+    // (below) doesn't reliably respect the SVG's own viewBox scaling/clip
+    // — it can render at something closer to its literal pixel values and
+    // escape the frame entirely. Chrome (incl. its mobile device
+    // emulation) doesn't have this bug, which is why it's invisible in
+    // dev tools. A hard overflow: hidden here, sized independently of
+    // that inner content, clips it back down regardless of the cause.
+    <div style={{ width: "100%", overflow: "hidden" }}>
     <svg
       viewBox="0 0 1620.5 1876.4"
       xmlns="http://www.w3.org/2000/svg"
@@ -85,5 +93,6 @@ export default function EmailBrowserFrame({ src }) {
         />
       </g>
     </svg>
+    </div>
   );
 }

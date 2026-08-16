@@ -7,6 +7,14 @@
      (a fixed 320px cap rendered nearly 2.25x taller than that). */
   max-width: 40%;
   margin: 0 auto;
+  /* Real Safari has a longstanding bug where the foreignObject's HTML
+     content below (.screen) doesn't reliably resolve height: 100%, and
+     can render at its content's natural (unbounded) height instead —
+     invisible in Chrome's dev tools, including its mobile emulation,
+     since neither has the bug. This wrapper's own size never depends on
+     that content, so overflow: hidden here clips it back down
+     regardless of the cause. */
+  overflow: hidden;
 }
 
 .wrapper.matchHeight {

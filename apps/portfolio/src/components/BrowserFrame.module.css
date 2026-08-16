@@ -3,6 +3,9 @@
 .wrapper {
   position: relative;
   width: 100%;
+  /* See MobileFrame.module.css's .wrapper — same Safari foreignObject
+     height/scaling bug, same independent-of-content backstop. */
+  overflow: hidden;
 }
 
 .svg {
