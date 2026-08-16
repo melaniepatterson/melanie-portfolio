@@ -114,17 +114,14 @@ export const PROJECTS = [
     thumbnailHeight: 770,
     // See RISD's hoverImage comment above.
     hoverImage: "/images/projects/GlowUp/melanie-patterson-glow-up-calendar-desktop.webp",
-    hero: null,      // or: () => import('../projects/project-one/Hero')
+    // Desktop/mobile calendar comparison, moved here from the gallery
+    // array below — stronger as the first thing visitors see than as one
+    // grid item among several. images[0] stays put; WorkDetail.jsx's
+    // LazyHero still needs it as the Suspense fallback shown while this
+    // chunk loads.
+    hero: () => import('../projects/GlowUp/Hero'),
     images: [
     { src: "/images/projects/GlowUp/melanie-patterson-glow-up-calendar-desktop.webp", width: 1400, height: 1590, alt: "The Glow Up calendar on desktop, showing a month grid with AM/PM routine slots colored by day type and an active Tretinoin Onboarding program banner." },
-    {
-      type: "device-compare",
-      desktopSrc: "/images/projects/GlowUp/melanie-patterson-glow-up-calendar-desktop.webp",
-      desktopAlt: "The Glow Up calendar on desktop, showing a month grid with AM/PM routine slots colored by day type and an active Tretinoin Onboarding program banner.",
-      mobileSrc: "/images/projects/GlowUp/melanie-patterson-glow-up-calendar-mobile.webp",
-      mobileAlt: "The same Glow Up calendar view, reflowed for mobile.",
-      caption: "The skincare calendar on desktop and mobile.",
-    },
     {
       type: "browser-frame",
       src: "/images/projects/GlowUp/melanie-patterson-glow-up-products-desktop.webp",
