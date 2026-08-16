@@ -236,8 +236,9 @@ export default function RepulseLogo() {
   const handleLinkEnter = (variant) => {
     if (isMobile) return;
     if (variant === "work") {
-      const randomImg = CHASER_IMAGES[Math.floor(Math.random() * CHASER_IMAGES.length)];
-      setChaserImage(randomImg);
+      const available = CHASER_IMAGES.filter((img) => !img.comingSoon);
+      const randomImg = available[Math.floor(Math.random() * available.length)];
+      setChaserImage(randomImg.src);
       setChaserStar(null);
     } else {
       const randomStar = CHASER_STARS[Math.floor(Math.random() * CHASER_STARS.length)];
