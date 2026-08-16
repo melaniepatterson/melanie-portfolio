@@ -12,10 +12,7 @@
   gap: 0.5rem;
 }
 
-.large {
-  flex: 2;
-}
-
+.large,
 .small {
   flex: 1;
 }
