@@ -22,6 +22,7 @@ import Hero from "./Radialgradient";
 const Work = lazy(() => import("./pages/Work"));
 const WorkDetail = lazy(() => import("./pages/WorkDetail"));
 const AboutContact = lazy(() => import("./pages/About-contact"));
+const Privacy = lazy(() => import("./pages/Privacy"));
 
 function Layout() {
   const location = useLocation();
@@ -77,6 +78,7 @@ function Layout() {
       "/": "melanie.studio",
       "/portfolio": "Work — melanie.studio",
       "/about-contact": "Info & Contact — melanie.studio",
+      "/privacy": "Privacy & Cookies — melanie.studio",
     };
     const title = titles[location.pathname];
     if (title) {
@@ -119,6 +121,7 @@ function Layout() {
                 <Route path="/portfolio" element={<Work />} />
                 <Route path="/portfolio/:slug" element={<WorkDetail />} />
                 <Route path="/about-contact" element={<AboutContact />} />
+                <Route path="/privacy" element={<Privacy />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
@@ -138,6 +141,12 @@ function Layout() {
           gap: "0.6rem",
         }}>
           <span>© {new Date().getFullYear()} Melanie Patterson</span>
+          <a
+            href="/privacy"
+            style={{ pointerEvents: "auto", color: "inherit" }}
+          >
+            Privacy
+          </a>
           <a
             href="https://www.instagram.com/melanie.studio_/"
             target="_blank"

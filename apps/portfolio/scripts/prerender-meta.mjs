@@ -60,6 +60,12 @@ const routes = [
     description: 'About Melanie Patterson, CV, and contact links.',
     image: defaultImage,
   },
+  {
+    path: '/privacy',
+    title: 'Privacy & Cookies — melanie.studio',
+    description: 'How melanie.studio uses cookies and analytics.',
+    image: defaultImage,
+  },
 ]
 
 const escapeAttr = (str) => str.replace(/&/g, '&amp;').replace(/"/g, '&quot;')

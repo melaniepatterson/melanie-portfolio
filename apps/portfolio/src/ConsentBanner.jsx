@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 
 const STORAGE_KEY = "melanie-studio-consent";
 const VISITOR_ID_KEY = "melanie-studio-visitor-id";
+const SIX_MONTHS_MS = 1000 * 60 * 60 * 24 * 182;
 
 function updateConsent(granted) {
   if (typeof window.gtag !== "function") return;
@@ -62,16 +63,18 @@ export default function ConsentBanner() {
 
   useEffect(() => {
     let saved = null;
-    try { saved = localStorage.getItem(STORAGE_KEY); } catch {}
-    if (saved === "granted" || saved === "denied") {
-      updateConsent(saved === "granted");
+    try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch {}
+    const expired = !saved?.timestamp || Date.now() - saved.timestamp > SIX_MONTHS_MS;
+    if (!expired && (saved.choice === "granted" || saved.choice === "denied")) {
+      updateConsent(saved.choice === "granted");
     } else {
       setVisible(true);
     }
   }, []);
 
   const choose = (granted) => {
-    try { localStorage.setItem(STORAGE_KEY, granted ? "granted" : "denied"); } catch {}
+    const record = { choice: granted ? "granted" : "denied", timestamp: Date.now() };
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(record)); } catch {}
     updateConsent(granted);
     logConsent(granted);
     setVisible(false);
