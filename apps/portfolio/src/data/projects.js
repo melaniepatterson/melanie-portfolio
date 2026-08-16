@@ -148,6 +148,7 @@ export const PROJECTS = [
   year: "2026",
   description: "Coming soon.",
   externalLink: "",
+  comingSoon: true,
   thumbnail: null, // or: () => import('../projects/project-one/Thumbnail')
   hero: null,      // or: () => import('../projects/project-one/Hero')
   images: [

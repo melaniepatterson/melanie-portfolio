@@ -199,6 +199,50 @@
   opacity: 1;
 }
 
+/* WIP project gate — comingSoon boolean in projects.js (same pattern as
+   showRefresh). Fade + red overlay are always on, on every viewport; only
+   the "Coming Soon" text visibility is device-dependent (hover-revealed on
+   desktop, always shown on mobile — there's no hover on touch). */
+.comingSoonThumb {
+  position: relative;
+}
+
+.comingSoonThumb img,
+.comingSoonThumb video {
+  opacity: 0.6;
+}
+
+.comingSoonOverlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(201, 53, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.comingSoonLabel {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #FAF7F2;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.card:hover .comingSoonLabel {
+  opacity: 1;
+}
+
+@media (max-width: 640px) {
+  .comingSoonLabel {
+    opacity: 1;
+  }
+}
+
 .small {
   grid-column: span 1;
 }

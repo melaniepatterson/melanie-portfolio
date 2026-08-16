@@ -359,32 +359,39 @@ useEffect(() => {
                   style={isMobile ? undefined : { marginTop: `${nudge}px`, marginBottom: `${sessionMargins[i]}px` }}
                   onClick={() => sessionStorage.setItem("workScroll", window.scrollY)}
                 >
-                  {typeof project.thumbnail === "function" ? (
-                    <LazyThumbnail
-                      loader={project.thumbnail}
-                      hovered={false}
-                      fallbackSrc={project.images[0].src}
-                      fallbackAlt={project.images[0].alt}
-                      fallbackWidth={project.images[0].width}
-                      fallbackHeight={project.images[0].height}
-                    />
-                  ) : typeof project.thumbnail === "string" && project.thumbnail.endsWith(".webm") ? (
-                    <VisibilityGatedVideo
-                      src={project.thumbnail}
-                      width={project.thumbnailWidth}
-                      height={project.thumbnailHeight}
-                      alt={project.images[0].alt}
-                    />
-                  ) : (
-                    <ShimmerImage
-                      src={project.thumbnail || project.images[0].src}
-                      srcSet={project.thumbnail ? project.thumbnailSrcSet : undefined}
-                      sizes={project.thumbnail ? project.thumbnailSizes : undefined}
-                      alt={project.images[0].alt}
-                      width={project.thumbnail ? project.thumbnailWidth : project.images[0].width}
-                      height={project.thumbnail ? project.thumbnailHeight : project.images[0].height}
-                    />
-                  )}
+                  <div className={project.comingSoon ? styles.comingSoonThumb : undefined}>
+                    {typeof project.thumbnail === "function" ? (
+                      <LazyThumbnail
+                        loader={project.thumbnail}
+                        hovered={false}
+                        fallbackSrc={project.images[0].src}
+                        fallbackAlt={project.images[0].alt}
+                        fallbackWidth={project.images[0].width}
+                        fallbackHeight={project.images[0].height}
+                      />
+                    ) : typeof project.thumbnail === "string" && project.thumbnail.endsWith(".webm") ? (
+                      <VisibilityGatedVideo
+                        src={project.thumbnail}
+                        width={project.thumbnailWidth}
+                        height={project.thumbnailHeight}
+                        alt={project.images[0].alt}
+                      />
+                    ) : (
+                      <ShimmerImage
+                        src={project.thumbnail || project.images[0].src}
+                        srcSet={project.thumbnail ? project.thumbnailSrcSet : undefined}
+                        sizes={project.thumbnail ? project.thumbnailSizes : undefined}
+                        alt={project.images[0].alt}
+                        width={project.thumbnail ? project.thumbnailWidth : project.images[0].width}
+                        height={project.thumbnail ? project.thumbnailHeight : project.images[0].height}
+                      />
+                    )}
+                    {project.comingSoon && (
+                      <div className={styles.comingSoonOverlay}>
+                        <span className={styles.comingSoonLabel}>Coming Soon</span>
+                      </div>
+                    )}
+                  </div>
                   <div className={styles.cardTitle}>{project.title}</div>
                   <div className={styles.cardYear}>{project.year}</div>
                 </Link>
