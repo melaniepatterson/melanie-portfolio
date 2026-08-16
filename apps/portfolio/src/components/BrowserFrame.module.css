@@ -45,7 +45,12 @@
   color: #FAF7F2;
   position: absolute;
   right: -1.5rem;
-  top: 0;
+  /* The chrome's own drawn top edge sits a little inside the SVG's
+     bounding box (rounded-corner artwork, not a flush rect) — measured
+     ~1.2% of the frame's rendered height, consistent across sizes. top:0
+     left the hint starting visibly above where the frame actually
+     begins. */
+  top: 1.2%;
   writing-mode: vertical-rl;
   text-orientation: mixed;
   white-space: nowrap;

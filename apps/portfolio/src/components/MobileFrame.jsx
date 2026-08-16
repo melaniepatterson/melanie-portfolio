@@ -18,7 +18,7 @@ import styles from "./MobileFrame.module.css";
 const CLIP_ID = "mobileFrameClip";
 const MASK_ID = "mobileFrameMask";
 
-export default function MobileFrame({ children, scrollable = false, matchHeight = false }) {
+export default function MobileFrame({ children, scrollable = false, matchHeight = false, fullWidth = false }) {
   const [isScrolling, setIsScrolling] = useState(false);
   const scrollTimer = useRef(null);
 
@@ -35,7 +35,7 @@ export default function MobileFrame({ children, scrollable = false, matchHeight 
   }
 
   return (
-    <div className={`${styles.wrapper} ${matchHeight ? styles.matchHeight : ""}`}>
+    <div className={`${styles.wrapper} ${matchHeight ? styles.matchHeight : ""} ${fullWidth ? styles.fullWidth : ""}`}>
       <svg
         viewBox="0 0 927.98 1920"
         xmlns="http://www.w3.org/2000/svg"

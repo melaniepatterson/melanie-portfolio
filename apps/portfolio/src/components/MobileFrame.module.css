@@ -16,6 +16,13 @@
   margin: 0;
 }
 
+/* For standalone use where the frame IS the whole visual (e.g. the
+   mobile-only Glow Up hero) rather than one piece sitting beside other
+   content — the default 40% cap is tuned for the latter. */
+.wrapper.fullWidth {
+  max-width: 100%;
+}
+
 .svg {
   display: block;
   width: 100%;
@@ -74,7 +81,10 @@
   color: #FAF7F2;
   position: absolute;
   right: -1.5rem;
-  top: 0;
+  /* See BrowserFrame.module.css's scrollHint — same ~1.2% correction for
+     the chrome's drawn top edge sitting slightly inside the SVG's own
+     bounding box. */
+  top: 1.2%;
   writing-mode: vertical-rl;
   text-orientation: mixed;
   white-space: nowrap;

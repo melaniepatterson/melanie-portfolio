@@ -123,6 +123,17 @@ export const PROJECTS = [
     images: [
     { src: "/images/projects/GlowUp/melanie-patterson-glow-up-calendar-desktop.webp", width: 1400, height: 1590, alt: "The Glow Up calendar on desktop, showing a month grid with AM/PM routine slots colored by day type and an active Tretinoin Onboarding program banner." },
     {
+      // Desktop half of the hero pairing — split out to only appear
+      // here on mobile, where the hero itself shows the phone frame
+      // alone (see Hero.jsx). Desktop viewports still get it as part of
+      // the DeviceCompare hero, so this would be a duplicate there.
+      type: "browser-frame",
+      mobileOnly: true,
+      src: "/images/projects/GlowUp/melanie-patterson-glow-up-calendar-desktop.webp",
+      alt: "The Glow Up calendar on desktop, showing a month grid with AM/PM routine slots colored by day type and an active Tretinoin Onboarding program banner.",
+      caption: "The same calendar view on desktop.",
+    },
+    {
       type: "browser-frame",
       src: "/images/projects/GlowUp/melanie-patterson-glow-up-products-desktop.webp",
       alt: "The Glow Up product library, showing a filterable grid of skincare products with brand, finish count, and affiliate links.",

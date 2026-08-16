@@ -132,6 +132,13 @@ export default function WorkDetail() {
   // waiting for the whole two-column block to finish; on mobile they
   // render in their own full-width section after it, same as before.
   function renderGalleryItem(img, i) {
+    // Some items (e.g. Glow Up's desktop calendar screenshot, split out
+    // of the hero on mobile — see projects.js) only belong in one of the
+    // two placements above. .galleryFlow only ever renders when
+    // !isMobile and .gallery only when isMobile, so a plain null here is
+    // enough to keep it out of whichever one it doesn't belong in.
+    if (img.mobileOnly && !isMobile) return null;
+
     const sizeClass = isLargeItem(img) ? styles.galleryLarge : styles.gallerySmall;
 
     if (img.type === "inspiration-result") {
