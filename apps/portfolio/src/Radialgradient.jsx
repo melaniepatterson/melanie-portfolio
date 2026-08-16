@@ -5,8 +5,10 @@ import { SplitText, computeRepulsion, applyRepulsionStyle } from "./utils";
 
 // Same shape as the About page's desktop-only StarOverlay (see
 // About-contact.jsx) — using it exclusively, instead of a rotating pool of
-// 3, visually ties the Home hover back to that page. Randomly rotated per
-// hover, same as before.
+// 3, visually ties the Home hover back to that page. Always rendered in
+// its original orientation (no rotation) — randomizing it per hover made
+// it snap to a new direction every time, which read as erratic rather
+// than intentional.
 const INFO_STAR = {
   viewBox: "0 0 122.64 114.84",
   paths: [
@@ -219,7 +221,7 @@ export default function RepulseLogo() {
       setChaserImage(randomImg);
       setChaserStar(null);
     } else {
-      setChaserStar({ ...INFO_STAR, rotation: Math.floor(Math.random() * 360) });
+      setChaserStar(INFO_STAR);
       setChaserImage(null);
     }
     setChaserVisible(true);
@@ -311,7 +313,7 @@ export default function RepulseLogo() {
         {chaserStar && (
           <svg
             viewBox={chaserStar.viewBox}
-            style={{ width: "100%", height: "100%", display: "block", fill: "#C93500", transform: `rotate(${chaserStar.rotation}deg)` }}
+            style={{ width: "100%", height: "100%", display: "block", fill: "#C93500" }}
           >
             {chaserStar.paths.map((d, i) => <path key={i} d={d} />)}
           </svg>
