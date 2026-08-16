@@ -42,7 +42,6 @@ export default function EmailBrowserFrame({ src }) {
               actual HTML div is the reliable way to round it. */}
           <div xmlns="http://www.w3.org/1999/xhtml" style={{ position: "relative", width: "1583.8px", height: "1714.45px", overflow: "hidden", borderRadius: "0 0 50px 50px" }}>
             <video
-              src={src}
               autoPlay
               loop
               muted
@@ -50,7 +49,12 @@ export default function EmailBrowserFrame({ src }) {
               disablePictureInPicture
               controls={false}
               style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-            />
+            >
+              {/* See VisibilityGatedVideo.jsx — Safari can't decode VP9/
+                  WebM at all, so it needs the H.264 .mp4 fallback. */}
+              <source src={src} type="video/webm" />
+              <source src={src.replace(/\.webm$/, ".mp4")} type="video/mp4" />
+            </video>
           </div>
         </foreignObject>
       </g>

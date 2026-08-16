@@ -35,7 +35,6 @@ export default function VisibilityGatedVideo({ src, width, height, alt }) {
     >
       <video
         ref={videoRef}
-        src={src}
         width={width}
         height={height}
         loop
@@ -51,7 +50,14 @@ export default function VisibilityGatedVideo({ src, width, height, alt }) {
         aria-hidden={alt ? undefined : "true"}
         aria-label={alt || undefined}
         className={skeletonStyles.img}
-      />
+      >
+        <source src={src} type="video/webm" />
+        {/* Safari (desktop and iOS both) has no VP9/WebM decode support at
+            all — the source above silently fails there rather than being
+            slow, so every .webm on the site has a matching H.264 .mp4
+            sitting right next to it for Safari to fall back to. */}
+        <source src={src.replace(/\.webm$/, ".mp4")} type="video/mp4" />
+      </video>
     </div>
   );
 }
