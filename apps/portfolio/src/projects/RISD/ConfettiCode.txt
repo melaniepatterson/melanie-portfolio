@@ -54,6 +54,12 @@
   // reflow (a geometry read interleaved with the style writes below).
   const containerWidth = container.offsetWidth;
   const containerHeight = container.offsetHeight;
+  // Piece sizes/speeds below were tuned against the desktop decision-letter
+  // panel (~200px). The same absolute px sizes read as oversized confetti
+  // on the much smaller mobile panel (~120px) — scale everything down
+  // together (never up) so the effect stays proportional to the container.
+  const REFERENCE_WIDTH = 200;
+  const SCALE = Math.min(1, containerWidth / REFERENCE_WIDTH);
 
   // ── Helpers ───────────────────────────────────────────────────────────────
   function rand(min, max) {
@@ -65,7 +71,7 @@
 
   function createPiece() {
     const def = pick(WEIGHTED_POOL);
-    const size = def.size * rand(0.7, 1.4); // ±40% size variation
+    const size = def.size * rand(0.7, 1.4) * SCALE; // ±40% size variation
 
     const el = document.createElement('img');
     el.src = def.src;

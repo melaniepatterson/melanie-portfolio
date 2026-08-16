@@ -57,7 +57,10 @@ main {
      bottom instead, so the top row is free for the main nav. */
   .sidenav {
     width: auto;
-    top: 3.5rem;
+    /* Vertically centered on the fixed melanie.studio wordmark
+       (LogoHorizontal, top: calc(1.25rem - 14px)) so WORK / INFO share
+       its row instead of sitting in a separate line below it. */
+    top: 1.3rem;
     bottom: auto;
     left: 0;
     right: 0;

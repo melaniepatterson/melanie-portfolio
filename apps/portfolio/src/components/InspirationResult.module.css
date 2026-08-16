@@ -1,5 +1,9 @@
 .wrapper {
   display: flex;
+  /* Stays vertically centered (unlike AppletResult.module.css's
+     .wrapper) — inspiration/result pairs here have genuinely different
+     source-file aspect ratios, so centering reads better than top-
+     aligning two mismatched heights. */
   align-items: center;
   gap: 1.5rem;
   width: 100%;

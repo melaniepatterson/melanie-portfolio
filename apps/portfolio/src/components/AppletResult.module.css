@@ -1,6 +1,13 @@
 .wrapper {
   display: flex;
-  align-items: center;
+  /* flex-start, not center — with align-items: center, expanding one
+     item's caption (see Caption.module.css's toggle) grew that item's
+     height and re-centered the OTHER item's artwork within the taller
+     row instead of leaving it in place. Top-aligning also means the
+     applet/result artwork tops line up regardless of caption length,
+     rather than each item centering independently against its own
+     label+artwork+caption stack. */
+  align-items: flex-start;
   gap: 1.5rem;
   width: 100%;
   position: relative;
@@ -75,6 +82,9 @@
   flex-shrink: 0;
   display: flex;
   align-items: center;
+  /* .wrapper is flex-start now (top-aligned artwork), but the arrow
+     itself should still sit centered within the row's full height. */
+  align-self: center;
   opacity: 0.5;
 }
 

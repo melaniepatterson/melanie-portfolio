@@ -22,7 +22,7 @@ export default function Nav({ isWork, isWorkDetail }) {
   return (
     <nav className="sidenav">
       <NavLink to="/portfolio" style={{ color, borderBottomColor: color }}><SplitText>{showBack ? "← Back" : "Work"}</SplitText></NavLink>
-      <NavLink to="/about-contact" style={{ color, borderBottomColor: color }}><SplitText>Info / Contact</SplitText></NavLink>
+      <NavLink to="/about-contact" style={{ color, borderBottomColor: color }}><SplitText>{isMobile ? "Info" : "Info / Contact"}</SplitText></NavLink>
     </nav>
   );
 }
