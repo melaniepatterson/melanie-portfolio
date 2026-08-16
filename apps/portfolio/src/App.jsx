@@ -37,14 +37,9 @@ function Layout() {
   }, []);
 
   // Keep Safari's toolbar chrome in sync with whichever background is
-  // actually visible. Home's circle (Radialgradient.jsx) is a heavily
-  // blurred ellipse, not a flat fill — its raw color (#FFD6F9) is far more
-  // saturated than what's actually visible near the screen edges where the
-  // toolbar sits, since the blur fades it out there. #fce7f5 is sampled
-  // directly from the rendered edge (canvas pixel read, composited over the
-  // cream body background), not guessed.
+  // actually visible — cream everywhere except Work/WorkDetail's rust.
   useEffect(() => {
-    const color = isWork || isWorkDetail ? "#C93500" : isHome ? "#fce7f5" : "#FAF7F2";
+    const color = isWork || isWorkDetail ? "#C93500" : "#FAF7F2";
     const meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.setAttribute('content', color);
   }, [isHome, isWork, isWorkDetail]);
@@ -55,21 +50,31 @@ function Layout() {
   // updating correctly but the visible chrome stayed stale until the user
   // happened to scroll. Forcing a tiny real scroll nudges Safari into
   // resampling it. Same fix already used in the GlowUp app.
+  //
+  // minHeight only gets forced when the page genuinely isn't scrollable
+  // yet (nothing to nudge otherwise) — CSS vh units resolve inconsistently
+  // depending on whether Safari's toolbar happens to be expanded or
+  // minimized at that exact moment, and forcing one unconditionally on
+  // every route change risked fighting the toolbar's own resize reflow
+  // (reported as scrolling back up "getting stuck" while it was
+  // minimized). window.innerHeight is measured once, live, in JS instead
+  // — no CSS viewport-unit ambiguity to fight.
   useEffect(() => {
     const html = document.documentElement;
+    const needsHeight = html.scrollHeight <= window.innerHeight;
     const prevMinHeight = html.style.minHeight;
-    html.style.minHeight = 'calc(100vh + 2px)';
+    if (needsHeight) html.style.minHeight = `${window.innerHeight + 2}px`;
     const raf = requestAnimationFrame(() => {
       window.scrollTo(window.scrollX, window.scrollY + 2);
     });
     const timeout = setTimeout(() => {
       window.scrollTo(window.scrollX, window.scrollY - 2);
-      html.style.minHeight = prevMinHeight;
+      if (needsHeight) html.style.minHeight = prevMinHeight;
     }, 120);
     return () => {
       cancelAnimationFrame(raf);
       clearTimeout(timeout);
-      html.style.minHeight = prevMinHeight;
+      if (needsHeight) html.style.minHeight = prevMinHeight;
     };
   }, [isHome, isWork, isWorkDetail]);
 

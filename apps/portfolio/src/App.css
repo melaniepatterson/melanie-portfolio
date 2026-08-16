@@ -144,6 +144,12 @@ main {
     display: block;
     width: min(160px, 40vw);
   }
+
+  /* Same 3rem gap as desktop's row layout reads as a big empty gap once
+     WORK/INFO stack into a column instead. */
+  .home-nav {
+    gap: 1rem;
+  }
 }
 
 .layout {
