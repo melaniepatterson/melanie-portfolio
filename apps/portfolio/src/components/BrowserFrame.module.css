@@ -21,7 +21,12 @@
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
-  scroll-behavior: smooth;
+  /* scroll-behavior: smooth applies to EVERY scroll change, including
+     native touch-driven ones — not just programmatic scrollTo() calls
+     (which this never makes anyway). That means it was fighting the
+     browser's own touch momentum on mobile, reading as sluggish/laggy
+     instead of responding 1:1 to the drag. */
+  -webkit-overflow-scrolling: touch;
 }
 
 .screenshot {

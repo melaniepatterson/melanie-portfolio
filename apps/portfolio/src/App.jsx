@@ -107,7 +107,7 @@ function Layout() {
 
   return (
     <div className="layout">
-      {!isHome && <Nav isWork={isWork || isWorkDetail} />}
+      {!isHome && <Nav isWork={isWork || isWorkDetail} isWorkDetail={isWorkDetail} />}
       <Logo isWork={isWork || isWorkDetail} />
       <LogoHorizontal isWork={isWork || isWorkDetail} />
       <div className="page-wrapper" style={{

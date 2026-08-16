@@ -253,11 +253,10 @@
 
 @media (max-width: 640px) {
   .page {
-    /* Extra top padding clears the centered logo, the WORK/INFO nav below
-       it, and the back link below that (its own row now, to avoid
-       colliding with WORK/INFO). Nothing's fixed at the bottom anymore
-       (WORK/INFO moved to the top), so bottom padding is just the base. */
-    padding: 7rem 1.25rem 3rem;
+    /* Extra top padding clears the centered logo and the WORK/INFO nav
+       below it. "Work" doubles as the back link on this page now (see
+       Nav.jsx), so there's no separate back row to clear anymore. */
+    padding: 5.5rem 1.25rem 3rem;
   }
 
   .layout {
@@ -266,9 +265,10 @@
   }
 
   .back {
-    /* Its own row below WORK/INFO's, which now also sits at the top. */
-    top: 5.5rem;
-    left: 1.25rem;
+    /* Nav's own "Work" link already reads "← Back" and goes to the same
+       place on mobile work-detail pages — this would just be a
+       duplicate sitting right underneath it. */
+    display: none;
   }
 
   .info {

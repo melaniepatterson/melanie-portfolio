@@ -61,7 +61,10 @@
 .screen.scrollable {
   overflow-y: auto;
   overflow-x: hidden;
-  scroll-behavior: smooth;
+  /* See BrowserFrame.module.css's .scrollContainer — scroll-behavior:
+     smooth fights native touch momentum instead of just easing
+     programmatic scrolls (which never happen here). */
+  -webkit-overflow-scrolling: touch;
 }
 
 .screen img {
