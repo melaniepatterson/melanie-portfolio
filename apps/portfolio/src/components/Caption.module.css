@@ -18,6 +18,16 @@
   letter-spacing: 0.05em;
   line-height: 1.5;
   opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+/* Dimmed at rest fails contrast on its own, but reads clearly as
+   secondary/muted next to the full-strength body text around it — full
+   opacity (the same #FAF7F2 the rest of the page already uses, a pairing
+   confirmed compliant against this page's rust background) only while
+   the caption is actually open and being read. */
+.trigger.open {
+  opacity: 1;
 }
 
 .text {
