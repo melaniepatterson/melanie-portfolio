@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
 const STORAGE_KEY = "melanie-studio-consent";
+const VISITOR_ID_KEY = "melanie-studio-visitor-id";
 
 function updateConsent(granted) {
   if (typeof window.gtag !== "function") return;
@@ -10,6 +11,48 @@ function updateConsent(granted) {
     ad_user_data: "denied",
     ad_personalization: "denied",
     analytics_storage: granted ? "granted" : "denied",
+  });
+}
+
+// A random id, not tied to any real identity — this is only so a given
+// browser's own record can be told apart from another's in consent_logs,
+// not to track who someone is. Generated once and reused on repeat
+// visits (same key the choice itself is stored under, in the same spot).
+function getVisitorId() {
+  try {
+    let id = localStorage.getItem(VISITOR_ID_KEY);
+    if (!id) {
+      id = crypto.randomUUID();
+      localStorage.setItem(VISITOR_ID_KEY, id);
+    }
+    return id;
+  } catch {
+    return crypto.randomUUID();
+  }
+}
+
+// Durable record of consent decisions, kept in Supabase so there's an
+// actual demonstrable log (GDPR Art. 7(1) puts the burden of proof on the
+// site to show consent was given, not just trust that it was) — separate
+// from the localStorage flag above, which only handles gating GA in this
+// one browser. Fire-and-forget: gating already happened via localStorage/
+// gtag before this runs, so a failed or slow network request here should
+// never block or affect the visitor's actual experience.
+//
+// The import is dynamic, not a top-level static import, so
+// @supabase/supabase-js (a meaningfully large library) only ever gets
+// fetched at the moment someone actually clicks Accept/Decline, instead
+// of bloating the eagerly-loaded main bundle every single page load for
+// a feature most visits never trigger.
+function logConsent(granted) {
+  import("./supabase").then(({ supabase }) => {
+    supabase.from("consent_logs").insert({
+      choice: granted ? "granted" : "denied",
+      visitor_id: getVisitorId(),
+      page_path: window.location.pathname,
+    }).then(({ error }) => {
+      if (error) console.error("consent_logs insert failed:", error);
+    });
   });
 }
 
@@ -30,6 +73,7 @@ export default function ConsentBanner() {
   const choose = (granted) => {
     try { localStorage.setItem(STORAGE_KEY, granted ? "granted" : "denied"); } catch {}
     updateConsent(granted);
+    logConsent(granted);
     setVisible(false);
   };
 
