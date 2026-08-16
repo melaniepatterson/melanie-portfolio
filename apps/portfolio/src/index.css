@@ -13,7 +13,17 @@ code {
 
 html {
   background-color: #FAF7F2;
-  scroll-behavior: smooth;
+  /* Removed scroll-behavior: smooth — same bug already found and fixed
+     on BrowserFrame/MobileFrame's inner scroll containers (see those
+     files), just on the page's own root scroll this time: it applies to
+     EVERY scroll change, including native touch-driven ones, not just
+     programmatic scrollTo() calls, so it was fighting iOS Safari's own
+     touch momentum — read as a stuck/unresponsive scroll, and likely
+     produced the persistent scrollbar and the never-quite-reaches-the-
+     bottom symptom too. Every scrollTo() call in this codebase is
+     either a 2px nudge (imperceptible either way) or a route-change
+     reset to (0,0), where instant is actually the correct behavior —
+     nothing here wanted the smooth animation. */
   /* Reserves the vertical scrollbar's width up front so it can never
      toggle on mid-load (e.g. once web-font swap grows a long page's
      height past the viewport). Without this, that toggle changes
