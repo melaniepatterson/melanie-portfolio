@@ -156,9 +156,23 @@ main {
 .layout::after {
   content: "";
   position: fixed;
-  inset: -50%;
-  width: 200%;
-  height: 200%;
+  /* svw/svh (small-viewport units), not %/vw/vh — % against a fixed
+     element resolves against window.innerHeight/innerWidth the same way
+     vh/vw do, both of which track the LIVE viewport as a mobile
+     browser's toolbar collapses/expands on load. For an overlay this
+     size (2x viewport in both dimensions), even that resize registers
+     as a real, large layout shift (flagged by PageSpeed on the mobile
+     About page, score 0.114) despite nothing visually changing. svw/svh
+     are defined as the viewport's SMALLEST possible size and stay
+     static regardless of toolbar state, so this box can't resize itself
+     mid-load the way the desktop scrollbar-toggle case already fixed in
+     index.css (scrollbar-gutter: stable) couldn't cover — mobile
+     browsers don't reserve scrollbar gutter space, so that fix is a
+     no-op here. */
+  top: -50svh;
+  left: -50svw;
+  width: 200svw;
+  height: 200svh;
   pointer-events: none;
   z-index: 9999;
   opacity: 0.08;
