@@ -49,22 +49,24 @@ function LazyThumbnail({ loader, hovered, fallbackSrc, fallbackAlt, fallbackWidt
   );
 }
 
+// Each shape carries its own viewBox — these are Melanie's hand-drawn
+// stars, not a shared 24x24 icon set, so their native proportions differ.
+// The fixed-size .star box (Work.module.css) scales each down to fit via
+// the svg's own preserveAspectRatio default (xMidYMid meet).
 const SHAPES = [
-  "M12 2C16 2 22 6 22 12C22 18 17 22 12 22C7 22 2 17 2 12C2 7 8 2 12 2Z",
-  "M12 1C15 1 20 4 21 8C22 12 20 18 17 21C14 23 9 23 6 20C3 17 2 12 3 8C4 4 9 1 12 1Z",
-  "M12 2L14 9L21 9L15.5 13.5L17.5 21L12 16.5L6.5 21L8.5 13.5L3 9L10 9Z",
-  "M12 2C13.5 5 17 5 19 7C21 9 21 13 19 15C17 17 13.5 17 12 20C10.5 17 7 17 5 15C3 13 3 9 5 7C7 5 10.5 5 12 2Z",
-  "M12 1L14 7L20 4L17 10L23 12L17 14L20 20L14 17L12 23L10 17L4 20L7 14L1 12L7 10L4 4L10 7Z",
-  "M7 18C4 18 2 16 2 13C2 11 3 9 5 8C5 5 7 3 10 3C11 3 12 3.5 13 4C14 2 16 1 18 2C20 3 21 5 20 7C22 8 23 10 22 12C21 15 18 17 15 17Z",
-  "M4 12C4 8 6 3 10 2C13 1 16 3 18 6C20 8 22 10 21 13C20 16 17 19 14 20C11 21 7 20 5 18C3 16 4 14 4 12Z",
-  "M12 1L15 5L20 3L18 8L23 10L18 13L21 18L16 17L14 22L11 18L6 21L7 16L2 14L7 11L4 6L9 8Z",
+  { viewBox: "0 0 158.01 144.94", path: "M103.63,47.72c.49.09,41.48-11.99,45.3-10.25,1.08.49,1.51,1.98,1.42,2.81-.14,1.29-35.7,34.91-35.7,34.91-.36,1.1,24.24,31.63,24.59,33.44s-.25,2.96-1.83,3.53c-2.67.58-36.36-8.06-37.21-7.42-.74.56,1.01,24.35-.23,25.93-1.23,1.56-24.31-21.55-24.94-21.99,0,0-25.11,19.4-25.48,18.63s-1.33-37.19-1.38-38.24c-.05-1.05-36.24-17.87-36.58-18.68s-.5-4.42,1.01-6.27c1.17-1.35,34.1-6.58,34.22-6.98,1.33-3.8-17.02-31-14.33-33.95,1.35-1.93,33.79,22.29,35.78,23.46,0,0,28.05-38.18,28.88-38.72s2.65-.77,3.43.03c2.06,2.12,1.41,39.45,3.06,39.77Z" },
+  { viewBox: "0 0 170 181.99", path: "m115.88 84.64s44.25-20.67 43.23-23.25c-2.54-5.64-54-1.17-54.12-2.91-0.09-5.32-2.67-42.84-5.59-43.32-4.69-0.88-19.84 34.24-22.01 39.32-0.92 2.14-35.6-18.53-35.6-18.53s7.8 29.15 9.81 34.15c-5.45 2.18-43.98-2.15-45.51 1.41-0.21 3.96 39.7 22.56 39.7 22.56s-12.88 50.84-9.99 48.88c1.58-1.06 34.69-22.36 34.69-22.36s14.15 49.45 17.61 49.06 14.21-50.19 14.36-54.88c-0.03-4.78 50.69 7.04 54.02 4.95 2.07-1.41-40.58-35.1-40.58-35.1z" },
+  { viewBox: "0 0 184.17 178.72", path: "M15.38,145.7c4.05,1.88,44.08-23.08,46.41-17.82.48,2.3-2.43,41.11-1.82,43.56,1.52,5.79,27.09-41.97,31.83-41.86,4.75.11,25.65,22.93,29.93,23.71s-3.89-34.2-2.58-40.67c8.87-.64,48.48-8.1,46.13-13.06s-34.21-12.26-31.96-14.67c6.07-6.2,38.99-30.94,36.63-32.57s-49.95,7.68-50.84,4.26c-1.47-5.66-10.49-42.42-11.81-44.19-.55-.53-1.47-.55-2.19-.09-2.99,2.29-14.59,46.45-15.25,45.4-1.4-2.09-28.12-41.93-30.09-42.02-1.04.08-1.94,1.05-2.18,2.05-.52,2,4.69,37.5,7.63,47.54,2,5.34-55.48,11.51-53.48,15.75s45.94,11.98,45.13,15.32-45.19,47.66-41.48,49.39Z" },
+  { viewBox: "0 0 148.21 132.95", path: "m108.61 118.58c1.02 0.68 1.5 2.58 1.28 3.64-0.25 1.15-1.28 1.96-2.16 2.16-1.18 0.27-2.04-0.58-3.22-1.24-1.81-2.53-52.41-32.76-52.58-32.61 0 0-31.18 26.4-34.15 28.13s-7.43 2.07-7.32-0.27 1.08-4.49 2.66-6.22c4.01-4.42 17.42-33.13 16.45-33.18-0.42-0.16-22.08 0.34-22.83-2.57-0.65-2.5 23.35-22.2 24.46-22.78s-13.21-24.78-12.88-27.02c0.31-2.05 2.8-2.89 4.47-2.38s28.36 8.56 32.42 13.17c-0.33-2.5 20.91-34.03 23.01-34.08 3.14-0.08 4.52 1.99 4.83 4.66l0.7 5.96c0.4 3.4 1.21 29.07 2.7 29.01s47.82 14.96 49.11 15.65c1.88 1.01 2.66 3.21 1.86 5.03-0.48 1.09-1.23 1.66-2.57 0.98s-49.92 11.04-50.19 11.67 21.36 40.55 23.97 42.3z" },
+  { viewBox: "0 0 187.44 179.81", path: "M153.24,52.24c-1.08-1.86-33.02,5.32-32.9,4.37.11-.95,4.58-39.84,2.29-40.66-1.71-.61-4.04.7-5.32,1.5-2.99,2.13-23.12,28.61-24.83,29.14-2.1.02-19.44-7.39-22.81-8.43,0,0-19.27-6.77-21.43-3.36-1.19,1.87,19.79,25.59,20.47,26.55-2.47,4.63-46.56,22.31-47.55,26.37-.24,1-.4,2.19.14,3.22.82,1.57,49.44-2.29,48.6-2.04-1.18,1.11-5.59,48.93-4.77,51.98.22.83,1.01,2.08,2.24,2.16,2.67.17,23.53-44.49,23.53-44.49.63-.83,8.3,66.11,9.31,67.13,1.01,1.02,3.03.39,4.08-.55,1.13-1.01,15.62-61.67,15.83-63.1.21-1.44,29.51-10.32,29.8-15.14.25-4.25-26.35-7.92-27.31-8.79,2.88-2.57,31.99-18.76,32.16-21.66.17-2.9-.44-2.32-1.53-4.19Z" },
+  { viewBox: "0 0 174.2 197.4", path: "M119.09,88.74c3.34-2.95,31.64-37.92,32.51-39.21,2.61-4.11-51.76,21.95-52.85,19.96-1.19-3.3-23.19-54.3-26.88-53.4-4.16,1.87.89,57.37-3.04,56.53-10.27-5.18-32.37-24.31-43.92-23.26-1.55,2.27,25.97,44.34,28.43,47.37-1.55,4.28-31.54,7.37-39.2,14.28,2.5,4.54,42.84,12.6,42.84,12.6,0,0-6.62,33.45-5.96,35.35.71,1.89,26.43-19.66,27.73-17.68,7.29,10.68,30.92,46.17,31.42,45.94,2.14-1.68-1.03-61.63-1.3-63.29.13-.07,57.66-17.37,57.57-19.77-1.31-4.6-48.74-14.27-47.34-15.41Z" },
 ];
 
 function StarCheckbox({ checked, shape }) {
   return (
     <div className={styles.starCheckbox} aria-hidden="true">
-      <svg viewBox="0 0 24 24" className={`${styles.star} ${checked ? styles.starChecked : ""}`}>
-        <path d={shape} />
+      <svg viewBox={shape.viewBox} className={`${styles.star} ${checked ? styles.starChecked : ""}`}>
+        <path d={shape.path} />
       </svg>
     </div>
   );
@@ -191,18 +193,35 @@ export default function Work() {
   const availableDisciplines = [...new Set(PROJECTS.flatMap(p => p.disciplines))];
   const availableTopics = [...new Set(PROJECTS.flatMap(p => p.topics ?? []))];
 
+  // Assigns each filter option a shape from SHAPES, cycling through a
+  // shuffled pool and reshuffling once it's exhausted — but if a fresh
+  // shuffle would put the same shape that just ran out back at the front,
+  // that's an adjacent repeat across the reshuffle boundary, so it gets
+  // swapped out first. Guarantees no two options next to each other in
+  // the rendered list ever share a shape.
   const shapeMap = useMemo(() => {
+    const options = [...availableDisciplines, ...availableTopics];
     const map = {};
-    const shuffled = [...SHAPES].sort(() => Math.random() - 0.5);
-    [...availableDisciplines, ...availableTopics].forEach((opt, i) => {
-      map[opt] = shuffled[i % shuffled.length];
+    let pool = [];
+    let prevShape = null;
+    options.forEach((opt) => {
+      if (pool.length === 0) {
+        pool = [...SHAPES].sort(() => Math.random() - 0.5);
+        if (pool[0] === prevShape && pool.length > 1) {
+          const swapIndex = 1 + Math.floor(Math.random() * (pool.length - 1));
+          [pool[0], pool[swapIndex]] = [pool[swapIndex], pool[0]];
+        }
+      }
+      const shape = pool.shift();
+      map[opt] = shape;
+      prevShape = shape;
     });
     return map;
   }, []);
 
   const filtered = sessionOrder.filter(p => {
     const disciplineMatch = selectedDisciplines.length === 0 || p.disciplines.some(d => selectedDisciplines.includes(d));
-    const topicMatch = selectedTopics.length === 0 || p.topics.some(t => selectedTopics.includes(t));
+    const topicMatch = selectedTopics.length === 0 || (p.topics ?? []).some(t => selectedTopics.includes(t));
     return disciplineMatch && topicMatch;
   });
 
