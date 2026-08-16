@@ -78,27 +78,23 @@ main {
 }
 
 .site-footer {
+  /* Fixed to the viewport, like Logo/LogoHorizontal/Nav above it —
+     previously an in-flow element pushed to the bottom of the page via
+     flex's margin-top: auto, so it only appeared once you'd scrolled
+     all the way down, and read as part of the scrollable content
+     underneath it rather than a persistent piece of chrome like the
+     rest of the site's fixed UI. */
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
   padding-bottom: 1rem;
-  /* Home's circle background (Radialgradient.jsx) is `position: fixed`
-     with its own z-index — even at z-index:0, a positioned element
-     always paints above plain in-flow content like this footer,
-     regardless of DOM order. Giving the footer its own stacking
-     context beats that so the copyright line and Instagram icon
-     aren't washed out under the circle's edge. */
-  position: relative;
   z-index: 10;
 }
 
 @media (max-width: 640px) {
   .site-footer {
     padding-bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
-  }
-
-  /* Only Work.jsx has a floating filter pill fixed to the bottom on
-     mobile (About/WorkDetail have nothing fixed down there), so only
-     it needs the footer pushed up to clear it. */
-  .site-footer.footerAboveFilters {
-    padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
   }
 }
 

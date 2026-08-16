@@ -460,7 +460,11 @@
   .filterButton {
     top: auto;
     left: 50%;
-    bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
+    /* Site-footer (App.css) is now fixed to the viewport bottom instead
+       of scrolling away with the page — raised from 1.5rem to clear it
+       instead of the old approach of pushing the footer's own padding
+       down, which only worked while the footer scrolled with content. */
+    bottom: calc(4.25rem + env(safe-area-inset-bottom, 0px));
     transform: translateX(-50%) translateZ(0);
     background: #FAF7F2;
     color: #C93500;
