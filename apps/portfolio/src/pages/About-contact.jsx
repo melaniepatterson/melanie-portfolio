@@ -168,22 +168,25 @@ export default function AboutContact() {
         style={isMobile
           // Original (unscaled) size — cropped off the left edge instead
           // of the top, sitting behind the text/photo (z-index below
-          // .page's own 2, same as desktop).
-          ? { left: "-15%", top: "25%", width: 220, height: 197 }
+          // .page's own 2, same as desktop). position: absolute (not
+          // fixed) on mobile so the star scrolls with the page instead of
+          // staying pinned to the viewport — .page is position: relative,
+          // so percentages resolve against its box instead.
+          ? { position: "absolute", left: "-15%", top: "25%", width: 220, height: 197 }
           : { left: "2.3%", top: "-36px", width: 253, height: 227 }
         }
       />
       <StarBottom
         ref={starBottomRef}
         style={isMobile
-          ? { right: "-15%", top: "80%", width: 240, height: 230 }
+          ? { position: "absolute", right: "-15%", top: "80%", width: 240, height: 230 }
           : { left: "24%", bottom: "-76px", width: 240, height: 230 }
         }
       />
       {!isMobile && (
         <StarOverlay
           ref={starOverlayRef}
-          style={{ left: "75%", top: "25%", width: 200, height: 187 }}
+          style={{ left: "77%", top: "25%", width: 200, height: 187, transform: "rotate(-16deg)" }}
         />
       )}
       <h1 className="sr-only">About Melanie Patterson</h1>
