@@ -14,19 +14,27 @@ export default function GridFisheye() {
     const stage = canvas.parentElement;
     const ctx = canvas.getContext("2d");
 
-    const GRID_SIZE = 20;
-    const LINE_WIDTH = 2;
+    // Tuned at this site's typical desktop rendered width for this
+    // applet (~424px, 21 grid cells across) — everything below scales
+    // proportionally to the canvas's actual width (see resize()) so a
+    // much narrower mobile box (~171px) keeps roughly that same cell
+    // count instead of the same absolute 20px cells reading as a much
+    // more zoomed-in grid.
+    const REFERENCE_WIDTH = 424;
+    const BASE_GRID_SIZE = 20;
+    const BASE_LINE_WIDTH = 2;
+    const BASE_RADIUS = 140;
+    const BASE_SAMPLE_STEP = 6;
     const GRID_COLOR = "#2454ff";
     const BG_COLOR = "#000000";
 
-    const RADIUS = 140;
     const STRENGTH = 0.3;
     const EDGE_SOFTNESS = 0.5;
     const EASE = 0.18;
-    const SAMPLE_STEP = 6;
 
     let dpr = Math.max(window.devicePixelRatio || 1, 1);
     let width = 0, height = 0;
+    let GRID_SIZE = BASE_GRID_SIZE, LINE_WIDTH = BASE_LINE_WIDTH, RADIUS = BASE_RADIUS, SAMPLE_STEP = BASE_SAMPLE_STEP;
 
     let targetX = -9999, targetY = -9999;
     let curX = -9999, curY = -9999;
@@ -40,6 +48,12 @@ export default function GridFisheye() {
       canvas.width = width * dpr;
       canvas.height = height * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      const scale = Math.min(1, width / REFERENCE_WIDTH);
+      GRID_SIZE = BASE_GRID_SIZE * scale;
+      LINE_WIDTH = BASE_LINE_WIDTH * scale;
+      RADIUS = BASE_RADIUS * scale;
+      SAMPLE_STEP = BASE_SAMPLE_STEP * scale;
     }
 
     const ro = new ResizeObserver(resize);
