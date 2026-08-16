@@ -7,6 +7,7 @@ import { PROJECT_TITLES } from "./data/projectTitles";
 import { useEffect, Suspense, lazy } from "react";
 import PageTransition from "./PageTransition";
 import NotFound from "./NotFound";
+import ConsentBanner from "./ConsentBanner";
 // "/" is the default landing page for nearly every visitor, so it's kept
 // eager rather than lazy — lazy-loading it only adds a sequential
 // network round-trip to the critical path (main bundle, then this chunk,
@@ -87,6 +88,21 @@ function Layout() {
     }
   }, [location.pathname]);
 
+  // gtag's own automatic page_view (fired once, from the initial config
+  // call in index.html) is disabled via send_page_view: false — this is
+  // an SPA, so that one-shot send would only ever cover the very first
+  // load. Every route change, first one included, gets its own manual
+  // event here instead. Runs after the title effect above so page_title
+  // reflects the route that was just navigated to, not the previous one.
+  useEffect(() => {
+    if (typeof window.gtag !== "function") return;
+    window.gtag("event", "page_view", {
+      page_path: location.pathname,
+      page_title: document.title,
+      page_location: window.location.href,
+    });
+  }, [location.pathname]);
+
   return (
     <div className="layout">
       {!isHome && <Nav isWork={isWork || isWorkDetail} />}
@@ -137,6 +153,7 @@ function Layout() {
           </a>
         </footer>
       </div>
+      <ConsentBanner />
     </div>
   );
 }

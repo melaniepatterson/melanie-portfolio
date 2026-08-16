@@ -2,6 +2,29 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-PMRFJXYHXM"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      // Consent Mode v2 default — everything denied until the visitor
+      // makes a choice in ConsentBanner.jsx. gtag.js still loads and
+      // pings in a limited/cookieless mode either way; this only
+      // controls whether it's allowed to set cookies / attach
+      // identifying data, not whether the tag itself loads.
+      gtag('consent', 'default', {
+        'ad_storage': 'denied',
+        'ad_user_data': 'denied',
+        'ad_personalization': 'denied',
+        'analytics_storage': 'denied'
+      });
+      gtag('js', new Date());
+      // send_page_view: false — this is an SPA (React Router), so a
+      // fresh document load only ever happens once; client-side route
+      // changes need their own manual page_view event (see App.jsx)
+      // instead of relying on gtag's automatic one-shot send here.
+      gtag('config', 'G-PMRFJXYHXM', { send_page_view: false });
+    </script>
     <link rel="icon" href="/melanie-studio-favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#C93500" />
