@@ -156,6 +156,7 @@ export default function RepulseLogo() {
   const chaserPos = useRef({ x: 0, y: 0 });
   const cursorPos = useRef({ x: 0, y: 0 });
   const animFrame = useRef(null);
+  const lastInfoStarRef = useRef(null);
 
   // threshold = how close mouse needs to get
   // force = how far it pushes
@@ -241,7 +242,13 @@ export default function RepulseLogo() {
       setChaserImage(randomImg.src);
       setChaserStar(null);
     } else {
-      const randomStar = CHASER_STARS[Math.floor(Math.random() * CHASER_STARS.length)];
+      // Never repeat the same star shape twice in a row — a different
+      // random rotation on the same shape still reads as "the same star"
+      // to the eye, so exclude it from the pool rather than just
+      // re-rolling the rotation.
+      const options = CHASER_STARS.filter((s) => s !== lastInfoStarRef.current);
+      const randomStar = options[Math.floor(Math.random() * options.length)];
+      lastInfoStarRef.current = randomStar;
       setChaserStar({ ...randomStar, rotation: Math.floor(Math.random() * 360) });
       setChaserImage(null);
     }
