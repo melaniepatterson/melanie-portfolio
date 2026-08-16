@@ -63,8 +63,9 @@
   overflow-x: hidden;
   /* See BrowserFrame.module.css's .scrollContainer — scroll-behavior:
      smooth fights native touch momentum instead of just easing
-     programmatic scrolls (which never happen here). */
-  -webkit-overflow-scrolling: touch;
+     programmatic scrolls (which never happen here), and
+     -webkit-overflow-scrolling: touch causes Safari to ghost stale
+     painted frames when several of these sit on one page. */
 }
 
 .screen img {

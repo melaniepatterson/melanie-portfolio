@@ -25,8 +25,12 @@
      native touch-driven ones — not just programmatic scrollTo() calls
      (which this never makes anyway). That means it was fighting the
      browser's own touch momentum on mobile, reading as sluggish/laggy
-     instead of responding 1:1 to the drag. */
-  -webkit-overflow-scrolling: touch;
+     instead of responding 1:1 to the drag. Not replaced with
+     -webkit-overflow-scrolling: touch — that property forces its own
+     compositing layer, and with several of these frames on one page
+     (e.g. a gallery of device screenshots) Safari would leave stale
+     painted frames ghosted on top of newly scrolled-in content. Modern
+     iOS has native momentum scrolling without it. */
 }
 
 .screenshot {
