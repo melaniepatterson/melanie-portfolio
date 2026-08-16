@@ -208,10 +208,11 @@ export default function WorkDetail() {
     const isVideo = typeof img.src === "string" && img.src.endsWith(".webm");
     const lightboxable = img.lightbox && !isVideo;
     const openLightbox = () => lightboxable && setLightbox({ src: img.src, alt: img.alt });
+    const showHoverHint = img.hoverHint && hoverCapable;
     return (
       <div
         key={i}
-        className={`${styles.galleryItem} ${sizeClass} ${lightboxable ? styles.lightboxable : ""}`}
+        className={`${styles.galleryItem} ${sizeClass} ${lightboxable ? styles.lightboxable : ""} ${showHoverHint ? styles.hasHoverHint : ""}`}
         onClick={openLightbox}
         role={lightboxable ? "button" : undefined}
         tabIndex={lightboxable ? 0 : undefined}
@@ -225,7 +226,7 @@ export default function WorkDetail() {
         )}
         {lightboxable && <div className={styles.lightboxHint} aria-hidden="true">⊕</div>}
         {img.caption && <Caption className={styles.caption}>{img.caption}</Caption>}
-        {img.hoverHint && hoverCapable && <p className={styles.hoverHint}>Hover to interact</p>}
+        {showHoverHint && <p className={styles.hoverHint}>Hover to interact</p>}
       </div>
     );
   }

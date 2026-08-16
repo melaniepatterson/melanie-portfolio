@@ -79,7 +79,13 @@
   overflow: visible;
   display: block;
   position: relative;
-  padding-right: 2rem; /* consistent on all items — hint items use it, others leave it empty */
+}
+
+/* Only the one item that actually renders .hoverHint needs this reserved
+   strip — every other item was getting it too, rendering narrower than
+   the grid column for no reason since nothing ever sat in that space. */
+.hasHoverHint {
+  padding-right: 2rem;
 }
 
 .galleryItem img {
