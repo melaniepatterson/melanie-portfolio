@@ -154,7 +154,7 @@ export const PROJECTS = [
     },
   ]
   },
-  {
+  /* {
   id: 4,
   slug: "DARE-body-count",
   title: "D.O.D.",
@@ -170,7 +170,7 @@ export const PROJECTS = [
   images: [
     { src: "https://placehold.co/1200x800/1a1a1a/FAF7F2", width: 1200, height: 800, alt: "Placeholder — project content coming soon." },
   ]
-  }, /* {
+  }, */ /* {
     id: 3,
     slug: "brightline",
     title: "Brightline Maps",
