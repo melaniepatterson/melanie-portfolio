@@ -49,6 +49,14 @@
   text-decoration: none;
 }
 
+.stack {
+  margin-top: 1.5rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  color: #C93500;
+  opacity: 0.6;
+}
+
 /* Applied to ShimmerImage's own wrapper (not a bare <img>) — width: auto
    lets the aspect-ratio + max-height combination shrink the box exactly
    like object-fit: contain would have on a plain <img>, instead of the

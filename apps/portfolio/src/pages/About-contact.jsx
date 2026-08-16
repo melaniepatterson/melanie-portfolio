@@ -210,7 +210,8 @@ export default function AboutContact() {
             <span> / </span>
             <a href="mailto:hello@melanie.studio"><SplitText>Email</SplitText></a>
           </div>
-       
+
+          <p className={styles.stack}>Site built with React, Vite &amp; Supabase.</p>
         </div>
         <div className={styles.photo}>
           <ShimmerImage
