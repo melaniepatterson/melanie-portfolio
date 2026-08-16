@@ -221,14 +221,15 @@
   position: absolute;
   right: 0.75rem; /* was -0.5rem — now sits inside the padding area */
   top: 50%;
-  transform-origin: right center;
+  transform-origin: center;
   white-space: nowrap;
   pointer-events: none;
-  /* Static rest-state transform, matching pulse's own 0%/100% keyframe
-     value — pulse has a 2s delay before its first iteration, and
-     without this the element would render untransformed (unrotated)
-     during that window instead of holding its correct position. */
-  transform: rotate(90deg) translateX(-50%) scale(1);
+  /* translateY(-50%) centers the unrotated box on the 50% mark first
+     (using the box's own height); only then does rotate spin it around
+     its own center, which by definition can't move the center point —
+     unlike the previous rotate+translateX(-50%)+origin:right approach,
+     which left the hint resting well above the wrapper's true center. */
+  transform: translateY(-50%) rotate(90deg);
   /* Matches BrowserFrame's scroll hint's rhythm (delayed fade-in, then a
      repeating pulse), with the pulse itself also opacity-based — but
      #FAF7F2 on this page's #C93500 background only clears 4.5:1 contrast

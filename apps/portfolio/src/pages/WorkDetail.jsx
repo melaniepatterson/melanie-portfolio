@@ -136,7 +136,7 @@ export default function WorkDetail() {
 
     if (img.type === "inspiration-result") {
       return (
-        <div key={i} className={`${styles.galleryItem} ${sizeClass}`}>
+        <div key={i} className={`${styles.galleryItem} ${sizeClass} ${img.hoverHint && hoverCapable ? styles.hasHoverHint : ""}`}>
           <InspirationResult
             {...img}
             onLightbox={(src, alt) => setLightbox({ src, alt })}
@@ -147,7 +147,7 @@ export default function WorkDetail() {
 
     if (img.type === "applet-result") {
       return (
-        <div key={i} className={`${styles.galleryItem} ${sizeClass}`}>
+        <div key={i} className={`${styles.galleryItem} ${sizeClass} ${img.hoverHint && hoverCapable ? styles.hasHoverHint : ""}`}>
           <AppletResult
             {...img}
             onLightbox={(src, alt) => setLightbox({ src, alt })}

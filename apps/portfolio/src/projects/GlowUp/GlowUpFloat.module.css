@@ -24,3 +24,14 @@
   text-align: center;
   user-select: none;
 }
+
+@media (max-width: 640px) {
+  /* The 4/3 ratio matched GlowUpColorPalette's own box so the two sat
+     even side by side — once GlowUpBrandPair stacks them on mobile
+     instead, that tall fixed ratio just leaves a lot of empty space
+     above and below the wordmark. Size to content instead. */
+  .stage {
+    aspect-ratio: auto;
+    padding: 1.5rem 0;
+  }
+}

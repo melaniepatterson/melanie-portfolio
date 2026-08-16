@@ -38,8 +38,12 @@
   position: absolute;
   right: 3%;
   top: 50%;
-  transform: rotate(90deg) translateX(-50%);
-  transform-origin: right center;
+  /* See MobileFrame.module.css's scrollHint for why this is
+     translateY(-50%)+rotate around center rather than the previous
+     rotate+translateX(-50%)+origin:right approach — that version left
+     the hint resting well above the wrapper's true vertical center. */
+  transform: translateY(-50%) rotate(90deg);
+  transform-origin: center;
   white-space: nowrap;
   pointer-events: none;
   margin: 0;

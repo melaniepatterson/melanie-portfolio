@@ -72,8 +72,15 @@
   position: absolute;
   right: 8%;
   top: 50%;
-  transform: rotate(90deg) translateX(-50%);
-  transform-origin: right center;
+  /* translateY(-50%) centers the unrotated box on the 50% mark first
+     (using the box's own height, so it self-adjusts to font-size); only
+     then does rotate spin it, around its own center — which by
+     definition can't move the center point, unlike the previous
+     rotate+translateX(-50%)+origin:right approach, which centered the
+     box's on-screen LENGTH around the anchor but left the anchor itself
+     resting well above the wrapper's true vertical center. */
+  transform: translateY(-50%) rotate(90deg);
+  transform-origin: center;
   white-space: nowrap;
   pointer-events: none;
   margin: 0;
