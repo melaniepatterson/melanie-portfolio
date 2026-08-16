@@ -8,3 +8,9 @@
   flex: 1;
   min-width: 0;
 }
+
+@media (max-width: 640px) {
+  .wrapper {
+    flex-direction: column;
+  }
+}
