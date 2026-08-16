@@ -3,7 +3,7 @@ import still from "./images/melanie-patterson-decision-letter-text.webp";
 import risdConfettiCode from "./ConfettiCode.txt?raw";
 import styles from "./ConfettiDemo.module.css";
 
-export default function ConfettiDemo() {
+export default function ConfettiDemo({ resetSignal }) {
   const runningInline = useRef(false);
   const runningLightbox = useRef(false);
   const hasAutoPlayedRef = useRef(false);
@@ -31,6 +31,15 @@ export default function ConfettiDemo() {
       runningLightbox.current = false;
     }
   }, [expanded]);
+
+  // InspirationResult's refresh button passes a bumped resetSignal instead
+  // of remounting this component (which previously recreated the
+  // background <img> and visibly flashed) — starts at 0 so this doesn't
+  // also fire on first mount, only on an actual click.
+  useEffect(() => {
+    if (!resetSignal) return;
+    runConfetti(wrapperRef.current, runningInline);
+  }, [resetSignal]);
 
   // The inline card only ever triggers confetti via onMouseEnter below,
   // which never fires on touch devices — same root problem as

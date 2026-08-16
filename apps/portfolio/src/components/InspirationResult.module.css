@@ -72,6 +72,13 @@
   margin: 0;
 }
 
+/* See AppletResult.module.css's .caption.caption — same specificity
+   boost, same reasoning: 0.7rem instead of Caption.module.css's default
+   0.85rem, sized for this narrow column instead of a full-width image. */
+.caption.caption {
+  font-size: 0.7rem;
+}
+
 .arrow {
   flex-shrink: 0;
   display: flex;

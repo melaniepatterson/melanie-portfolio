@@ -8,7 +8,7 @@ import { useHoverCapable } from "../utils";
 
 const resultComponentCache = {};
 
-function LazyResultComponent({ loader, fallbackSrc, fallbackAlt, fallbackWidth, fallbackHeight, fallbackRatio, resetKey }) {
+function LazyResultComponent({ loader, fallbackSrc, fallbackAlt, fallbackWidth, fallbackHeight, fallbackRatio, resetSignal }) {
   if (!resultComponentCache[loader]) {
     resultComponentCache[loader] = lazy(loader);
   }
@@ -18,8 +18,8 @@ function LazyResultComponent({ loader, fallbackSrc, fallbackAlt, fallbackWidth, 
     : <Skeleton ratio={fallbackRatio} />;
   return (
     <LazyOnVisible placeholder={fallback}>
-      <Suspense key={resetKey} fallback={fallback}>
-        <Component />
+      <Suspense fallback={fallback}>
+        <Component resetSignal={resetSignal} />
       </Suspense>
     </LazyOnVisible>
   );
@@ -44,9 +44,11 @@ export default function InspirationResult({
   hoverHint,
 }) {
   const hoverCapable = useHoverCapable();
-  // Same restart mechanism as AppletResult's refresh button — bumping this
-  // remounts LazyResultComponent's inner Suspense via key, re-running the
-  // component's own effects from scratch.
+  // Unlike AppletResult's refresh (which remounts the whole applet via a
+  // Suspense key), this is passed straight through as a prop instead —
+  // remounting ConfettiDemo would also recreate its background <img>,
+  // which visibly flashed. The result component itself watches this value
+  // and re-triggers just its own animation, nothing else.
   const [resultKey, setResultKey] = useState(0);
   return (
     <div className={styles.wrapper}>
@@ -94,7 +96,7 @@ export default function InspirationResult({
         )}
         {resultComponent ? (
           <LazyResultComponent
-            resetKey={resultKey}
+            resetSignal={resultKey}
             loader={resultComponent}
             fallbackSrc={resultSrc}
             fallbackAlt={resultAlt}

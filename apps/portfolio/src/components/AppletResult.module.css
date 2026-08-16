@@ -78,6 +78,16 @@
   margin: 0;
 }
 
+/* Doubled selector boosts specificity over Caption.module.css's own
+   .trigger rule (same 0.85rem font-size), which otherwise wins or loses
+   depending on CSS bundle order. These pairings only have ~120-140px of
+   width on mobile — 0.85rem only fit a word or two before the 1-line
+   clamp; 0.7rem matches this component's own .label size and reads
+   consistently across every applet/result and inspiration/result pair. */
+.caption.caption {
+  font-size: 0.7rem;
+}
+
 .arrow {
   flex-shrink: 0;
   display: flex;

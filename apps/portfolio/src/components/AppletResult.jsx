@@ -156,6 +156,26 @@ export default function AppletResult({
         aria-label={onLightbox && !bannerComponent && !bannerIsVideoFile ? `View larger: ${bannerAlt}` : undefined}
       >
         {onLightbox && !bannerComponent && !bannerIsVideoFile && <div className={styles.lightboxHint} aria-hidden="true">⊕</div>}
+        {/* This side never gets its own "Result" label/header — an
+            invisible spacer the same height as the Applet side's
+            itemHeader keeps the two artworks' tops aligned instead of
+            the Result image starting higher than the Applet one. Mirrors
+            the Applet side's own refresh-button condition too: the
+            button's negative-margin hit-target padding makes it taller
+            than the label alone, so the spacer needs the same icon
+            present/absent to match height exactly, not just the label. */}
+        <div className={styles.itemHeader} aria-hidden="true" style={{ visibility: "hidden" }}>
+          <span className={styles.label}>Result</span>
+          {appletComponent && showRefresh && !useAppletVideo && (
+            <span className={styles.refreshButton}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M3 12a9 9 0 0 1 15.5-6.36M21 12a9 9 0 0 1-15.5 6.36" />
+                <polyline points="16 3 18.5 5.5 16 8" />
+                <polyline points="8 21 5.5 18.5 8 16" />
+              </svg>
+            </span>
+          )}
+        </div>
         {useBannerVideo ? (
           <video src={bannerVideoSrc} autoPlay loop muted playsInline aria-label={bannerAlt} />
         ) : bannerComponent ? (

@@ -92,9 +92,12 @@
       el,
       xDriftPx: 0, // cumulative slow drift, in px — folded into transform below
       y: -size * 1.5,
-      fallSpeed: rand(FALL_SPEED.min, FALL_SPEED.max),
+      // Same SCALE as size above — unscaled fall/drift speed covered the
+      // (already smaller) mobile container in noticeably less time,
+      // reading as sped-up rather than just smaller.
+      fallSpeed: rand(FALL_SPEED.min, FALL_SPEED.max) * SCALE,
       driftAmp:
-        rand(DRIFT_SPEED.min, DRIFT_SPEED.max) * (Math.random() < 0.5 ? 1 : -1),
+        rand(DRIFT_SPEED.min, DRIFT_SPEED.max) * SCALE * (Math.random() < 0.5 ? 1 : -1),
       driftFreq: rand(0.02, 0.05), // sine wave frequency
       rotation: def.rotate ? rand(0, 360) : 0,
       rotateSpeed: def.rotate
