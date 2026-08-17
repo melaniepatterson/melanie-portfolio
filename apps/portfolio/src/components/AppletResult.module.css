@@ -6,7 +6,10 @@
      row instead of leaving it in place. Top-aligning also means the
      applet/result artwork tops line up regardless of caption length,
      rather than each item centering independently against its own
-     label+artwork+caption stack. */
+     label+artwork+caption stack. Only actually matters on mobile —
+     Caption's expand/collapse toggle only exists below the 640px
+     breakpoint (desktop captions just render full-length, statically),
+     so desktop overrides back to center below. */
   align-items: flex-start;
   gap: 1.5rem;
   width: 100%;
@@ -25,6 +28,15 @@
 }
 
 @media (min-width: 641px) {
+  /* No caption-expansion risk on desktop (see .wrapper's own comment)
+     — and now that the result side is intentionally smaller than the
+     applet side (below), their heights genuinely differ, so centering
+     the two against each other reads right instead of top-aligning a
+     shorter item next to a taller one. */
+  .wrapper {
+    align-items: center;
+  }
+
   /* Desktop only, per request — mobile keeps the equal 50/50 split from
      the large/small sizing above. The result/banner side (whichever
      item this is, independent of the dominates-driven large/small
