@@ -65,9 +65,9 @@
    parent reserves (see WorkDetail.module.css's .hasEdgeHint), rather
    than overlaid on the chrome itself. writing-mode does the rotation
    here instead of a transform, so there's no risk of the centering math
-   drifting the way the old rotate+translate version did. White — the
-   frame's own rust chrome color would be invisible against the page's
-   own rust background out here. */
+   drifting the way the old rotate+translate version did. Red — this
+   renders on the page's own background, which is cream, not the
+   frame's rust chrome. */
 .scrollHint {
   font-family: 'Bricolage Grotesque', sans-serif;
   font-size: 0.7rem;
@@ -75,7 +75,7 @@
   letter-spacing: 0.2em;
   text-transform: uppercase;
   line-height: 1.2;
-  color: #FAF7F2;
+  color: #C93500;
   position: absolute;
   right: -1.5rem;
   /* The chrome's own drawn top edge sits a little inside the SVG's
@@ -98,7 +98,10 @@
   opacity: 0;
 }
 
-/* Pulse lives here — isolated from the transition above */
+/* Pulse lives here — isolated from the transition above. #C93500 on this
+   page's #FAF7F2 background needs ~0.94+ opacity to hold 4.5:1 contrast
+   (computed) — the old 0.4/0.8 range was tuned for white-on-rust and is
+   nowhere near compliant for this pairing. */
 .scrollHintInner {
   display: block;
   animation: browserFadeIn 0.8s ease 1.2s both, browserPulse 2s ease-in-out 2s infinite;
@@ -106,10 +109,10 @@
 
 @keyframes browserFadeIn {
   from { opacity: 0; }
-  to { opacity: 0.4; }
+  to { opacity: 1; }
 }
 
 @keyframes browserPulse {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 0.8; }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.95; }
 }

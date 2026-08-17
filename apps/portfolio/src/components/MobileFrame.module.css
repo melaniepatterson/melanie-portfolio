@@ -93,7 +93,8 @@
 
 /* Same treatment as BrowserFrame's scrollHint — see that file for why
    this sits outside the frame (right: negative) with writing-mode
-   instead of a rotate transform, and why it's white. */
+   instead of a rotate transform, and why it's red (renders on the
+   page's own cream background, not the frame's chrome). */
 .scrollHint {
   font-family: 'Bricolage Grotesque', sans-serif;
   font-size: 0.65rem;
@@ -101,7 +102,7 @@
   letter-spacing: 0.2em;
   text-transform: uppercase;
   line-height: 1.2;
-  color: #FAF7F2;
+  color: #C93500;
   position: absolute;
   right: -1.5rem;
   /* See BrowserFrame.module.css's scrollHint — same ~1.2% correction for
@@ -122,6 +123,9 @@
   opacity: 0;
 }
 
+/* #C93500 on this page's #FAF7F2 background needs ~0.94+ opacity to
+   hold 4.5:1 contrast (computed) — the old 0.4/0.8 range was tuned for
+   white-on-rust and is nowhere near compliant for this pairing. */
 .scrollHintInner {
   display: block;
   animation: mobileFrameFadeIn 0.8s ease 1.2s both, mobileFramePulse 2s ease-in-out 2s infinite;
@@ -129,10 +133,10 @@
 
 @keyframes mobileFrameFadeIn {
   from { opacity: 0; }
-  to { opacity: 0.4; }
+  to { opacity: 1; }
 }
 
 @keyframes mobileFramePulse {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 0.8; }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.95; }
 }
