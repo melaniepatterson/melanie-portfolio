@@ -32,12 +32,9 @@ export const PROJECTS = [
     thumbnail: "/images/projects/RISD/risd_seal_grid.webm",
     thumbnailWidth: 878,
     thumbnailHeight: 518,
-    // Shown on Home's WORK hover chaser instead of the hero image — the
-    // hero is a busy composite that reads poorly shrunk down to the
-    // chaser's small (160x120) box. Supports transparent PNGs; the
-    // chaser's red-tint overlay is masked to this image's own alpha so
-    // transparent areas don't get painted in as a solid red rectangle.
-    hoverImage: "/images/projects/RISD/melanie-patterson-risd.webp",
+    // Shown on Home's WORK hover chaser instead of the hero image
+    // Supports transparent PNGs
+    hoverImage: "/images/projects/RISD/RISD_Seal.webp",
     hero: () => import('../projects/RISD/Hero'),      // or: () => import('../projects/project-one/Hero')
     images: [
   { src: "/images/projects/RISD/melanie-patterson-risd.webm", width: 1200, height: 800, alt: "Textured blue liquid gradient with the RISD seal in the center." },
@@ -113,8 +110,7 @@ export const PROJECTS = [
     thumbnail: "/images/projects/GlowUp/glow_up_thumbnail.webm", // or: () => import('../projects/project-one/Thumbnail')
     thumbnailWidth: 1200,
     thumbnailHeight: 770,
-    // See RISD's hoverImage comment above.
-    hoverImage: "/images/projects/GlowUp/melanie-patterson-glow-up-calendar-desktop.webp",
+    hoverImage: "/images/projects/GlowUp/glow-up-app.webp",
     // Desktop/mobile calendar comparison, moved here from the gallery
     // array below — stronger as the first thing visitors see than as one
     // grid item among several. images[0] stays put; WorkDetail.jsx's
