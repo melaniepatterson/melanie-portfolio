@@ -1,24 +1,20 @@
 .wrapper {
   position: relative;
   width: 100%;
+  aspect-ratio: 927.98 / 1920;
   /* A percentage, not a fixed px cap, so this scales down with whatever
      column it's dropped into instead of always maxing out at one fixed
      size — tuned so it lands close to DeviceCompare's own phone height
      (a fixed 320px cap rendered nearly 2.25x taller than that). */
   max-width: 40%;
   margin: 0 auto;
-  /* Real Safari has a longstanding bug where the foreignObject's HTML
-     content below (.screen) doesn't reliably resolve height: 100%, and
-     can render at its content's natural (unbounded) height instead —
-     invisible in Chrome's dev tools, including its mobile emulation,
-     since neither has the bug. This wrapper's own size never depends on
-     that content, so overflow: hidden here clips it back down
-     regardless of the cause. */
   overflow: hidden;
 }
 
 .wrapper.matchHeight {
-  width: 100%;
+  /* auto, not 100% — aspect-ratio (above) computes width FROM the given
+     height instead, which is the whole point of this variant. */
+  width: auto;
   max-width: none;
   height: 100%;
   margin: 0;
@@ -31,15 +27,14 @@
   max-width: 100%;
 }
 
-.svg {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-.matchHeight .svg {
+/* Purely decorative — pointer-events: none, nothing lives inside it.
+   Sits on top of .screen below. */
+.chromeSvg {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
+  pointer-events: none;
 }
 
 .body {
@@ -52,8 +47,6 @@
 
 .screen {
   position: relative;
-  width: 100%;
-  height: 100%;
   box-sizing: border-box;
   overflow: hidden;
   background: #FAF7F2;

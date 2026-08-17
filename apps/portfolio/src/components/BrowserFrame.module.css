@@ -3,23 +3,21 @@
 .wrapper {
   position: relative;
   width: 100%;
-  /* See MobileFrame.module.css's .wrapper — same Safari foreignObject
-     height/scaling bug, same independent-of-content backstop. */
+  aspect-ratio: 3464.9 / 1920;
   overflow: hidden;
 }
 
-.svg {
+/* Purely decorative — pointer-events: none, nothing lives inside it.
+   Sits on top of .scrollContainer below. */
+.chromeSvg {
+  position: absolute;
+  inset: 0;
   width: 100%;
-  height: auto;
-  display: block;
-  /* Ensure the rounded-corner clip looks clean */
-  overflow: visible;
+  height: 100%;
+  pointer-events: none;
 }
 
 .scrollContainer {
-  position: relative;
-  width: 100%;
-  height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
   /* scroll-behavior: smooth applies to EVERY scroll change, including
