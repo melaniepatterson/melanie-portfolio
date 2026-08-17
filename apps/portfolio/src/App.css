@@ -149,9 +149,10 @@ main {
   }
 
   /* Same 3rem gap as desktop's row layout reads as a big empty gap once
-     WORK/INFO stack into a column instead. */
+     WORK/INFO stack into a column instead — 1rem overcorrected and read
+     as too tight, so 2rem splits the difference. */
   .home-nav {
-    gap: 1rem;
+    gap: 2rem;
   }
 }
 

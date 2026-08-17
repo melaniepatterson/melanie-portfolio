@@ -177,15 +177,17 @@ export default function AboutContact() {
         ref={starLeftRef}
         isMobile={isMobile}
         style={isMobile
-          // Fixed, same as desktop below — previously position: absolute
-          // so it scrolled with .page's content, but an absolute,
-          // negative-z-index layer scrolling alongside the normal-flow
-          // text around it was part of what made this page prone to the
-          // Safari repaint/ghosting artifacts during fast scroll (see
-          // will-change comment below). Fixed removes it from the
-          // scrolling paint chain entirely, same as the rest of this
-          // page's chrome (Nav, Logo, footer).
-          ? { left: "-15%", top: "18%", width: 180, height: 161 }
+          // Original (unscaled) size — cropped off the left edge instead
+          // of the top, sitting behind the text/photo (z-index below
+          // .page's own 2, same as desktop). position: absolute (not
+          // fixed) on mobile so the star scrolls with the page instead of
+          // staying pinned to the viewport — .page is position: relative,
+          // so percentages resolve against its box instead. (Briefly
+          // tried fixed, to rule it out as a cause of Safari scroll
+          // ghosting on this page — the other Liquid Glass fixes made
+          // that unnecessary, so this reverts to the preferred scrolling
+          // behavior.)
+          ? { position: "absolute", left: "-15%", top: "24%", width: 220, height: 197 }
           : { left: "2.3%", top: "-36px", width: 253, height: 227 }
         }
       />
@@ -193,9 +195,7 @@ export default function AboutContact() {
         ref={starBottomRef}
         isMobile={isMobile}
         style={isMobile
-          // Fixed, bottom-anchored — see StarLeft above for why this is
-          // no longer position: absolute on mobile.
-          ? { right: "-15%", bottom: "6%", width: 190, height: 182 }
+          ? { position: "absolute", right: "-15%", top: "80%", width: 240, height: 230 }
           : { left: "24%", bottom: "-76px", width: 240, height: 230 }
         }
       />

@@ -334,7 +334,13 @@ export default function RepulseLogo() {
         src="/images/melanie studio circle.svg"
         alt=""
         className="gradient-circle"
-        style={{ willChange: "transform" }}
+        // Purely decorative background — pointer-events: none keeps it
+        // out of long-press/right-click "Save Image" gestures instead of
+        // an ordinary <img> being freely savable. Doesn't affect the
+        // repulsion effect above, which only reads its
+        // getBoundingClientRect() and writes its transform, neither of
+        // which needs pointer interaction.
+        style={{ willChange: "transform", pointerEvents: "none" }}
       />
 
       <div className="home-nav" style={{
