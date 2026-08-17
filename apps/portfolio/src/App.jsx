@@ -40,7 +40,7 @@ function Layout() {
   // Keep Safari's toolbar chrome in sync with whichever background is
   // actually visible — cream everywhere except Work/WorkDetail's rust.
   useEffect(() => {
-    const color = isWork || isWorkDetail ? "#C93500" : "#FAF7F2";
+    const color = "#FAF7F2";
     const meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.setAttribute('content', color);
   }, [isHome, isWork, isWorkDetail]);
@@ -121,7 +121,7 @@ function Layout() {
       <Logo isWork={isWork || isWorkDetail} />
       <LogoHorizontal isWork={isWork || isWorkDetail} />
       <div className="page-wrapper" style={{
-        backgroundColor: isWork || isWorkDetail ? "#C93500" : "#FAF7F2",
+        backgroundColor: "#FAF7F2",
       }}>
         <main className="content">
           <PageTransition>
@@ -149,7 +149,7 @@ function Layout() {
           paddingRight: "2rem",
           fontSize: "0.6rem",
           letterSpacing: "0.1em",
-          color: isWork || isWorkDetail ? "#FAF7F2" : "#C93500",
+          color: "#C93500",
           pointerEvents: "none",
           display: "flex",
           alignItems: "center",

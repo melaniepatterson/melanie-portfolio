@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 // its own .back link on mobile for the same reason). Same destination
 // either way (/portfolio), so no behavior change, just the label.
 export default function Nav({ isWork, isWorkDetail }) {
-  const color = isWork ? "#FAF7F2" : "#C93500";
+  const color = "#C93500";
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < 640);
 
   useEffect(() => {

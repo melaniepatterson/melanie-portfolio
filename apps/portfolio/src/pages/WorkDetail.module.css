@@ -1,7 +1,7 @@
 .page {
   min-height: 100vh;
-  background-color: #C93500;
-  color: #FAF7F2;
+  background-color: #FAF7F2;
+  color: #C93500;
   padding: 3rem 4rem;
   position: relative;
   z-index: 2;
@@ -11,14 +11,14 @@
   position: fixed;
   top: 2rem;
   left: 2rem;
-  color: #FAF7F2;
+  color: #C93500;
   text-decoration: none;
   font-size: 0.85rem;
   font-weight: 700;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   line-height: 1.2;
-  border-bottom: 2px solid #FAF7F2;
+  border-bottom: 2px solid #C93500;
   z-index: 100;
   -webkit-transform: translateZ(0);
   transform: translateZ(0);
@@ -149,9 +149,9 @@
   align-self: flex-start;
   align-items: center;
   gap: 0.5rem;
-  color: #FAF7F2;
+  color: #C93500;
   background: transparent;
-  border: 1px solid #FAF7F2;
+  border: 1px solid #C93500;
   text-decoration: none;
   font-size: 0.85rem;
   font-weight: 700;
@@ -168,13 +168,13 @@
   letter-spacing: 0.1em;
   text-transform: uppercase;
   line-height: 1.2;
-  color: #FAF7F2;
+  color: #C93500;
 }
 
 .clientLink {
-  color: #FAF7F2;
+  color: #C93500;
   text-decoration: none;
-  border-bottom: 1px solid #FAF7F2;
+  border-bottom: 1px solid #C93500;
 }
 
 .clientLink:hover {
@@ -186,7 +186,7 @@
   letter-spacing: 0.1em;
   text-transform: uppercase;
   line-height: 1.4;
-  color: #FAF7F2;
+  color: #C93500;
 }
 
 .caption {
@@ -201,7 +201,7 @@
   position: absolute;
   top: 0.75rem;
   right: 2.75rem;
-  color: #FAF7F2;
+  color: #C93500;
   font-size: 1.2rem;
   opacity: 0;
   transition: opacity 0.2s ease;
@@ -217,7 +217,7 @@
   letter-spacing: 0.2em;
   text-transform: uppercase;
   line-height: 1.2;
-  color: #FAF7F2;
+  color: #C93500;
   position: absolute;
   right: 0.75rem; /* was -0.5rem — now sits inside the padding area */
   top: 50%;
@@ -232,11 +232,11 @@
   transform: translateY(-50%) rotate(90deg);
   /* Matches BrowserFrame's scroll hint's rhythm (delayed fade-in, then a
      repeating pulse), with the pulse itself also opacity-based — but
-     #FAF7F2 on this page's #C93500 background only clears 4.5:1 contrast
-     down to ~0.94 opacity (full opacity is already just 4.92:1), so the
-     pulse's low point is clamped to 0.95 rather than BrowserFrame's 0.4.
-     The swing reads as a subtle shimmer, not a strong pulse — that's the
-     tradeoff for staying compliant with this color pairing. */
+     #C93500 on this page's #FAF7F2 background needs ~0.93+ opacity to
+     hold 4.5:1 contrast (computed), so the pulse's low point is clamped
+     to 0.95 rather than BrowserFrame's normal 0.4. This red is dark
+     enough on its own that there's very little room to dim it at all
+     before failing WCAG AA against a light background. */
   opacity: 0;
   animation: hoverHintFadeIn 0.8s ease 1.2s both, pulse 2s ease-in-out 2s infinite;
 }
@@ -285,4 +285,3 @@
     font-size: 1.9rem;
   }
 }
-

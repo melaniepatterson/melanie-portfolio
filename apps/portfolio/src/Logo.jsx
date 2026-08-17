@@ -10,7 +10,7 @@ export default function Logo({ isWork, isHidden }) {
       width: "clamp(190px, 42vw, 580px)",
       pointerEvents: "none"
     }}>
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 916.78 579.4" fill={isWork ? "#FAF7F2" : "#c93500"}>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 916.78 579.4" fill="#c93500">
         <Link to="/" aria-label="melanie.studio — home" style={{
           pointerEvents: "auto"
         }}>

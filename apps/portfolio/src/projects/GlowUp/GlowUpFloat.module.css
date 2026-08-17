@@ -20,7 +20,10 @@
   font-size: clamp(3rem, 20cqi, 7.5rem);
   line-height: 1;
   letter-spacing: -0.01em;
-  color: #FFFFFF;
+  /* White read fine against the old rust WorkDetail background — against
+     the current cream one it would nearly disappear. GlowUp's own brand
+     green (same #197A3C as GlowUpLoaderPreview's background) instead. */
+  color: #197A3C;
   text-align: center;
   user-select: none;
 }

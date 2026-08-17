@@ -20,6 +20,11 @@
 .scrollContainer {
   overflow-y: auto;
   overflow-x: hidden;
+  /* A little brand touch instead of the default OS scrollbar — Firefox
+     via scrollbar-color/-width, everyone else via the ::-webkit-*
+     pseudo-elements below. */
+  scrollbar-width: thin;
+  scrollbar-color: #C93500 transparent;
   /* scroll-behavior: smooth applies to EVERY scroll change, including
      native touch-driven ones — not just programmatic scrollTo() calls
      (which this never makes anyway). That means it was fighting the
@@ -30,6 +35,23 @@
      (e.g. a gallery of device screenshots) Safari would leave stale
      painted frames ghosted on top of newly scrolled-in content. Modern
      iOS has native momentum scrolling without it. */
+}
+
+.scrollContainer::-webkit-scrollbar {
+  width: 10px;
+}
+
+.scrollContainer::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollContainer::-webkit-scrollbar-thumb {
+  background-color: #C93500;
+  border-radius: 999px;
+  /* Padding-box clip + transparent border insets the visible thumb
+     inside the track's own width, instead of it running edge-to-edge. */
+  border: 2px solid transparent;
+  background-clip: padding-box;
 }
 
 .screenshot {

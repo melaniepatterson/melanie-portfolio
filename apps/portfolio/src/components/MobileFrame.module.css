@@ -60,6 +60,23 @@
      programmatic scrolls (which never happen here), and
      -webkit-overflow-scrolling: touch causes Safari to ghost stale
      painted frames when several of these sit on one page. */
+  scrollbar-width: thin;
+  scrollbar-color: #C93500 transparent;
+}
+
+.screen.scrollable::-webkit-scrollbar {
+  width: 8px;
+}
+
+.screen.scrollable::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.screen.scrollable::-webkit-scrollbar-thumb {
+  background-color: #C93500;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
 }
 
 .screen img {

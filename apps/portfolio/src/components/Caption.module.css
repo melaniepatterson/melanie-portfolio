@@ -17,15 +17,14 @@
   font-size: 0.85rem;
   letter-spacing: 0.05em;
   line-height: 1.5;
-  opacity: 0.7;
+  /* color: inherit picks up WorkDetail's #C93500 on its #FAF7F2 page
+     background — that pairing needs ~0.94+ opacity to hold 4.5:1
+     contrast (computed), so there's very little headroom left to read
+     as "dimmed" at rest without failing WCAG AA. */
+  opacity: 0.95;
   transition: opacity 0.3s ease;
 }
 
-/* Dimmed at rest fails contrast on its own, but reads clearly as
-   secondary/muted next to the full-strength body text around it — full
-   opacity (the same #FAF7F2 the rest of the page already uses, a pairing
-   confirmed compliant against this page's rust background) only while
-   the caption is actually open and being read. */
 .trigger.open {
   opacity: 1;
 }

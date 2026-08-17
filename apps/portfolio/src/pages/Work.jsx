@@ -94,8 +94,8 @@ export default function Work() {
     // iOS 26 Liquid Glass ignores theme-color entirely and falls back to
     // html/body's actual background-color when no qualifying fixed element
     // is sampled — body needs this too, not just documentElement.
-    document.documentElement.style.backgroundColor = "#C93500";
-    document.body.style.backgroundColor = "#C93500";
+    document.documentElement.style.backgroundColor = "#FAF7F2";
+    document.body.style.backgroundColor = "#FAF7F2";
     return () => {
       document.documentElement.style.backgroundColor = "";
       document.body.style.backgroundColor = "";
@@ -426,7 +426,7 @@ useEffect(() => {
         </div>
         <div className={styles.scrollHint} style={{ opacity: showScroll && hasScroll ? 1 : 0 }}>
           <span>Scroll</span>
-          <svg viewBox="0 0 24 24" fill="none" stroke="#FAF7F2" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#C93500" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
             <line x1="12" y1="4" x2="12" y2="20" />
             <polyline points="6 14 12 20 18 14" />
           </svg>

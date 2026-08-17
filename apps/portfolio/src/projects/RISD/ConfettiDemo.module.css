@@ -5,6 +5,21 @@
   overflow: hidden;
 }
 
+/* The decision letter's own background is white/cream — on the page's
+   current cream background it had no visible edge at all. A plain
+   border would just look like a UI chrome line; multiply + low opacity
+   instead reads as a soft edge definition, same treatment as .cardYear/
+   .starChecked elsewhere in this app. */
+.wrapper::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid #C93500;
+  mix-blend-mode: multiply;
+  opacity: 0.25;
+  pointer-events: none;
+}
+
 .image {
   width: 100%;
   height: auto;

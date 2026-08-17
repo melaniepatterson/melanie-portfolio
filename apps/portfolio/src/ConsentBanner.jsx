@@ -64,6 +64,15 @@ function logConsent(granted) {
 export default function ConsentBanner() {
   const [visible, setVisible] = useState(false);
   const isWork = useLocation().pathname === "/portfolio";
+  // Work's floating "Filters" pill is mobile-only (see Work.module.css) —
+  // desktop's version lives top-left instead, so there's nothing to
+  // clear there. Same 640px breakpoint used everywhere else in this app.
+  const [isMobile, setIsMobile] = useState(() => typeof window !== "undefined" && window.innerWidth < 640);
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 640);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
   useEffect(() => {
     let saved = null;
@@ -96,10 +105,13 @@ export default function ConsentBanner() {
     <div style={{
       position: "fixed",
       // Work.jsx has its own floating "Filters" pill fixed to the bottom
-      // on mobile (bottom: 1.5rem there) — clearing it here reuses the
-      // same offset Work.module.css already uses to push its own footer
-      // content clear of that pill, rather than a new one-off number.
-      bottom: isWork ? "calc(5.5rem + env(safe-area-inset-bottom, 0px))" : "1.25rem",
+      // on mobile only (bottom: 1.5rem there) — clearing it here reuses
+      // the same offset Work.module.css already uses to push its own
+      // footer content clear of that pill, rather than a new one-off
+      // number. Desktop's filter control lives top-left instead, so this
+      // page shouldn't get a special offset there — same spot as every
+      // other page.
+      bottom: isWork && isMobile ? "calc(5.5rem + env(safe-area-inset-bottom, 0px))" : "1.25rem",
       left: "1.25rem",
       zIndex: 1000,
       width: "min(280px, calc(100vw - 2.5rem))",
