@@ -69,7 +69,7 @@ export default function InspirationResult({
       </div>
 
       <div
-        className={`${styles.item} ${dominates === "result" ? styles.large : styles.small} ${onLightbox && !resultComponent ? styles.lightboxable : ""}`}
+        className={`${styles.item} ${styles.resultSide} ${dominates === "result" ? styles.large : styles.small} ${onLightbox && !resultComponent ? styles.lightboxable : ""}`}
         onClick={() => onLightbox && !resultComponent && onLightbox(resultSrc, resultAlt)}
         role={onLightbox && !resultComponent ? "button" : undefined}
         tabIndex={onLightbox && !resultComponent ? 0 : undefined}

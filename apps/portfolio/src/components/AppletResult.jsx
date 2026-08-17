@@ -148,7 +148,7 @@ export default function AppletResult({
       </div>
 
       <div
-        className={`${styles.item} ${dominates === "banner" ? styles.large : styles.small} ${onLightbox && !bannerComponent && !bannerIsVideoFile ? styles.lightboxable : ""}`}
+        className={`${styles.item} ${styles.resultSide} ${dominates === "banner" ? styles.large : styles.small} ${onLightbox && !bannerComponent && !bannerIsVideoFile ? styles.lightboxable : ""}`}
         onClick={() => onLightbox && !bannerComponent && !bannerIsVideoFile && onLightbox(bannerSrc, bannerAlt)}
         role={onLightbox && !bannerComponent && !bannerIsVideoFile ? "button" : undefined}
         tabIndex={onLightbox && !bannerComponent && !bannerIsVideoFile ? 0 : undefined}

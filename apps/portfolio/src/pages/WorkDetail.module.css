@@ -261,7 +261,7 @@
 
   .layout {
     grid-template-columns: 1fr;
-    gap: 2rem;
+    gap: 2.5rem;
   }
 
   .back {
@@ -283,5 +283,14 @@
 
   .title {
     font-size: 1.9rem;
+  }
+
+  /* More air between stacked gallery components (screenshots, device
+     frames, applet-results) than the desktop 2-col masonry needs —
+     1.5rem read as cramped once everything's a single full-width
+     column instead of sitting side by side with a neighbor. */
+  .gallery {
+    gap: 3rem;
+    margin-top: 3.5rem;
   }
 }

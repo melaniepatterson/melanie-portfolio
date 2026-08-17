@@ -24,6 +24,16 @@
   flex: 1;
 }
 
+@media (min-width: 641px) {
+  /* Desktop only, per request — mobile keeps the equal 50/50 split from
+     the large/small sizing above. The result/banner side (whichever
+     item this is, independent of the dominates-driven large/small
+     class) reads a touch smaller than its applet/inspiration partner. */
+  .resultSide {
+    flex: 0.85;
+  }
+}
+
 .item img,
 .item video {
   width: 100%;
@@ -78,16 +88,6 @@
   margin: 0;
 }
 
-/* Doubled selector boosts specificity over Caption.module.css's own
-   .trigger rule (same 0.85rem font-size), which otherwise wins or loses
-   depending on CSS bundle order. These pairings only have ~120-140px of
-   width on mobile — 0.85rem only fit a word or two before the 1-line
-   clamp; 0.7rem matches this component's own .label size and reads
-   consistently across every applet/result and inspiration/result pair. */
-.caption.caption {
-  font-size: 0.7rem;
-}
-
 .arrow {
   flex-shrink: 0;
   display: flex;
@@ -112,7 +112,7 @@
   position: absolute;
   top: 0.75rem;
   right: 0.75rem;
-  color: #FAF7F2;
+  color: #C93500;
   font-size: 1.2rem;
   opacity: 0;
   transition: opacity 0.2s ease;
@@ -132,7 +132,7 @@
   letter-spacing: 0.2em;
   text-transform: uppercase;
   line-height: 1.2;
-  color: #FAF7F2;
+  color: #C93500;
   position: absolute;
   right: -1.5rem;
   top: 0;
@@ -143,11 +143,9 @@
   transform-origin: top center;
   /* Matches BrowserFrame's scroll hint's rhythm (delayed fade-in, then a
      repeating pulse), with the pulse itself also opacity-based — but
-     #FAF7F2 on this page's #C93500 background only clears 4.5:1 contrast
-     down to ~0.94 opacity (full opacity is already just 4.92:1), so the
-     pulse's low point is clamped to 0.95 rather than BrowserFrame's 0.4.
-     The swing reads as a subtle shimmer, not a strong pulse — that's the
-     tradeoff for staying compliant with this color pairing. */
+     #C93500 on this page's #FAF7F2 background needs ~0.94+ opacity to
+     hold 4.5:1 contrast (computed), so the pulse's low point is clamped
+     to 0.95 rather than BrowserFrame's normal 0.4. */
   opacity: 0;
   animation: hoverHintFadeIn 0.8s ease 1.2s both, pulse 2s ease-in-out 2s infinite;
 }

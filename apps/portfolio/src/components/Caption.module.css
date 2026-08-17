@@ -14,7 +14,13 @@
   font-family: 'Bricolage Grotesque', sans-serif;
   font-optical-sizing: auto;
   font-weight: 600;
-  font-size: 0.85rem;
+  /* Was 0.85rem, but AppletResult/InspirationResult overrode this to
+     0.7rem for their own narrow (~120-140px on mobile) columns — two
+     sizes for the same component read as inconsistent across a
+     WorkDetail page. Standardizing on the smaller, already-proven-safe
+     value here instead of bumping the narrow contexts up, which risked
+     overflowing their 1-line mobile clamp. */
+  font-size: 0.7rem;
   letter-spacing: 0.05em;
   line-height: 1.5;
   /* color: inherit picks up WorkDetail's #C93500 on its #FAF7F2 page

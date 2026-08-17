@@ -21,6 +21,16 @@
   flex: 1;
 }
 
+@media (min-width: 641px) {
+  /* Desktop only, per request — mobile keeps the equal 50/50 split from
+     the large/small sizing above. The result side (independent of the
+     dominates-driven large/small class) reads a touch smaller than the
+     inspiration side. */
+  .resultSide {
+    flex: 0.85;
+  }
+}
+
 .item img {
   width: 100%;
   height: auto;
@@ -72,13 +82,6 @@
   margin: 0;
 }
 
-/* See AppletResult.module.css's .caption.caption — same specificity
-   boost, same reasoning: 0.7rem instead of Caption.module.css's default
-   0.85rem, sized for this narrow column instead of a full-width image. */
-.caption.caption {
-  font-size: 0.7rem;
-}
-
 .arrow {
   flex-shrink: 0;
   display: flex;
@@ -100,7 +103,7 @@
   position: absolute;
   top: 0.75rem;
   right: 0.75rem;
-  color: #FAF7F2;
+  color: #C93500;
   font-size: 1.2rem;
   opacity: 0;
   transition: opacity 0.2s ease;
@@ -120,7 +123,7 @@
   letter-spacing: 0.2em;
   text-transform: uppercase;
   line-height: 1.2;
-  color: #FAF7F2;
+  color: #C93500;
   position: absolute;
   right: -1.5rem;
   top: 0;
@@ -131,11 +134,9 @@
   transform-origin: top center;
   /* Matches BrowserFrame's scroll hint's rhythm (delayed fade-in, then a
      repeating pulse), with the pulse itself also opacity-based — but
-     #FAF7F2 on this page's #C93500 background only clears 4.5:1 contrast
-     down to ~0.94 opacity (full opacity is already just 4.92:1), so the
-     pulse's low point is clamped to 0.95 rather than BrowserFrame's 0.4.
-     The swing reads as a subtle shimmer, not a strong pulse — that's the
-     tradeoff for staying compliant with this color pairing. */
+     #C93500 on this page's #FAF7F2 background needs ~0.94+ opacity to
+     hold 4.5:1 contrast (computed), so the pulse's low point is clamped
+     to 0.95 rather than BrowserFrame's normal 0.4. */
   opacity: 0;
   animation: hoverHintFadeIn 0.8s ease 1.2s both, pulse 2s ease-in-out 2s infinite;
 }
