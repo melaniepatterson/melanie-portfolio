@@ -45,11 +45,18 @@ function Layout() {
   }, [isHome, isWork, isWorkDetail]);
 
   // iOS Safari only repaints its status bar/toolbar chrome on a scroll
-  // event, not immediately when theme-color changes via JS (client-side
-  // route changes never trigger one on their own) — so the meta tag was
-  // updating correctly but the visible chrome stayed stale until the user
-  // happened to scroll. Forcing a tiny real scroll nudges Safari into
-  // resampling it. Same fix already used in the GlowUp app.
+  // event, not immediately when theme-color (or html/body's background,
+  // which is what iOS 26's Liquid Glass toolbar actually samples) changes
+  // via JS — client-side route changes never trigger a scroll on their
+  // own, so the correct color was set but the visible chrome stayed
+  // stale. Forcing a real scroll nudges Safari into resampling it.
+  //
+  // Unlike the old version of this effect, the nudge is never reverted
+  // back to 0 — Liquid Glass needs a persistently non-zero scrollY to
+  // composite real page pixels behind the toolbar at all; snapping back
+  // to exactly 0 re-opens the flat-color-fallback gap this exists to
+  // avoid. .layout's matching -1px margin-top (App.css) cancels this
+  // out visually, so nothing above the fold actually moves.
   //
   // minHeight only gets forced when the page genuinely isn't scrollable
   // yet (nothing to nudge otherwise) — CSS vh units resolve inconsistently
@@ -61,21 +68,18 @@ function Layout() {
   // — no CSS viewport-unit ambiguity to fight.
   useEffect(() => {
     const html = document.documentElement;
+    // Reset before measuring, not after — React 18 StrictMode
+    // double-invokes this effect in dev, and reading scrollHeight
+    // without resetting first measures the PREVIOUS run's own inflated
+    // minHeight, concludes it's no longer needed, and clears it right
+    // back out from under itself, leaving scrollY stuck at 0.
+    html.style.minHeight = "";
     const needsHeight = html.scrollHeight <= window.innerHeight;
-    const prevMinHeight = html.style.minHeight;
-    if (needsHeight) html.style.minHeight = `${window.innerHeight + 2}px`;
+    if (needsHeight) html.style.minHeight = `${window.innerHeight + 1}px`;
     const raf = requestAnimationFrame(() => {
-      window.scrollTo(window.scrollX, window.scrollY + 2);
+      if (window.scrollY < 1) window.scrollTo(window.scrollX, 1);
     });
-    const timeout = setTimeout(() => {
-      window.scrollTo(window.scrollX, window.scrollY - 2);
-      if (needsHeight) html.style.minHeight = prevMinHeight;
-    }, 120);
-    return () => {
-      cancelAnimationFrame(raf);
-      clearTimeout(timeout);
-      if (needsHeight) html.style.minHeight = prevMinHeight;
-    };
+    return () => cancelAnimationFrame(raf);
   }, [isHome, isWork, isWorkDetail]);
 
   useEffect(() => {

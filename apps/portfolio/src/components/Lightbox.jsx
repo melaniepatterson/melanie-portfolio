@@ -5,12 +5,24 @@ export default function Lightbox({ src, alt, onClose }) {
   const closeButtonRef = useRef(null);
   const previouslyFocusedRef = useRef(null);
 
+  // Locks scroll via position: fixed (restoring scrollY on close) rather
+  // than body { overflow: hidden } — iOS 26's Liquid Glass toolbar needs
+  // the document to stay genuinely scrollable for its compositor even
+  // while a modal is open, and overflow: hidden defeats that, leaving a
+  // wrong-colored gap behind the toolbar until the lightbox closes.
   useEffect(() => {
-    document.body.style.overflow = "hidden";
+    const scrollY = window.scrollY;
+    const body = document.body;
+    body.style.position = "fixed";
+    body.style.top = `-${scrollY}px`;
+    body.style.width = "100%";
     previouslyFocusedRef.current = document.activeElement;
     closeButtonRef.current?.focus();
     return () => {
-      document.body.style.overflow = "";
+      body.style.position = "";
+      body.style.top = "";
+      body.style.width = "";
+      window.scrollTo(window.scrollX, scrollY);
       previouslyFocusedRef.current?.focus?.();
     };
   }, []);

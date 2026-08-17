@@ -153,13 +153,13 @@ export default function RepulseLogo() {
   // styles, so the browser does one layout pass instead of up to four.
 
   // Liquid Glass on iOS 26 ignores theme-color and falls back to html/body's
-  // real background-color when sampling for toolbar tint — #fce7f5 is the
-  // same sampled edge color used for the theme-color meta tag in App.jsx
-  // (the actual page background is cream, but the giant blurred circle
-  // covers the whole viewport, so that's what should be sampled here).
+  // real background-color when sampling for toolbar tint. Cream, matching
+  // the actual page background (and the color the rest of the site uses
+  // for this) — not the gradient circle's own edge tone, which read as an
+  // off/pink toolbar tint instead of the intended cream.
   useEffect(() => {
-    document.documentElement.style.backgroundColor = "#fce7f5";
-    document.body.style.backgroundColor = "#fce7f5";
+    document.documentElement.style.backgroundColor = "#FAF7F2";
+    document.body.style.backgroundColor = "#FAF7F2";
     return () => {
       document.documentElement.style.backgroundColor = "";
       document.body.style.backgroundColor = "";

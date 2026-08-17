@@ -160,6 +160,14 @@ main {
   min-height: 100vh;
   min-height: 100dvh; /* mobile Safari's 100vh ignores its own toolbar, pushing the footer under it */
   width: 100%;
+  /* Paired with App.jsx's scroll-runway effect, which keeps window
+     scrollY permanently at 1px or more instead of snapping back to 0 —
+     iOS 26's Liquid Glass toolbar needs non-zero scroll to composite
+     real page pixels behind the status bar/toolbar rather than falling
+     back to a flat sampled color. This negative margin shifts the whole
+     layout up by that same 1px so the permanent scroll offset is
+     visually invisible — nothing above the fold actually moves. */
+  margin-top: -1px;
 }
 
 .layout::after {
