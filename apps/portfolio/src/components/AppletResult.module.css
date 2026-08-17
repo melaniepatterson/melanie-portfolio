@@ -30,7 +30,7 @@
      item this is, independent of the dominates-driven large/small
      class) reads a touch smaller than its applet/inspiration partner. */
   .resultSide {
-    flex: 0.85;
+    flex: 0.75;
   }
 }
 

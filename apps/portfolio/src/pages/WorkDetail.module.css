@@ -35,7 +35,9 @@
 .images {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  /* Matches .galleryFlow's row-gap — same "space between one component
+     and the next" down this column, hero image included. */
+  gap: 3rem;
 }
 
 .images img {
@@ -54,7 +56,11 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   grid-auto-flow: dense;
-  gap: 1.5rem;
+  /* Split instead of one gap value — more room between rows of stacked
+     components, same room as before between the two side-by-side
+     columns. */
+  row-gap: 3rem;
+  column-gap: 1.5rem;
 }
 
 .gallerySmall {

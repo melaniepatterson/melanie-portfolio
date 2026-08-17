@@ -27,7 +27,7 @@
      dominates-driven large/small class) reads a touch smaller than the
      inspiration side. */
   .resultSide {
-    flex: 0.85;
+    flex: 0.75;
   }
 }
 
@@ -53,6 +53,20 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
+}
+
+@media (min-width: 641px) {
+  /* Desktop already has a way to replay this one — hovering re-triggers
+     it (see the wrapper's onMouseEnter in InspirationResult.jsx) — so a
+     visible refresh button there is redundant next to the "Hover to
+     interact" hint. Mobile has no hover, so it's the only way to replay
+     without leaving/re-entering the page — hiding the whole header
+     (not just the button) instead of just the button, since this is
+     also the only thing that would otherwise put a "Result" label on
+     desktop that was never there before. */
+  .itemHeader {
+    display: none;
+  }
 }
 
 .refreshButton {
