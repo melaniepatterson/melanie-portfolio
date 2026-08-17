@@ -1,9 +1,8 @@
 import { useEffect } from "react";
 import { Navigate } from "react-router-dom";
 
-// Codes are read from .env.local (gitignored) -- add one VITE_TRACKING_*
-// pair per application. Values here are just meaningless short codes;
-// the company mapping lives only in the Notion tracker, never in code.
+// Values are read from env vars (.env.local locally, gitignored),
+// never hardcoded here.
 const TRACKING_CODES = {
   p1: import.meta.env.VITE_TRACKING_P1_SOURCE,
   p2: import.meta.env.VITE_TRACKING_P2_SOURCE,
