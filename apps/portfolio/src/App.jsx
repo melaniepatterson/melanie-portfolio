@@ -7,6 +7,7 @@ import { PROJECT_TITLES } from "./data/projectTitles";
 import { useEffect, Suspense, lazy } from "react";
 import PageTransition from "./PageTransition";
 import NotFound from "./NotFound";
+import TrackedRedirect from "./TrackedRedirect";
 import ConsentBanner from "./ConsentBanner";
 // "/" is the default landing page for nearly every visitor, so it's kept
 // eager rather than lazy — lazy-loading it only adds a sequential
@@ -131,6 +132,7 @@ function Layout() {
                 <Route path="/portfolio/:slug" element={<WorkDetail />} />
                 <Route path="/about-contact" element={<AboutContact />} />
                 <Route path="/privacy" element={<Privacy />} />
+                <Route path="/:code" element={<TrackedRedirect />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
