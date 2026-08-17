@@ -132,7 +132,8 @@ function Layout() {
             </Suspense>
           </PageTransition>
         </main>
-        <footer className="site-footer" style={{
+        <footer className={`site-footer${isWork ? " footerAboveFilters" : ""}`} style={{
+          marginTop: "auto",
           paddingTop: "1rem",
           paddingLeft: "2rem",
           paddingRight: "2rem",

@@ -27,7 +27,14 @@
     </script>
     <link rel="icon" href="/melanie-studio-favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#C93500" />
+    <!-- Cream, matching the home page — by far the most common entry
+         point (root domain). App.jsx's effect flips this to rust for
+         Work/WorkDetail, but iOS Safari only repaints the toolbar on a
+         scroll event, not immediately when JS changes it — so whatever's
+         here is what's actually visible until the first scroll. Rust as
+         the static default meant every fresh home-page load showed the
+         wrong color until that first scroll happened. -->
+    <meta name="theme-color" content="#FAF7F2" />
     <meta name="robots" content="index, follow" />
     <meta name="description" content="Melanie Patterson is an Indo-Jamaican American artist and designer working across fine art, web development, and design. Based in Providence, RI." />
     <meta property="og:title" content="melanie.studio" />
