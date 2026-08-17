@@ -8,28 +8,43 @@
   position: absolute;
   inset: 0;
   background: #197A3C;
+  /* Establishes the cqi (container query inline-size) reference every
+     size below is defined against. This stage renders as a plain,
+     really-sized HTML layer (see MobileFrame.jsx), not inside an SVG
+     foreignObject, so nothing shrinks these values automatically — cqi
+     scales them against the frame instead. Every size here is converted
+     from the REAL GlowUpLoader.jsx's own px values (not guessed), using
+     390px (a representative phone viewport width) as the reference: its
+     wordmark's font-size clamp(64px, 14vw, 88px) only clears its 64px
+     floor above a 457px viewport, so on every real phone it renders at a
+     flat 64px — that's the number used here, not the clamp's ceiling.
+     No padding lives here — deliberately. A percentage `padding` on the
+     SAME element that establishes container-type breaks `gap`'s cqi
+     resolution (confirmed: it silently falls back to the page viewport
+     width instead of this container — font-size/width aren't affected,
+     only gap). .inner below carries the padding instead, one level in,
+     so gap keeps resolving against this element's real size. */
+  container-type: inline-size;
+}
+
+.inner {
+  position: absolute;
+  inset: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6.28cqi;
+  /* 28px in the real loader (GlowUpLoader.jsx), which runs full-viewport
+     on an actual phone — see .stage's cqi reference note. */
+  gap: 7.18cqi;
   padding: 10%;
   box-sizing: border-box;
-  /* Establishes the cqi (container query inline-size) reference every
-     size below is defined against. This stage now renders as a plain,
-     really-sized HTML layer (see MobileFrame.jsx) instead of living
-     inside an SVG foreignObject that used to shrink a fixed pre-authored
-     pixel scale down automatically — without container queries here,
-     the sizes below (originally tuned against that old 875.85-wide
-     coordinate space) would render at their literal, far-too-large
-     pixel values instead of scaling with the frame. */
-  container-type: inline-size;
 }
 
 .wordmark {
   font-family: 'Naskle', 'DM Sans', sans-serif;
-  /* 155px in the old 875.85-wide reference space. */
-  font-size: 17.7cqi;
+  /* 64px / 390px reference width. */
+  font-size: 16.41cqi;
   line-height: 1;
   letter-spacing: -0.01em;
   color: #FFFFFF;
@@ -39,9 +54,10 @@
 }
 
 .barTrack {
-  /* 380px in the old reference space. */
-  width: min(43.4cqi, 60%);
-  height: 1.6cqi;
+  /* 200px / 390px reference width. */
+  width: 51.28cqi;
+  /* 6px / 390px reference width. */
+  height: 1.54cqi;
   border-radius: 999px;
   overflow: hidden;
   background: #FFFFFF;
@@ -59,24 +75,26 @@
 
 .saying {
   font-family: 'Bricolage Grotesque', sans-serif;
-  /* 50px in the old reference space. */
-  font-size: 5.71cqi;
+  /* 12px (theme.js fontSize.sm) / 390px reference width. */
+  font-size: 3.08cqi;
   color: #FFFFFF;
   letter-spacing: 0.02em;
-  min-height: 6.28cqi;
+  /* 16px / 390px reference width. */
+  min-height: 4.1cqi;
   text-align: center;
 }
 
+/* ±8px / 390px reference width — the real loader's float amplitude. */
 @keyframes glowupLoaderFloat {
-  0%, 100% { transform: translateY(-20px); }
-  50%      { transform: translateY(20px); }
+  0%, 100% { transform: translateY(-2.05cqi); }
+  50%      { transform: translateY(2.05cqi); }
 }
 
-/* SLOT (52.069cqi) * BAR_COLORS.length (5) from GlowUpLoaderPreview.jsx
+/* SLOT (61.54cqi) * BAR_COLORS.length (5) from GlowUpLoaderPreview.jsx
    — both are fixed constants, so this doesn't need to be computed
    dynamically. */
 @keyframes glowupLoaderBarRoll {
-  0%   { background-position: -260.35cqi 0; }
+  0%   { background-position: -307.69cqi 0; }
   100% { background-position: 0cqi 0; }
 }
 

@@ -285,13 +285,13 @@ export default function RepulseLogo() {
             <img
               src={chaserImage}
               alt=""
-              style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", filter: "grayscale(100%)" }}
+              style={{ width: "100%", height: "100%", objectFit: "contain", display: "block", filter: "grayscale(100%)" }}
             />
             {/* Red-tint overlay masked to the image's own alpha channel
                 (via mask-image, not a plain covering rectangle) so a
                 transparent PNG's negative space stays transparent instead
                 of getting painted in as a solid red box. mask-size/
-                position match the img's own object-fit: cover framing. */}
+                position match the img's own object-fit: contain framing. */}
             <div
               style={{
                 backgroundColor: "#c93500",
@@ -300,8 +300,8 @@ export default function RepulseLogo() {
                 inset: 0,
                 WebkitMaskImage: `url(${chaserImage})`,
                 maskImage: `url(${chaserImage})`,
-                WebkitMaskSize: "cover",
-                maskSize: "cover",
+                WebkitMaskSize: "contain",
+                maskSize: "contain",
                 WebkitMaskPosition: "center",
                 maskPosition: "center",
                 WebkitMaskRepeat: "no-repeat",
