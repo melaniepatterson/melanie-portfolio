@@ -34,7 +34,7 @@ export const PROJECTS = [
     thumbnailHeight: 518,
     // Shown on Home's WORK hover chaser instead of the hero image
     // Supports transparent PNGs
-    hoverImage: "/images/projects/RISD/RISD_Seal.webp",
+    hoverImage: "/images/projects/RISD/RISD_Seal.svg",
     hero: () => import('../projects/RISD/Hero'),      // or: () => import('../projects/project-one/Hero')
     images: [
   { src: "/images/projects/RISD/melanie-patterson-risd.webm", width: 1200, height: 800, alt: "Textured blue liquid gradient with the RISD seal in the center." },
