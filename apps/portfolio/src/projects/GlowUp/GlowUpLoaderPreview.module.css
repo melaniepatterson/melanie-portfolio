@@ -12,22 +12,24 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 55px;
+  gap: 6.28cqi;
   padding: 10%;
   box-sizing: border-box;
+  /* Establishes the cqi (container query inline-size) reference every
+     size below is defined against. This stage now renders as a plain,
+     really-sized HTML layer (see MobileFrame.jsx) instead of living
+     inside an SVG foreignObject that used to shrink a fixed pre-authored
+     pixel scale down automatically — without container queries here,
+     the sizes below (originally tuned against that old 875.85-wide
+     coordinate space) would render at their literal, far-too-large
+     pixel values instead of scaling with the frame. */
+  container-type: inline-size;
 }
 
-/* This whole stage is dropped into MobileFrame's SVG via a foreignObject,
-   authored at the SVG's own (927.98-wide) user-unit scale — the outer <svg>
-   then visually shrinks that entire coordinate space down to however big
-   the frame is actually rendered (as small as ~120px wide standalone).
-   Regular CSS px values in here are in that fixed, pre-shrink space, so
-   they end up far smaller on screen than the number suggests — a 44px
-   font here rendered at roughly 6px on screen. Sizes below are chosen for
-   how they look post-shrink, not as literal on-screen pixel values. */
 .wordmark {
   font-family: 'Naskle', 'DM Sans', sans-serif;
-  font-size: 155px;
+  /* 155px in the old 875.85-wide reference space. */
+  font-size: 17.7cqi;
   line-height: 1;
   letter-spacing: -0.01em;
   color: #FFFFFF;
@@ -37,8 +39,9 @@
 }
 
 .barTrack {
-  width: min(380px, 60%);
-  height: 14px;
+  /* 380px in the old reference space. */
+  width: min(43.4cqi, 60%);
+  height: 1.6cqi;
   border-radius: 999px;
   overflow: hidden;
   background: #FFFFFF;
@@ -56,10 +59,11 @@
 
 .saying {
   font-family: 'Bricolage Grotesque', sans-serif;
-  font-size: 50px;
+  /* 50px in the old reference space. */
+  font-size: 5.71cqi;
   color: #FFFFFF;
   letter-spacing: 0.02em;
-  min-height: 55px;
+  min-height: 6.28cqi;
   text-align: center;
 }
 
@@ -68,11 +72,12 @@
   50%      { transform: translateY(20px); }
 }
 
-/* SLOT (456) * BAR_COLORS.length (5) from GlowUpLoaderPreview.jsx — both are
-   fixed constants, so this doesn't need to be computed dynamically. */
+/* SLOT (52.069cqi) * BAR_COLORS.length (5) from GlowUpLoaderPreview.jsx
+   — both are fixed constants, so this doesn't need to be computed
+   dynamically. */
 @keyframes glowupLoaderBarRoll {
-  0%   { background-position: -2280px 0; }
-  100% { background-position: 0px 0; }
+  0%   { background-position: -260.35cqi 0; }
+  100% { background-position: 0cqi 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {

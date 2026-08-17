@@ -20,12 +20,15 @@ const SAYINGS = [
 ];
 
 const BAR_COLORS = ["#ED6FBB", "#98AAF8", "#7BE3A5", "#F5C222", "#F07040"];
-// SLOT sized against the 380px track (see .barTrack) at the same
-// track-width/SLOT ratio as the real loader (200px / 240px) — this is what
-// keeps only one color dominant in view at a time instead of several
-// smaller bands showing at once.
-const SLOT = 456;
-const BAND_HALF = 87;
+// In cqi (container query inline-size units, against .stage's own
+// container-type: inline-size — see GlowUpLoaderPreview.module.css)
+// instead of raw px, so this scales with the frame like everything
+// else in .stage does. SLOT sized against the barTrack's own width at
+// the same track-width/SLOT ratio as the real loader (200px / 240px)
+// — this is what keeps only one color dominant in view at a time
+// instead of several smaller bands showing at once.
+const SLOT = 52.069;
+const BAND_HALF = 9.933;
 const UNIT = SLOT * BAR_COLORS.length;
 
 function shuffle(arr) {
@@ -39,14 +42,14 @@ function shuffle(arr) {
 
 function buildBarGradient() {
   const order = shuffle(BAR_COLORS);
-  const stops = ["#FFFFFF 0px"];
+  const stops = ["#FFFFFF 0cqi"];
   order.forEach((color, i) => {
     const center = i * SLOT + SLOT / 2;
-    stops.push(`#FFFFFF ${center - BAND_HALF}px`);
-    stops.push(`${color} ${center}px`);
-    stops.push(`#FFFFFF ${center + BAND_HALF}px`);
+    stops.push(`#FFFFFF ${center - BAND_HALF}cqi`);
+    stops.push(`${color} ${center}cqi`);
+    stops.push(`#FFFFFF ${center + BAND_HALF}cqi`);
   });
-  stops.push(`#FFFFFF ${UNIT}px`);
+  stops.push(`#FFFFFF ${UNIT}cqi`);
   return `linear-gradient(90deg, ${stops.join(", ")})`;
 }
 
@@ -95,7 +98,7 @@ export default function GlowUpLoaderPreview() {
           className={styles.bar}
           style={{
             backgroundImage: barGradient.current,
-            backgroundSize: `${UNIT}px 100%`,
+            backgroundSize: `${UNIT}cqi 100%`,
           }}
         />
       </div>
