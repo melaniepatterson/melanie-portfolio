@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useParams, Navigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
 // Codes are read from .env.local (gitignored) -- add one VITE_TRACKING_*
 // pair per application. Values here are just meaningless short codes;
@@ -9,8 +9,11 @@ const TRACKING_CODES = {
   p2: import.meta.env.VITE_TRACKING_P2_SOURCE,
 };
 
-export default function TrackedRedirect() {
-  const { code } = useParams();
+// code is passed directly as a prop from an explicit <Route> per code in
+// App.jsx (not read via useParams from a catchall /:code route) — that
+// way an unmapped path/typo falls through to the real 404 route instead
+// of silently redirecting home.
+export default function TrackedRedirect({ code }) {
   const source = TRACKING_CODES[code];
 
   useEffect(() => {

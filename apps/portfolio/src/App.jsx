@@ -132,7 +132,11 @@ function Layout() {
                 <Route path="/portfolio/:slug" element={<WorkDetail />} />
                 <Route path="/about-contact" element={<AboutContact />} />
                 <Route path="/privacy" element={<Privacy />} />
-                <Route path="/:code" element={<TrackedRedirect />} />
+                {/* One explicit route per known code, not a /:code
+                    catchall — a typo'd path should hit the real 404
+                    below, not silently redirect home. */}
+                <Route path="/p1" element={<TrackedRedirect code="p1" />} />
+                <Route path="/p2" element={<TrackedRedirect code="p2" />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
