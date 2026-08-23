@@ -36,29 +36,28 @@ function getVisitorId() {
   }
 }
 
-// Durable record of consent decisions, kept in Supabase so there's an
-// actual demonstrable log (GDPR Art. 7(1) puts the burden of proof on the
-// site to show consent was given, not just trust that it was) — separate
-// from the localStorage flag above, which only handles gating GA in this
-// one browser. Fire-and-forget: gating already happened via localStorage/
-// gtag before this runs, so a failed or slow network request here should
-// never block or affect the visitor's actual experience.
-//
-// The import is dynamic, not a top-level static import, so
-// @supabase/supabase-js (a meaningfully large library) only ever gets
-// fetched at the moment someone actually clicks Accept/Decline, instead
-// of bloating the eagerly-loaded main bundle every single page load for
-// a feature most visits never trigger.
+// Record of consent decisions, logged via this project's own Vercel
+// Function (see /api/log-consent.js) so there's at least a recent trail
+// showing a choice was made (GDPR Art. 7(1) puts the burden of proof on
+// the site) — separate from the localStorage flag above, which only
+// handles gating GA in this one browser. Vercel's request logs are a
+// rolling window, not permanent storage, but that's the tradeoff for not
+// running a database for this one insert. Fire-and-forget with
+// keepalive: gating already happened via localStorage/gtag before this
+// runs, so a failed or slow request here should never block or affect
+// the visitor's actual experience — keepalive just means it isn't
+// silently cancelled if the page is already navigating away.
 function logConsent(granted) {
-  import("./supabase").then(({ supabase }) => {
-    supabase.from("consent_logs").insert({
+  fetch("/api/log-consent", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
       choice: granted ? "granted" : "denied",
-      visitor_id: getVisitorId(),
-      page_path: window.location.pathname,
-    }).then(({ error }) => {
-      if (error) console.error("consent_logs insert failed:", error);
-    });
-  });
+      visitorId: getVisitorId(),
+      pagePath: window.location.pathname,
+    }),
+    keepalive: true,
+  }).catch((error) => console.error("consent log failed:", error));
 }
 
 export default function ConsentBanner() {

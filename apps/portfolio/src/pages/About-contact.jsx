@@ -224,7 +224,7 @@ export default function AboutContact() {
             <a href="mailto:hello@melanie.studio"><SplitText>Email</SplitText></a>
           </div>
 
-          <p className={styles.stack}>Site built with React, Vite &amp; Supabase.</p>
+          <p className={styles.stack}>Site built with React &amp; Vite.</p>
         </div>
         <div className={styles.photo}>
           <ShimmerImage

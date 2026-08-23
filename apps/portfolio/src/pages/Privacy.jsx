@@ -27,9 +27,9 @@ export default function Privacy() {
       <div className={styles.section}>
         <h2>Consent records</h2>
         <p>
-          When you accept or decline, a record of that choice (timestamp and a random, anonymous
-          id — not your name or anything identifying) is kept so there's proof a choice was made,
-          should it ever be asked for. It can't be read back or edited from your browser.
+          When you accept or decline, that choice (timestamp and a random, anonymous id — not
+          your name or anything identifying) is logged so there's a record it was made. It can't
+          be read back or edited from your browser.
         </p>
       </div>
 
