@@ -36,6 +36,12 @@
   font-weight: 600;
 }
 
+.inlineLink {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 .links {
   font-size: 0.95rem;
   line-height: 1.6;

@@ -1,5 +1,6 @@
 import { useParams, Link, Navigate } from "react-router-dom";
 import { PROJECTS } from "../data/projects";
+import { LOG_ENTRIES } from "../data/log";
 import styles from "./WorkDetail.module.css";
 import { SplitText, useHoverCapable } from "../utils";
 import InspirationResult from "../components/InspirationResult";
@@ -115,6 +116,14 @@ export default function WorkDetail() {
   if (project.comingSoon) return <Navigate to="/portfolio" replace />;
 
   const { images: galleryImages } = getGalleryData(project);
+
+  // Reverse of LogEntry.jsx's "Related project →" link — same
+  // relatedProject field on the log side, just looked up from this
+  // direction instead. Reverse-chronological, same order Log.jsx's own
+  // list uses, in case a project ever has more than one.
+  const relatedLogEntries = LOG_ENTRIES
+    .filter((entry) => entry.relatedProject === project.slug)
+    .sort((a, b) => b.date.localeCompare(a.date));
 
   // These types are always the wide/large slot — same list this codebase
   // has used all along (see the old computeRowBreaks isLarge check) —
@@ -299,6 +308,11 @@ export default function WorkDetail() {
               {project.externalLink.startsWith("http") && <span className="sr-only"> (opens in new window)</span>}
             </a>
           )}
+          {relatedLogEntries.map((entry) => (
+            <Link key={entry.slug} to={`/log/${entry.slug}`} className={styles.link}>
+              <SplitText>{`Related Log: ${entry.title} →`}</SplitText>
+            </Link>
+          ))}
         </div>
       </div>
 

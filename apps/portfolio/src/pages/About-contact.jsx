@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { SplitText, computeRepulsion, applyRepulsionStyle } from "../utils";
 import styles from "./About-contact.module.css";
 import ShimmerImage from "../components/Skeleton";
@@ -214,7 +215,11 @@ export default function AboutContact() {
           <p className={styles.bio}>
             Available for freelance projects and open to new opportunities.
           </p>
-         
+
+          <p className={styles.bio}>
+            Also keeping a <Link to="/log" className={styles.inlineLink}>running log</Link> of small builds, debugging notes, and short opinions.
+          </p>
+
           <div className={styles.links}>
             <a href="/images/Melanie_Patterson_Resume.pdf" target="_blank" rel="noopener noreferrer">
               <SplitText>CV</SplitText>
