@@ -158,8 +158,8 @@
 
 /* Matches AppletResult's refreshButton treatment — dim at rest, full
    opacity on hover, generous invisible hit padding via the negative
-   margin trick so the actual clickable area is bigger than the visible
-   text. */
+   margin trick so the actual clickable area (30x30) is bigger than the
+   visible icon (14x14). */
 .copyButton {
   position: absolute;
   top: 0.6rem;
@@ -167,16 +167,17 @@
   background: none;
   border: none;
   color: #C93500;
-  font-family: 'Bricolage Grotesque', sans-serif;
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
   opacity: 0.5;
   cursor: pointer;
-  padding: 0.4rem 0.6rem;
-  margin: -0.4rem -0.6rem;
+  display: flex;
+  padding: 8px;
+  margin: -8px;
   transition: opacity 0.2s ease;
+}
+
+.copyButton svg {
+  width: 14px;
+  height: 14px;
 }
 
 .copyButton:hover,
