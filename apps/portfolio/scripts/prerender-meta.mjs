@@ -17,6 +17,7 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { LOG_ENTRIES } from '../src/data/log.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const distDir = resolve(__dirname, '../../../dist/portfolio')
@@ -78,6 +79,24 @@ const routes = [
     image: defaultImage,
     noindex: true,
   },
+  {
+    path: '/log',
+    title: 'Log — melanie.studio',
+    description: 'Small builds, debugging notes, and short opinions from Melanie Patterson.',
+    image: defaultImage,
+  },
+  // One route per log entry, generated from the same data the site
+  // itself renders from — adding a new entry to data/log.js is enough
+  // to get it a real title/description in link previews too, no extra
+  // step. No per-entry image (entries don't have one, see log.js) — the
+  // site's own default OG image covers it, same as most project routes
+  // above already do.
+  ...LOG_ENTRIES.map((entry) => ({
+    path: `/log/${entry.slug}`,
+    title: `${entry.title} — melanie.studio`,
+    description: entry.excerpt,
+    image: defaultImage,
+  })),
 ]
 
 const escapeAttr = (str) => str.replace(/&/g, '&amp;').replace(/"/g, '&quot;')
@@ -121,3 +140,50 @@ for (const route of routes) {
 }
 
 console.log(`prerender-meta: wrote per-route meta tags for ${routes.length} routes.`)
+
+// Built alongside everything else in this pass, but not wired up yet —
+// two entries isn't really a "feed" anyone would subscribe to. Uncomment
+// the writeRssFeed() call below once there's enough here to be worth
+// following, then link it somewhere on /log (a small "RSS" link is the
+// usual convention).
+const escapeXml = (str) => str
+  .replace(/&/g, '&amp;')
+  .replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;')
+  .replace(/'/g, '&apos;')
+
+function writeRssFeed() {
+  const items = LOG_ENTRIES
+    .slice()
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .map((entry) => {
+      const url = `${baseUrl}/log/${entry.slug}`
+      const pubDate = new Date(`${entry.date}T00:00:00Z`).toUTCString()
+      return `    <item>
+      <title>${escapeXml(entry.title)}</title>
+      <link>${url}</link>
+      <guid>${url}</guid>
+      <pubDate>${pubDate}</pubDate>
+      <description>${escapeXml(entry.excerpt)}</description>
+    </item>`
+    })
+    .join('\n')
+
+  const feed = `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Log — melanie.studio</title>
+    <link>${baseUrl}/log</link>
+    <description>Small builds, debugging notes, and short opinions from Melanie Patterson.</description>
+    <language>en-us</language>
+${items}
+  </channel>
+</rss>
+`
+
+  writeFileSync(join(distDir, 'log', 'rss.xml'), feed)
+  console.log('prerender-meta: wrote /log/rss.xml')
+}
+
+// writeRssFeed()
