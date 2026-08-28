@@ -22,7 +22,10 @@
 .subtitle {
   font-size: 1rem;
   line-height: 1.6;
-  opacity: 0.8;
+  /* #C93500 on this page's #FAF7F2 background needs ~0.94+ opacity to
+     hold 4.5:1 contrast (computed) — same floor as the rest of the
+     site's red-on-cream text. */
+  opacity: 0.95;
   margin: 0;
 }
 
@@ -72,14 +75,19 @@
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  opacity: 0.55;
+  /* See .subtitle's comment on the compliant opacity floor. */
+  opacity: 0.95;
 }
 
+/* Same uppercase-label treatment as the site's other small category
+   labels (Work.module.css's .filterTitle, AppletResult's "Applet"/
+   "Result" .label) — 0.2em letter-spacing, not the 0.1em this used to
+   have, which didn't match anywhere else on the site. */
 .typeTag {
   font-family: 'Bricolage Grotesque', sans-serif;
   font-size: 0.65rem;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   line-height: 1;
   padding: 0.3rem 0.55rem;
@@ -96,7 +104,8 @@
 .excerpt {
   font-size: 0.95rem;
   line-height: 1.6;
-  opacity: 0.75;
+  /* See .subtitle's comment on the compliant opacity floor. */
+  opacity: 0.95;
   margin: 0;
 }
 
