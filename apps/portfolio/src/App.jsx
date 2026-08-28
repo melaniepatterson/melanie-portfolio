@@ -4,6 +4,12 @@ import Logo from "./Logo";
 import LogoHorizontal from "./LogoHorizontal";
 import "./App.css";
 import { PROJECT_TITLES } from "./data/projectTitles";
+// Unlike data/projects.js (split into a lightweight projectTitles.js for
+// exactly this reason), log.js has no separate title-only file yet — it's
+// just the two seeded entries so far. Worth splitting out the same way
+// projectTitles.js does if this list grows large enough that eagerly
+// importing every entry's full Markdown body here starts to matter.
+import { LOG_ENTRIES } from "./data/log";
 import { useEffect, Suspense, lazy } from "react";
 import PageTransition from "./PageTransition";
 import NotFound from "./NotFound";
@@ -22,6 +28,8 @@ import Hero from "./Radialgradient";
 // everything they in turn pull in, like the full project data) upfront.
 const Work = lazy(() => import("./pages/Work"));
 const WorkDetail = lazy(() => import("./pages/WorkDetail"));
+const Log = lazy(() => import("./pages/Log"));
+const LogEntry = lazy(() => import("./pages/LogEntry"));
 const AboutContact = lazy(() => import("./pages/About-contact"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 
@@ -87,6 +95,7 @@ function Layout() {
     const titles = {
       "/": "melanie.studio",
       "/portfolio": "Work — melanie.studio",
+      "/log": "Log — melanie.studio",
       "/about-contact": "Info & Contact — melanie.studio",
       "/privacy": "Privacy & Cookies — melanie.studio",
     };
@@ -97,6 +106,10 @@ function Layout() {
       const slug = location.pathname.replace("/portfolio/", "");
       const project = PROJECT_TITLES.find(p => p.slug === slug);
       document.title = project ? `${project.title} — melanie.studio` : "melanie.studio";
+    } else if (location.pathname.startsWith("/log/")) {
+      const slug = location.pathname.replace("/log/", "");
+      const entry = LOG_ENTRIES.find(e => e.slug === slug);
+      document.title = entry ? `${entry.title} — melanie.studio` : "melanie.studio";
     }
   }, [location.pathname]);
 
@@ -130,6 +143,8 @@ function Layout() {
                 <Route path="/" element={<Hero />} />
                 <Route path="/portfolio" element={<Work />} />
                 <Route path="/portfolio/:slug" element={<WorkDetail />} />
+                <Route path="/log" element={<Log />} />
+                <Route path="/log/:slug" element={<LogEntry />} />
                 <Route path="/about-contact" element={<AboutContact />} />
                 <Route path="/privacy" element={<Privacy />} />
                 {/* One explicit route per known code, not a /:code

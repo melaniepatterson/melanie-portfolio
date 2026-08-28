@@ -1,0 +1,178 @@
+.page {
+  min-height: 100vh;
+  padding: 3rem 4rem;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/* Matches WorkDetail.module.css's .back exactly on desktop. Unlike
+   WorkDetail (where mobile hides this entirely — Nav's own "Work" link
+   already reads "← Back" there), Log has no equivalent nav shortcut
+   back to /log, so mobile keeps this visible, just static-in-flow
+   instead of fixed (avoids fighting the mobile WORK/INFO row for the
+   same top-left corner). */
+.back {
+  position: fixed;
+  top: 2rem;
+  left: 2rem;
+  color: #C93500;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  border-bottom: 2px solid #C93500;
+  z-index: 100;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.date {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.55;
+}
+
+.typeTag {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1;
+  padding: 0.3rem 0.55rem;
+  border-radius: 999px;
+}
+
+.title {
+  font-size: 2.25rem;
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin: 0 0 1rem;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.tag {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  opacity: 0.55;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  padding: 0.25rem 0.6rem;
+}
+
+.body {
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.body :global(h1),
+.body :global(h2),
+.body :global(h3) {
+  margin: 2rem 0 0.75rem;
+}
+
+.body :global(p) {
+  margin: 0 0 1.25rem;
+}
+
+.body :global(ul),
+.body :global(ol) {
+  margin: 0 0 1.25rem;
+  padding-left: 1.5rem;
+}
+
+.body :global(li) {
+  margin-bottom: 0.4rem;
+}
+
+.body :global(code) {
+  background: rgba(201, 53, 0, 0.08);
+  border-radius: 4px;
+  padding: 0.15em 0.4em;
+  font-size: 0.9em;
+}
+
+/* Fenced blocks: the <pre> wrapper (see LogEntry.jsx's markdownComponents)
+   gets the background/padding; the inline-code style above still applies
+   to the <code> inside it, so unsetting background/padding there keeps
+   the block from painting a second nested pill around the whole thing. */
+.codeBlock {
+  background: rgba(201, 53, 0, 0.06);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 0 0 1.25rem;
+}
+
+.codeBlock :global(code) {
+  background: none;
+  padding: 0;
+  font-size: 0.85em;
+  line-height: 1.6;
+}
+
+.markdownLink {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.relatedLink {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: 0.5rem;
+  color: #C93500;
+  background: transparent;
+  border: 1px solid #C93500;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  padding: 0.75rem 1.25rem;
+  border-radius: 25px;
+  transition: opacity 0.2s ease;
+  margin-top: 1rem;
+}
+
+.relatedLink:hover {
+  opacity: 0.7;
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: 5.5rem 1.25rem 3rem;
+  }
+
+  .back {
+    position: static;
+    display: inline-block;
+    transform: none;
+    margin-bottom: 2rem;
+  }
+
+  .title {
+    font-size: 1.7rem;
+  }
+}

@@ -19,6 +19,15 @@ input:focus-visible {
   display: flex;
   flex-direction: column;
   flex: 1;
+  /* Without this, a flex item's default min-width:auto means its
+     min-content size — driven here by any unwrapped-text descendant
+     (e.g. a <pre> code block, white-space: pre) — can leak upward and
+     widen .layout itself well past the viewport, even though the pre's
+     own overflow-x: auto correctly contains it visually. main.content
+     already has this for the same reason, one level down — this needs
+     it too since .page-wrapper is itself a flex item of .layout, a
+     separate containment boundary from content's own. */
+  min-width: 0;
 }
 
 main {
