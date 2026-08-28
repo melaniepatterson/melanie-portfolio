@@ -65,11 +65,7 @@ export default function LogEntry() {
       <h1 className={styles.title}>{entry.title}</h1>
 
       {entry.tags?.length > 0 && (
-        <div className={styles.tags}>
-          {entry.tags.map((tag) => (
-            <span key={tag} className={styles.tag}>{tag}</span>
-          ))}
-        </div>
+        <p className={styles.tags}>{entry.tags.join(" · ")}</p>
       )}
 
       <div className={styles.body}>
