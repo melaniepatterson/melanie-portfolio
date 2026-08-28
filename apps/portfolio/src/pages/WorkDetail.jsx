@@ -122,7 +122,7 @@ export default function WorkDetail() {
   // direction instead. Reverse-chronological, same order Log.jsx's own
   // list uses, in case a project ever has more than one.
   const relatedLogEntries = LOG_ENTRIES
-    .filter((entry) => entry.relatedProject === project.slug)
+    .filter((entry) => entry.relatedProject === project.slug && entry.published !== false)
     .sort((a, b) => b.date.localeCompare(a.date));
 
   // These types are always the wide/large slot — same list this codebase
@@ -310,7 +310,11 @@ export default function WorkDetail() {
           )}
           {relatedLogEntries.map((entry) => (
             <Link key={entry.slug} to={`/log/${entry.slug}`} className={styles.link}>
-              <SplitText>{`Related Log: ${entry.title} →`}</SplitText>
+              {/* Deliberately not including entry.title here — a long
+                  one turned this into an oversized, awkward pill.
+                  "Related Log" alone stays a consistent size regardless
+                  of what a given entry is titled. */}
+              <SplitText>Related Log →</SplitText>
             </Link>
           ))}
         </div>

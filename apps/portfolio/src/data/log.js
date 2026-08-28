@@ -14,12 +14,22 @@
 // content: Markdown (rendered via react-markdown on the entry page).
 // Fenced code blocks (```js, ```css, etc.) render as plain styled
 // <pre><code> — no syntax highlighting, just monospace + a background.
+//
+// published: false hides an entry everywhere — Log.jsx's list,
+// LogEntry.jsx (direct URL redirects to /log), WorkDetail's reverse
+// "Related Log" lookup, and prerender-meta.mjs's per-route static
+// files. Kept as a flag rather than commenting the object out: still
+// type-checked, still a normal object to edit, and flipping it back on
+// later is a one-word change instead of un-commenting a block. Both
+// seed entries below are placeholder copy, not Melanie's own writing
+// yet — set to false until they're rewritten for real.
 export const LOG_ENTRIES = [
   {
     slug: "device-compare-bug",
     date: "2026-08-25",
     title: "Chasing a hero-image bug in DeviceCompare",
     type: "debug",
+    published: false,
     tags: ["React", "component design"],
     excerpt: "Deleting a screenshot from the middle of the list quietly promoted the wrong image to \"hero.\" The array shifted; my state didn't know.",
     content: `DeviceCompare renders a row of screenshots with one marked as the "hero" — bigger, shown first. I was tracking which one with a plain index:
@@ -50,6 +60,7 @@ Still deciding whether to backfill a test for this or just trust that "track ids
     date: "2026-08-20",
     title: "Giving canvas confetti some fake depth",
     type: "build",
+    published: false,
     tags: ["Canvas", "animation"],
     excerpt: "Every piece of confetti falling at the same speed reads as flat and a little cheap. One extra random number fixes that.",
     content: `Built a confetti-fall script for a decision-letter reveal — nothing exotic, a canvas, a particle array, gravity. First pass had every piece falling at the same speed and it looked exactly like what it was: a loop, not weather.

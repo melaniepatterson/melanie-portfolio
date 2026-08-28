@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, Navigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import { LOG_ENTRIES } from "../data/log";
 import { TYPE_COLORS } from "../data/logTypeColors";
@@ -132,6 +132,11 @@ export default function LogEntry() {
     );
   }
 
+  // Not public yet (see log.js's published field) — bounce straight
+  // back to the list instead of rendering placeholder content, same
+  // gating WorkDetail.jsx uses for a project's own comingSoon flag.
+  if (entry.published === false) return <Navigate to="/log" replace />;
+
   const color = TYPE_COLORS[entry.type];
   const relatedTitle = entry.relatedProject
     ? PROJECT_TITLES.find((p) => p.slug === entry.relatedProject)?.title
@@ -140,7 +145,9 @@ export default function LogEntry() {
   // Same reverse-chronological order Log.jsx's list shows, so "next"
   // always means "newer" — computed even while PREV_NEXT_ENABLED is
   // false so the only thing flipping that flag on later has to change.
-  const sortedEntries = [...LOG_ENTRIES].sort((a, b) => b.date.localeCompare(a.date));
+  const sortedEntries = LOG_ENTRIES
+    .filter((e) => e.published !== false)
+    .sort((a, b) => b.date.localeCompare(a.date));
   const currentIndex = sortedEntries.findIndex((e) => e.slug === entry.slug);
   const newerEntry = currentIndex > 0 ? sortedEntries[currentIndex - 1] : null;
   const olderEntry = currentIndex < sortedEntries.length - 1 ? sortedEntries[currentIndex + 1] : null;

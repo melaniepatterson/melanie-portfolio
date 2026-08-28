@@ -15,8 +15,12 @@ export default function Log() {
   // Not assumed to already be in order in the data file — sorting here
   // means entries can be added to log.js in whatever order is easiest
   // (usually just appended) without breaking the reverse-chronological
-  // display.
-  const entries = [...LOG_ENTRIES].sort((a, b) => b.date.localeCompare(a.date));
+  // display. published: false (see log.js) hides drafts here — !== false
+  // rather than === true so a new entry defaults to visible unless
+  // explicitly marked otherwise.
+  const entries = LOG_ENTRIES
+    .filter((entry) => entry.published !== false)
+    .sort((a, b) => b.date.localeCompare(a.date));
 
   return (
     <div className={styles.page}>

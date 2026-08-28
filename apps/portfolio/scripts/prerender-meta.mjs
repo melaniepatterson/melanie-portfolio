@@ -90,13 +90,18 @@ const routes = [
   // to get it a real title/description in link previews too, no extra
   // step. No per-entry image (entries don't have one, see log.js) — the
   // site's own default OG image covers it, same as most project routes
-  // above already do.
-  ...LOG_ENTRIES.map((entry) => ({
-    path: `/log/${entry.slug}`,
-    title: `${entry.title} — melanie.studio`,
-    description: entry.excerpt,
-    image: defaultImage,
-  })),
+  // above already do. published: false entries are skipped entirely —
+  // LogEntry.jsx redirects them client-side, so a crawlable static file
+  // would just be a dead end (and a stale link preview once the real
+  // copy replaces the placeholder).
+  ...LOG_ENTRIES
+    .filter((entry) => entry.published !== false)
+    .map((entry) => ({
+      path: `/log/${entry.slug}`,
+      title: `${entry.title} — melanie.studio`,
+      description: entry.excerpt,
+      image: defaultImage,
+    })),
 ]
 
 const escapeAttr = (str) => str.replace(/&/g, '&amp;').replace(/"/g, '&quot;')
@@ -155,7 +160,7 @@ const escapeXml = (str) => str
 
 function writeRssFeed() {
   const items = LOG_ENTRIES
-    .slice()
+    .filter((entry) => entry.published !== false)
     .sort((a, b) => b.date.localeCompare(a.date))
     .map((entry) => {
       const url = `${baseUrl}/log/${entry.slug}`
